@@ -1,0 +1,24 @@
+{
+  "name": "types-cjs",
+  "version": "1.0.0",
+  "description": "Typescript declarations for CJS - Cinnamon JavaScript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gr3q/types-cjs.git"
+  },
+  "keywords": [
+    "Typescript",
+    "CJS",
+    "Cinnamon"
+  ],
+  "author": "Attila Greguss",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Gr3q/types-cjs/issues"
+  },
+  "homepage": "https://github.com/Gr3q/types-cjs#readme"
+}
