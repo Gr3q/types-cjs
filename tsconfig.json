@@ -4,10 +4,6 @@
         "noImplicitAny": true,
         "removeComments": true,
         "sourceMap": false,
-    },
-    "exclude": [
-        "files",
-        "node_modules",
-        "**/*.spec.ts"
-    ]
+        "declaration": true
+    }
 }
