@@ -38,6 +38,8 @@ declare interface Global {
     ui_scale: number;
 
     stage_input_mode: imports.gi.Cinnamon.StageInputMode;
+
+    reparentActor(actor_before: imports.gi.Clutter.Actor, actor_after: imports.gi.Clutter.Actor): void
 }
 
 declare const global: Global;
