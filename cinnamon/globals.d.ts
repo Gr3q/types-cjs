@@ -12,9 +12,11 @@ declare function clearTimeout(timouetId: number): void;
 	}
  */
 declare interface Global {
-    log(...any: Array<any>): void;
-    logWarning(...any: Array<any>): void;
-    logError(...text: Array<string>): void;
+    log: typeof imports.ui.main._logInfo;
+    logWarning: typeof imports.ui.main._logWarning
+    logError: typeof imports.ui.main._logError
+    logTrace: typeof imports.ui.main._logTrace
+    
     create_app_launch_context(): imports.gi.Gio.AppLaunchContext;
     /** Main Cinnamon settings */
     settings: imports.gi.Gio.Settings;
