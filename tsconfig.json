@@ -5,5 +5,9 @@
         "removeComments": true,
         "sourceMap": false,
         "declaration": true
-    }
+    },
+    "include": [
+        "./**/*",
+        "../types-gjs/**/*"
+    ]
 }

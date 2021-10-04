@@ -45,7 +45,11 @@ declare namespace imports.gi.Cinnamon {
 	}
 
 	class WindowTracker {
+		static get_default(): WindowTracker;
 
+		connect(id: "notify::focus-app", callback: () => void): number;
+		// TODO: App?
+		get_window_app(window: imports.gi.Meta.Window): unknown;
 	}
 
 	// ENUMS
