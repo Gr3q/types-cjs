@@ -69,6 +69,8 @@ declare namespace imports.gi.Cinnamon {
 	function util_format_date(format: string, milliseconds: number): string;
 	function util_get_transformed_allocation(actor: imports.gi.Clutter.Actor): gi.Clutter.ActorBox
 
+	function util_get_week_start(): number;
+
 	function get_file_contents_utf8_sync(path: string): string
 
 }
