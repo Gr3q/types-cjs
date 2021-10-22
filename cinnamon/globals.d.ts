@@ -3,7 +3,7 @@ declare function require(path: string): any;
 declare function setInterval(callback: { (): void }, delay: number): number;
 declare function clearInterval(intervalID: number): void;
 declare function setTimeout(callback: { (): void }, delay: number): number;
-declare function clearTimeout(timouetId: number): void;
+declare function clearTimeout(timeoutID: number): void;
 
 /** Interface typing for the global variable.
  * Extendable, for example overloading in a d.ts file:
@@ -112,6 +112,6 @@ declare namespace imports {
     export const signals: Signals
 
     class Signals {
-        addSignalMethods(protoype: any): void
+        addSignalMethods(prototype: any): void
     }
 }
