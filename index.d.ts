@@ -1,5 +1,5 @@
 /// <reference path="./Cinnamon.d.ts" />
-/// <reference path="./CinnamonDesktop.d.ts" />
+/// <reference path="./CinnamonDesktop-3.0.d.ts" />
 
 /// <reference path="./cinnamon/misc/config.d.ts" />
 /// <reference path="./cinnamon/misc/gnomeSession.d.ts" />
