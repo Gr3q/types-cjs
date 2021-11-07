@@ -1,6 +1,6 @@
 {
   "name": "@ci-types/cjs",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Typescript declarations for CJS - Cinnamon JavaScript",
   "types": "index.d.ts",
   "scripts": {
@@ -22,6 +22,6 @@
   },
   "homepage": "https://github.com/Gr3q/types-cjs#readme",
   "dependencies": {
-    "@ci-types/gjs": "^1.0.6"
+    "@ci-types/gjs": "^1.0.7"
   }
 }
