@@ -61,13 +61,13 @@ declare namespace imports.gi.Cvc {
 		set_ports(ports: GLib.List): boolean;
 		set_profile(profile: string): boolean;
 		set_profiles(profiles: GLib.List): boolean;
-		connect(signal: "notify::human_profile", callback: (owner: this, ...args: any) => number): number;
-		connect(signal: "notify::icon_name", callback: (owner: this, ...args: any) => number): number;
-		connect(signal: "notify::id", callback: (owner: this, ...args: any) => number): number;
-		connect(signal: "notify::index", callback: (owner: this, ...args: any) => number): number;
-		connect(signal: "notify::name", callback: (owner: this, ...args: any) => number): number;
-		connect(signal: "notify::pa_context", callback: (owner: this, ...args: any) => number): number;
-		connect(signal: "notify::profile", callback: (owner: this, ...args: any) => number): number;
+		connect(signal: "notify::human_profile", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::icon_name", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::id", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::index", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::name", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::pa_context", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::profile", callback: (owner: this, ...args: any) => void): number;
 
 	}
 
@@ -141,7 +141,7 @@ declare namespace imports.gi.Cvc {
 		connect(signal: "stream-changed", callback: (owner: this, object: number) => void): number;
 		connect(signal: "stream-removed", callback: (owner: this, object: number) => void): number;
 
-		connect(signal: "notify::name", callback: (owner: this, ...args: any) => number): number;
+		connect(signal: "notify::name", callback: (owner: this, ...args: any) => void): number;
 
 	}
 
@@ -169,7 +169,7 @@ declare namespace imports.gi.Cvc {
 	interface IMixerEventRole {
 		device: string;
 
-		connect(signal: "notify::device", callback: (owner: this, ...args: any) => number): number;
+		connect(signal: "notify::device", callback: (owner: this, ...args: any) => void): number;
 
 	}
 
@@ -346,24 +346,24 @@ declare namespace imports.gi.Cvc {
 		connect(signal: "monitor-suspend", callback: (owner: this) => void): number;
 		connect(signal: "monitor-update", callback: (owner: this, object: number) => void): number;
 
-		connect(signal: "notify::application_id", callback: (owner: this, ...args: any) => number): number;
-		connect(signal: "notify::can_decibel", callback: (owner: this, ...args: any) => number): number;
-		connect(signal: "notify::card_index", callback: (owner: this, ...args: any) => number): number;
-		connect(signal: "notify::channel_map", callback: (owner: this, ...args: any) => number): number;
-		connect(signal: "notify::decibel", callback: (owner: this, ...args: any) => number): number;
-		connect(signal: "notify::description", callback: (owner: this, ...args: any) => number): number;
-		connect(signal: "notify::form_factor", callback: (owner: this, ...args: any) => number): number;
-		connect(signal: "notify::icon_name", callback: (owner: this, ...args: any) => number): number;
-		connect(signal: "notify::id", callback: (owner: this, ...args: any) => number): number;
-		connect(signal: "notify::index", callback: (owner: this, ...args: any) => number): number;
-		connect(signal: "notify::is_event_stream", callback: (owner: this, ...args: any) => number): number;
-		connect(signal: "notify::is_muted", callback: (owner: this, ...args: any) => number): number;
-		connect(signal: "notify::is_virtual", callback: (owner: this, ...args: any) => number): number;
-		connect(signal: "notify::name", callback: (owner: this, ...args: any) => number): number;
-		connect(signal: "notify::pa_context", callback: (owner: this, ...args: any) => number): number;
-		connect(signal: "notify::port", callback: (owner: this, ...args: any) => number): number;
-		connect(signal: "notify::sysfs_path", callback: (owner: this, ...args: any) => number): number;
-		connect(signal: "notify::volume", callback: (owner: this, ...args: any) => number): number;
+		connect(signal: "notify::application_id", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::can_decibel", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::card_index", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::channel_map", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::decibel", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::description", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::form_factor", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::icon_name", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::id", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::index", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::is_event_stream", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::is_muted", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::is_virtual", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::name", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::pa_context", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::port", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::sysfs_path", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::volume", callback: (owner: this, ...args: any) => void): number;
 
 	}
 
@@ -455,14 +455,14 @@ declare namespace imports.gi.Cvc {
 		set_profiles(in_profiles: GLib.List): void;
 		set_user_preferred_profile(profile: string): void;
 		should_profiles_be_hidden(): boolean;
-		connect(signal: "notify::card", callback: (owner: this, ...args: any) => number): number;
-		connect(signal: "notify::description", callback: (owner: this, ...args: any) => number): number;
-		connect(signal: "notify::icon_name", callback: (owner: this, ...args: any) => number): number;
-		connect(signal: "notify::origin", callback: (owner: this, ...args: any) => number): number;
-		connect(signal: "notify::port_available", callback: (owner: this, ...args: any) => number): number;
-		connect(signal: "notify::port_name", callback: (owner: this, ...args: any) => number): number;
-		connect(signal: "notify::stream_id", callback: (owner: this, ...args: any) => number): number;
-		connect(signal: "notify::type", callback: (owner: this, ...args: any) => number): number;
+		connect(signal: "notify::card", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::description", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::icon_name", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::origin", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::port_available", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::port_name", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::stream_id", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::type", callback: (owner: this, ...args: any) => void): number;
 
 	}
 
@@ -490,25 +490,6 @@ declare namespace imports.gi.Cvc {
 		public constructor(options?: Partial<MixerUIDeviceInitOptions>);
 	}
 
-	export interface ChannelMapClassInitOptions {}
-	interface ChannelMapClass {}
-	class ChannelMapClass {
-		public constructor(options?: Partial<ChannelMapClassInitOptions>);
-		public volume_changed: {(channel_map: ChannelMap, set: boolean): void;};
-	}
-
-	export interface ChannelMapPrivateInitOptions {}
-	interface ChannelMapPrivate {}
-	class ChannelMapPrivate {
-		public constructor(options?: Partial<ChannelMapPrivateInitOptions>);
-	}
-
-	export interface MixerCardClassInitOptions {}
-	interface MixerCardClass {}
-	class MixerCardClass {
-		public constructor(options?: Partial<MixerCardClassInitOptions>);
-	}
-
 	export interface MixerCardPortInitOptions {}
 	interface MixerCardPort {}
 	class MixerCardPort {
@@ -520,12 +501,6 @@ declare namespace imports.gi.Cvc {
 		public available: number;
 		public direction: number;
 		public profiles: GLib.List;
-	}
-
-	export interface MixerCardPrivateInitOptions {}
-	interface MixerCardPrivate {}
-	class MixerCardPrivate {
-		public constructor(options?: Partial<MixerCardPrivateInitOptions>);
 	}
 
 	export interface MixerCardProfileInitOptions {}
@@ -541,104 +516,6 @@ declare namespace imports.gi.Cvc {
 		public compare(b: MixerCardProfile): number;
 	}
 
-	export interface MixerControlClassInitOptions {}
-	interface MixerControlClass {}
-	class MixerControlClass {
-		public constructor(options?: Partial<MixerControlClassInitOptions>);
-		public state_changed: {(control: MixerControl, new_state: MixerControlState): void;};
-		public stream_added: {(control: MixerControl, id: number): void;};
-		public stream_changed: {(control: MixerControl, id: number): void;};
-		public stream_removed: {(control: MixerControl, id: number): void;};
-		public card_added: {(control: MixerControl, id: number): void;};
-		public card_removed: {(control: MixerControl, id: number): void;};
-		public default_sink_changed: {(control: MixerControl, id: number): void;};
-		public default_source_changed: {(control: MixerControl, id: number): void;};
-		public active_output_update: {(control: MixerControl, id: number): void;};
-		public active_input_update: {(control: MixerControl, id: number): void;};
-		public output_added: {(control: MixerControl, id: number): void;};
-		public input_added: {(control: MixerControl, id: number): void;};
-		public output_removed: {(control: MixerControl, id: number): void;};
-		public input_removed: {(control: MixerControl, id: number): void;};
-		public audio_device_selection_needed: {(control: MixerControl, id: number, show_dialog: boolean, choices: HeadsetPortChoice): void;};
-	}
-
-	export interface MixerControlPrivateInitOptions {}
-	interface MixerControlPrivate {}
-	class MixerControlPrivate {
-		public constructor(options?: Partial<MixerControlPrivateInitOptions>);
-	}
-
-	export interface MixerEventRoleClassInitOptions {}
-	interface MixerEventRoleClass {}
-	class MixerEventRoleClass {
-		public constructor(options?: Partial<MixerEventRoleClassInitOptions>);
-	}
-
-	export interface MixerEventRolePrivateInitOptions {}
-	interface MixerEventRolePrivate {}
-	class MixerEventRolePrivate {
-		public constructor(options?: Partial<MixerEventRolePrivateInitOptions>);
-	}
-
-	export interface MixerSinkClassInitOptions {}
-	interface MixerSinkClass {}
-	class MixerSinkClass {
-		public constructor(options?: Partial<MixerSinkClassInitOptions>);
-	}
-
-	export interface MixerSinkInputClassInitOptions {}
-	interface MixerSinkInputClass {}
-	class MixerSinkInputClass {
-		public constructor(options?: Partial<MixerSinkInputClassInitOptions>);
-	}
-
-	export interface MixerSinkInputPrivateInitOptions {}
-	interface MixerSinkInputPrivate {}
-	class MixerSinkInputPrivate {
-		public constructor(options?: Partial<MixerSinkInputPrivateInitOptions>);
-	}
-
-	export interface MixerSinkPrivateInitOptions {}
-	interface MixerSinkPrivate {}
-	class MixerSinkPrivate {
-		public constructor(options?: Partial<MixerSinkPrivateInitOptions>);
-	}
-
-	export interface MixerSourceClassInitOptions {}
-	interface MixerSourceClass {}
-	class MixerSourceClass {
-		public constructor(options?: Partial<MixerSourceClassInitOptions>);
-	}
-
-	export interface MixerSourceOutputClassInitOptions {}
-	interface MixerSourceOutputClass {}
-	class MixerSourceOutputClass {
-		public constructor(options?: Partial<MixerSourceOutputClassInitOptions>);
-	}
-
-	export interface MixerSourceOutputPrivateInitOptions {}
-	interface MixerSourceOutputPrivate {}
-	class MixerSourceOutputPrivate {
-		public constructor(options?: Partial<MixerSourceOutputPrivateInitOptions>);
-	}
-
-	export interface MixerSourcePrivateInitOptions {}
-	interface MixerSourcePrivate {}
-	class MixerSourcePrivate {
-		public constructor(options?: Partial<MixerSourcePrivateInitOptions>);
-	}
-
-	export interface MixerStreamClassInitOptions {}
-	interface MixerStreamClass {}
-	class MixerStreamClass {
-		public constructor(options?: Partial<MixerStreamClassInitOptions>);
-		public push_volume: {(stream: MixerStream, operation: any | null): boolean;};
-		public change_is_muted: {(stream: MixerStream, is_muted: boolean): boolean;};
-		public change_port: {(stream: MixerStream, port: string): boolean;};
-		public monitor_update: {(stream: MixerStream, v: number): void;};
-		public monitor_suspend: {(stream: MixerStream): void;};
-	}
-
 	export interface MixerStreamPortInitOptions {}
 	interface MixerStreamPort {}
 	class MixerStreamPort {
@@ -647,24 +524,6 @@ declare namespace imports.gi.Cvc {
 		public human_port: string;
 		public priority: number;
 		public available: boolean;
-	}
-
-	export interface MixerStreamPrivateInitOptions {}
-	interface MixerStreamPrivate {}
-	class MixerStreamPrivate {
-		public constructor(options?: Partial<MixerStreamPrivateInitOptions>);
-	}
-
-	export interface MixerUIDeviceClassInitOptions {}
-	interface MixerUIDeviceClass {}
-	class MixerUIDeviceClass {
-		public constructor(options?: Partial<MixerUIDeviceClassInitOptions>);
-	}
-
-	export interface MixerUIDevicePrivateInitOptions {}
-	interface MixerUIDevicePrivate {}
-	class MixerUIDevicePrivate {
-		public constructor(options?: Partial<MixerUIDevicePrivateInitOptions>);
 	}
 
 	enum MixerControlState {
