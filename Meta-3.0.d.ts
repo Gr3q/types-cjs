@@ -754,7 +754,7 @@ declare namespace imports.gi.Meta {
 		 * Gets the compositor's wrapper object for #window.
 		 * @returns the wrapper object.
 		 */
-		get_compositor_private(): GObject.Object;
+		get_compositor_private(): WindowActor;
 		get_description(): string;
 		get_display(): Display;
 		get_frame(): Frame;
