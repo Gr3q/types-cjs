@@ -570,7 +570,7 @@ declare namespace imports.gi.CinnamonDesktop {
 		 */
 		connect(signal: "output-disconnected", callback: (owner: this, output: any | null) => void): number;
 
-		connect(signal: "notify::gdk_screen", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::gdk-screen", callback: (owner: this, ...args: any) => void): number;
 
 	}
 
@@ -654,7 +654,7 @@ declare namespace imports.gi.CinnamonDesktop {
 		 */
 		set_format_string(format_string: string | null): boolean;
 		connect(signal: "notify::clock", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::format_string", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::format-string", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::parent_object", callback: (owner: this, ...args: any) => void): number;
 
 	}

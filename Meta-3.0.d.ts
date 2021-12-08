@@ -10,7 +10,7 @@ declare namespace imports.gi.Meta {
 		 */
 		dim_factor: number;
 
-		connect(signal: "notify::dim_factor", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::dim-factor", callback: (owner: this, ...args: any) => void): number;
 
 	}
 
@@ -267,7 +267,7 @@ declare namespace imports.gi.Meta {
 		connect(signal: "zoom-scroll-in", callback: (owner: this) => void): number;
 		connect(signal: "zoom-scroll-out", callback: (owner: this) => void): number;
 
-		connect(signal: "notify::focus_window", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::focus-window", callback: (owner: this, ...args: any) => void): number;
 
 	}
 
@@ -342,7 +342,7 @@ declare namespace imports.gi.Meta {
 		switch_workspace_completed(): void;
 		tile_completed(actor: WindowActor): void;
 		unmaximize_completed(actor: WindowActor): void;
-		connect(signal: "notify::debug_mode", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::debug-mode", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::screen", callback: (owner: this, ...args: any) => void): number;
 
 	}
@@ -489,8 +489,8 @@ declare namespace imports.gi.Meta {
 		connect(signal: "workspace-removed", callback: (owner: this, object: number) => void): number;
 		connect(signal: "workspace-switched", callback: (owner: this, object: number, p0: number, p1: MotionDirection) => void): number;
 
-		connect(signal: "notify::keyboard_grabbed", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::n_workspaces", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::keyboard-grabbed", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::n-workspaces", callback: (owner: this, ...args: any) => void): number;
 
 	}
 
@@ -754,7 +754,7 @@ declare namespace imports.gi.Meta {
 		 * Gets the compositor's wrapper object for #window.
 		 * @returns the wrapper object.
 		 */
-		get_compositor_private(): WindowActor;
+		get_compositor_private(): GObject.Object;
 		get_description(): string;
 		get_display(): Display;
 		get_frame(): Frame;
@@ -1075,29 +1075,29 @@ declare namespace imports.gi.Meta {
 		connect(signal: "workspace-changed", callback: (owner: this, object: number) => void): number;
 
 		connect(signal: "notify::above", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::appears_focused", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::appears-focused", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::decorated", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::demands_attention", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::demands-attention", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::fullscreen", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::gtk_app_menu_object_path", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::gtk_application_id", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::gtk_application_object_path", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::gtk_menubar_object_path", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::gtk_unique_bus_name", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::gtk_window_object_path", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::maximized_horizontally", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::maximized_vertically", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::gtk-app-menu-object-path", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::gtk-application-id", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::gtk-application-object-path", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::gtk-menubar-object-path", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::gtk-unique-bus-name", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::gtk-window-object-path", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::maximized-horizontally", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::maximized-vertically", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::minimized", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::muffin_hints", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::muffin-hints", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::progress", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::progress_pulse", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::progress-pulse", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::resizeable", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::tile_type", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::tile-type", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::title", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::urgent", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::user_time", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::window_type", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::wm_class", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::user-time", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::window-type", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::wm-class", callback: (owner: this, ...args: any) => void): number;
 
 	}
 
@@ -1180,11 +1180,11 @@ declare namespace imports.gi.Meta {
 		connect(signal: "position-changed", callback: (owner: this) => void): number;
 		connect(signal: "size-changed", callback: (owner: this) => void): number;
 
-		connect(signal: "notify::meta_screen", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::meta_window", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::no_shadow", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::shadow_class", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::x_window", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::meta-screen", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::meta-window", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::no-shadow", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::shadow-class", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::x-window", callback: (owner: this, ...args: any) => void): number;
 
 	}
 
@@ -1271,7 +1271,7 @@ declare namespace imports.gi.Meta {
 		connect(signal: "window-added", callback: (owner: this, object: Window) => void): number;
 		connect(signal: "window-removed", callback: (owner: this, object: Window) => void): number;
 
-		connect(signal: "notify::n_windows", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::n-windows", callback: (owner: this, ...args: any) => void): number;
 
 	}
 
