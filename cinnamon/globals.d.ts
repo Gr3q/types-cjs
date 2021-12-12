@@ -66,7 +66,7 @@ declare const  __meta: {
 declare const __dirname: string
 declare const __filename: string
 
-declare class GJSError {
+declare class GJSError extends Error {
     stack: any;
     fileName: string;
     lineNumber: number;

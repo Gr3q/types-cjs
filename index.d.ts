@@ -4,7 +4,8 @@
 /// <reference path="./CMenu-3.0.d.ts" />
 /// <reference path="./Cvc-1.0.d.ts" />
 /// <reference path="./Meta-3.0.d.ts" />
-/// <reference path="./xfixes.d.ts" />
+/// <reference path="./XApp-1.0.d.ts" />
+/// <reference path="./xfixes-4.0.d.ts" />
 
 /// <reference path="./cinnamon/misc/config.d.ts" />
 /// <reference path="./cinnamon/misc/gnomeSession.d.ts" />
