@@ -131,7 +131,7 @@ declare namespace imports.ui.tooltips {
 		 * @param initTitle the initial string of the tooltip
 		 * @param orientation the orientation of the applet.
 		 */
-		constructor(panelItem: applet.Applet, initTitle: string, orientation: gi.St.Side);
+		constructor(panelItem: applet.Applet, initTitle: string | null | undefined, orientation: gi.St.Side);
 
 		public show(): void;
 

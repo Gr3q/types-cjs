@@ -59,5 +59,6 @@
 /// <reference path="./cinnamon/ui/xdndHandler.d.ts" />
 
 /// <reference path="./cinnamon/globals.d.ts" />
+/// <reference path="./XApp.d.ts" />
 
 import "@ci-types/gjs";

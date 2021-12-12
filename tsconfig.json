@@ -4,7 +4,9 @@
         "noImplicitAny": true,
         "removeComments": true,
         "sourceMap": false,
-        "declaration": true
+        "declaration": true, 
+        "strictNullChecks": true,
+        "exactOptionalPropertyTypes": true
     },
     "include": [
         "./**/*",
