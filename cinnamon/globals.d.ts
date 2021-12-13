@@ -50,18 +50,21 @@ interface String {
     format(...args: string[]): string
 }
 
-declare class __meta {
-    static uuid: string;
-    static path: string;
-    static name: string;
-    static description: string;
-    static "max-instances": number;
-    static multiversion: boolean;
-    static author: string;
-    static "last-edited": number;
-    static error: any;
-    static "force-loaded": boolean
+declare const  __meta: {
+    uuid: string;
+    path: string;
+    name: string;
+    description: string;
+    "max-instances": number;
+    multiversion: boolean;
+    author: string;
+    "last-edited": number;
+    error: any;
+    "force-loaded": boolean
 }
+
+declare const __dirname: string
+declare const __filename: string
 
 declare class GJSError extends Error {
     stack: any;
