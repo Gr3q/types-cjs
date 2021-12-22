@@ -1,9 +1,9 @@
 declare function require(path: string): any;
 
-declare function setInterval(callback: { (): void }, delay: number): number;
-declare function clearInterval(intervalID: number): void;
-declare function setTimeout(callback: { (): void }, delay: number): number;
-declare function clearTimeout(timeoutID: number): void;
+declare const setInterval: typeof imports.misc.util.setInterval
+declare const clearInterval: typeof imports.misc.util.clearInterval
+declare const setTimeout: typeof imports.misc.util.setTimeout
+declare const clearTimeout: typeof imports.misc.util.clearTimeout
 
 /** Interface typing for the global variable.
  * Extendable, for example overloading in a d.ts file:
@@ -50,7 +50,7 @@ interface String {
     format(...args: string[]): string
 }
 
-declare const  __meta: {
+declare interface Meta {
     uuid: string;
     path: string;
     name: string;
@@ -62,6 +62,8 @@ declare const  __meta: {
     error: any;
     "force-loaded": boolean
 }
+
+declare const __meta: Meta
 
 declare const __dirname: string
 declare const __filename: string
