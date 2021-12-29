@@ -86,7 +86,7 @@ declare namespace imports.ui.tooltips {
 		 * @param item  the actor owning the tooltip
 		 * @param initTitle the string to display initially
 		 */
-		constructor(item: gi.Clutter.Actor, initTitle: string);
+		constructor(item: gi.Clutter.Actor, initTitle?: string | null);
 
 		public hide(): void;
 

@@ -23,7 +23,7 @@ declare interface Global {
     set_cursor(cursor: imports.gi.Cinnamon.Cursor): void;
     unset_cursor(): void;
     /** equivalent to imports.gi.Meta */
-    screen: any;
+    screen: imports.gi.Meta.Screen;
     display: imports.gi.Meta.Display;
     stage: imports.gi.Clutter.Stage;
     /** Gets the pointer coordinates and current modifier key state */
@@ -50,7 +50,7 @@ interface String {
     format(...args: string[]): string
 }
 
-declare interface Meta {
+declare interface  Meta {
     uuid: string;
     path: string;
     name: string;
