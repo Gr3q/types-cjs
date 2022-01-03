@@ -120,10 +120,7 @@ declare namespace imports.gi.Cinnamon {
 
 	}
 
-	type AppInitOptionsMixin = GObject.ObjectInitOptions & 
-	Pick<IApp,
-		"state">;
-
+	type AppInitOptionsMixin = GObject.ObjectInitOptions
 	export interface AppInitOptions extends AppInitOptionsMixin {}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -577,26 +574,8 @@ declare namespace imports.gi.Cinnamon {
 
 	type GlobalInitOptionsMixin = GObject.ObjectInitOptions & 
 	Pick<IGlobal,
-		"background_actor" |
-		"bottom_window_group" |
-		"datadir" |
-		"display" |
-		"focus_manager" |
-		"gdk_screen" |
-		"imagedir" |
-		"overlay_group" |
-		"screen" |
-		"screen_height" |
-		"screen_width" |
 		"session_running" |
-		"settings" |
-		"stage" |
-		"stage_input_mode" |
-		"top_window_group" |
-		"ui_scale" |
-		"userdatadir" |
-		"window_group" |
-		"window_manager">;
+		"stage_input_mode">;
 
 	export interface GlobalInitOptions extends GlobalInitOptionsMixin {}
 
@@ -1025,12 +1004,7 @@ declare namespace imports.gi.Cinnamon {
 
 	}
 
-	type TrayIconInitOptionsMixin = GtkEmbedInitOptions & Atk.ImplementorIfaceInitOptions & Clutter.AnimatableInitOptions & Clutter.ContainerInitOptions & Clutter.ScriptableInitOptions & 
-	Pick<ITrayIcon,
-		"pid" |
-		"title" |
-		"wm_class">;
-
+	type TrayIconInitOptionsMixin = GtkEmbedInitOptions & Atk.ImplementorIfaceInitOptions & Clutter.AnimatableInitOptions & Clutter.ContainerInitOptions & Clutter.ScriptableInitOptions
 	export interface TrayIconInitOptions extends TrayIconInitOptionsMixin {}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -1188,10 +1162,7 @@ declare namespace imports.gi.Cinnamon {
 
 	}
 
-	type WindowTrackerInitOptionsMixin = GObject.ObjectInitOptions & 
-	Pick<IWindowTracker,
-		"focus_app">;
-
+	type WindowTrackerInitOptionsMixin = GObject.ObjectInitOptions
 	export interface WindowTrackerInitOptions extends WindowTrackerInitOptionsMixin {}
 
 	/** This construct is only for enabling class multi-inheritance,

@@ -465,11 +465,7 @@ declare namespace imports.gi.XApp {
 
 	}
 
-	type KbdLayoutControllerInitOptionsMixin = GObject.ObjectInitOptions & 
-	Pick<IKbdLayoutController,
-		"enabled" |
-		"parent_object">;
-
+	type KbdLayoutControllerInitOptionsMixin = GObject.ObjectInitOptions
 	export interface KbdLayoutControllerInitOptions extends KbdLayoutControllerInitOptionsMixin {}
 
 	/** This construct is only for enabling class multi-inheritance,

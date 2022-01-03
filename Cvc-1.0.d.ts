@@ -73,7 +73,6 @@ declare namespace imports.gi.Cvc {
 
 	type MixerCardInitOptionsMixin = GObject.ObjectInitOptions & 
 	Pick<IMixerCard,
-		"human_profile" |
 		"icon_name" |
 		"id" |
 		"index" |

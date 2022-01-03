@@ -271,10 +271,7 @@ declare namespace imports.gi.Meta {
 
 	}
 
-	type DisplayInitOptionsMixin = GObject.ObjectInitOptions & 
-	Pick<IDisplay,
-		"focus_window">;
-
+	type DisplayInitOptionsMixin = GObject.ObjectInitOptions
 	export interface DisplayInitOptions extends DisplayInitOptionsMixin {}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -349,7 +346,6 @@ declare namespace imports.gi.Meta {
 
 	type PluginInitOptionsMixin = GObject.ObjectInitOptions & 
 	Pick<IPlugin,
-		"debug_mode" |
 		"screen">;
 
 	export interface PluginInitOptions extends PluginInitOptionsMixin {}
@@ -494,11 +490,7 @@ declare namespace imports.gi.Meta {
 
 	}
 
-	type ScreenInitOptionsMixin = GObject.ObjectInitOptions & 
-	Pick<IScreen,
-		"keyboard_grabbed" |
-		"n_workspaces">;
-
+	type ScreenInitOptionsMixin = GObject.ObjectInitOptions
 	export interface ScreenInitOptions extends ScreenInitOptionsMixin {}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -1101,33 +1093,7 @@ declare namespace imports.gi.Meta {
 
 	}
 
-	type WindowInitOptionsMixin = GObject.ObjectInitOptions & 
-	Pick<IWindow,
-		"above" |
-		"appears_focused" |
-		"decorated" |
-		"demands_attention" |
-		"fullscreen" |
-		"gtk_app_menu_object_path" |
-		"gtk_application_id" |
-		"gtk_application_object_path" |
-		"gtk_menubar_object_path" |
-		"gtk_unique_bus_name" |
-		"gtk_window_object_path" |
-		"maximized_horizontally" |
-		"maximized_vertically" |
-		"minimized" |
-		"muffin_hints" |
-		"progress" |
-		"progress_pulse" |
-		"resizeable" |
-		"tile_type" |
-		"title" |
-		"urgent" |
-		"user_time" |
-		"window_type" |
-		"wm_class">;
-
+	type WindowInitOptionsMixin = GObject.ObjectInitOptions
 	export interface WindowInitOptions extends WindowInitOptionsMixin {}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -1275,10 +1241,7 @@ declare namespace imports.gi.Meta {
 
 	}
 
-	type WorkspaceInitOptionsMixin = GObject.ObjectInitOptions & 
-	Pick<IWorkspace,
-		"n_windows">;
-
+	type WorkspaceInitOptionsMixin = GObject.ObjectInitOptions
 	export interface WorkspaceInitOptions extends WorkspaceInitOptionsMixin {}
 
 	/** This construct is only for enabling class multi-inheritance,

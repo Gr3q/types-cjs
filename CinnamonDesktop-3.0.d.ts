@@ -175,8 +175,7 @@ declare namespace imports.gi.CinnamonDesktop {
 	type BGCrossfadeInitOptionsMixin = GObject.ObjectInitOptions & 
 	Pick<IBGCrossfade,
 		"height" |
-		"width" |
-		"parent_object">;
+		"width">;
 
 	export interface BGCrossfadeInitOptions extends BGCrossfadeInitOptionsMixin {}
 
@@ -661,9 +660,7 @@ declare namespace imports.gi.CinnamonDesktop {
 
 	type WallClockInitOptionsMixin = GObject.ObjectInitOptions & 
 	Pick<IWallClock,
-		"clock" |
-		"format_string" |
-		"parent_object">;
+		"format_string">;
 
 	export interface WallClockInitOptions extends WallClockInitOptionsMixin {}
 
@@ -779,10 +776,7 @@ declare namespace imports.gi.CinnamonDesktop {
 
 	}
 
-	type XkbInfoInitOptionsMixin = GObject.ObjectInitOptions & 
-	Pick<IXkbInfo,
-		"parent_object">;
-
+	type XkbInfoInitOptionsMixin = GObject.ObjectInitOptions
 	export interface XkbInfoInitOptions extends XkbInfoInitOptionsMixin {}
 
 	/** This construct is only for enabling class multi-inheritance,
