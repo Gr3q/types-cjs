@@ -22,7 +22,6 @@ declare interface Global {
     settings: imports.gi.Gio.Settings;
     set_cursor(cursor: imports.gi.Cinnamon.Cursor): void;
     unset_cursor(): void;
-    /** equivalent to imports.gi.Meta */
     screen: imports.gi.Meta.Screen;
     display: imports.gi.Meta.Display;
     stage: imports.gi.Clutter.Stage;
@@ -38,6 +37,8 @@ declare interface Global {
     focus_manager: imports.gi.St.FocusManager
 
     ui_scale: number;
+    /** the directory, the cinnamon spices are placed, e.g. on Linux Mint 20.2 this is: $HOME/.local/share/cinnamon  */
+    userdatadir: string
 
     stage_input_mode: imports.gi.Cinnamon.StageInputMode;
 
