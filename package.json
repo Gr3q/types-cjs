@@ -22,6 +22,6 @@
   },
   "homepage": "https://github.com/Gr3q/types-cjs#readme",
   "dependencies": {
-    "@ci-types/gjs": "^1.0.11"
+    "@ci-types/gjs": "^1.0.12"
   }
 }
