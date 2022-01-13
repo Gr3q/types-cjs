@@ -1,6 +1,6 @@
 {
   "name": "@ci-types/cjs",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "description": "Typescript declarations for CJS - Cinnamon JavaScript",
   "types": "index.d.ts",
   "scripts": {

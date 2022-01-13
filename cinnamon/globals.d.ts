@@ -36,13 +36,18 @@ declare interface Global {
     set_pointer(x: number, y: number): void
     focus_manager: imports.gi.St.FocusManager
 
+    /**
+     * @returns the current X server time from the current Clutter, Gdk, or X event. If called from outside an event handler, this may return Clutter.CURRENT_TIME (aka 0), or it may return a slightly out-of-date timestamp.
+     */
+    get_current_time(): number
+
     ui_scale: number;
     /** the directory, the cinnamon spices are placed, e.g. on Linux Mint 20.2 this is: $HOME/.local/share/cinnamon  */
     userdatadir: string
 
     stage_input_mode: imports.gi.Cinnamon.StageInputMode;
 
-    reparentActor(actor_before: imports.gi.Clutter.Actor, actor_after: imports.gi.Clutter.Actor): void
+    reparentActor: typeof imports.ui.main['_reparentActor']
 }
 
 declare const global: Global;
@@ -110,14 +115,15 @@ declare namespace imports.gettext {
 }
 
 declare namespace imports {
+
     export const lang: Lang;
-    class Lang {
+    interface Lang {
         bind<T, CTX>(ctx: CTX, func: T): T;
     }
 
     export const signals: Signals
 
-    class Signals {
+    interface Signals {
         addSignalMethods(prototype: any): void
     }
 }
