@@ -6,10 +6,10 @@
         "sourceMap": false,
         "declaration": true, 
         "strictNullChecks": true,
-        "exactOptionalPropertyTypes": true
+        "exactOptionalPropertyTypes": true,
+        "strict": true
     },
     "include": [
-        "./**/*",
-        "../types-gjs/**/*"
+        "./**/*"
     ]
 }
