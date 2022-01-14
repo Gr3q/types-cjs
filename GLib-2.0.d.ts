@@ -3965,22 +3965,22 @@ declare namespace imports.gi.GLib {
 	 * The #GList struct is used for each element in a doubly-linked list.
 	 */
 	interface List {}
-	class List {
+	class List<T = any> {
 		public constructor(options?: Partial<ListInitOptions>);
 		/**
 		 * holds the element's data, which can be a pointer to any kind
 		 *        of data, or any integer value using the
 		 *        [Type Conversion Macros][glib-Type-Conversion-Macros]
 		 */
-		public data: any;
+		public data: T;
 		/**
 		 * contains the link to the next element in the list
 		 */
-		public next: GLib.List;
+		public next: GLib.List | null;
 		/**
 		 * contains the link to the previous element in the list
 		 */
-		public prev: GLib.List;
+		public prev: GLib.List | null;
 	}
 
 	export interface LogFieldInitOptions {}
