@@ -22,8 +22,6 @@ declare interface Global extends imports.gi.Cinnamon.IGlobal{
     readonly settings: imports.gi.Gio.Settings;
     /** the directory, the cinnamon spices are placed, e.g. on Linux Mint 20.2 this is: $HOME/.local/share/cinnamon  */
     readonly userdatadir: string
-
-    readonly stage: imports.gi.Clutter.Stage;
 }
 
 declare const global: Global;
