@@ -11,43 +11,17 @@ declare const clearTimeout: typeof imports.misc.util.clearTimeout
 		trayReloading?: boolean;
 	}
  */
-declare interface Global {
+declare interface Global extends imports.gi.Cinnamon.IGlobal{
     log: typeof imports.ui.main._logInfo;
     logWarning: typeof imports.ui.main._logWarning
     logError: typeof imports.ui.main._logError
     logTrace: typeof imports.ui.main._logTrace
-    
-    create_app_launch_context(): imports.gi.Gio.AppLaunchContext;
+    reparentActor: typeof imports.ui.main._reparentActor
+
     /** Main Cinnamon settings */
-    settings: imports.gi.Gio.Settings;
-    set_cursor(cursor: imports.gi.Cinnamon.Cursor): void;
-    unset_cursor(): void;
-    screen: imports.gi.Meta.Screen;
-    display: imports.gi.Meta.Display;
-    stage: imports.gi.Clutter.Stage;
-    /** Gets the pointer coordinates and current modifier key state */
-    get_pointer(): [number, number, imports.gi.Clutter.ModifierType]
-    /**
-     * Sets the pointer coordinates
-     * 
-     * @param x the X coordinate of the pointer, in global coordinates
-     * @param y the Y coordinate of the pointer, in global coordinates
-     */
-    set_pointer(x: number, y: number): void
-    focus_manager: imports.gi.St.FocusManager
-
-    /**
-     * @returns the current X server time from the current Clutter, Gdk, or X event. If called from outside an event handler, this may return Clutter.CURRENT_TIME (aka 0), or it may return a slightly out-of-date timestamp.
-     */
-    get_current_time(): number
-
-    ui_scale: number;
+    readonly settings: imports.gi.Gio.Settings;
     /** the directory, the cinnamon spices are placed, e.g. on Linux Mint 20.2 this is: $HOME/.local/share/cinnamon  */
-    userdatadir: string
-
-    stage_input_mode: imports.gi.Cinnamon.StageInputMode;
-
-    reparentActor: typeof imports.ui.main['_reparentActor']
+    readonly userdatadir: string
 }
 
 declare const global: Global;
