@@ -337,7 +337,7 @@ declare namespace imports.gi.Cinnamon {
 	 */
 	interface IGlobal {
 		readonly background_actor: Clutter.Actor;
-		readonly bottom_window_group: Clutter.Actor;
+		readonly bottom_window_group: Gtk.WindowGroup;
 		readonly datadir: string;
 		readonly display: Meta.Display;
 		readonly focus_manager: St.FocusManager;
@@ -349,12 +349,12 @@ declare namespace imports.gi.Cinnamon {
 		readonly screen_width: number;
 		session_running: boolean;
 		readonly settings: Gio.Settings;
-		readonly stage: Clutter.Actor;
+		readonly stage: Clutter.Stage;
 		stage_input_mode: StageInputMode;
-		readonly top_window_group: Clutter.Actor;
+		readonly top_window_group: Gtk.WindowGroup;
 		readonly ui_scale: number;
 		readonly userdatadir: string;
-		readonly window_group: Clutter.Actor;
+		readonly window_group: Gtk.WindowGroup;
 		readonly window_manager: WM;
 		/**
 		 * Request mb megabytes allocated. This is just for debugging.
@@ -448,7 +448,7 @@ declare namespace imports.gi.Cinnamon {
 		 * Gets the list of #MetaWindowActor for the plugin's screen
 		 * @returns the list of windows
 		 */
-		get_window_actors(): GLib.List;
+		get_window_actors(): GLib.List<Meta.WindowActor>;
 		/**
 		 * Enables tracking of Xdnd events
 		 */
