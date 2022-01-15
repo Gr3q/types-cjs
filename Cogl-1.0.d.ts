@@ -226,6 +226,25 @@ declare namespace imports.gi.Cogl {
 		 *   to free the allocated resources
 		 */
 		public static new(): Color;
+		/**
+		 * Compares two {@link Color}<!-- -->s and checks if they are the same.
+		 * 
+		 * This function can be passed to {@link G.hash_table_new} as the #key_equal_func
+		 * parameter, when using #CoglColor<!-- -->s as keys in a #GHashTable.
+		 * @param v1 a {@link Color}
+		 * @param v2 a {@link Color}
+		 * @returns %TRUE if the two colors are the same.
+		 */
+		public static equal(v1: any | null, v2: any | null): Bool;
+		/**
+		 * Converts a color expressed in HLS (hue, luminance and saturation)
+		 * values into a {@link Color}.
+		 * @param hue hue value, in the 0 .. 360 range
+		 * @param saturation saturation value, in the 0 .. 1 range
+		 * @param luminance luminance value, in the 0 .. 1 range
+		 * @returns return location for a {@link Color}
+		 */
+		public static init_from_hsl(hue: number, saturation: number, luminance: number): Color;
 		public readonly private_member_red: number;
 		public readonly private_member_green: number;
 		public readonly private_member_blue: number;
@@ -454,6 +473,31 @@ declare namespace imports.gi.Cogl {
 	interface Material {}
 	class Material {
 		public constructor(options?: Partial<MaterialInitOptions>);
+		/**
+		 * @deprecated
+		 * Use {@link Cogl.pipeline_new} instead
+		 * 
+		 * Allocates and initializes a blank white material
+		 * @returns a pointer to a new {@link Material}
+		 */
+		public static new(): Material;
+		/**
+		 * @deprecated
+		 * Use {@link Cogl.object_ref} instead
+		 * 
+		 * Increment the reference count for a {@link Material}.
+		 * @param material a {@link Material} object.
+		 * @returns the #material.
+		 */
+		public static ref(material: Handle): Handle;
+		/**
+		 * @deprecated
+		 * Use {@link Cogl.object_unref} instead
+		 * 
+		 * Decrement the reference count for a {@link Material}.
+		 * @param material a {@link Material} object.
+		 */
+		public static unref(material: Handle): void;
 		/**
 		 * @deprecated
 		 * Use {@link Cogl.pipeline_copy} instead
@@ -1199,6 +1243,16 @@ declare namespace imports.gi.Cogl {
 	interface Matrix {}
 	class Matrix {
 		public constructor(options?: Partial<MatrixInitOptions>);
+		/**
+		 * Compares two matrices to see if they represent the same
+		 * transformation. Although internally the matrices may have different
+		 * annotations associated with them and may potentially have a cached
+		 * inverse matrix these are not considered in the comparison.
+		 * @param v1 A 4x4 transformation matrix
+		 * @param v2 A 4x4 transformation matrix
+		 * @returns 
+		 */
+		public static equal(v1: any | null, v2: any | null): Bool;
 		public xx: number;
 		public yx: number;
 		public zx: number;

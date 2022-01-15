@@ -16,6 +16,51 @@ declare namespace imports.gi.Graphene {
 		 *   Use {@link Graphene.Box.free} to free the resources allocated by this function
 		 */
 		public static alloc(): Box;
+		/**
+		 * A degenerate #graphene_box_t that can only be expanded.
+		 * 
+		 * The returned value is owned by Graphene and should not be modified or freed.
+		 * @returns a #graphene_box_t
+		 */
+		public static empty(): Box;
+		/**
+		 * A degenerate #graphene_box_t that cannot be expanded.
+		 * 
+		 * The returned value is owned by Graphene and should not be modified or freed.
+		 * @returns a #graphene_box_t
+		 */
+		public static infinite(): Box;
+		/**
+		 * A #graphene_box_t with the minimum vertex set at (-1, -1, -1) and the
+		 * maximum vertex set at (0, 0, 0).
+		 * 
+		 * The returned value is owned by Graphene and should not be modified or freed.
+		 * @returns a #graphene_box_t
+		 */
+		public static minus_one(): Box;
+		/**
+		 * A #graphene_box_t with the minimum vertex set at (0, 0, 0) and the
+		 * maximum vertex set at (1, 1, 1).
+		 * 
+		 * The returned value is owned by Graphene and should not be modified or freed.
+		 * @returns a #graphene_box_t
+		 */
+		public static one(): Box;
+		/**
+		 * A #graphene_box_t with the minimum vertex set at (-1, -1, -1) and the
+		 * maximum vertex set at (1, 1, 1).
+		 * 
+		 * The returned value is owned by Graphene and should not be modified or freed.
+		 * @returns a #graphene_box_t
+		 */
+		public static one_minus_one(): Box;
+		/**
+		 * A #graphene_box_t with both the minimum and maximum vertices set at (0, 0, 0).
+		 * 
+		 * The returned value is owned by Graphene and should not be modified or freed.
+		 * @returns a #graphene_box_t
+		 */
+		public static zero(): Box;
 		public readonly min: Vec3;
 		public readonly max: Vec3;
 		/**
@@ -1238,6 +1283,11 @@ declare namespace imports.gi.Graphene {
 		 */
 		public static alloc(): Point;
 		/**
+		 * Returns a point fixed at (0, 0).
+		 * @returns a fixed point
+		 */
+		public static zero(): Point;
+		/**
 		 * the X coordinate of the point
 		 */
 		public x: number;
@@ -1330,6 +1380,11 @@ declare namespace imports.gi.Graphene {
 		 *   allocated by this function.
 		 */
 		public static alloc(): Point3D;
+		/**
+		 * Retrieves a constant point with all three coordinates set to 0.
+		 * @returns a zero point
+		 */
+		public static zero(): Point3D;
 		/**
 		 * the X coordinate
 		 */
@@ -1892,6 +1947,19 @@ declare namespace imports.gi.Graphene {
 	class Rect {
 		public constructor(options?: Partial<RectInitOptions>);
 		/**
+		 * Allocates a new #graphene_rect_t.
+		 * 
+		 * The contents of the returned rectangle are undefined.
+		 * @returns the newly allocated rectangle
+		 */
+		public static alloc(): Rect;
+		/**
+		 * Returns a degenerate rectangle with origin fixed at (0, 0) and
+		 * a size of 0, 0.
+		 * @returns a fixed rectangle
+		 */
+		public static zero(): Rect;
+		/**
 		 * the coordinates of the origin of the rectangle
 		 */
 		public origin: Point;
@@ -2218,6 +2286,12 @@ declare namespace imports.gi.Graphene {
 		 * @returns the newly allocated #graphene_size_t
 		 */
 		public static alloc(): Size;
+		/**
+		 * A constant pointer to a zero #graphene_size_t, useful for
+		 * equality checks and interpolations.
+		 * @returns a constant size
+		 */
+		public static zero(): Size;
 		/**
 		 * the width
 		 */
@@ -2552,6 +2626,26 @@ declare namespace imports.gi.Graphene {
 		 *   by this function.
 		 */
 		public static alloc(): Vec2;
+		/**
+		 * Retrieves a constant vector with (1, 1) components.
+		 * @returns the one vector
+		 */
+		public static one(): Vec2;
+		/**
+		 * Retrieves a constant vector with (1, 0) components.
+		 * @returns the X axis vector
+		 */
+		public static x_axis(): Vec2;
+		/**
+		 * Retrieves a constant vector with (0, 1) components.
+		 * @returns the Y axis vector
+		 */
+		public static y_axis(): Vec2;
+		/**
+		 * Retrieves a constant vector with (0, 0) components.
+		 * @returns the zero vector
+		 */
+		public static zero(): Vec2;
 		public readonly value: Simd4F;
 		/**
 		 * Adds each component of the two passed vectors and places
@@ -2711,6 +2805,36 @@ declare namespace imports.gi.Graphene {
 		 *   by this function.
 		 */
 		public static alloc(): Vec3;
+		/**
+		 * Provides a constant pointer to a vector with three components,
+		 * all sets to 1.
+		 * @returns a constant vector
+		 */
+		public static one(): Vec3;
+		/**
+		 * Provides a constant pointer to a vector with three components
+		 * with values set to (1, 0, 0).
+		 * @returns a constant vector
+		 */
+		public static x_axis(): Vec3;
+		/**
+		 * Provides a constant pointer to a vector with three components
+		 * with values set to (0, 1, 0).
+		 * @returns a constant vector
+		 */
+		public static y_axis(): Vec3;
+		/**
+		 * Provides a constant pointer to a vector with three components
+		 * with values set to (0, 0, 1).
+		 * @returns a constant vector
+		 */
+		public static z_axis(): Vec3;
+		/**
+		 * Provides a constant pointer to a vector with three components,
+		 * all sets to 0.
+		 * @returns a constant vector
+		 */
+		public static zero(): Vec3;
 		public readonly value: Simd4F;
 		/**
 		 * Adds each component of the two given vectors.
@@ -2911,6 +3035,42 @@ declare namespace imports.gi.Graphene {
 		 *   by this function.
 		 */
 		public static alloc(): Vec4;
+		/**
+		 * Retrieves a pointer to a #graphene_vec4_t with all its
+		 * components set to 1.
+		 * @returns a constant vector
+		 */
+		public static one(): Vec4;
+		/**
+		 * Retrieves a pointer to a #graphene_vec4_t with its
+		 * components set to (0, 0, 0, 1).
+		 * @returns a constant vector
+		 */
+		public static w_axis(): Vec4;
+		/**
+		 * Retrieves a pointer to a #graphene_vec4_t with its
+		 * components set to (1, 0, 0, 0).
+		 * @returns a constant vector
+		 */
+		public static x_axis(): Vec4;
+		/**
+		 * Retrieves a pointer to a #graphene_vec4_t with its
+		 * components set to (0, 1, 0, 0).
+		 * @returns a constant vector
+		 */
+		public static y_axis(): Vec4;
+		/**
+		 * Retrieves a pointer to a #graphene_vec4_t with its
+		 * components set to (0, 0, 1, 0).
+		 * @returns a constant vector
+		 */
+		public static z_axis(): Vec4;
+		/**
+		 * Retrieves a pointer to a #graphene_vec4_t with all its
+		 * components set to 0.
+		 * @returns a constant vector
+		 */
+		public static zero(): Vec4;
 		public readonly value: Simd4F;
 		/**
 		 * Adds each component of the two given vectors.

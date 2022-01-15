@@ -56022,6 +56022,91 @@ declare namespace imports.gi.Gtk {
 	class BindingEntry {
 		public constructor(options?: Partial<BindingEntryInitOptions>);
 		/**
+		 * Override or install a new key binding for #keyval with #modifiers on
+		 * #binding_set. When the binding is activated, #signal_name will be
+		 * emitted on the target widget, with #n_args #Varargs used as
+		 * arguments.
+		 * 
+		 * Each argument to the signal must be passed as a pair of varargs: the
+		 * #GType of the argument, followed by the argument value (which must
+		 * be of the given type). There must be #n_args pairs in total.
+		 * 
+		 * ## Adding a Key Binding
+		 * 
+		 * |[<!-- language="C" -->
+		 * GtkBindingSet *binding_set;
+		 * GdkModifierType modmask = GDK_CONTROL_MASK;
+		 * int count = 1;
+		 * gtk_binding_entry_add_signal (binding_set,
+		 *                               GDK_KEY_space,
+		 *                               modmask,
+		 *                               "move-cursor", 2,
+		 *                               GTK_TYPE_MOVEMENT_STEP, GTK_MOVEMENT_PAGES,
+		 *                               G_TYPE_INT, count,
+		 *                               G_TYPE_BOOLEAN, FALSE);
+		 * ]|
+		 * @param binding_set a {@link BindingSet} to install an entry for
+		 * @param keyval key value of binding to install
+		 * @param modifiers key modifier of binding to install
+		 * @param signal_name signal to execute upon activation
+		 * @param n_args number of arguments to #signal_name
+		 */
+		public static add_signal(binding_set: BindingSet, keyval: number, modifiers: Gdk.ModifierType, signal_name: string, n_args: number): void;
+		/**
+		 * Parses a signal description from #signal_desc and incorporates
+		 * it into #binding_set.
+		 * 
+		 * Signal descriptions may either bind a key combination to
+		 * one or more signals:
+		 * |[
+		 *   bind "key" {
+		 *     "signalname" (param, ...)
+		 *     ...
+		 *   }
+		 * ]|
+		 * 
+		 * Or they may also unbind a key combination:
+		 * |[
+		 *   unbind "key"
+		 * ]|
+		 * 
+		 * Key combinations must be in a format that can be parsed by
+		 * {@link Gtk.accelerator.parse}.
+		 * @param binding_set a {@link BindingSet}
+		 * @param signal_desc a signal description
+		 * @returns %G_TOKEN_NONE if the signal was successfully parsed and added,
+		 *     the expected token otherwise
+		 */
+		public static add_signal_from_string(binding_set: BindingSet, signal_desc: string): GLib.TokenType;
+		/**
+		 * Override or install a new key binding for #keyval with #modifiers on
+		 * #binding_set.
+		 * @param binding_set a {@link BindingSet} to add a signal to
+		 * @param keyval key value
+		 * @param modifiers key modifier
+		 * @param signal_name signal name to be bound
+		 * @param binding_args 
+		 *     list of {@link BindingArg} signal arguments
+		 */
+		public static add_signall(binding_set: BindingSet, keyval: number, modifiers: Gdk.ModifierType, signal_name: string, binding_args: GLib.SList): void;
+		/**
+		 * Remove a binding previously installed via
+		 * {@link Gtk.BindingEntry.add_signal} on #binding_set.
+		 * @param binding_set a {@link BindingSet} to remove an entry of
+		 * @param keyval key value of binding to remove
+		 * @param modifiers key modifier of binding to remove
+		 */
+		public static remove(binding_set: BindingSet, keyval: number, modifiers: Gdk.ModifierType): void;
+		/**
+		 * Install a binding on #binding_set which causes key lookups
+		 * to be aborted, to prevent bindings from lower priority sets
+		 * to be activated.
+		 * @param binding_set a {@link BindingSet} to skip an entry of
+		 * @param keyval key value of binding to skip
+		 * @param modifiers key modifier of binding to skip
+		 */
+		public static skip(binding_set: BindingSet, keyval: number, modifiers: Gdk.ModifierType): void;
+		/**
 		 * key value to match
 		 */
 		public keyval: number;
@@ -56071,6 +56156,31 @@ declare namespace imports.gi.Gtk {
 	interface BindingSet {}
 	class BindingSet {
 		public constructor(options?: Partial<BindingSetInitOptions>);
+		/**
+		 * This function returns the binding set named after the type name of
+		 * the passed in class structure. New binding sets are created on
+		 * demand by this function.
+		 * @param object_class a valid #GObject class
+		 * @returns the binding set corresponding to
+		 *     #object_class
+		 */
+		public static by_class(object_class: any | null): BindingSet;
+		/**
+		 * Find a binding set by its globally unique name.
+		 * 
+		 * The #set_name can either be a name used for {@link Gtk.binding.set_new}
+		 * or the type name of a class used in gtk_binding_set_by_class().
+		 * @param set_name unique binding set name
+		 * @returns %NULL or the specified binding set
+		 */
+		public static find(set_name: string): BindingSet | null;
+		/**
+		 * GTK+ maintains a global list of binding sets. Each binding set has
+		 * a unique name which needs to be specified upon creation.
+		 * @param set_name unique name of this binding set
+		 * @returns new binding set
+		 */
+		public static new(set_name: string): BindingSet;
 		/**
 		 * unique name of this binding set
 		 */
@@ -57147,6 +57257,21 @@ declare namespace imports.gi.Gtk {
 		 */
 		public static new_from_ppd(ppd_name: string, ppd_display_name: string, width: number, height: number): PaperSize;
 		/**
+		 * Returns the name of the default paper size, which
+		 * depends on the current locale.
+		 * @returns the name of the default paper size. The string
+		 * is owned by GTK+ and should not be modified.
+		 */
+		public static get_default(): string;
+		/**
+		 * Creates a list of known paper sizes.
+		 * @param include_custom whether to include custom paper sizes
+		 *     as defined in the page setup dialog
+		 * @returns a newly allocated list of newly
+		 *    allocated {@link PaperSize} objects
+		 */
+		public static get_paper_sizes(include_custom: boolean): GLib.List;
+		/**
 		 * Copies an existing {@link PaperSize}.
 		 * @returns a copy of #other
 		 */
@@ -57318,6 +57443,74 @@ declare namespace imports.gi.Gtk {
 	interface RcProperty {}
 	class RcProperty {
 		public constructor(options?: Partial<RcPropertyInitOptions>);
+		/**
+		 * A {@link RcPropertyParser} for use with {@link Gtk.Settings.install_property_parser}
+		 * or gtk_widget_class_install_style_property_parser() which parses
+		 * borders in the form
+		 * `"{ left, right, top, bottom }"` for integers
+		 * left, right, top and bottom.
+		 * @param pspec a #GParamSpec
+		 * @param gstring the #GString to be parsed
+		 * @param property_value a #GValue which must hold boxed values.
+		 * @returns %TRUE if #gstring could be parsed and #property_value
+		 * has been set to the resulting {@link Border}.
+		 */
+		public static parse_border(pspec: GObject.ParamSpec, gstring: GLib.String, property_value: GObject.Value): boolean;
+		/**
+		 * A {@link RcPropertyParser} for use with {@link Gtk.Settings.install_property_parser}
+		 * or gtk_widget_class_install_style_property_parser() which parses a
+		 * color given either by its name or in the form
+		 * `{ red, green, blue }` where red, green and
+		 * blue are integers between 0 and 65535 or floating-point numbers
+		 * between 0 and 1.
+		 * @param pspec a #GParamSpec
+		 * @param gstring the #GString to be parsed
+		 * @param property_value a #GValue which must hold #GdkColor values.
+		 * @returns %TRUE if #gstring could be parsed and #property_value
+		 * has been set to the resulting #GdkColor.
+		 */
+		public static parse_color(pspec: GObject.ParamSpec, gstring: GLib.String, property_value: GObject.Value): boolean;
+		/**
+		 * A {@link RcPropertyParser} for use with {@link Gtk.Settings.install_property_parser}
+		 * or gtk_widget_class_install_style_property_parser() which parses a single
+		 * enumeration value.
+		 * 
+		 * The enumeration value can be specified by its name, its nickname or
+		 * its numeric value. For consistency with flags parsing, the value
+		 * may be surrounded by parentheses.
+		 * @param pspec a #GParamSpec
+		 * @param gstring the #GString to be parsed
+		 * @param property_value a #GValue which must hold enum values.
+		 * @returns %TRUE if #gstring could be parsed and #property_value
+		 * has been set to the resulting #GEnumValue.
+		 */
+		public static parse_enum(pspec: GObject.ParamSpec, gstring: GLib.String, property_value: GObject.Value): boolean;
+		/**
+		 * A {@link RcPropertyParser} for use with {@link Gtk.Settings.install_property_parser}
+		 * or gtk_widget_class_install_style_property_parser() which parses flags.
+		 * 
+		 * Flags can be specified by their name, their nickname or
+		 * numerically. Multiple flags can be specified in the form
+		 * `"( flag1 | flag2 | ... )"`.
+		 * @param pspec a #GParamSpec
+		 * @param gstring the #GString to be parsed
+		 * @param property_value a #GValue which must hold flags values.
+		 * @returns %TRUE if #gstring could be parsed and #property_value
+		 * has been set to the resulting flags value.
+		 */
+		public static parse_flags(pspec: GObject.ParamSpec, gstring: GLib.String, property_value: GObject.Value): boolean;
+		/**
+		 * A {@link RcPropertyParser} for use with {@link Gtk.Settings.install_property_parser}
+		 * or gtk_widget_class_install_style_property_parser() which parses a
+		 * requisition in the form
+		 * `"{ width, height }"` for integers %width and %height.
+		 * @param pspec a #GParamSpec
+		 * @param gstring the #GString to be parsed
+		 * @param property_value a #GValue which must hold boxed values.
+		 * @returns %TRUE if #gstring could be parsed and #property_value
+		 * has been set to the resulting {@link Requisition}.
+		 */
+		public static parse_requisition(pspec: GObject.ParamSpec, gstring: GLib.String, property_value: GObject.Value): boolean;
 		/**
 		 * quark-ified type identifier
 		 */
@@ -59685,6 +59878,32 @@ declare namespace imports.gi.Gtk {
 		 * @returns a newly allocated {@link TreeRowReference}, or %NULL
 		 */
 		public static new_proxy(proxy: GObject.Object, model: TreeModel, path: TreePath): TreeRowReference;
+		/**
+		 * Lets a set of row reference created by
+		 * {@link Gtk.TreeRowReference.new_proxy} know that the
+		 * model emitted the {@link TreeModel.row_deleted} signal.
+		 * @param proxy a #GObject
+		 * @param path the path position that was deleted
+		 */
+		public static deleted(proxy: GObject.Object, path: TreePath): void;
+		/**
+		 * Lets a set of row reference created by
+		 * {@link Gtk.TreeRowReference.new_proxy} know that the
+		 * model emitted the {@link TreeModel.row_inserted} signal.
+		 * @param proxy a #GObject
+		 * @param path the row position that was inserted
+		 */
+		public static inserted(proxy: GObject.Object, path: TreePath): void;
+		/**
+		 * Lets a set of row reference created by
+		 * {@link Gtk.TreeRowReference.new_proxy} know that the
+		 * model emitted the {@link TreeModel.rows_reordered} signal.
+		 * @param proxy a #GObject
+		 * @param path the parent path of the reordered signal
+		 * @param iter the iter pointing to the parent of the reordered
+		 * @param new_order the new order of rows
+		 */
+		public static reordered(proxy: GObject.Object, path: TreePath, iter: TreeIter, new_order: number[]): void;
 		/**
 		 * Copies a {@link TreeRowReference}.
 		 * @returns a copy of #reference

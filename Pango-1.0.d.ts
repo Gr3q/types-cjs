@@ -1967,6 +1967,17 @@ declare namespace imports.gi.Pango {
 	class AttrFontDesc {
 		public constructor(options?: Partial<AttrFontDescInitOptions>);
 		/**
+		 * Create a new font description attribute.
+		 * 
+		 * This attribute allows setting family, style, weight, variant,
+		 * stretch, and size simultaneously.
+		 * @param desc the font description
+		 * @returns the newly allocated
+		 *   `PangoAttribute`, which should be freed with
+		 *   [method#Pango.Attribute.destroy]
+		 */
+		public static new(desc: FontDescription): Attribute;
+		/**
 		 * the common portion of the attribute
 		 */
 		public attr: Attribute;
@@ -1984,6 +1995,18 @@ declare namespace imports.gi.Pango {
 	interface AttrFontFeatures {}
 	class AttrFontFeatures {
 		public constructor(options?: Partial<AttrFontFeaturesInitOptions>);
+		/**
+		 * Create a new font features tag attribute.
+		 * 
+		 * You can use this attribute to select OpenType font features like small-caps,
+		 * alternative glyphs, ligatures, etc. for fonts that support them.
+		 * @param features a string with OpenType font features, with the syntax of the [CSS
+		 * font-feature-settings property](https://www.w3.org/TR/css-fonts-4/#font-rend-desc)
+		 * @returns the newly allocated
+		 *   `PangoAttribute`, which should be freed with
+		 *   [method#Pango.Attribute.destroy]
+		 */
+		public static new(features: string): Attribute;
 		/**
 		 * the common portion of the attribute
 		 */
@@ -2107,6 +2130,14 @@ declare namespace imports.gi.Pango {
 	interface AttrLanguage {}
 	class AttrLanguage {
 		public constructor(options?: Partial<AttrLanguageInitOptions>);
+		/**
+		 * Create a new language tag attribute.
+		 * @param language language tag
+		 * @returns the newly allocated
+		 *   `PangoAttribute`, which should be freed with
+		 *   [method#Pango.Attribute.destroy]
+		 */
+		public static new(language: Language): Attribute;
 		/**
 		 * the common portion of the attribute
 		 */
@@ -2288,6 +2319,39 @@ declare namespace imports.gi.Pango {
 	class AttrShape {
 		public constructor(options?: Partial<AttrShapeInitOptions>);
 		/**
+		 * Create a new shape attribute.
+		 * 
+		 * A shape is used to impose a particular ink and logical
+		 * rectangle on the result of shaping a particular glyph.
+		 * This might be used, for instance, for embedding a picture
+		 * or a widget inside a `PangoLayout`.
+		 * @param ink_rect ink rectangle to assign to each character
+		 * @param logical_rect logical rectangle to assign to each character
+		 * @returns the newly allocated
+		 *   `PangoAttribute`, which should be freed with
+		 *   [method#Pango.Attribute.destroy]
+		 */
+		public static new(ink_rect: Rectangle, logical_rect: Rectangle): Attribute;
+		/**
+		 * Creates a new shape attribute.
+		 * 
+		 * Like [func#Pango.AttrShape.new], but a user data pointer
+		 * is also provided; this pointer can be accessed when later
+		 * rendering the glyph.
+		 * @param ink_rect ink rectangle to assign to each character
+		 * @param logical_rect logical rectangle to assign to each character
+		 * @param data user data pointer
+		 * @param copy_func function to copy #data when the
+		 *   attribute is copied. If %NULL, #data is simply copied
+		 *   as a pointer
+		 * @param destroy_func function to free #data when the
+		 *   attribute is freed
+		 * @returns the newly allocated
+		 *   `PangoAttribute`, which should be freed with
+		 *   [method#Pango.Attribute.destroy]
+		 */
+		public static new_with_data(ink_rect: Rectangle, logical_rect: Rectangle, data: any | null, copy_func: AttrDataCopyFunc | null, destroy_func: GLib.DestroyNotify | null): Attribute;
+		/**
 		 * the common portion of the attribute
 		 */
 		public attr: Attribute;
@@ -2321,6 +2385,22 @@ declare namespace imports.gi.Pango {
 	interface AttrSize {}
 	class AttrSize {
 		public constructor(options?: Partial<AttrSizeInitOptions>);
+		/**
+		 * Create a new font-size attribute in fractional points.
+		 * @param size the font size, in %PANGO_SCALE-ths of a point
+		 * @returns the newly allocated
+		 *   `PangoAttribute`, which should be freed with
+		 *   [method#Pango.Attribute.destroy]
+		 */
+		public static new(size: number): Attribute;
+		/**
+		 * Create a new font-size attribute in device units.
+		 * @param size the font size, in %PANGO_SCALE-ths of a device unit
+		 * @returns the newly allocated
+		 *   `PangoAttribute`, which should be freed with
+		 *   [method#Pango.Attribute.destroy]
+		 */
+		public static new_absolute(size: number): Attribute;
 		/**
 		 * the common portion of the attribute
 		 */
@@ -2518,6 +2598,54 @@ declare namespace imports.gi.Pango {
 		 *   should be freed using [method#Pango.FontDescription.free].
 		 */
 		public static new(): FontDescription;
+		/**
+		 * Creates a new font description from a string representation.
+		 * 
+		 * The string must have the form
+		 * 
+		 *     "\[FAMILY-LIST] \[STYLE-OPTIONS] \[SIZE] \[VARIATIONS]",
+		 * 
+		 * where FAMILY-LIST is a comma-separated list of families optionally
+		 * terminated by a comma, STYLE_OPTIONS is a whitespace-separated list
+		 * of words where each word describes one of style, variant, weight,
+		 * stretch, or gravity, and SIZE is a decimal number (size in points)
+		 * or optionally followed by the unit modifier "px" for absolute size.
+		 * VARIATIONS is a comma-separated list of font variation
+		 * specifications of the form "\#axis=value" (the = sign is optional).
+		 * 
+		 * The following words are understood as styles:
+		 * "Normal", "Roman", "Oblique", "Italic".
+		 * 
+		 * The following words are understood as variants:
+		 * "Small-Caps".
+		 * 
+		 * The following words are understood as weights:
+		 * "Thin", "Ultra-Light", "Extra-Light", "Light", "Semi-Light",
+		 * "Demi-Light", "Book", "Regular", "Medium", "Semi-Bold", "Demi-Bold",
+		 * "Bold", "Ultra-Bold", "Extra-Bold", "Heavy", "Black", "Ultra-Black",
+		 * "Extra-Black".
+		 * 
+		 * The following words are understood as stretch values:
+		 * "Ultra-Condensed", "Extra-Condensed", "Condensed", "Semi-Condensed",
+		 * "Semi-Expanded", "Expanded", "Extra-Expanded", "Ultra-Expanded".
+		 * 
+		 * The following words are understood as gravity values:
+		 * "Not-Rotated", "South", "Upside-Down", "North", "Rotated-Left",
+		 * "East", "Rotated-Right", "West".
+		 * 
+		 * Any one of the options may be absent. If FAMILY-LIST is absent, then
+		 * the family_name field of the resulting font description will be
+		 * initialized to %NULL. If STYLE-OPTIONS is missing, then all style
+		 * options will be set to the default values. If SIZE is missing, the
+		 * size in the resulting font description will be set to 0.
+		 * 
+		 * A typical example:
+		 * 
+		 *     "Cantarell Italic Light 15 \#wght=200"
+		 * @param str string representation of a font description.
+		 * @returns a new `PangoFontDescription`.
+		 */
+		public static from_string(str: string): FontDescription;
 		/**
 		 * Determines if the style attributes of #new_match are a closer match
 		 * for #desc than those of #old_match are, or if #old_match is %NULL,
@@ -3475,6 +3603,70 @@ declare namespace imports.gi.Pango {
 	interface Language {}
 	class Language {
 		public constructor(options?: Partial<LanguageInitOptions>);
+		/**
+		 * Convert a language tag to a `PangoLanguage`.
+		 * 
+		 * The language tag must be in a RFC-3066 format. `PangoLanguage` pointers
+		 * can be efficiently copied (copy the pointer) and compared with other
+		 * language tags (compare the pointer.)
+		 * 
+		 * This function first canonicalizes the string by converting it to
+		 * lowercase, mapping '_' to '-', and stripping all characters other
+		 * than letters and '-'.
+		 * 
+		 * Use [func#Pango.Language.get_default] if you want to get the
+		 * `PangoLanguage` for the current locale of the process.
+		 * @param language a string representing a language tag
+		 * @returns a `PangoLanguage`
+		 */
+		public static from_string(language: string | null): Language | null;
+		/**
+		 * Returns the `PangoLanguage` for the current locale of the process.
+		 * 
+		 * On Unix systems, this is the return value is derived from
+		 * `setlocale (LC_CTYPE, NULL)`, and the user can
+		 * affect this through the environment variables LC_ALL, LC_CTYPE or
+		 * LANG (checked in that order). The locale string typically is in
+		 * the form lang_COUNTRY, where lang is an ISO-639 language code, and
+		 * COUNTRY is an ISO-3166 country code. For instance, sv_FI for
+		 * Swedish as written in Finland or pt_BR for Portuguese as written in
+		 * Brazil.
+		 * 
+		 * On Windows, the C library does not use any such environment
+		 * variables, and setting them won't affect the behavior of functions
+		 * like ctime(). The user sets the locale through the Regional Options
+		 * in the Control Panel. The C library (in the setlocale() function)
+		 * does not use country and language codes, but country and language
+		 * names spelled out in English.
+		 * However, this function does check the above environment
+		 * variables, and does return a Unix-style locale string based on
+		 * either said environment variables or the thread's current locale.
+		 * 
+		 * Your application should call `setlocale(LC_ALL, "")` for the user
+		 * settings to take effect. GTK does this in its initialization
+		 * functions automatically (by calling gtk_set_locale()).
+		 * See the setlocale() manpage for more details.
+		 * 
+		 * Note that the default language can change over the life of an application.
+		 * @returns the default language as a `PangoLanguage`
+		 */
+		public static get_default(): Language;
+		/**
+		 * Returns the list of languages that the user prefers.
+		 * 
+		 * The list is specified by the `PANGO_LANGUAGE` or `LANGUAGE`
+		 * environment variables, in order of preference. Note that this
+		 * list does not necessarily include the language returned by
+		 * [func#Pango.Language.get_default].
+		 * 
+		 * When choosing language-specific resources, such as the sample
+		 * text returned by [method#Pango.Language.get_sample_string],
+		 * you should first try the default language, followed by the
+		 * languages returned by this function.
+		 * @returns a %NULL-terminated array
+		 *   of `PangoLanguage`*
+		 */
+		public static get_preferred(): Language | null;
 		/**
 		 * Get a string that is representative of the characters needed to
 		 * render a particular language.

@@ -2370,6 +2370,708 @@ declare namespace imports.gi.GObject {
 	class CClosure {
 		public constructor(options?: Partial<CClosureInitOptions>);
 		/**
+		 * A #GClosureMarshal function for use with signals with handlers that
+		 * take two boxed pointers as arguments and return a boolean.  If you
+		 * have such a signal, you will probably also need to use an
+		 * accumulator, such as {@link G.signal_accumulator_true_handled}.
+		 * @param closure A #GClosure.
+		 * @param return_value A #GValue to store the return value. May be %NULL
+		 *   if the callback of closure doesn't return a value.
+		 * @param n_param_values The length of the #param_values array.
+		 * @param param_values An array of #GValues holding the arguments
+		 *   on which to invoke the callback of closure.
+		 * @param invocation_hint The invocation hint given as the last argument to
+		 *   {@link G.closure_invoke}.
+		 * @param marshal_data Additional data specified when registering the
+		 *   marshaller, see {@link G.closure_set_marshal} and
+		 *   g_closure_set_meta_marshal()
+		 */
+		public static marshal_BOOLEAN__BOXED_BOXED(closure: Closure, return_value: Value, n_param_values: number, param_values: Value, invocation_hint: any | null, marshal_data: any | null): void;
+		/**
+		 * The #GVaClosureMarshal equivalent to {@link G.cclosure_marshal_BOOLEAN__BOXED_BOXED}.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value a #GValue to store the return
+		 *  value. May be %NULL if the callback of #closure doesn't return a
+		 *  value.
+		 * @param instance the instance on which the closure is invoked.
+		 * @param args va_list of arguments to be passed to the closure.
+		 * @param marshal_data additional data specified when
+		 *  registering the marshaller, see {@link G.closure_set_marshal} and
+		 *  g_closure_set_meta_marshal()
+		 * @param n_params the length of the #param_types array
+		 * @param param_types the #GType of each argument from
+		 *  #args.
+		 */
+		public static marshal_BOOLEAN__BOXED_BOXEDv(closure: Closure, return_value: Value | null, instance: TypeInstance, args: any[], marshal_data: any | null, n_params: number, param_types: GObject.Type[]): void;
+		/**
+		 * A marshaller for a #GCClosure with a callback of type
+		 * `gboolean (*callback) (gpointer instance, gint arg1, gpointer user_data)` where the #gint parameter
+		 * denotes a flags type.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value a #GValue which can store the returned #gboolean
+		 * @param n_param_values 2
+		 * @param param_values a #GValue array holding instance and arg1
+		 * @param invocation_hint the invocation hint given as the last argument
+		 *  to {@link G.closure_invoke}
+		 * @param marshal_data additional data specified when registering the marshaller
+		 */
+		public static marshal_BOOLEAN__FLAGS(closure: Closure, return_value: Value, n_param_values: number, param_values: Value, invocation_hint: any | null, marshal_data: any | null): void;
+		/**
+		 * The #GVaClosureMarshal equivalent to {@link G.cclosure_marshal_BOOLEAN__FLAGS}.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value a #GValue to store the return
+		 *  value. May be %NULL if the callback of #closure doesn't return a
+		 *  value.
+		 * @param instance the instance on which the closure is invoked.
+		 * @param args va_list of arguments to be passed to the closure.
+		 * @param marshal_data additional data specified when
+		 *  registering the marshaller, see {@link G.closure_set_marshal} and
+		 *  g_closure_set_meta_marshal()
+		 * @param n_params the length of the #param_types array
+		 * @param param_types the #GType of each argument from
+		 *  #args.
+		 */
+		public static marshal_BOOLEAN__FLAGSv(closure: Closure, return_value: Value | null, instance: TypeInstance, args: any[], marshal_data: any | null, n_params: number, param_types: GObject.Type[]): void;
+		/**
+		 * A marshaller for a #GCClosure with a callback of type
+		 * `gchar* (*callback) (gpointer instance, GObject *arg1, gpointer arg2, gpointer user_data)`.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value a #GValue, which can store the returned string
+		 * @param n_param_values 3
+		 * @param param_values a #GValue array holding instance, arg1 and arg2
+		 * @param invocation_hint the invocation hint given as the last argument
+		 *  to {@link G.closure_invoke}
+		 * @param marshal_data additional data specified when registering the marshaller
+		 */
+		public static marshal_STRING__OBJECT_POINTER(closure: Closure, return_value: Value, n_param_values: number, param_values: Value, invocation_hint: any | null, marshal_data: any | null): void;
+		/**
+		 * The #GVaClosureMarshal equivalent to {@link G.cclosure_marshal_STRING__OBJECT_POINTER}.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value a #GValue to store the return
+		 *  value. May be %NULL if the callback of #closure doesn't return a
+		 *  value.
+		 * @param instance the instance on which the closure is invoked.
+		 * @param args va_list of arguments to be passed to the closure.
+		 * @param marshal_data additional data specified when
+		 *  registering the marshaller, see {@link G.closure_set_marshal} and
+		 *  g_closure_set_meta_marshal()
+		 * @param n_params the length of the #param_types array
+		 * @param param_types the #GType of each argument from
+		 *  #args.
+		 */
+		public static marshal_STRING__OBJECT_POINTERv(closure: Closure, return_value: Value | null, instance: TypeInstance, args: any[], marshal_data: any | null, n_params: number, param_types: GObject.Type[]): void;
+		/**
+		 * A marshaller for a #GCClosure with a callback of type
+		 * `void (*callback) (gpointer instance, gboolean arg1, gpointer user_data)`.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value ignored
+		 * @param n_param_values 2
+		 * @param param_values a #GValue array holding the instance and the #gboolean parameter
+		 * @param invocation_hint the invocation hint given as the last argument
+		 *  to {@link G.closure_invoke}
+		 * @param marshal_data additional data specified when registering the marshaller
+		 */
+		public static marshal_VOID__BOOLEAN(closure: Closure, return_value: Value, n_param_values: number, param_values: Value, invocation_hint: any | null, marshal_data: any | null): void;
+		/**
+		 * The #GVaClosureMarshal equivalent to {@link G.cclosure_marshal_VOID__BOOLEAN}.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value a #GValue to store the return
+		 *  value. May be %NULL if the callback of #closure doesn't return a
+		 *  value.
+		 * @param instance the instance on which the closure is invoked.
+		 * @param args va_list of arguments to be passed to the closure.
+		 * @param marshal_data additional data specified when
+		 *  registering the marshaller, see {@link G.closure_set_marshal} and
+		 *  g_closure_set_meta_marshal()
+		 * @param n_params the length of the #param_types array
+		 * @param param_types the #GType of each argument from
+		 *  #args.
+		 */
+		public static marshal_VOID__BOOLEANv(closure: Closure, return_value: Value | null, instance: TypeInstance, args: any[], marshal_data: any | null, n_params: number, param_types: GObject.Type[]): void;
+		/**
+		 * A marshaller for a #GCClosure with a callback of type
+		 * `void (*callback) (gpointer instance, GBoxed *arg1, gpointer user_data)`.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value ignored
+		 * @param n_param_values 2
+		 * @param param_values a #GValue array holding the instance and the #GBoxed* parameter
+		 * @param invocation_hint the invocation hint given as the last argument
+		 *  to {@link G.closure_invoke}
+		 * @param marshal_data additional data specified when registering the marshaller
+		 */
+		public static marshal_VOID__BOXED(closure: Closure, return_value: Value, n_param_values: number, param_values: Value, invocation_hint: any | null, marshal_data: any | null): void;
+		/**
+		 * The #GVaClosureMarshal equivalent to {@link G.cclosure_marshal_VOID__BOXED}.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value a #GValue to store the return
+		 *  value. May be %NULL if the callback of #closure doesn't return a
+		 *  value.
+		 * @param instance the instance on which the closure is invoked.
+		 * @param args va_list of arguments to be passed to the closure.
+		 * @param marshal_data additional data specified when
+		 *  registering the marshaller, see {@link G.closure_set_marshal} and
+		 *  g_closure_set_meta_marshal()
+		 * @param n_params the length of the #param_types array
+		 * @param param_types the #GType of each argument from
+		 *  #args.
+		 */
+		public static marshal_VOID__BOXEDv(closure: Closure, return_value: Value | null, instance: TypeInstance, args: any[], marshal_data: any | null, n_params: number, param_types: GObject.Type[]): void;
+		/**
+		 * A marshaller for a #GCClosure with a callback of type
+		 * `void (*callback) (gpointer instance, gchar arg1, gpointer user_data)`.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value ignored
+		 * @param n_param_values 2
+		 * @param param_values a #GValue array holding the instance and the #gchar parameter
+		 * @param invocation_hint the invocation hint given as the last argument
+		 *  to {@link G.closure_invoke}
+		 * @param marshal_data additional data specified when registering the marshaller
+		 */
+		public static marshal_VOID__CHAR(closure: Closure, return_value: Value, n_param_values: number, param_values: Value, invocation_hint: any | null, marshal_data: any | null): void;
+		/**
+		 * The #GVaClosureMarshal equivalent to {@link G.cclosure_marshal_VOID__CHAR}.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value a #GValue to store the return
+		 *  value. May be %NULL if the callback of #closure doesn't return a
+		 *  value.
+		 * @param instance the instance on which the closure is invoked.
+		 * @param args va_list of arguments to be passed to the closure.
+		 * @param marshal_data additional data specified when
+		 *  registering the marshaller, see {@link G.closure_set_marshal} and
+		 *  g_closure_set_meta_marshal()
+		 * @param n_params the length of the #param_types array
+		 * @param param_types the #GType of each argument from
+		 *  #args.
+		 */
+		public static marshal_VOID__CHARv(closure: Closure, return_value: Value | null, instance: TypeInstance, args: any[], marshal_data: any | null, n_params: number, param_types: GObject.Type[]): void;
+		/**
+		 * A marshaller for a #GCClosure with a callback of type
+		 * `void (*callback) (gpointer instance, gdouble arg1, gpointer user_data)`.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value ignored
+		 * @param n_param_values 2
+		 * @param param_values a #GValue array holding the instance and the #gdouble parameter
+		 * @param invocation_hint the invocation hint given as the last argument
+		 *  to {@link G.closure_invoke}
+		 * @param marshal_data additional data specified when registering the marshaller
+		 */
+		public static marshal_VOID__DOUBLE(closure: Closure, return_value: Value, n_param_values: number, param_values: Value, invocation_hint: any | null, marshal_data: any | null): void;
+		/**
+		 * The #GVaClosureMarshal equivalent to {@link G.cclosure_marshal_VOID__DOUBLE}.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value a #GValue to store the return
+		 *  value. May be %NULL if the callback of #closure doesn't return a
+		 *  value.
+		 * @param instance the instance on which the closure is invoked.
+		 * @param args va_list of arguments to be passed to the closure.
+		 * @param marshal_data additional data specified when
+		 *  registering the marshaller, see {@link G.closure_set_marshal} and
+		 *  g_closure_set_meta_marshal()
+		 * @param n_params the length of the #param_types array
+		 * @param param_types the #GType of each argument from
+		 *  #args.
+		 */
+		public static marshal_VOID__DOUBLEv(closure: Closure, return_value: Value | null, instance: TypeInstance, args: any[], marshal_data: any | null, n_params: number, param_types: GObject.Type[]): void;
+		/**
+		 * A marshaller for a #GCClosure with a callback of type
+		 * `void (*callback) (gpointer instance, gint arg1, gpointer user_data)` where the #gint parameter denotes an enumeration type..
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value ignored
+		 * @param n_param_values 2
+		 * @param param_values a #GValue array holding the instance and the enumeration parameter
+		 * @param invocation_hint the invocation hint given as the last argument
+		 *  to {@link G.closure_invoke}
+		 * @param marshal_data additional data specified when registering the marshaller
+		 */
+		public static marshal_VOID__ENUM(closure: Closure, return_value: Value, n_param_values: number, param_values: Value, invocation_hint: any | null, marshal_data: any | null): void;
+		/**
+		 * The #GVaClosureMarshal equivalent to {@link G.cclosure_marshal_VOID__ENUM}.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value a #GValue to store the return
+		 *  value. May be %NULL if the callback of #closure doesn't return a
+		 *  value.
+		 * @param instance the instance on which the closure is invoked.
+		 * @param args va_list of arguments to be passed to the closure.
+		 * @param marshal_data additional data specified when
+		 *  registering the marshaller, see {@link G.closure_set_marshal} and
+		 *  g_closure_set_meta_marshal()
+		 * @param n_params the length of the #param_types array
+		 * @param param_types the #GType of each argument from
+		 *  #args.
+		 */
+		public static marshal_VOID__ENUMv(closure: Closure, return_value: Value | null, instance: TypeInstance, args: any[], marshal_data: any | null, n_params: number, param_types: GObject.Type[]): void;
+		/**
+		 * A marshaller for a #GCClosure with a callback of type
+		 * `void (*callback) (gpointer instance, gint arg1, gpointer user_data)` where the #gint parameter denotes a flags type.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value ignored
+		 * @param n_param_values 2
+		 * @param param_values a #GValue array holding the instance and the flags parameter
+		 * @param invocation_hint the invocation hint given as the last argument
+		 *  to {@link G.closure_invoke}
+		 * @param marshal_data additional data specified when registering the marshaller
+		 */
+		public static marshal_VOID__FLAGS(closure: Closure, return_value: Value, n_param_values: number, param_values: Value, invocation_hint: any | null, marshal_data: any | null): void;
+		/**
+		 * The #GVaClosureMarshal equivalent to {@link G.cclosure_marshal_VOID__FLAGS}.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value a #GValue to store the return
+		 *  value. May be %NULL if the callback of #closure doesn't return a
+		 *  value.
+		 * @param instance the instance on which the closure is invoked.
+		 * @param args va_list of arguments to be passed to the closure.
+		 * @param marshal_data additional data specified when
+		 *  registering the marshaller, see {@link G.closure_set_marshal} and
+		 *  g_closure_set_meta_marshal()
+		 * @param n_params the length of the #param_types array
+		 * @param param_types the #GType of each argument from
+		 *  #args.
+		 */
+		public static marshal_VOID__FLAGSv(closure: Closure, return_value: Value | null, instance: TypeInstance, args: any[], marshal_data: any | null, n_params: number, param_types: GObject.Type[]): void;
+		/**
+		 * A marshaller for a #GCClosure with a callback of type
+		 * `void (*callback) (gpointer instance, gfloat arg1, gpointer user_data)`.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value ignored
+		 * @param n_param_values 2
+		 * @param param_values a #GValue array holding the instance and the #gfloat parameter
+		 * @param invocation_hint the invocation hint given as the last argument
+		 *  to {@link G.closure_invoke}
+		 * @param marshal_data additional data specified when registering the marshaller
+		 */
+		public static marshal_VOID__FLOAT(closure: Closure, return_value: Value, n_param_values: number, param_values: Value, invocation_hint: any | null, marshal_data: any | null): void;
+		/**
+		 * The #GVaClosureMarshal equivalent to {@link G.cclosure_marshal_VOID__FLOAT}.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value a #GValue to store the return
+		 *  value. May be %NULL if the callback of #closure doesn't return a
+		 *  value.
+		 * @param instance the instance on which the closure is invoked.
+		 * @param args va_list of arguments to be passed to the closure.
+		 * @param marshal_data additional data specified when
+		 *  registering the marshaller, see {@link G.closure_set_marshal} and
+		 *  g_closure_set_meta_marshal()
+		 * @param n_params the length of the #param_types array
+		 * @param param_types the #GType of each argument from
+		 *  #args.
+		 */
+		public static marshal_VOID__FLOATv(closure: Closure, return_value: Value | null, instance: TypeInstance, args: any[], marshal_data: any | null, n_params: number, param_types: GObject.Type[]): void;
+		/**
+		 * A marshaller for a #GCClosure with a callback of type
+		 * `void (*callback) (gpointer instance, gint arg1, gpointer user_data)`.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value ignored
+		 * @param n_param_values 2
+		 * @param param_values a #GValue array holding the instance and the #gint parameter
+		 * @param invocation_hint the invocation hint given as the last argument
+		 *  to {@link G.closure_invoke}
+		 * @param marshal_data additional data specified when registering the marshaller
+		 */
+		public static marshal_VOID__INT(closure: Closure, return_value: Value, n_param_values: number, param_values: Value, invocation_hint: any | null, marshal_data: any | null): void;
+		/**
+		 * The #GVaClosureMarshal equivalent to {@link G.cclosure_marshal_VOID__INT}.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value a #GValue to store the return
+		 *  value. May be %NULL if the callback of #closure doesn't return a
+		 *  value.
+		 * @param instance the instance on which the closure is invoked.
+		 * @param args va_list of arguments to be passed to the closure.
+		 * @param marshal_data additional data specified when
+		 *  registering the marshaller, see {@link G.closure_set_marshal} and
+		 *  g_closure_set_meta_marshal()
+		 * @param n_params the length of the #param_types array
+		 * @param param_types the #GType of each argument from
+		 *  #args.
+		 */
+		public static marshal_VOID__INTv(closure: Closure, return_value: Value | null, instance: TypeInstance, args: any[], marshal_data: any | null, n_params: number, param_types: GObject.Type[]): void;
+		/**
+		 * A marshaller for a #GCClosure with a callback of type
+		 * `void (*callback) (gpointer instance, glong arg1, gpointer user_data)`.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value ignored
+		 * @param n_param_values 2
+		 * @param param_values a #GValue array holding the instance and the #glong parameter
+		 * @param invocation_hint the invocation hint given as the last argument
+		 *  to {@link G.closure_invoke}
+		 * @param marshal_data additional data specified when registering the marshaller
+		 */
+		public static marshal_VOID__LONG(closure: Closure, return_value: Value, n_param_values: number, param_values: Value, invocation_hint: any | null, marshal_data: any | null): void;
+		/**
+		 * The #GVaClosureMarshal equivalent to {@link G.cclosure_marshal_VOID__LONG}.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value a #GValue to store the return
+		 *  value. May be %NULL if the callback of #closure doesn't return a
+		 *  value.
+		 * @param instance the instance on which the closure is invoked.
+		 * @param args va_list of arguments to be passed to the closure.
+		 * @param marshal_data additional data specified when
+		 *  registering the marshaller, see {@link G.closure_set_marshal} and
+		 *  g_closure_set_meta_marshal()
+		 * @param n_params the length of the #param_types array
+		 * @param param_types the #GType of each argument from
+		 *  #args.
+		 */
+		public static marshal_VOID__LONGv(closure: Closure, return_value: Value | null, instance: TypeInstance, args: any[], marshal_data: any | null, n_params: number, param_types: GObject.Type[]): void;
+		/**
+		 * A marshaller for a #GCClosure with a callback of type
+		 * `void (*callback) (gpointer instance, GObject *arg1, gpointer user_data)`.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value ignored
+		 * @param n_param_values 2
+		 * @param param_values a #GValue array holding the instance and the #GObject* parameter
+		 * @param invocation_hint the invocation hint given as the last argument
+		 *  to {@link G.closure_invoke}
+		 * @param marshal_data additional data specified when registering the marshaller
+		 */
+		public static marshal_VOID__OBJECT(closure: Closure, return_value: Value, n_param_values: number, param_values: Value, invocation_hint: any | null, marshal_data: any | null): void;
+		/**
+		 * The #GVaClosureMarshal equivalent to {@link G.cclosure_marshal_VOID__OBJECT}.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value a #GValue to store the return
+		 *  value. May be %NULL if the callback of #closure doesn't return a
+		 *  value.
+		 * @param instance the instance on which the closure is invoked.
+		 * @param args va_list of arguments to be passed to the closure.
+		 * @param marshal_data additional data specified when
+		 *  registering the marshaller, see {@link G.closure_set_marshal} and
+		 *  g_closure_set_meta_marshal()
+		 * @param n_params the length of the #param_types array
+		 * @param param_types the #GType of each argument from
+		 *  #args.
+		 */
+		public static marshal_VOID__OBJECTv(closure: Closure, return_value: Value | null, instance: TypeInstance, args: any[], marshal_data: any | null, n_params: number, param_types: GObject.Type[]): void;
+		/**
+		 * A marshaller for a #GCClosure with a callback of type
+		 * `void (*callback) (gpointer instance, GParamSpec *arg1, gpointer user_data)`.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value ignored
+		 * @param n_param_values 2
+		 * @param param_values a #GValue array holding the instance and the #GParamSpec* parameter
+		 * @param invocation_hint the invocation hint given as the last argument
+		 *  to {@link G.closure_invoke}
+		 * @param marshal_data additional data specified when registering the marshaller
+		 */
+		public static marshal_VOID__PARAM(closure: Closure, return_value: Value, n_param_values: number, param_values: Value, invocation_hint: any | null, marshal_data: any | null): void;
+		/**
+		 * The #GVaClosureMarshal equivalent to {@link G.cclosure_marshal_VOID__PARAM}.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value a #GValue to store the return
+		 *  value. May be %NULL if the callback of #closure doesn't return a
+		 *  value.
+		 * @param instance the instance on which the closure is invoked.
+		 * @param args va_list of arguments to be passed to the closure.
+		 * @param marshal_data additional data specified when
+		 *  registering the marshaller, see {@link G.closure_set_marshal} and
+		 *  g_closure_set_meta_marshal()
+		 * @param n_params the length of the #param_types array
+		 * @param param_types the #GType of each argument from
+		 *  #args.
+		 */
+		public static marshal_VOID__PARAMv(closure: Closure, return_value: Value | null, instance: TypeInstance, args: any[], marshal_data: any | null, n_params: number, param_types: GObject.Type[]): void;
+		/**
+		 * A marshaller for a #GCClosure with a callback of type
+		 * `void (*callback) (gpointer instance, gpointer arg1, gpointer user_data)`.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value ignored
+		 * @param n_param_values 2
+		 * @param param_values a #GValue array holding the instance and the #gpointer parameter
+		 * @param invocation_hint the invocation hint given as the last argument
+		 *  to {@link G.closure_invoke}
+		 * @param marshal_data additional data specified when registering the marshaller
+		 */
+		public static marshal_VOID__POINTER(closure: Closure, return_value: Value, n_param_values: number, param_values: Value, invocation_hint: any | null, marshal_data: any | null): void;
+		/**
+		 * The #GVaClosureMarshal equivalent to {@link G.cclosure_marshal_VOID__POINTER}.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value a #GValue to store the return
+		 *  value. May be %NULL if the callback of #closure doesn't return a
+		 *  value.
+		 * @param instance the instance on which the closure is invoked.
+		 * @param args va_list of arguments to be passed to the closure.
+		 * @param marshal_data additional data specified when
+		 *  registering the marshaller, see {@link G.closure_set_marshal} and
+		 *  g_closure_set_meta_marshal()
+		 * @param n_params the length of the #param_types array
+		 * @param param_types the #GType of each argument from
+		 *  #args.
+		 */
+		public static marshal_VOID__POINTERv(closure: Closure, return_value: Value | null, instance: TypeInstance, args: any[], marshal_data: any | null, n_params: number, param_types: GObject.Type[]): void;
+		/**
+		 * A marshaller for a #GCClosure with a callback of type
+		 * `void (*callback) (gpointer instance, const gchar *arg1, gpointer user_data)`.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value ignored
+		 * @param n_param_values 2
+		 * @param param_values a #GValue array holding the instance and the #gchar* parameter
+		 * @param invocation_hint the invocation hint given as the last argument
+		 *  to {@link G.closure_invoke}
+		 * @param marshal_data additional data specified when registering the marshaller
+		 */
+		public static marshal_VOID__STRING(closure: Closure, return_value: Value, n_param_values: number, param_values: Value, invocation_hint: any | null, marshal_data: any | null): void;
+		/**
+		 * The #GVaClosureMarshal equivalent to {@link G.cclosure_marshal_VOID__STRING}.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value a #GValue to store the return
+		 *  value. May be %NULL if the callback of #closure doesn't return a
+		 *  value.
+		 * @param instance the instance on which the closure is invoked.
+		 * @param args va_list of arguments to be passed to the closure.
+		 * @param marshal_data additional data specified when
+		 *  registering the marshaller, see {@link G.closure_set_marshal} and
+		 *  g_closure_set_meta_marshal()
+		 * @param n_params the length of the #param_types array
+		 * @param param_types the #GType of each argument from
+		 *  #args.
+		 */
+		public static marshal_VOID__STRINGv(closure: Closure, return_value: Value | null, instance: TypeInstance, args: any[], marshal_data: any | null, n_params: number, param_types: GObject.Type[]): void;
+		/**
+		 * A marshaller for a #GCClosure with a callback of type
+		 * `void (*callback) (gpointer instance, guchar arg1, gpointer user_data)`.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value ignored
+		 * @param n_param_values 2
+		 * @param param_values a #GValue array holding the instance and the #guchar parameter
+		 * @param invocation_hint the invocation hint given as the last argument
+		 *  to {@link G.closure_invoke}
+		 * @param marshal_data additional data specified when registering the marshaller
+		 */
+		public static marshal_VOID__UCHAR(closure: Closure, return_value: Value, n_param_values: number, param_values: Value, invocation_hint: any | null, marshal_data: any | null): void;
+		/**
+		 * The #GVaClosureMarshal equivalent to {@link G.cclosure_marshal_VOID__UCHAR}.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value a #GValue to store the return
+		 *  value. May be %NULL if the callback of #closure doesn't return a
+		 *  value.
+		 * @param instance the instance on which the closure is invoked.
+		 * @param args va_list of arguments to be passed to the closure.
+		 * @param marshal_data additional data specified when
+		 *  registering the marshaller, see {@link G.closure_set_marshal} and
+		 *  g_closure_set_meta_marshal()
+		 * @param n_params the length of the #param_types array
+		 * @param param_types the #GType of each argument from
+		 *  #args.
+		 */
+		public static marshal_VOID__UCHARv(closure: Closure, return_value: Value | null, instance: TypeInstance, args: any[], marshal_data: any | null, n_params: number, param_types: GObject.Type[]): void;
+		/**
+		 * A marshaller for a #GCClosure with a callback of type
+		 * `void (*callback) (gpointer instance, guint arg1, gpointer user_data)`.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value ignored
+		 * @param n_param_values 2
+		 * @param param_values a #GValue array holding the instance and the #guint parameter
+		 * @param invocation_hint the invocation hint given as the last argument
+		 *  to {@link G.closure_invoke}
+		 * @param marshal_data additional data specified when registering the marshaller
+		 */
+		public static marshal_VOID__UINT(closure: Closure, return_value: Value, n_param_values: number, param_values: Value, invocation_hint: any | null, marshal_data: any | null): void;
+		/**
+		 * A marshaller for a #GCClosure with a callback of type
+		 * `void (*callback) (gpointer instance, guint arg1, gpointer arg2, gpointer user_data)`.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value ignored
+		 * @param n_param_values 3
+		 * @param param_values a #GValue array holding instance, arg1 and arg2
+		 * @param invocation_hint the invocation hint given as the last argument
+		 *  to {@link G.closure_invoke}
+		 * @param marshal_data additional data specified when registering the marshaller
+		 */
+		public static marshal_VOID__UINT_POINTER(closure: Closure, return_value: Value, n_param_values: number, param_values: Value, invocation_hint: any | null, marshal_data: any | null): void;
+		/**
+		 * The #GVaClosureMarshal equivalent to {@link G.cclosure_marshal_VOID__UINT_POINTER}.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value a #GValue to store the return
+		 *  value. May be %NULL if the callback of #closure doesn't return a
+		 *  value.
+		 * @param instance the instance on which the closure is invoked.
+		 * @param args va_list of arguments to be passed to the closure.
+		 * @param marshal_data additional data specified when
+		 *  registering the marshaller, see {@link G.closure_set_marshal} and
+		 *  g_closure_set_meta_marshal()
+		 * @param n_params the length of the #param_types array
+		 * @param param_types the #GType of each argument from
+		 *  #args.
+		 */
+		public static marshal_VOID__UINT_POINTERv(closure: Closure, return_value: Value | null, instance: TypeInstance, args: any[], marshal_data: any | null, n_params: number, param_types: GObject.Type[]): void;
+		/**
+		 * The #GVaClosureMarshal equivalent to {@link G.cclosure_marshal_VOID__UINT}.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value a #GValue to store the return
+		 *  value. May be %NULL if the callback of #closure doesn't return a
+		 *  value.
+		 * @param instance the instance on which the closure is invoked.
+		 * @param args va_list of arguments to be passed to the closure.
+		 * @param marshal_data additional data specified when
+		 *  registering the marshaller, see {@link G.closure_set_marshal} and
+		 *  g_closure_set_meta_marshal()
+		 * @param n_params the length of the #param_types array
+		 * @param param_types the #GType of each argument from
+		 *  #args.
+		 */
+		public static marshal_VOID__UINTv(closure: Closure, return_value: Value | null, instance: TypeInstance, args: any[], marshal_data: any | null, n_params: number, param_types: GObject.Type[]): void;
+		/**
+		 * A marshaller for a #GCClosure with a callback of type
+		 * `void (*callback) (gpointer instance, gulong arg1, gpointer user_data)`.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value ignored
+		 * @param n_param_values 2
+		 * @param param_values a #GValue array holding the instance and the #gulong parameter
+		 * @param invocation_hint the invocation hint given as the last argument
+		 *  to {@link G.closure_invoke}
+		 * @param marshal_data additional data specified when registering the marshaller
+		 */
+		public static marshal_VOID__ULONG(closure: Closure, return_value: Value, n_param_values: number, param_values: Value, invocation_hint: any | null, marshal_data: any | null): void;
+		/**
+		 * The #GVaClosureMarshal equivalent to {@link G.cclosure_marshal_VOID__ULONG}.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value a #GValue to store the return
+		 *  value. May be %NULL if the callback of #closure doesn't return a
+		 *  value.
+		 * @param instance the instance on which the closure is invoked.
+		 * @param args va_list of arguments to be passed to the closure.
+		 * @param marshal_data additional data specified when
+		 *  registering the marshaller, see {@link G.closure_set_marshal} and
+		 *  g_closure_set_meta_marshal()
+		 * @param n_params the length of the #param_types array
+		 * @param param_types the #GType of each argument from
+		 *  #args.
+		 */
+		public static marshal_VOID__ULONGv(closure: Closure, return_value: Value | null, instance: TypeInstance, args: any[], marshal_data: any | null, n_params: number, param_types: GObject.Type[]): void;
+		/**
+		 * A marshaller for a #GCClosure with a callback of type
+		 * `void (*callback) (gpointer instance, GVariant *arg1, gpointer user_data)`.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value ignored
+		 * @param n_param_values 2
+		 * @param param_values a #GValue array holding the instance and the #GVariant* parameter
+		 * @param invocation_hint the invocation hint given as the last argument
+		 *  to {@link G.closure_invoke}
+		 * @param marshal_data additional data specified when registering the marshaller
+		 */
+		public static marshal_VOID__VARIANT(closure: Closure, return_value: Value, n_param_values: number, param_values: Value, invocation_hint: any | null, marshal_data: any | null): void;
+		/**
+		 * The #GVaClosureMarshal equivalent to {@link G.cclosure_marshal_VOID__VARIANT}.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value a #GValue to store the return
+		 *  value. May be %NULL if the callback of #closure doesn't return a
+		 *  value.
+		 * @param instance the instance on which the closure is invoked.
+		 * @param args va_list of arguments to be passed to the closure.
+		 * @param marshal_data additional data specified when
+		 *  registering the marshaller, see {@link G.closure_set_marshal} and
+		 *  g_closure_set_meta_marshal()
+		 * @param n_params the length of the #param_types array
+		 * @param param_types the #GType of each argument from
+		 *  #args.
+		 */
+		public static marshal_VOID__VARIANTv(closure: Closure, return_value: Value | null, instance: TypeInstance, args: any[], marshal_data: any | null, n_params: number, param_types: GObject.Type[]): void;
+		/**
+		 * A marshaller for a #GCClosure with a callback of type
+		 * `void (*callback) (gpointer instance, gpointer user_data)`.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value ignored
+		 * @param n_param_values 1
+		 * @param param_values a #GValue array holding only the instance
+		 * @param invocation_hint the invocation hint given as the last argument
+		 *  to {@link G.closure_invoke}
+		 * @param marshal_data additional data specified when registering the marshaller
+		 */
+		public static marshal_VOID__VOID(closure: Closure, return_value: Value, n_param_values: number, param_values: Value, invocation_hint: any | null, marshal_data: any | null): void;
+		/**
+		 * The #GVaClosureMarshal equivalent to {@link G.cclosure_marshal_VOID__VOID}.
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value a #GValue to store the return
+		 *  value. May be %NULL if the callback of #closure doesn't return a
+		 *  value.
+		 * @param instance the instance on which the closure is invoked.
+		 * @param args va_list of arguments to be passed to the closure.
+		 * @param marshal_data additional data specified when
+		 *  registering the marshaller, see {@link G.closure_set_marshal} and
+		 *  g_closure_set_meta_marshal()
+		 * @param n_params the length of the #param_types array
+		 * @param param_types the #GType of each argument from
+		 *  #args.
+		 */
+		public static marshal_VOID__VOIDv(closure: Closure, return_value: Value | null, instance: TypeInstance, args: any[], marshal_data: any | null, n_params: number, param_types: GObject.Type[]): void;
+		/**
+		 * A generic marshaller function implemented via
+		 * [libffi](http://sourceware.org/libffi/).
+		 * 
+		 * Normally this function is not passed explicitly to {@link G.signal_new},
+		 * but used automatically by GLib when specifying a %NULL marshaller.
+		 * @param closure A #GClosure.
+		 * @param return_gvalue A #GValue to store the return value. May be %NULL
+		 *   if the callback of closure doesn't return a value.
+		 * @param n_param_values The length of the #param_values array.
+		 * @param param_values An array of #GValues holding the arguments
+		 *   on which to invoke the callback of closure.
+		 * @param invocation_hint The invocation hint given as the last argument to
+		 *   {@link G.closure_invoke}.
+		 * @param marshal_data Additional data specified when registering the
+		 *   marshaller, see {@link G.closure_set_marshal} and
+		 *   g_closure_set_meta_marshal()
+		 */
+		public static marshal_generic(closure: Closure, return_gvalue: Value, n_param_values: number, param_values: Value, invocation_hint: any | null, marshal_data: any | null): void;
+		/**
+		 * A generic #GVaClosureMarshal function implemented via
+		 * [libffi](http://sourceware.org/libffi/).
+		 * @param closure the #GClosure to which the marshaller belongs
+		 * @param return_value a #GValue to store the return
+		 *  value. May be %NULL if the callback of #closure doesn't return a
+		 *  value.
+		 * @param instance the instance on which the closure is
+		 *  invoked.
+		 * @param args_list va_list of arguments to be passed to the closure.
+		 * @param marshal_data additional data specified when
+		 *  registering the marshaller, see {@link G.closure_set_marshal} and
+		 *  g_closure_set_meta_marshal()
+		 * @param n_params the length of the #param_types array
+		 * @param param_types the #GType of each argument from
+		 *  #args_list.
+		 */
+		public static marshal_generic_va(closure: Closure, return_value: Value | null, instance: TypeInstance, args_list: any[], marshal_data: any | null, n_params: number, param_types: GObject.Type[]): void;
+		/**
+		 * Creates a new closure which invokes #callback_func with #user_data as
+		 * the last parameter.
+		 * 
+		 * #destroy_data will be called as a finalize notifier on the #GClosure.
+		 * @param callback_func the function to invoke
+		 * @param destroy_data destroy notify to be called when #user_data is no longer used
+		 * @returns a floating reference to a new #GCClosure
+		 */
+		public static new(callback_func: Callback | null, destroy_data: ClosureNotify): Closure;
+		/**
+		 * A variant of {@link G.cclosure_new} which uses #object as #user_data and
+		 * calls g_object_watch_closure() on #object and the created
+		 * closure. This function is useful when you have a callback closely
+		 * associated with a #GObject, and want the callback to no longer run
+		 * after the object is is freed.
+		 * @param callback_func the function to invoke
+		 * @param object a #GObject pointer to pass to #callback_func
+		 * @returns a new #GCClosure
+		 */
+		public static new_object(callback_func: Callback, object: Object): Closure;
+		/**
+		 * A variant of {@link G.cclosure_new_swap} which uses #object as #user_data
+		 * and calls g_object_watch_closure() on #object and the created
+		 * closure. This function is useful when you have a callback closely
+		 * associated with a #GObject, and want the callback to no longer run
+		 * after the object is is freed.
+		 * @param callback_func the function to invoke
+		 * @param object a #GObject pointer to pass to #callback_func
+		 * @returns a new #GCClosure
+		 */
+		public static new_object_swap(callback_func: Callback, object: Object): Closure;
+		/**
+		 * Creates a new closure which invokes #callback_func with #user_data as
+		 * the first parameter.
+		 * 
+		 * #destroy_data will be called as a finalize notifier on the #GClosure.
+		 * @param callback_func the function to invoke
+		 * @param destroy_data destroy notify to be called when #user_data is no longer used
+		 * @returns a floating reference to a new #GCClosure
+		 */
+		public static new_swap(callback_func: Callback | null, destroy_data: ClosureNotify): Closure;
+		/**
 		 * the #GClosure
 		 */
 		public closure: Closure;
@@ -2856,6 +3558,17 @@ declare namespace imports.gi.GObject {
 	class ParamSpecPool {
 		public constructor(options?: Partial<ParamSpecPoolInitOptions>);
 		/**
+		 * Creates a new #GParamSpecPool.
+		 * 
+		 * If #type_prefixing is %TRUE, lookups in the newly created pool will
+		 * allow to specify the owner as a colon-separated prefix of the
+		 * property name, like "GtkContainer:border-width". This feature is
+		 * deprecated, so you should always set #type_prefixing to %FALSE.
+		 * @param type_prefixing Whether the pool will support type-prefixed property names.
+		 * @returns a newly allocated #GParamSpecPool.
+		 */
+		public static new(type_prefixing: boolean): ParamSpecPool;
+		/**
 		 * Inserts a #GParamSpec in the pool.
 		 * @param pspec the #GParamSpec to insert
 		 * @param owner_type a #GType identifying the owner of #pspec
@@ -3028,6 +3741,37 @@ declare namespace imports.gi.GObject {
 	interface TypeClass {}
 	class TypeClass {
 		public constructor(options?: Partial<TypeClassInitOptions>);
+		public static adjust_private_offset(g_class: any | null, private_size_or_offset: number): void;
+		/**
+		 * This function is essentially the same as {@link G.type_class_ref},
+		 * except that the classes reference count isn't incremented.
+		 * As a consequence, this function may return %NULL if the class
+		 * of the type passed in does not currently exist (hasn't been
+		 * referenced before).
+		 * @param type type ID of a classed type
+		 * @returns the #GTypeClass
+		 *     structure for the given type ID or %NULL if the class does not
+		 *     currently exist
+		 */
+		public static peek(type: GObject.Type): TypeClass;
+		/**
+		 * A more efficient version of {@link G.type_class_peek} which works only for
+		 * static types.
+		 * @param type type ID of a classed type
+		 * @returns the #GTypeClass
+		 *     structure for the given type ID or %NULL if the class does not
+		 *     currently exist or is dynamically loaded
+		 */
+		public static peek_static(type: GObject.Type): TypeClass;
+		/**
+		 * Increments the reference count of the class structure belonging to
+		 * #type. This function will demand-create the class if it doesn't
+		 * exist already.
+		 * @param type type ID of a classed type
+		 * @returns the #GTypeClass
+		 *     structure for the given type ID
+		 */
+		public static ref(type: GObject.Type): TypeClass;
 		public readonly g_type: GObject.Type;
 		/**
 		 * @deprecated
@@ -3238,6 +3982,59 @@ declare namespace imports.gi.GObject {
 	interface TypeInterface {}
 	class TypeInterface {
 		public constructor(options?: Partial<TypeInterfaceInitOptions>);
+		/**
+		 * Adds #prerequisite_type to the list of prerequisites of #interface_type.
+		 * This means that any type implementing #interface_type must also implement
+		 * #prerequisite_type. Prerequisites can be thought of as an alternative to
+		 * interface derivation (which GType doesn't support). An interface can have
+		 * at most one instantiatable prerequisite type.
+		 * @param interface_type #GType value of an interface type
+		 * @param prerequisite_type #GType value of an interface or instantiatable type
+		 */
+		public static add_prerequisite(interface_type: GObject.Type, prerequisite_type: GObject.Type): void;
+		/**
+		 * Returns the #GTypePlugin structure for the dynamic interface
+		 * #interface_type which has been added to #instance_type, or %NULL
+		 * if #interface_type has not been added to #instance_type or does
+		 * not have a #GTypePlugin structure. See {@link G.type_add_interface_dynamic}.
+		 * @param instance_type #GType of an instantiatable type
+		 * @param interface_type #GType of an interface type
+		 * @returns the #GTypePlugin for the dynamic
+		 *     interface #interface_type of #instance_type
+		 */
+		public static get_plugin(instance_type: GObject.Type, interface_type: GObject.Type): TypePlugin;
+		/**
+		 * Returns the most specific instantiatable prerequisite of an
+		 * interface type. If the interface type has no instantiatable
+		 * prerequisite, %G_TYPE_INVALID is returned.
+		 * 
+		 * See {@link G.type_interface_add_prerequisite} for more information
+		 * about prerequisites.
+		 * @param interface_type an interface type
+		 * @returns the instantiatable prerequisite type or %G_TYPE_INVALID if none
+		 */
+		public static instantiatable_prerequisite(interface_type: GObject.Type): GObject.Type;
+		/**
+		 * Returns the #GTypeInterface structure of an interface to which the
+		 * passed in class conforms.
+		 * @param instance_class a #GTypeClass structure
+		 * @param iface_type an interface ID which this class conforms to
+		 * @returns the #GTypeInterface
+		 *     structure of #iface_type if implemented by #instance_class, %NULL
+		 *     otherwise
+		 */
+		public static peek(instance_class: TypeClass, iface_type: GObject.Type): TypeInterface;
+		/**
+		 * Returns the prerequisites of an interfaces type.
+		 * @param interface_type an interface type
+		 * @returns a
+		 *     newly-allocated zero-terminated array of #GType containing
+		 *     the prerequisites of #interface_type
+		 * 
+		 * location to return the number
+		 *     of prerequisites, or %NULL
+		 */
+		public static prerequisites(interface_type: GObject.Type): [ GObject.Type[], number | null ];
 		public readonly g_type: GObject.Type;
 		public readonly g_instance_type: GObject.Type;
 		/**
@@ -3320,6 +4117,17 @@ declare namespace imports.gi.GObject {
 	class TypeValueTable {
 		public constructor(options?: Partial<TypeValueTableInitOptions>);
 		/**
+		 * Returns the location of the #GTypeValueTable associated with #type.
+		 * 
+		 * Note that this function should only be used from source code
+		 * that implements or has internal knowledge of the implementation of
+		 * #type.
+		 * @param type a #GType
+		 * @returns location of the #GTypeValueTable associated with #type or
+		 *     %NULL if there is no #GTypeValueTable associated with #type
+		 */
+		public static peek(type: GObject.Type): TypeValueTable;
+		/**
 		 * A string format describing how to collect the contents of
 		 *  this value bit-by-bit. Each character in the format represents
 		 *  an argument to be collected, and the characters themselves indicate
@@ -3364,6 +4172,34 @@ declare namespace imports.gi.GObject {
 	interface Value {}
 	class Value {
 		public constructor(options?: Partial<ValueInitOptions>);
+		/**
+		 * Registers a value transformation function for use in {@link G.value_transform}.
+		 * A previously registered transformation function for #src_type and #dest_type
+		 * will be replaced.
+		 * @param src_type Source type.
+		 * @param dest_type Target type.
+		 * @param transform_func a function which transforms values of type #src_type
+		 *  into value of type #dest_type
+		 */
+		public static register_transform_func(src_type: GObject.Type, dest_type: GObject.Type, transform_func: ValueTransform): void;
+		/**
+		 * Returns whether a #GValue of type #src_type can be copied into
+		 * a #GValue of type #dest_type.
+		 * @param src_type source type to be copied.
+		 * @param dest_type destination type for copying.
+		 * @returns %TRUE if {@link G.value_copy} is possible with #src_type and #dest_type.
+		 */
+		public static type_compatible(src_type: GObject.Type, dest_type: GObject.Type): boolean;
+		/**
+		 * Check whether {@link G.value_transform} is able to transform values
+		 * of type #src_type into values of type #dest_type. Note that for
+		 * the types to be transformable, they must be compatible or a
+		 * transformation function must be registered.
+		 * @param src_type Source type.
+		 * @param dest_type Target type.
+		 * @returns %TRUE if the transformation is possible, %FALSE otherwise.
+		 */
+		public static type_transformable(src_type: GObject.Type, dest_type: GObject.Type): boolean;
 		public readonly g_type: GObject.Type;
 		public data: _Value__data__union[];
 		/**

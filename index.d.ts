@@ -27,6 +27,7 @@
 /// <reference path="./XApp-1.0.d.ts" />
 /// <reference path="./xlib-2.0.d.ts" />
 /// <reference path="./xfixes-4.0.d.ts" />
+/// <reference path="./xrandr-1.3.d.ts" />
 
 /// <reference path="./extensions/ByteArray.d.ts" />
 /// <reference path="./extensions/cairo-1.0.d.ts" />

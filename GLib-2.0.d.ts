@@ -8,6 +8,281 @@ declare namespace imports.gi.GLib {
 	class Array {
 		public constructor(options?: Partial<ArrayInitOptions>);
 		/**
+		 * Adds #len elements onto the end of the array.
+		 * @param array a #GArray
+		 * @param data a pointer to the elements to append to the end of the array
+		 * @param len the number of elements to append
+		 * @returns the #GArray
+		 */
+		public static append_vals(array: any[], data: any, len: number): any[];
+		/**
+		 * Checks whether #target exists in #array by performing a binary
+		 * search based on the given comparison function #compare_func which
+		 * get pointers to items as arguments. If the element is found, %TRUE
+		 * is returned and the element’s index is returned in #out_match_index
+		 * (if non-%NULL). Otherwise, %FALSE is returned and #out_match_index
+		 * is undefined. If #target exists multiple times in #array, the index
+		 * of the first instance is returned. This search is using a binary
+		 * search, so the #array must absolutely be sorted to return a correct
+		 * result (if not, the function may produce false-negative).
+		 * 
+		 * This example defines a comparison function and search an element in a #GArray:
+		 * |[<!-- language="C" -->
+		 * static gint*
+		 * cmpint (gconstpointer a, gconstpointer b)
+		 * {
+		 *   const gint *_a = a;
+		 *   const gint *_b = b;
+		 * 
+		 *   return *_a - *_b;
+		 * }
+		 * ...
+		 * gint i = 424242;
+		 * guint matched_index;
+		 * gboolean result = g_array_binary_search (garray, &i, cmpint, &matched_index);
+		 * ...
+		 * ]|
+		 * @param array a #GArray.
+		 * @param target a pointer to the item to look up.
+		 * @param compare_func A #GCompareFunc used to locate #target.
+		 * @returns %TRUE if #target is one of the elements of #array, %FALSE otherwise.
+		 * 
+		 * return location
+		 *    for the index of the element, if found.
+		 */
+		public static binary_search(array: any[], target: any | null, compare_func: CompareFunc): [ boolean, number | null ];
+		/**
+		 * Create a shallow copy of a #GArray. If the array elements consist of
+		 * pointers to data, the pointers are copied but the actual data is not.
+		 * @param array A #GArray.
+		 * @returns A copy of #array.
+		 */
+		public static copy(array: any[]): any[];
+		/**
+		 * Frees the memory allocated for the #GArray. If #free_segment is
+		 * %TRUE it frees the memory block holding the elements as well. Pass
+		 * %FALSE if you want to free the #GArray wrapper but preserve the
+		 * underlying array for use elsewhere. If the reference count of
+		 * #array is greater than one, the #GArray wrapper is preserved but
+		 * the size of  #array will be set to zero.
+		 * 
+		 * If array contents point to dynamically-allocated memory, they should
+		 * be freed separately if #free_seg is %TRUE and no #clear_func
+		 * function has been set for #array.
+		 * 
+		 * This function is not thread-safe. If using a #GArray from multiple
+		 * threads, use only the atomic {@link G.array_ref} and g_array_unref()
+		 * functions.
+		 * @param array a #GArray
+		 * @param free_segment if %TRUE the actual element data is freed as well
+		 * @returns the element data if #free_segment is %FALSE, otherwise
+		 *     %NULL. The element data should be freed using {@link G.free}.
+		 */
+		public static free(array: any[], free_segment: boolean): string;
+		/**
+		 * Gets the size of the elements in #array.
+		 * @param array A #GArray
+		 * @returns Size of each element, in bytes
+		 */
+		public static get_element_size(array: any[]): number;
+		/**
+		 * Inserts #len elements into a #GArray at the given index.
+		 * 
+		 * If #index_ is greater than the array’s current length, the array is expanded.
+		 * The elements between the old end of the array and the newly inserted elements
+		 * will be initialised to zero if the array was configured to clear elements;
+		 * otherwise their values will be undefined.
+		 * 
+		 * If #index_ is less than the array’s current length, new entries will be
+		 * inserted into the array, and the existing entries above #index_ will be moved
+		 * upwards.
+		 * 
+		 * #data may be %NULL if (and only if) #len is zero. If #len is zero, this
+		 * function is a no-op.
+		 * @param array a #GArray
+		 * @param index_ the index to place the elements at
+		 * @param data a pointer to the elements to insert
+		 * @param len the number of elements to insert
+		 * @returns the #GArray
+		 */
+		public static insert_vals(array: any[], index_: number, data: any | null, len: number): any[];
+		/**
+		 * Creates a new #GArray with a reference count of 1.
+		 * @param zero_terminated %TRUE if the array should have an extra element at
+		 *     the end which is set to 0
+		 * @param clear_ %TRUE if #GArray elements should be automatically cleared
+		 *     to 0 when they are allocated
+		 * @param element_size the size of each element in bytes
+		 * @returns the new #GArray
+		 */
+		public static new(zero_terminated: boolean, clear_: boolean, element_size: number): any[];
+		/**
+		 * Adds #len elements onto the start of the array.
+		 * 
+		 * #data may be %NULL if (and only if) #len is zero. If #len is zero, this
+		 * function is a no-op.
+		 * 
+		 * This operation is slower than {@link G.array_append_vals} since the
+		 * existing elements in the array have to be moved to make space for
+		 * the new elements.
+		 * @param array a #GArray
+		 * @param data a pointer to the elements to prepend to the start of the array
+		 * @param len the number of elements to prepend, which may be zero
+		 * @returns the #GArray
+		 */
+		public static prepend_vals(array: any[], data: any | null, len: number): any[];
+		/**
+		 * Atomically increments the reference count of #array by one.
+		 * This function is thread-safe and may be called from any thread.
+		 * @param array A #GArray
+		 * @returns The passed in #GArray
+		 */
+		public static ref(array: any[]): any[];
+		/**
+		 * Removes the element at the given index from a #GArray. The following
+		 * elements are moved down one place.
+		 * @param array a #GArray
+		 * @param index_ the index of the element to remove
+		 * @returns the #GArray
+		 */
+		public static remove_index(array: any[], index_: number): any[];
+		/**
+		 * Removes the element at the given index from a #GArray. The last
+		 * element in the array is used to fill in the space, so this function
+		 * does not preserve the order of the #GArray. But it is faster than
+		 * {@link G.array_remove_index}.
+		 * @param array a #GArray
+		 * @param index_ the index of the element to remove
+		 * @returns the #GArray
+		 */
+		public static remove_index_fast(array: any[], index_: number): any[];
+		/**
+		 * Removes the given number of elements starting at the given index
+		 * from a #GArray.  The following elements are moved to close the gap.
+		 * @param array a #GArray
+		 * @param index_ the index of the first element to remove
+		 * @param length the number of elements to remove
+		 * @returns the #GArray
+		 */
+		public static remove_range(array: any[], index_: number, length: number): any[];
+		/**
+		 * Sets a function to clear an element of #array.
+		 * 
+		 * The #clear_func will be called when an element in the array
+		 * data segment is removed and when the array is freed and data
+		 * segment is deallocated as well. #clear_func will be passed a
+		 * pointer to the element to clear, rather than the element itself.
+		 * 
+		 * Note that in contrast with other uses of #GDestroyNotify
+		 * functions, #clear_func is expected to clear the contents of
+		 * the array element it is given, but not free the element itself.
+		 * 
+		 * |[<!-- language="C" -->
+		 * typedef struct
+		 * {
+		 *   gchar *str;
+		 *   GObject *obj;
+		 * } ArrayElement;
+		 * 
+		 * static void
+		 * array_element_clear (ArrayElement *element)
+		 * {
+		 *   g_clear_pointer (&element->str, g_free);
+		 *   g_clear_object (&element->obj);
+		 * }
+		 * 
+		 * // main code
+		 * GArray *garray = g_array_new (FALSE, FALSE, sizeof (ArrayElement));
+		 * g_array_set_clear_func (garray, (GDestroyNotify) array_element_clear);
+		 * // assign data to the structure
+		 * g_array_free (garray, TRUE);
+		 * ]|
+		 * @param array A #GArray
+		 * @param clear_func a function to clear an element of #array
+		 */
+		public static set_clear_func(array: any[], clear_func: DestroyNotify): void;
+		/**
+		 * Sets the size of the array, expanding it if necessary. If the array
+		 * was created with #clear_ set to %TRUE, the new elements are set to 0.
+		 * @param array a #GArray
+		 * @param length the new size of the #GArray
+		 * @returns the #GArray
+		 */
+		public static set_size(array: any[], length: number): any[];
+		/**
+		 * Creates a new #GArray with #reserved_size elements preallocated and
+		 * a reference count of 1. This avoids frequent reallocation, if you
+		 * are going to add many elements to the array. Note however that the
+		 * size of the array is still 0.
+		 * @param zero_terminated %TRUE if the array should have an extra element at
+		 *     the end with all bits cleared
+		 * @param clear_ %TRUE if all bits in the array should be cleared to 0 on
+		 *     allocation
+		 * @param element_size size of each element in the array
+		 * @param reserved_size number of elements preallocated
+		 * @returns the new #GArray
+		 */
+		public static sized_new(zero_terminated: boolean, clear_: boolean, element_size: number, reserved_size: number): any[];
+		/**
+		 * Sorts a #GArray using #compare_func which should be a qsort()-style
+		 * comparison function (returns less than zero for first arg is less
+		 * than second arg, zero for equal, greater zero if first arg is
+		 * greater than second arg).
+		 * 
+		 * This is guaranteed to be a stable sort since version 2.32.
+		 * @param array a #GArray
+		 * @param compare_func comparison function
+		 */
+		public static sort(array: any[], compare_func: CompareFunc): void;
+		/**
+		 * Like {@link G.array_sort}, but the comparison function receives an extra
+		 * user data argument.
+		 * 
+		 * This is guaranteed to be a stable sort since version 2.32.
+		 * 
+		 * There used to be a comment here about making the sort stable by
+		 * using the addresses of the elements in the comparison function.
+		 * This did not actually work, so any such code should be removed.
+		 * @param array a #GArray
+		 * @param compare_func comparison function
+		 */
+		public static sort_with_data(array: any[], compare_func: CompareDataFunc): void;
+		/**
+		 * Frees the data in the array and resets the size to zero, while
+		 * the underlying array is preserved for use elsewhere and returned
+		 * to the caller.
+		 * 
+		 * If the array was created with the #zero_terminate property
+		 * set to %TRUE, the returned data is zero terminated too.
+		 * 
+		 * If array elements contain dynamically-allocated memory,
+		 * the array elements should also be freed by the caller.
+		 * 
+		 * A short example of use:
+		 * |[<!-- language="C" -->
+		 * ...
+		 * gpointer data;
+		 * gsize data_len;
+		 * data = g_array_steal (some_array, &data_len);
+		 * ...
+		 * ]|
+		 * @param array a #GArray.
+		 * @returns the element data, which should be
+		 *     freed using {@link G.free}.
+		 * 
+		 * pointer to retrieve the number of
+		 *    elements of the original array
+		 */
+		public static steal(array: any[]): [ any | null, number | null ];
+		/**
+		 * Atomically decrements the reference count of #array by one. If the
+		 * reference count drops to 0, all memory allocated by the array is
+		 * released. This function is thread-safe and may be called from any
+		 * thread.
+		 * @param array A #GArray
+		 */
+		public static unref(array: any[]): void;
+		/**
 		 * a pointer to the element data. The data may be moved as
 		 *     elements are added to the #GArray.
 		 */
@@ -28,6 +303,19 @@ declare namespace imports.gi.GLib {
 	interface AsyncQueue {}
 	class AsyncQueue {
 		public constructor(options?: Partial<AsyncQueueInitOptions>);
+		/**
+		 * Creates a new asynchronous queue.
+		 * @returns a new #GAsyncQueue. Free with {@link G.async_queue_unref}
+		 */
+		public static new(): AsyncQueue;
+		/**
+		 * Creates a new asynchronous queue and sets up a destroy notify
+		 * function that is used to free any remaining queue items when
+		 * the queue is destroyed after the final unref.
+		 * @param item_free_func function to free queue elements
+		 * @returns a new #GAsyncQueue. Free with {@link G.async_queue_unref}
+		 */
+		public static new_full(item_free_func: DestroyNotify | null): AsyncQueue;
 		/**
 		 * Returns the length of the queue.
 		 * 
@@ -323,6 +611,16 @@ declare namespace imports.gi.GLib {
 	interface BookmarkFile {}
 	class BookmarkFile {
 		public constructor(options?: Partial<BookmarkFileInitOptions>);
+		public static error_quark(): Quark;
+		/**
+		 * Creates a new empty #GBookmarkFile object.
+		 * 
+		 * Use {@link G.bookmark_file_load_from_file}, g_bookmark_file_load_from_data()
+		 * or g_bookmark_file_load_from_data_dirs() to read an existing bookmark
+		 * file.
+		 * @returns an empty #GBookmarkFile
+		 */
+		public static new(): BookmarkFile;
 		/**
 		 * Adds the application with #name and #exec to the list of
 		 * applications that have registered a bookmark for #uri into
@@ -938,6 +1236,158 @@ declare namespace imports.gi.GLib {
 	class ByteArray {
 		public constructor(options?: Partial<ByteArrayInitOptions>);
 		/**
+		 * Adds the given bytes to the end of the #GByteArray.
+		 * The array will grow in size automatically if necessary.
+		 * @param array a #GByteArray
+		 * @param data the byte data to be added
+		 * @param len the number of bytes to add
+		 * @returns the #GByteArray
+		 */
+		public static append(array: number[], data: number, len: number): number[];
+		/**
+		 * Frees the memory allocated by the #GByteArray. If #free_segment is
+		 * %TRUE it frees the actual byte data. If the reference count of
+		 * #array is greater than one, the #GByteArray wrapper is preserved but
+		 * the size of #array will be set to zero.
+		 * @param array a #GByteArray
+		 * @param free_segment if %TRUE the actual byte data is freed as well
+		 * @returns the element data if #free_segment is %FALSE, otherwise
+		 *          %NULL.  The element data should be freed using {@link G.free}.
+		 */
+		public static free(array: number[], free_segment: boolean): number;
+		/**
+		 * Transfers the data from the #GByteArray into a new immutable #GBytes.
+		 * 
+		 * The #GByteArray is freed unless the reference count of #array is greater
+		 * than one, the #GByteArray wrapper is preserved but the size of #array
+		 * will be set to zero.
+		 * 
+		 * This is identical to using {@link G.bytes_new_take} and g_byte_array_free()
+		 * together.
+		 * @param array a #GByteArray
+		 * @returns a new immutable #GBytes representing same
+		 *     byte data that was in the array
+		 */
+		public static free_to_bytes(array: number[]): Bytes;
+		/**
+		 * Creates a new #GByteArray with a reference count of 1.
+		 * @returns the new #GByteArray
+		 */
+		public static new(): number[];
+		/**
+		 * Create byte array containing the data. The data will be owned by the array
+		 * and will be freed with {@link G.free}, i.e. it could be allocated using g_strdup().
+		 * 
+		 * Do not use it if #len is greater than %G_MAXUINT. #GByteArray
+		 * stores the length of its data in #guint, which may be shorter than
+		 * #gsize.
+		 * @param data byte data for the array
+		 * @param len length of #data
+		 * @returns a new #GByteArray
+		 */
+		public static new_take(data: number[], len: number): number[];
+		/**
+		 * Adds the given data to the start of the #GByteArray.
+		 * The array will grow in size automatically if necessary.
+		 * @param array a #GByteArray
+		 * @param data the byte data to be added
+		 * @param len the number of bytes to add
+		 * @returns the #GByteArray
+		 */
+		public static prepend(array: number[], data: number, len: number): number[];
+		/**
+		 * Atomically increments the reference count of #array by one.
+		 * This function is thread-safe and may be called from any thread.
+		 * @param array A #GByteArray
+		 * @returns The passed in #GByteArray
+		 */
+		public static ref(array: number[]): number[];
+		/**
+		 * Removes the byte at the given index from a #GByteArray.
+		 * The following bytes are moved down one place.
+		 * @param array a #GByteArray
+		 * @param index_ the index of the byte to remove
+		 * @returns the #GByteArray
+		 */
+		public static remove_index(array: number[], index_: number): number[];
+		/**
+		 * Removes the byte at the given index from a #GByteArray. The last
+		 * element in the array is used to fill in the space, so this function
+		 * does not preserve the order of the #GByteArray. But it is faster
+		 * than {@link G.byte_array_remove_index}.
+		 * @param array a #GByteArray
+		 * @param index_ the index of the byte to remove
+		 * @returns the #GByteArray
+		 */
+		public static remove_index_fast(array: number[], index_: number): number[];
+		/**
+		 * Removes the given number of bytes starting at the given index from a
+		 * #GByteArray.  The following elements are moved to close the gap.
+		 * @param array a #GByteArray
+		 * @param index_ the index of the first byte to remove
+		 * @param length the number of bytes to remove
+		 * @returns the #GByteArray
+		 */
+		public static remove_range(array: number[], index_: number, length: number): number[];
+		/**
+		 * Sets the size of the #GByteArray, expanding it if necessary.
+		 * @param array a #GByteArray
+		 * @param length the new size of the #GByteArray
+		 * @returns the #GByteArray
+		 */
+		public static set_size(array: number[], length: number): number[];
+		/**
+		 * Creates a new #GByteArray with #reserved_size bytes preallocated.
+		 * This avoids frequent reallocation, if you are going to add many
+		 * bytes to the array. Note however that the size of the array is still
+		 * 0.
+		 * @param reserved_size number of bytes preallocated
+		 * @returns the new #GByteArray
+		 */
+		public static sized_new(reserved_size: number): number[];
+		/**
+		 * Sorts a byte array, using #compare_func which should be a
+		 * qsort()-style comparison function (returns less than zero for first
+		 * arg is less than second arg, zero for equal, greater than zero if
+		 * first arg is greater than second arg).
+		 * 
+		 * If two array elements compare equal, their order in the sorted array
+		 * is undefined. If you want equal elements to keep their order (i.e.
+		 * you want a stable sort) you can write a comparison function that,
+		 * if two elements would otherwise compare equal, compares them by
+		 * their addresses.
+		 * @param array a #GByteArray
+		 * @param compare_func comparison function
+		 */
+		public static sort(array: number[], compare_func: CompareFunc): void;
+		/**
+		 * Like {@link G.byte_array_sort}, but the comparison function takes an extra
+		 * user data argument.
+		 * @param array a #GByteArray
+		 * @param compare_func comparison function
+		 */
+		public static sort_with_data(array: number[], compare_func: CompareDataFunc): void;
+		/**
+		 * Frees the data in the array and resets the size to zero, while
+		 * the underlying array is preserved for use elsewhere and returned
+		 * to the caller.
+		 * @param array a #GByteArray.
+		 * @returns the element data, which should be
+		 *     freed using {@link G.free}.
+		 * 
+		 * pointer to retrieve the number of
+		 *    elements of the original array
+		 */
+		public static steal(array: number[]): [ number, number | null ];
+		/**
+		 * Atomically decrements the reference count of #array by one. If the
+		 * reference count drops to 0, all memory allocated by the array is
+		 * released. This function is thread-safe and may be called from any
+		 * thread.
+		 * @param array A #GByteArray
+		 */
+		public static unref(array: number[]): void;
+		/**
 		 * a pointer to the element data. The data may be moved as
 		 *     elements are added to the #GByteArray
 		 */
@@ -1204,6 +1654,13 @@ declare namespace imports.gi.GLib {
 		 *   Use {@link G.checksum_free} to free the memory allocated by it.
 		 */
 		public static new(checksum_type: ChecksumType): Checksum | null;
+		/**
+		 * Gets the length in bytes of digests of type #checksum_type
+		 * @param checksum_type a #GChecksumType
+		 * @returns the checksum length, or -1 if #checksum_type is
+		 * not supported.
+		 */
+		public static type_get_length(checksum_type: ChecksumType): number;
 		/**
 		 * Copies a #GChecksum. If #checksum has been closed, by calling
 		 * {@link G.checksum_get_string} or g_checksum_get_digest(), the copied
@@ -1490,6 +1947,115 @@ declare namespace imports.gi.GLib {
 		 * @returns a newly-allocated #GDate initialized with #julian_day
 		 */
 		public static new_julian(julian_day: number): Date;
+		/**
+		 * Returns the number of days in a month, taking leap
+		 * years into account.
+		 * @param month month
+		 * @param year year
+		 * @returns number of days in #month during the #year
+		 */
+		public static get_days_in_month(month: DateMonth, year: DateYear): number;
+		/**
+		 * Returns the number of weeks in the year, where weeks
+		 * are taken to start on Monday. Will be 52 or 53. The
+		 * date must be valid. (Years always have 52 7-day periods,
+		 * plus 1 or 2 extra days depending on whether it's a leap
+		 * year. This function is basically telling you how many
+		 * Mondays are in the year, i.e. there are 53 Mondays if
+		 * one of the extra days happens to be a Monday.)
+		 * @param year a year
+		 * @returns number of Mondays in the year
+		 */
+		public static get_monday_weeks_in_year(year: DateYear): number;
+		/**
+		 * Returns the number of weeks in the year, where weeks
+		 * are taken to start on Sunday. Will be 52 or 53. The
+		 * date must be valid. (Years always have 52 7-day periods,
+		 * plus 1 or 2 extra days depending on whether it's a leap
+		 * year. This function is basically telling you how many
+		 * Sundays are in the year, i.e. there are 53 Sundays if
+		 * one of the extra days happens to be a Sunday.)
+		 * @param year year to count weeks in
+		 * @returns the number of weeks in #year
+		 */
+		public static get_sunday_weeks_in_year(year: DateYear): number;
+		/**
+		 * Returns %TRUE if the year is a leap year.
+		 * 
+		 * For the purposes of this function, leap year is every year
+		 * divisible by 4 unless that year is divisible by 100. If it
+		 * is divisible by 100 it would be a leap year only if that year
+		 * is also divisible by 400.
+		 * @param year year to check
+		 * @returns %TRUE if the year is a leap year
+		 */
+		public static is_leap_year(year: DateYear): boolean;
+		/**
+		 * Generates a printed representation of the date, in a
+		 * [locale][setlocale]-specific way.
+		 * Works just like the platform's C library strftime() function,
+		 * but only accepts date-related formats; time-related formats
+		 * give undefined results. Date must be valid. Unlike strftime()
+		 * (which uses the locale encoding), works on a UTF-8 format
+		 * string and stores a UTF-8 result.
+		 * 
+		 * This function does not provide any conversion specifiers in
+		 * addition to those implemented by the platform's C library.
+		 * For example, don't expect that using g_date_strftime() would
+		 * make the \%F provided by the C99 strftime() work on Windows
+		 * where the C library only complies to C89.
+		 * @param s destination buffer
+		 * @param slen buffer size
+		 * @param format format string
+		 * @param date valid #GDate
+		 * @returns number of characters written to the buffer, or 0 the buffer was too small
+		 */
+		public static strftime(s: string, slen: number, format: string, date: Date): number;
+		/**
+		 * Returns %TRUE if the day of the month is valid (a day is valid if it's
+		 * between 1 and 31 inclusive).
+		 * @param day day to check
+		 * @returns %TRUE if the day is valid
+		 */
+		public static valid_day(day: DateDay): boolean;
+		/**
+		 * Returns %TRUE if the day-month-year triplet forms a valid, existing day
+		 * in the range of days #GDate understands (Year 1 or later, no more than
+		 * a few thousand years in the future).
+		 * @param day day
+		 * @param month month
+		 * @param year year
+		 * @returns %TRUE if the date is a valid one
+		 */
+		public static valid_dmy(day: DateDay, month: DateMonth, year: DateYear): boolean;
+		/**
+		 * Returns %TRUE if the Julian day is valid. Anything greater than zero
+		 * is basically a valid Julian, though there is a 32-bit limit.
+		 * @param julian_date Julian day to check
+		 * @returns %TRUE if the Julian day is valid
+		 */
+		public static valid_julian(julian_date: number): boolean;
+		/**
+		 * Returns %TRUE if the month value is valid. The 12 #GDateMonth
+		 * enumeration values are the only valid months.
+		 * @param month month
+		 * @returns %TRUE if the month is valid
+		 */
+		public static valid_month(month: DateMonth): boolean;
+		/**
+		 * Returns %TRUE if the weekday is valid. The seven #GDateWeekday enumeration
+		 * values are the only valid weekdays.
+		 * @param weekday weekday
+		 * @returns %TRUE if the weekday is valid
+		 */
+		public static valid_weekday(weekday: DateWeekday): boolean;
+		/**
+		 * Returns %TRUE if the year is valid. Any year greater than 0 is valid,
+		 * though there is a 16-bit limit to what #GDate will understand.
+		 * @param year year
+		 * @returns %TRUE if the year is valid
+		 */
+		public static valid_year(year: DateYear): boolean;
 		/**
 		 * the Julian representation of the date
 		 */
@@ -2500,6 +3066,38 @@ declare namespace imports.gi.GLib {
 	class Dir {
 		public constructor(options?: Partial<DirInitOptions>);
 		/**
+		 * Creates a subdirectory in the preferred directory for temporary
+		 * files (as returned by {@link G.get_tmp_dir}).
+		 * 
+		 * #tmpl should be a string in the GLib file name encoding containing
+		 * a sequence of six 'X' characters, as the parameter to g_mkstemp().
+		 * However, unlike these functions, the template should only be a
+		 * basename, no directory components are allowed. If template is
+		 * %NULL, a default template is used.
+		 * 
+		 * Note that in contrast to g_mkdtemp() (and mkdtemp()) #tmpl is not
+		 * modified, and might thus be a read-only literal string.
+		 * @param tmpl Template for directory name,
+		 *     as in {@link G.mkdtemp}, basename only, or %NULL for a default template
+		 * @returns The actual name used. This string
+		 *     should be freed with {@link G.free} when not needed any longer and is
+		 *     is in the GLib file name encoding. In case of errors, %NULL is
+		 *     returned and #error will be set.
+		 */
+		public static make_tmp(tmpl: string | null): string;
+		/**
+		 * Opens a directory for reading. The names of the files in the
+		 * directory can then be retrieved using {@link G.dir_read_name}.  Note
+		 * that the ordering is not defined.
+		 * @param path the path to the directory you are interested in. On Unix
+		 *         in the on-disk encoding. On Windows in UTF-8
+		 * @param flags Currently must be set to 0. Reserved for future use.
+		 * @returns a newly allocated #GDir on success, %NULL on failure.
+		 *   If non-%NULL, you must free the result with {@link G.dir_close}
+		 *   when you are finished with it.
+		 */
+		public static open(path: string, flags: number): Dir;
+		/**
 		 * Closes the directory and deallocates all related resources.
 		 */
 		public close(): void;
@@ -2568,6 +3166,44 @@ declare namespace imports.gi.GLib {
 		 */
 		public static new_valist(domain: Quark, code: number, format: string, args: any[]): Error;
 		/**
+		 * This function registers an extended #GError domain.
+		 * #error_type_name will be duplicated. Otherwise does the same as
+		 * {@link G.error_domain_register_static}.
+		 * @param error_type_name string to create a #GQuark from
+		 * @param error_type_private_size size of the private error data in bytes
+		 * @param error_type_init function initializing fields of the private error data
+		 * @param error_type_copy function copying fields of the private error data
+		 * @param error_type_clear function freeing fields of the private error data
+		 * @returns #GQuark representing the error domain
+		 */
+		public static domain_register(error_type_name: string, error_type_private_size: number, error_type_init: ErrorInitFunc, error_type_copy: ErrorCopyFunc, error_type_clear: ErrorClearFunc): Quark;
+		/**
+		 * This function registers an extended #GError domain.
+		 * 
+		 * #error_type_name should not be freed. #error_type_private_size must
+		 * be greater than 0.
+		 * 
+		 * #error_type_init receives an initialized #GError and should then initialize
+		 * the private data.
+		 * 
+		 * #error_type_copy is a function that receives both original and a copy
+		 * #GError and should copy the fields of the private error data. The standard
+		 * #GError fields are already handled.
+		 * 
+		 * #error_type_clear receives the pointer to the error, and it should free the
+		 * fields of the private error data. It should not free the struct itself though.
+		 * 
+		 * Normally, it is better to use {@link G.DEFINE_EXTENDED_ERROR}, as it
+		 * already takes care of passing valid information to this function.
+		 * @param error_type_name static string to create a #GQuark from
+		 * @param error_type_private_size size of the private error data in bytes
+		 * @param error_type_init function initializing fields of the private error data
+		 * @param error_type_copy function copying fields of the private error data
+		 * @param error_type_clear function freeing fields of the private error data
+		 * @returns #GQuark representing the error domain
+		 */
+		public static domain_register_static(error_type_name: string, error_type_private_size: number, error_type_init: ErrorInitFunc, error_type_copy: ErrorCopyFunc, error_type_clear: ErrorClearFunc): Quark;
+		/**
 		 * error domain, e.g. #G_FILE_ERROR
 		 */
 		public domain: Quark;
@@ -2615,6 +3251,352 @@ declare namespace imports.gi.GLib {
 	interface HashTable {}
 	class HashTable {
 		public constructor(options?: Partial<HashTableInitOptions>);
+		/**
+		 * This is a convenience function for using a #GHashTable as a set.  It
+		 * is equivalent to calling {@link G.hash_table_replace} with #key as both the
+		 * key and the value.
+		 * 
+		 * In particular, this means that if #key already exists in the hash table, then
+		 * the old copy of #key in the hash table is freed and #key replaces it in the
+		 * table.
+		 * 
+		 * When a hash table only ever contains keys that have themselves as the
+		 * corresponding value it is able to be stored more efficiently.  See
+		 * the discussion in the section description.
+		 * 
+		 * Starting from GLib 2.40, this function returns a boolean value to
+		 * indicate whether the newly added value was already in the hash table
+		 * or not.
+		 * @param hash_table a #GHashTable
+		 * @param key a key to insert
+		 * @returns %TRUE if the key did not exist yet
+		 */
+		public static add(hash_table: GLib.HashTable, key: any | null): boolean;
+		/**
+		 * Checks if #key is in #hash_table.
+		 * @param hash_table a #GHashTable
+		 * @param key a key to check
+		 * @returns %TRUE if #key is in #hash_table, %FALSE otherwise.
+		 */
+		public static contains(hash_table: GLib.HashTable, key: any | null): boolean;
+		/**
+		 * Destroys all keys and values in the #GHashTable and decrements its
+		 * reference count by 1. If keys and/or values are dynamically allocated,
+		 * you should either free them first or create the #GHashTable with destroy
+		 * notifiers using {@link G.hash_table_new_full}. In the latter case the destroy
+		 * functions you supplied will be called on all keys and values during the
+		 * destruction phase.
+		 * @param hash_table a #GHashTable
+		 */
+		public static destroy(hash_table: GLib.HashTable): void;
+		/**
+		 * Calls the given function for key/value pairs in the #GHashTable
+		 * until #predicate returns %TRUE. The function is passed the key
+		 * and value of each pair, and the given #user_data parameter. The
+		 * hash table may not be modified while iterating over it (you can't
+		 * add/remove items).
+		 * 
+		 * Note, that hash tables are really only optimized for forward
+		 * lookups, i.e. {@link G.hash_table_lookup}. So code that frequently issues
+		 * g_hash_table_find() or g_hash_table_foreach() (e.g. in the order of
+		 * once per every entry in a hash table) should probably be reworked
+		 * to use additional or different data structures for reverse lookups
+		 * (keep in mind that an O(n) find/foreach operation issued for all n
+		 * values in a hash table ends up needing O(n*n) operations).
+		 * @param hash_table a #GHashTable
+		 * @param predicate function to test the key/value pairs for a certain property
+		 * @returns The value of the first key/value pair is returned,
+		 *     for which #predicate evaluates to %TRUE. If no pair with the
+		 *     requested property is found, %NULL is returned.
+		 */
+		public static find(hash_table: GLib.HashTable, predicate: HRFunc): any | null;
+		/**
+		 * Calls the given function for each of the key/value pairs in the
+		 * #GHashTable.  The function is passed the key and value of each
+		 * pair, and the given #user_data parameter.  The hash table may not
+		 * be modified while iterating over it (you can't add/remove
+		 * items). To remove all items matching a predicate, use
+		 * {@link G.hash_table_foreach_remove}.
+		 * 
+		 * The order in which g_hash_table_foreach() iterates over the keys/values in
+		 * the hash table is not defined.
+		 * 
+		 * See g_hash_table_find() for performance caveats for linear
+		 * order searches in contrast to g_hash_table_lookup().
+		 * @param hash_table a #GHashTable
+		 * @param func the function to call for each key/value pair
+		 */
+		public static foreach(hash_table: GLib.HashTable, func: HFunc): void;
+		/**
+		 * Calls the given function for each key/value pair in the
+		 * #GHashTable. If the function returns %TRUE, then the key/value
+		 * pair is removed from the #GHashTable. If you supplied key or
+		 * value destroy functions when creating the #GHashTable, they are
+		 * used to free the memory allocated for the removed keys and values.
+		 * 
+		 * See #GHashTableIter for an alternative way to loop over the
+		 * key/value pairs in the hash table.
+		 * @param hash_table a #GHashTable
+		 * @param func the function to call for each key/value pair
+		 * @returns the number of key/value pairs removed
+		 */
+		public static foreach_remove(hash_table: GLib.HashTable, func: HRFunc): number;
+		/**
+		 * Calls the given function for each key/value pair in the
+		 * #GHashTable. If the function returns %TRUE, then the key/value
+		 * pair is removed from the #GHashTable, but no key or value
+		 * destroy functions are called.
+		 * 
+		 * See #GHashTableIter for an alternative way to loop over the
+		 * key/value pairs in the hash table.
+		 * @param hash_table a #GHashTable
+		 * @param func the function to call for each key/value pair
+		 * @returns the number of key/value pairs removed.
+		 */
+		public static foreach_steal(hash_table: GLib.HashTable, func: HRFunc): number;
+		/**
+		 * Retrieves every key inside #hash_table. The returned data is valid
+		 * until changes to the hash release those keys.
+		 * 
+		 * This iterates over every entry in the hash table to build its return value.
+		 * To iterate over the entries in a #GHashTable more efficiently, use a
+		 * #GHashTableIter.
+		 * @param hash_table a #GHashTable
+		 * @returns a #GList containing all the keys
+		 *     inside the hash table. The content of the list is owned by the
+		 *     hash table and should not be modified or freed. Use {@link G.list_free}
+		 *     when done using the list.
+		 */
+		public static get_keys(hash_table: GLib.HashTable): GLib.List;
+		/**
+		 * Retrieves every key inside #hash_table, as an array.
+		 * 
+		 * The returned array is %NULL-terminated but may contain %NULL as a
+		 * key.  Use #length to determine the true length if it's possible that
+		 * %NULL was used as the value for a key.
+		 * 
+		 * Note: in the common case of a string-keyed #GHashTable, the return
+		 * value of this function can be conveniently cast to (const gchar **).
+		 * 
+		 * This iterates over every entry in the hash table to build its return value.
+		 * To iterate over the entries in a #GHashTable more efficiently, use a
+		 * #GHashTableIter.
+		 * 
+		 * You should always free the return result with {@link G.free}.  In the
+		 * above-mentioned case of a string-keyed hash table, it may be
+		 * appropriate to use g_strfreev() if you call g_hash_table_steal_all()
+		 * first to transfer ownership of the keys.
+		 * @param hash_table a #GHashTable
+		 * @returns a
+		 *   %NULL-terminated array containing each key from the table.
+		 * 
+		 * the length of the returned array
+		 */
+		public static get_keys_as_array(hash_table: GLib.HashTable): [ any[], number | null ];
+		/**
+		 * Retrieves every value inside #hash_table. The returned data
+		 * is valid until #hash_table is modified.
+		 * 
+		 * This iterates over every entry in the hash table to build its return value.
+		 * To iterate over the entries in a #GHashTable more efficiently, use a
+		 * #GHashTableIter.
+		 * @param hash_table a #GHashTable
+		 * @returns a #GList containing all the values
+		 *     inside the hash table. The content of the list is owned by the
+		 *     hash table and should not be modified or freed. Use {@link G.list_free}
+		 *     when done using the list.
+		 */
+		public static get_values(hash_table: GLib.HashTable): GLib.List;
+		/**
+		 * Inserts a new key and value into a #GHashTable.
+		 * 
+		 * If the key already exists in the #GHashTable its current
+		 * value is replaced with the new value. If you supplied a
+		 * #value_destroy_func when creating the #GHashTable, the old
+		 * value is freed using that function. If you supplied a
+		 * #key_destroy_func when creating the #GHashTable, the passed
+		 * key is freed using that function.
+		 * 
+		 * Starting from GLib 2.40, this function returns a boolean value to
+		 * indicate whether the newly added value was already in the hash table
+		 * or not.
+		 * @param hash_table a #GHashTable
+		 * @param key a key to insert
+		 * @param value the value to associate with the key
+		 * @returns %TRUE if the key did not exist yet
+		 */
+		public static insert(hash_table: GLib.HashTable, key: any | null, value: any | null): boolean;
+		/**
+		 * Looks up a key in a #GHashTable. Note that this function cannot
+		 * distinguish between a key that is not present and one which is present
+		 * and has the value %NULL. If you need this distinction, use
+		 * {@link G.hash_table_lookup_extended}.
+		 * @param hash_table a #GHashTable
+		 * @param key the key to look up
+		 * @returns the associated value, or %NULL if the key is not found
+		 */
+		public static lookup(hash_table: GLib.HashTable, key: any | null): any | null;
+		/**
+		 * Looks up a key in the #GHashTable, returning the original key and the
+		 * associated value and a #gboolean which is %TRUE if the key was found. This
+		 * is useful if you need to free the memory allocated for the original key,
+		 * for example before calling {@link G.hash_table_remove}.
+		 * 
+		 * You can actually pass %NULL for #lookup_key to test
+		 * whether the %NULL key exists, provided the hash and equal functions
+		 * of #hash_table are %NULL-safe.
+		 * @param hash_table a #GHashTable
+		 * @param lookup_key the key to look up
+		 * @returns %TRUE if the key was found in the #GHashTable
+		 * 
+		 * return location for the original key
+		 * 
+		 * return location for the value associated
+		 * with the key
+		 */
+		public static lookup_extended(hash_table: GLib.HashTable, lookup_key: any | null): [ boolean, any | null, any | null ];
+		/**
+		 * Creates a new #GHashTable with a reference count of 1.
+		 * 
+		 * Hash values returned by #hash_func are used to determine where keys
+		 * are stored within the #GHashTable data structure. The {@link G.direct_hash},
+		 * g_int_hash(), g_int64_hash(), g_double_hash() and g_str_hash()
+		 * functions are provided for some common types of keys.
+		 * If #hash_func is %NULL, g_direct_hash() is used.
+		 * 
+		 * #key_equal_func is used when looking up keys in the #GHashTable.
+		 * The g_direct_equal(), g_int_equal(), g_int64_equal(), g_double_equal()
+		 * and g_str_equal() functions are provided for the most common types
+		 * of keys. If #key_equal_func is %NULL, keys are compared directly in
+		 * a similar fashion to g_direct_equal(), but without the overhead of
+		 * a function call. #key_equal_func is called with the key from the hash table
+		 * as its first parameter, and the user-provided key to check against as
+		 * its second.
+		 * @param hash_func a function to create a hash value from a key
+		 * @param key_equal_func a function to check two keys for equality
+		 * @returns a new #GHashTable
+		 */
+		public static new(hash_func: HashFunc, key_equal_func: EqualFunc): GLib.HashTable;
+		/**
+		 * Creates a new #GHashTable like {@link G.hash_table_new} with a reference
+		 * count of 1 and allows to specify functions to free the memory
+		 * allocated for the key and value that get called when removing the
+		 * entry from the #GHashTable.
+		 * 
+		 * Since version 2.42 it is permissible for destroy notify functions to
+		 * recursively remove further items from the hash table. This is only
+		 * permissible if the application still holds a reference to the hash table.
+		 * This means that you may need to ensure that the hash table is empty by
+		 * calling g_hash_table_remove_all() before releasing the last reference using
+		 * g_hash_table_unref().
+		 * @param hash_func a function to create a hash value from a key
+		 * @param key_equal_func a function to check two keys for equality
+		 * @param key_destroy_func a function to free the memory allocated for the key
+		 *     used when removing the entry from the #GHashTable, or %NULL
+		 *     if you don't want to supply such a function.
+		 * @param value_destroy_func a function to free the memory allocated for the
+		 *     value used when removing the entry from the #GHashTable, or %NULL
+		 *     if you don't want to supply such a function.
+		 * @returns a new #GHashTable
+		 */
+		public static new_full(hash_func: HashFunc, key_equal_func: EqualFunc, key_destroy_func: DestroyNotify | null, value_destroy_func: DestroyNotify | null): GLib.HashTable;
+		/**
+		 * Atomically increments the reference count of #hash_table by one.
+		 * This function is MT-safe and may be called from any thread.
+		 * @param hash_table a valid #GHashTable
+		 * @returns the passed in #GHashTable
+		 */
+		public static ref(hash_table: GLib.HashTable): GLib.HashTable;
+		/**
+		 * Removes a key and its associated value from a #GHashTable.
+		 * 
+		 * If the #GHashTable was created using {@link G.hash_table_new_full}, the
+		 * key and value are freed using the supplied destroy functions, otherwise
+		 * you have to make sure that any dynamically allocated values are freed
+		 * yourself.
+		 * @param hash_table a #GHashTable
+		 * @param key the key to remove
+		 * @returns %TRUE if the key was found and removed from the #GHashTable
+		 */
+		public static remove(hash_table: GLib.HashTable, key: any | null): boolean;
+		/**
+		 * Removes all keys and their associated values from a #GHashTable.
+		 * 
+		 * If the #GHashTable was created using {@link G.hash_table_new_full},
+		 * the keys and values are freed using the supplied destroy functions,
+		 * otherwise you have to make sure that any dynamically allocated
+		 * values are freed yourself.
+		 * @param hash_table a #GHashTable
+		 */
+		public static remove_all(hash_table: GLib.HashTable): void;
+		/**
+		 * Inserts a new key and value into a #GHashTable similar to
+		 * {@link G.hash_table_insert}. The difference is that if the key
+		 * already exists in the #GHashTable, it gets replaced by the
+		 * new key. If you supplied a #value_destroy_func when creating
+		 * the #GHashTable, the old value is freed using that function.
+		 * If you supplied a #key_destroy_func when creating the
+		 * #GHashTable, the old key is freed using that function.
+		 * 
+		 * Starting from GLib 2.40, this function returns a boolean value to
+		 * indicate whether the newly added value was already in the hash table
+		 * or not.
+		 * @param hash_table a #GHashTable
+		 * @param key a key to insert
+		 * @param value the value to associate with the key
+		 * @returns %TRUE if the key did not exist yet
+		 */
+		public static replace(hash_table: GLib.HashTable, key: any | null, value: any | null): boolean;
+		/**
+		 * Returns the number of elements contained in the #GHashTable.
+		 * @param hash_table a #GHashTable
+		 * @returns the number of key/value pairs in the #GHashTable.
+		 */
+		public static size(hash_table: GLib.HashTable): number;
+		/**
+		 * Removes a key and its associated value from a #GHashTable without
+		 * calling the key and value destroy functions.
+		 * @param hash_table a #GHashTable
+		 * @param key the key to remove
+		 * @returns %TRUE if the key was found and removed from the #GHashTable
+		 */
+		public static steal(hash_table: GLib.HashTable, key: any | null): boolean;
+		/**
+		 * Removes all keys and their associated values from a #GHashTable
+		 * without calling the key and value destroy functions.
+		 * @param hash_table a #GHashTable
+		 */
+		public static steal_all(hash_table: GLib.HashTable): void;
+		/**
+		 * Looks up a key in the #GHashTable, stealing the original key and the
+		 * associated value and returning %TRUE if the key was found. If the key was
+		 * not found, %FALSE is returned.
+		 * 
+		 * If found, the stolen key and value are removed from the hash table without
+		 * calling the key and value destroy functions, and ownership is transferred to
+		 * the caller of this method; as with {@link G.hash_table_steal}.
+		 * 
+		 * You can pass %NULL for #lookup_key, provided the hash and equal functions
+		 * of #hash_table are %NULL-safe.
+		 * @param hash_table a #GHashTable
+		 * @param lookup_key the key to look up
+		 * @returns %TRUE if the key was found in the #GHashTable
+		 * 
+		 * return location for the
+		 *    original key
+		 * 
+		 * return location
+		 *    for the value associated with the key
+		 */
+		public static steal_extended(hash_table: GLib.HashTable, lookup_key: any | null): [ boolean, any | null, any | null ];
+		/**
+		 * Atomically decrements the reference count of #hash_table by one.
+		 * If the reference count drops to 0, all keys and values will be
+		 * destroyed, and all memory allocated by the hash table is released.
+		 * This function is MT-safe and may be called from any thread.
+		 * @param hash_table a valid #GHashTable
+		 */
+		public static unref(hash_table: GLib.HashTable): void;
 	}
 
 	export interface HashTableIterInitOptions {}
@@ -2724,6 +3706,30 @@ declare namespace imports.gi.GLib {
 	class Hmac {
 		public constructor(options?: Partial<HmacInitOptions>);
 		/**
+		 * Creates a new #GHmac, using the digest algorithm #digest_type.
+		 * If the #digest_type is not known, %NULL is returned.
+		 * A #GHmac can be used to compute the HMAC of a key and an
+		 * arbitrary binary blob, using different hashing algorithms.
+		 * 
+		 * A #GHmac works by feeding a binary blob through {@link G.hmac_update}
+		 * until the data is complete; the digest can then be extracted
+		 * using g_hmac_get_string(), which will return the checksum as a
+		 * hexadecimal string; or g_hmac_get_digest(), which will return a
+		 * array of raw bytes. Once either g_hmac_get_string() or
+		 * g_hmac_get_digest() have been called on a #GHmac, the HMAC
+		 * will be closed and it won't be possible to call g_hmac_update()
+		 * on it anymore.
+		 * 
+		 * Support for digests of type %G_CHECKSUM_SHA512 has been added in GLib 2.42.
+		 * Support for %G_CHECKSUM_SHA384 was added in GLib 2.52.
+		 * @param digest_type the desired type of digest
+		 * @param key the key for the HMAC
+		 * @param key_len the length of the keys
+		 * @returns the newly created #GHmac, or %NULL.
+		 *   Use {@link G.hmac_unref} to free the memory allocated by it.
+		 */
+		public static new(digest_type: ChecksumType, key: number[], key_len: number): Hmac;
+		/**
 		 * Copies a #GHmac. If #hmac has been closed, by calling
 		 * {@link G.hmac_get_string} or g_hmac_get_digest(), the copied
 		 * HMAC will be closed as well.
@@ -2786,6 +3792,143 @@ declare namespace imports.gi.GLib {
 	interface Hook {}
 	class Hook {
 		public constructor(options?: Partial<HookInitOptions>);
+		/**
+		 * Allocates space for a #GHook and initializes it.
+		 * @param hook_list a #GHookList
+		 * @returns a new #GHook
+		 */
+		public static alloc(hook_list: HookList): Hook;
+		/**
+		 * Destroys a #GHook, given its ID.
+		 * @param hook_list a #GHookList
+		 * @param hook_id a hook ID
+		 * @returns %TRUE if the #GHook was found in the #GHookList and destroyed
+		 */
+		public static destroy(hook_list: HookList, hook_id: number): boolean;
+		/**
+		 * Removes one #GHook from a #GHookList, marking it
+		 * inactive and calling {@link G.hook_unref} on it.
+		 * @param hook_list a #GHookList
+		 * @param hook the #GHook to remove
+		 */
+		public static destroy_link(hook_list: HookList, hook: Hook): void;
+		/**
+		 * Finds a #GHook in a #GHookList using the given function to
+		 * test for a match.
+		 * @param hook_list a #GHookList
+		 * @param need_valids %TRUE if #GHook elements which have been destroyed
+		 *     should be skipped
+		 * @param func the function to call for each #GHook, which should return
+		 *     %TRUE when the #GHook has been found
+		 * @param data the data to pass to #func
+		 * @returns the found #GHook or %NULL if no matching #GHook is found
+		 */
+		public static find(hook_list: HookList, need_valids: boolean, func: HookFindFunc, data: any | null): Hook;
+		/**
+		 * Finds a #GHook in a #GHookList with the given data.
+		 * @param hook_list a #GHookList
+		 * @param need_valids %TRUE if #GHook elements which have been destroyed
+		 *     should be skipped
+		 * @param data the data to find
+		 * @returns the #GHook with the given #data or %NULL if no matching
+		 *     #GHook is found
+		 */
+		public static find_data(hook_list: HookList, need_valids: boolean, data: any | null): Hook;
+		/**
+		 * Finds a #GHook in a #GHookList with the given function.
+		 * @param hook_list a #GHookList
+		 * @param need_valids %TRUE if #GHook elements which have been destroyed
+		 *     should be skipped
+		 * @param func the function to find
+		 * @returns the #GHook with the given #func or %NULL if no matching
+		 *     #GHook is found
+		 */
+		public static find_func(hook_list: HookList, need_valids: boolean, func: any | null): Hook;
+		/**
+		 * Finds a #GHook in a #GHookList with the given function and data.
+		 * @param hook_list a #GHookList
+		 * @param need_valids %TRUE if #GHook elements which have been destroyed
+		 *     should be skipped
+		 * @param func the function to find
+		 * @param data the data to find
+		 * @returns the #GHook with the given #func and #data or %NULL if
+		 *     no matching #GHook is found
+		 */
+		public static find_func_data(hook_list: HookList, need_valids: boolean, func: any, data: any | null): Hook;
+		/**
+		 * Returns the first #GHook in a #GHookList which has not been destroyed.
+		 * The reference count for the #GHook is incremented, so you must call
+		 * {@link G.hook_unref} to restore it when no longer needed. (Or call
+		 * g_hook_next_valid() if you are stepping through the #GHookList.)
+		 * @param hook_list a #GHookList
+		 * @param may_be_in_call %TRUE if hooks which are currently running
+		 *     (e.g. in another thread) are considered valid. If set to %FALSE,
+		 *     these are skipped
+		 * @returns the first valid #GHook, or %NULL if none are valid
+		 */
+		public static first_valid(hook_list: HookList, may_be_in_call: boolean): Hook;
+		/**
+		 * Calls the #GHookList #finalize_hook function if it exists,
+		 * and frees the memory allocated for the #GHook.
+		 * @param hook_list a #GHookList
+		 * @param hook the #GHook to free
+		 */
+		public static free(hook_list: HookList, hook: Hook): void;
+		/**
+		 * Returns the #GHook with the given id, or %NULL if it is not found.
+		 * @param hook_list a #GHookList
+		 * @param hook_id a hook id
+		 * @returns the #GHook with the given id, or %NULL if it is not found
+		 */
+		public static get(hook_list: HookList, hook_id: number): Hook;
+		/**
+		 * Inserts a #GHook into a #GHookList, before a given #GHook.
+		 * @param hook_list a #GHookList
+		 * @param sibling the #GHook to insert the new #GHook before
+		 * @param hook the #GHook to insert
+		 */
+		public static insert_before(hook_list: HookList, sibling: Hook | null, hook: Hook): void;
+		/**
+		 * Inserts a #GHook into a #GHookList, sorted by the given function.
+		 * @param hook_list a #GHookList
+		 * @param hook the #GHook to insert
+		 * @param func the comparison function used to sort the #GHook elements
+		 */
+		public static insert_sorted(hook_list: HookList, hook: Hook, func: HookCompareFunc): void;
+		/**
+		 * Returns the next #GHook in a #GHookList which has not been destroyed.
+		 * The reference count for the #GHook is incremented, so you must call
+		 * {@link G.hook_unref} to restore it when no longer needed. (Or continue to call
+		 * g_hook_next_valid() until %NULL is returned.)
+		 * @param hook_list a #GHookList
+		 * @param hook the current #GHook
+		 * @param may_be_in_call %TRUE if hooks which are currently running
+		 *     (e.g. in another thread) are considered valid. If set to %FALSE,
+		 *     these are skipped
+		 * @returns the next valid #GHook, or %NULL if none are valid
+		 */
+		public static next_valid(hook_list: HookList, hook: Hook, may_be_in_call: boolean): Hook;
+		/**
+		 * Prepends a #GHook on the start of a #GHookList.
+		 * @param hook_list a #GHookList
+		 * @param hook the #GHook to add to the start of #hook_list
+		 */
+		public static prepend(hook_list: HookList, hook: Hook): void;
+		/**
+		 * Increments the reference count for a #GHook.
+		 * @param hook_list a #GHookList
+		 * @param hook the #GHook to increment the reference count of
+		 * @returns the #hook that was passed in (since 2.6)
+		 */
+		public static ref(hook_list: HookList, hook: Hook): Hook;
+		/**
+		 * Decrements the reference count of a #GHook.
+		 * If the reference count falls to 0, the #GHook is removed
+		 * from the #GHookList and {@link G.hook_free} is called to free it.
+		 * @param hook_list a #GHookList
+		 * @param hook the #GHook to unref
+		 */
+		public static unref(hook_list: HookList, hook: Hook): void;
 		/**
 		 * data which is passed to func when this hook is invoked
 		 */
@@ -2922,6 +4065,19 @@ declare namespace imports.gi.GLib {
 	class IConv {
 		public constructor(options?: Partial<IConvInitOptions>);
 		/**
+		 * Same as the standard UNIX routine {@link Iconv.open}, but
+		 * may be implemented via libiconv on UNIX flavors that lack
+		 * a native implementation.
+		 * 
+		 * GLib provides g_convert() and g_locale_to_utf8() which are likely
+		 * more convenient than the raw iconv wrappers.
+		 * @param to_codeset destination codeset
+		 * @param from_codeset source codeset
+		 * @returns a "conversion descriptor", or (GIConv)-1 if
+		 *  opening the converter failed.
+		 */
+		public static open(to_codeset: string, from_codeset: string): IConv;
+		/**
 		 * Same as the standard UNIX routine iconv(), but
 		 * may be implemented via libiconv on UNIX flavors that lack
 		 * a native implementation.
@@ -3004,6 +4160,14 @@ declare namespace imports.gi.GLib {
 		 * @returns a new #GIOChannel.
 		 */
 		public static unix_new(fd: number): IOChannel;
+		/**
+		 * Converts an `errno` error number to a #GIOChannelError.
+		 * @param en an `errno` error number, e.g. `EINVAL`
+		 * @returns a #GIOChannelError error number, e.g.
+		 *      %G_IO_CHANNEL_ERROR_INVAL.
+		 */
+		public static error_from_errno(en: number): IOChannelError;
+		public static error_quark(): Quark;
 		public readonly ref_count: number;
 		public readonly funcs: IOFuncs;
 		public readonly encoding: string;
@@ -3397,6 +4561,7 @@ declare namespace imports.gi.GLib {
 		 * @returns an empty #GKeyFile.
 		 */
 		public static new(): KeyFile;
+		public static error_quark(): Quark;
 		/**
 		 * Clears all keys and groups from #key_file, and decreases the
 		 * reference count by 1. If the reference count reaches zero,
@@ -3968,6 +5133,404 @@ declare namespace imports.gi.GLib {
 	class List<T = any> {
 		public constructor(options?: Partial<ListInitOptions>);
 		/**
+		 * Allocates space for one #GList element. It is called by
+		 * {@link G.list_append}, g_list_prepend(), g_list_insert() and
+		 * g_list_insert_sorted() and so is rarely used on its own.
+		 * @returns a pointer to the newly-allocated #GList element
+		 */
+		public static alloc<T>(): GLib.List<T>;
+		/**
+		 * Adds a new element on to the end of the list.
+		 * 
+		 * Note that the return value is the new start of the list,
+		 * if #list was empty; make sure you store the new value.
+		 * 
+		 * {@link G.list_append} has to traverse the entire list to find the end,
+		 * which is inefficient when adding multiple elements. A common idiom
+		 * to avoid the inefficiency is to use g_list_prepend() and reverse
+		 * the list with g_list_reverse() when all elements have been added.
+		 * 
+		 * |[<!-- language="C" -->
+		 * // Notice that these are initialized to the empty list.
+		 * GList *string_list = NULL, *number_list = NULL;
+		 * 
+		 * // This is a list of strings.
+		 * string_list = g_list_append (string_list, "first");
+		 * string_list = g_list_append (string_list, "second");
+		 * 
+		 * // This is a list of integers.
+		 * number_list = g_list_append (number_list, GINT_TO_POINTER (27));
+		 * number_list = g_list_append (number_list, GINT_TO_POINTER (14));
+		 * ]|
+		 * @param list a pointer to a #GList
+		 * @param data the data for the new element
+		 * @returns either #list or the new start of the #GList if #list was %NULL
+		 */
+		public static append<T>(list: GLib.List<T>, data: T | null): GLib.List<T>;
+		/**
+		 * Adds the second #GList onto the end of the first #GList.
+		 * Note that the elements of the second #GList are not copied.
+		 * They are used directly.
+		 * 
+		 * This function is for example used to move an element in the list.
+		 * The following example moves an element to the top of the list:
+		 * |[<!-- language="C" -->
+		 * list = g_list_remove_link (list, llink);
+		 * list = g_list_concat (llink, list);
+		 * ]|
+		 * @param list1 a #GList, this must point to the top of the list
+		 * @param list2 the #GList to add to the end of the first #GList,
+		 *     this must point  to the top of the list
+		 * @returns the start of the new #GList, which equals #list1 if not %NULL
+		 */
+		public static concat<T>(list1: GLib.List<T>, list2: GLib.List<T>): GLib.List<T>;
+		/**
+		 * Copies a #GList.
+		 * 
+		 * Note that this is a "shallow" copy. If the list elements
+		 * consist of pointers to data, the pointers are copied but
+		 * the actual data is not. See {@link G.list_copy_deep} if you need
+		 * to copy the data as well.
+		 * @param list a #GList, this must point to the top of the list
+		 * @returns the start of the new list that holds the same data as #list
+		 */
+		public static copy<T>(list: GLib.List<T>): GLib.List<T>;
+		/**
+		 * Makes a full (deep) copy of a #GList.
+		 * 
+		 * In contrast with {@link G.list_copy}, this function uses #func to make
+		 * a copy of each list element, in addition to copying the list
+		 * container itself.
+		 * 
+		 * #func, as a #GCopyFunc, takes two arguments, the data to be copied
+		 * and a #user_data pointer. On common processor architectures, it's safe to
+		 * pass %NULL as #user_data if the copy function takes only one argument. You
+		 * may get compiler warnings from this though if compiling with GCC’s
+		 * `-Wcast-function-type` warning.
+		 * 
+		 * For instance, if #list holds a list of GObjects, you can do:
+		 * |[<!-- language="C" -->
+		 * another_list = g_list_copy_deep (list, (GCopyFunc) g_object_ref, NULL);
+		 * ]|
+		 * 
+		 * And, to entirely free the new list, you could do:
+		 * |[<!-- language="C" -->
+		 * g_list_free_full (another_list, g_object_unref);
+		 * ]|
+		 * @param list a #GList, this must point to the top of the list
+		 * @param func a copy function used to copy every element in the list
+		 * @returns the start of the new list that holds a full copy of #list,
+		 *     use {@link G.list_free_full} to free it
+		 */
+		public static copy_deep<T, K>(list: GLib.List<T>, func: CopyFunc<T, K>): GLib.List<K>;
+		/**
+		 * Removes the node link_ from the list and frees it.
+		 * Compare this to {@link G.list_remove_link} which removes the node
+		 * without freeing it.
+		 * @param list a #GList, this must point to the top of the list
+		 * @param link_ node to delete from #list
+		 * @returns the (possibly changed) start of the #GList
+		 */
+		public static delete_link<T>(list: GLib.List<T>, link_: GLib.List<T>): GLib.List<T>;
+		/**
+		 * Finds the element in a #GList which contains the given data.
+		 * @param list a #GList, this must point to the top of the list
+		 * @param data the element data to find
+		 * @returns the found #GList element, or %NULL if it is not found
+		 */
+		public static find<T>(list: GLib.List<T>, data: T | null): GLib.List<T> | null;
+		/**
+		 * Finds an element in a #GList, using a supplied function to
+		 * find the desired element. It iterates over the list, calling
+		 * the given function which should return 0 when the desired
+		 * element is found. The function takes two #gconstpointer arguments,
+		 * the #GList element's data as the first argument and the
+		 * given user data.
+		 * @param list a #GList, this must point to the top of the list
+		 * @param data user data passed to the function
+		 * @param func the function to call for each element.
+		 *     It should return 0 when the desired element is found
+		 * @returns the found #GList element, or %NULL if it is not found
+		 */
+		public static find_custom<T, K>(list: GLib.List<T>, data: K | null, func: CompareFunc<T>): GLib.List<T> | null;
+		/**
+		 * Gets the first element in a #GList.
+		 * @param list any #GList element
+		 * @returns the first element in the #GList,
+		 *     or %NULL if the #GList has no elements
+		 */
+		public static first<T>(list: GLib.List<T>): GLib.List<T> | null;
+		/**
+		 * Calls a function for each element of a #GList.
+		 * 
+		 * It is safe for #func to remove the element from #list, but it must
+		 * not modify any part of the list after that element.
+		 * @param list a #GList, this must point to the top of the list
+		 * @param func the function to call with each element's data
+		 */
+		public static foreach<T>(list: GLib.List<T>, func: Func<T>): void;
+		/**
+		 * Frees all of the memory used by a #GList.
+		 * The freed elements are returned to the slice allocator.
+		 * 
+		 * If list elements contain dynamically-allocated memory, you should
+		 * either use {@link G.list_free_full} or free them manually first.
+		 * 
+		 * It can be combined with g_steal_pointer() to ensure the list head pointer
+		 * is not left dangling:
+		 * |[<!-- language="C" -->
+		 * GList *list_of_borrowed_things = …;  /<!-- -->* (transfer container) *<!-- -->/
+		 * g_list_free (g_steal_pointer (&list_of_borrowed_things));
+		 * ]|
+		 * @param list the first link of a #GList
+		 */
+		public static free(list: GLib.List): void;
+		/**
+		 * Frees one #GList element, but does not update links from the next and
+		 * previous elements in the list, so you should not call this function on an
+		 * element that is currently part of a list.
+		 * 
+		 * It is usually used after {@link G.list_remove_link}.
+		 * @param list a #GList element
+		 */
+		public static free_1(list: GLib.List): void;
+		/**
+		 * Convenience method, which frees all the memory used by a #GList,
+		 * and calls #free_func on every element's data.
+		 * 
+		 * #free_func must not modify the list (eg, by removing the freed
+		 * element from it).
+		 * 
+		 * It can be combined with {@link G.steal_pointer} to ensure the list head pointer
+		 * is not left dangling ­— this also has the nice property that the head pointer
+		 * is cleared before any of the list elements are freed, to prevent double frees
+		 * from #free_func:
+		 * |[<!-- language="C" -->
+		 * GList *list_of_owned_things = …;  /<!-- -->* (transfer full) (element-type GObject) *<!-- -->/
+		 * g_list_free_full (g_steal_pointer (&list_of_owned_things), g_object_unref);
+		 * ]|
+		 * @param list the first link of a #GList
+		 * @param free_func the function to be called to free each element's data
+		 */
+		public static free_full(list: GLib.List, free_func: DestroyNotify): void;
+		/**
+		 * Gets the position of the element containing
+		 * the given data (starting from 0).
+		 * @param list a #GList, this must point to the top of the list
+		 * @param data the data to find
+		 * @returns the index of the element containing the data,
+		 *     or -1 if the data is not found
+		 */
+		public static index<T>(list: GLib.List<T>, data: T | null): number;
+		/**
+		 * Inserts a new element into the list at the given position.
+		 * @param list a pointer to a #GList, this must point to the top of the list
+		 * @param data the data for the new element
+		 * @param position the position to insert the element. If this is
+		 *     negative, or is larger than the number of elements in the
+		 *     list, the new element is added on to the end of the list.
+		 * @returns the (possibly changed) start of the #GList
+		 */
+		public static insert<T>(list: GLib.List<T>, data: T | null, position: number): GLib.List<T>;
+		/**
+		 * Inserts a new element into the list before the given position.
+		 * @param list a pointer to a #GList, this must point to the top of the list
+		 * @param sibling the list element before which the new element
+		 *     is inserted or %NULL to insert at the end of the list
+		 * @param data the data for the new element
+		 * @returns the (possibly changed) start of the #GList
+		 */
+		public static insert_before<T>(list: GLib.List<T>, sibling: GLib.List<T> | null, data: T | null): GLib.List<T>;
+		/**
+		 * Inserts #link_ into the list before the given position.
+		 * @param list a pointer to a #GList, this must point to the top of the list
+		 * @param sibling the list element before which the new element
+		 *     is inserted or %NULL to insert at the end of the list
+		 * @param link_ the list element to be added, which must not be part of
+		 *     any other list
+		 * @returns the (possibly changed) start of the #GList
+		 */
+		public static insert_before_link<T>(list: GLib.List<T>, sibling: GLib.List<T> | null, link_: GLib.List<T>): GLib.List<T>;
+		/**
+		 * Inserts a new element into the list, using the given comparison
+		 * function to determine its position.
+		 * 
+		 * If you are adding many new elements to a list, and the number of
+		 * new elements is much larger than the length of the list, use
+		 * {@link G.list_prepend} to add the new items and sort the list afterwards
+		 * with g_list_sort().
+		 * @param list a pointer to a #GList, this must point to the top of the
+		 *     already sorted list
+		 * @param data the data for the new element
+		 * @param func the function to compare elements in the list. It should
+		 *     return a number > 0 if the first parameter comes after the
+		 *     second parameter in the sort order.
+		 * @returns the (possibly changed) start of the #GList
+		 */
+		public static insert_sorted<T>(list: GLib.List<T>, data: T | null, func: CompareFunc<T>): GLib.List<T>;
+		/**
+		 * Inserts a new element into the list, using the given comparison
+		 * function to determine its position.
+		 * 
+		 * If you are adding many new elements to a list, and the number of
+		 * new elements is much larger than the length of the list, use
+		 * {@link G.list_prepend} to add the new items and sort the list afterwards
+		 * with g_list_sort().
+		 * @param list a pointer to a #GList, this must point to the top of the
+		 *     already sorted list
+		 * @param data the data for the new element
+		 * @param func the function to compare elements in the list. It should
+		 *     return a number > 0 if the first parameter  comes after the
+		 *     second parameter in the sort order.
+		 * @returns the (possibly changed) start of the #GList
+		 */
+		public static insert_sorted_with_data<T>(list: GLib.List<T>, data: T | null, func: CompareDataFunc<T>): GLib.List<T>;
+		/**
+		 * Gets the last element in a #GList.
+		 * @param list any #GList element
+		 * @returns the last element in the #GList,
+		 *     or %NULL if the #GList has no elements
+		 */
+		public static last<T>(list: GLib.List<T>): GLib.List<T> | null;
+		/**
+		 * Gets the number of elements in a #GList.
+		 * 
+		 * This function iterates over the whole list to count its elements.
+		 * Use a #GQueue instead of a GList if you regularly need the number
+		 * of items. To check whether the list is non-empty, it is faster to check
+		 * #list against %NULL.
+		 * @param list a #GList, this must point to the top of the list
+		 * @returns the number of elements in the #GList
+		 */
+		public static length(list: GLib.List): number;
+		/**
+		 * Gets the element at the given position in a #GList.
+		 * 
+		 * This iterates over the list until it reaches the #n-th position. If you
+		 * intend to iterate over every element, it is better to use a for-loop as
+		 * described in the #GList introduction.
+		 * @param list a #GList, this must point to the top of the list
+		 * @param n the position of the element, counting from 0
+		 * @returns the element, or %NULL if the position is off
+		 *     the end of the #GList
+		 */
+		public static nth<T>(list: GLib.List<T>, n: number): GLib.List<T> | null;
+		/**
+		 * Gets the data of the element at the given position.
+		 * 
+		 * This iterates over the list until it reaches the #n-th position. If you
+		 * intend to iterate over every element, it is better to use a for-loop as
+		 * described in the #GList introduction.
+		 * @param list a #GList, this must point to the top of the list
+		 * @param n the position of the element
+		 * @returns the element's data, or %NULL if the position
+		 *     is off the end of the #GList
+		 */
+		public static nth_data<T>(list: GLib.List<T>, n: number): T | null;
+		/**
+		 * Gets the element #n places before #list.
+		 * @param list a #GList
+		 * @param n the position of the element, counting from 0
+		 * @returns the element, or %NULL if the position is
+		 *     off the end of the #GList
+		 */
+		public static nth_prev<T>(list: GLib.List<T>, n: number): GLib.List<T> | null;
+		/**
+		 * Gets the position of the given element
+		 * in the #GList (starting from 0).
+		 * @param list a #GList, this must point to the top of the list
+		 * @param llink an element in the #GList
+		 * @returns the position of the element in the #GList,
+		 *     or -1 if the element is not found
+		 */
+		public static position<T>(list: GLib.List<T>, llink: GLib.List<T>): number;
+		/**
+		 * Prepends a new element on to the start of the list.
+		 * 
+		 * Note that the return value is the new start of the list,
+		 * which will have changed, so make sure you store the new value.
+		 * 
+		 * |[<!-- language="C" -->
+		 * // Notice that it is initialized to the empty list.
+		 * GList *list = NULL;
+		 * 
+		 * list = g_list_prepend (list, "last");
+		 * list = g_list_prepend (list, "first");
+		 * ]|
+		 * 
+		 * Do not use this function to prepend a new element to a different
+		 * element than the start of the list. Use {@link G.list_insert_before} instead.
+		 * @param list a pointer to a #GList, this must point to the top of the list
+		 * @param data the data for the new element
+		 * @returns a pointer to the newly prepended element, which is the new
+		 *     start of the #GList
+		 */
+		public static prepend<T>(list: GLib.List<T>, data: T | null): GLib.List<T>;
+		/**
+		 * Removes an element from a #GList.
+		 * If two elements contain the same data, only the first is removed.
+		 * If none of the elements contain the data, the #GList is unchanged.
+		 * @param list a #GList, this must point to the top of the list
+		 * @param data the data of the element to remove
+		 * @returns the (possibly changed) start of the #GList
+		 */
+		public static remove<T>(list: GLib.List<T>, data: T | null): GLib.List<T>;
+		/**
+		 * Removes all list nodes with data equal to #data.
+		 * Returns the new head of the list. Contrast with
+		 * {@link G.list_remove} which removes only the first node
+		 * matching the given data.
+		 * @param list a #GList, this must point to the top of the list
+		 * @param data data to remove
+		 * @returns the (possibly changed) start of the #GList
+		 */
+		public static remove_all<T>(list: GLib.List<T>, data: T | null): GLib.List<T>;
+		/**
+		 * Removes an element from a #GList, without freeing the element.
+		 * The removed element's prev and next links are set to %NULL, so
+		 * that it becomes a self-contained list with one element.
+		 * 
+		 * This function is for example used to move an element in the list
+		 * (see the example for {@link G.list_concat}) or to remove an element in
+		 * the list before freeing its data:
+		 * |[<!-- language="C" -->
+		 * list = g_list_remove_link (list, llink);
+		 * free_some_data_that_may_access_the_list_again (llink->data);
+		 * g_list_free (llink);
+		 * ]|
+		 * @param list a #GList, this must point to the top of the list
+		 * @param llink an element in the #GList
+		 * @returns the (possibly changed) start of the #GList
+		 */
+		public static remove_link<T>(list: GLib.List<T>, llink: GLib.List<T>): GLib.List<T>;
+		/**
+		 * Reverses a #GList.
+		 * It simply switches the next and prev pointers of each element.
+		 * @param list a #GList, this must point to the top of the list
+		 * @returns the start of the reversed #GList
+		 */
+		public static reverse<T>(list: GLib.List<T>): GLib.List<T>;
+		/**
+		 * Sorts a #GList using the given comparison function. The algorithm
+		 * used is a stable sort.
+		 * @param list a #GList, this must point to the top of the list
+		 * @param compare_func the comparison function used to sort the #GList.
+		 *     This function is passed the data from 2 elements of the #GList
+		 *     and should return 0 if they are equal, a negative value if the
+		 *     first element comes before the second, or a positive value if
+		 *     the first element comes after the second.
+		 * @returns the (possibly changed) start of the #GList
+		 */
+		public static sort<T>(list: GLib.List<T>, compare_func: CompareFunc<T>): GLib.List<T>;
+		/**
+		 * Like {@link G.list_sort}, but the comparison function accepts
+		 * a user data argument.
+		 * @param list a #GList, this must point to the top of the list
+		 * @param compare_func comparison function
+		 * @returns the (possibly changed) start of the #GList
+		 */
+		public static sort_with_data<T>(list: GLib.List<T>, compare_func: CompareDataFunc<T>): GLib.List<T>;
+		/**
 		 * holds the element's data, which can be a pointer to any kind
 		 *        of data, or any integer value using the
 		 *        [Type Conversion Macros][glib-Type-Conversion-Macros]
@@ -3976,11 +5539,11 @@ declare namespace imports.gi.GLib {
 		/**
 		 * contains the link to the next element in the list
 		 */
-		public next: GLib.List | null;
+		public next: GLib.List<T>;
 		/**
 		 * contains the link to the previous element in the list
 		 */
-		public prev: GLib.List | null;
+		public prev: GLib.List<T>;
 	}
 
 	export interface LogFieldInitOptions {}
@@ -4023,6 +5586,41 @@ declare namespace imports.gi.GLib {
 		 * @returns the new #GMainContext
 		 */
 		public static new(): MainContext;
+		/**
+		 * Returns the global default main context. This is the main context
+		 * used for main loop functions when a main loop is not explicitly
+		 * specified, and corresponds to the "main" main loop. See also
+		 * {@link G.main_context_get_thread_default}.
+		 * @returns the global default main context.
+		 */
+		public static default(): MainContext;
+		/**
+		 * Gets the thread-default #GMainContext for this thread. Asynchronous
+		 * operations that want to be able to be run in contexts other than
+		 * the default one should call this method or
+		 * {@link G.main_context_ref_thread_default} to get a #GMainContext to add
+		 * their #GSources to. (Note that even in single-threaded
+		 * programs applications may sometimes want to temporarily push a
+		 * non-default context, so it is not safe to assume that this will
+		 * always return %NULL if you are running in the default thread.)
+		 * 
+		 * If you need to hold a reference on the context, use
+		 * g_main_context_ref_thread_default() instead.
+		 * @returns the thread-default #GMainContext, or
+		 * %NULL if the thread-default context is the global default context.
+		 */
+		public static get_thread_default(): MainContext | null;
+		/**
+		 * Gets the thread-default #GMainContext for this thread, as with
+		 * {@link G.main_context_get_thread_default}, but also adds a reference to
+		 * it with g_main_context_ref(). In addition, unlike
+		 * g_main_context_get_thread_default(), if the thread-default context
+		 * is the global default context, this will return that #GMainContext
+		 * (with a ref added to it) rather than returning %NULL.
+		 * @returns the thread-default #GMainContext. Unref
+		 *     with {@link G.main_context_unref} when you are done with it.
+		 */
+		public static ref_thread_default(): MainContext;
 		/**
 		 * Tries to become the owner of the specified context.
 		 * If some other thread is the owner of the context,
@@ -5017,6 +6615,13 @@ declare namespace imports.gi.GLib {
 	class Node {
 		public constructor(options?: Partial<NodeInitOptions>);
 		/**
+		 * Creates a new #GNode containing the given data.
+		 * Used to create the first node in a tree.
+		 * @param data the data of the new node
+		 * @returns a new #GNode
+		 */
+		public static new(data: any | null): Node;
+		/**
 		 * contains the actual data of the node.
 		 */
 		public data: any;
@@ -5233,6 +6838,52 @@ declare namespace imports.gi.GLib {
 	class Once {
 		public constructor(options?: Partial<OnceInitOptions>);
 		/**
+		 * Function to be called when starting a critical initialization
+		 * section. The argument #location must point to a static
+		 * 0-initialized variable that will be set to a value other than 0 at
+		 * the end of the initialization section. In combination with
+		 * {@link G.once_init_leave} and the unique address #value_location, it can
+		 * be ensured that an initialization section will be executed only once
+		 * during a program's life time, and that concurrent threads are
+		 * blocked until initialization completed. To be used in constructs
+		 * like this:
+		 * 
+		 * |[<!-- language="C" -->
+		 *   static gsize initialization_value = 0;
+		 * 
+		 *   if (g_once_init_enter (&initialization_value))
+		 *     {
+		 *       gsize setup_value = 42; // initialization code here
+		 * 
+		 *       g_once_init_leave (&initialization_value, setup_value);
+		 *     }
+		 * 
+		 *   // use initialization_value here
+		 * ]|
+		 * 
+		 * While #location has a `volatile` qualifier, this is a historical artifact and
+		 * the pointer passed to it should not be `volatile`.
+		 * @param location location of a static initializable variable
+		 *    containing 0
+		 * @returns %TRUE if the initialization section should be entered,
+		 *     %FALSE and blocks otherwise
+		 */
+		public static init_enter(location: any): boolean;
+		/**
+		 * Counterpart to {@link G.once_init_enter}. Expects a location of a static
+		 * 0-initialized initialization variable, and an initialization value
+		 * other than 0. Sets the variable to the initialization value, and
+		 * releases concurrent threads blocking in g_once_init_enter() on this
+		 * initialization variable.
+		 * 
+		 * While #location has a `volatile` qualifier, this is a historical artifact and
+		 * the pointer passed to it should not be `volatile`.
+		 * @param location location of a static initializable variable
+		 *    containing 0
+		 * @param result new non-0 value for *#value_location
+		 */
+		public static init_leave(location: any, result: number): void;
+		/**
 		 * the status of the #GOnce
 		 */
 		public status: OnceStatus;
@@ -5253,6 +6904,33 @@ declare namespace imports.gi.GLib {
 	interface OptionContext {}
 	class OptionContext {
 		public constructor(options?: Partial<OptionContextInitOptions>);
+		/**
+		 * Creates a new option context.
+		 * 
+		 * The #parameter_string can serve multiple purposes. It can be used
+		 * to add descriptions for "rest" arguments, which are not parsed by
+		 * the #GOptionContext, typically something like "FILES" or
+		 * "FILE1 FILE2...". If you are using #G_OPTION_REMAINING for
+		 * collecting "rest" arguments, GLib handles this automatically by
+		 * using the #arg_description of the corresponding #GOptionEntry in
+		 * the usage summary.
+		 * 
+		 * Another usage is to give a short summary of the program
+		 * functionality, like " - frob the strings", which will be displayed
+		 * in the same line as the usage. For a longer description of the
+		 * program functionality that should be displayed as a paragraph
+		 * below the usage line, use {@link G.option_context_set_summary}.
+		 * 
+		 * Note that the #parameter_string is translated using the
+		 * function set with g_option_context_set_translate_func(), so
+		 * it should normally be passed untranslated.
+		 * @param parameter_string a string which is displayed in
+		 *    the first line of `--help` output, after the usage summary
+		 *    `programname [OPTION...]`
+		 * @returns a newly created #GOptionContext, which must be
+		 *    freed with {@link G.option_context_free} after use.
+		 */
+		public static new(parameter_string: string | null): OptionContext;
 		/**
 		 * Adds a #GOptionGroup to the #context, so that parsing with #context
 		 * will recognize the options in the group. Note that this will take
@@ -5790,6 +7468,439 @@ declare namespace imports.gi.GLib {
 	class PtrArray {
 		public constructor(options?: Partial<PtrArrayInitOptions>);
 		/**
+		 * Adds a pointer to the end of the pointer array. The array will grow
+		 * in size automatically if necessary.
+		 * @param array a #GPtrArray
+		 * @param data the pointer to add
+		 */
+		public static add(array: any[], data: any | null): void;
+		/**
+		 * Makes a full (deep) copy of a #GPtrArray.
+		 * 
+		 * #func, as a #GCopyFunc, takes two arguments, the data to be copied
+		 * and a #user_data pointer. On common processor architectures, it's safe to
+		 * pass %NULL as #user_data if the copy function takes only one argument. You
+		 * may get compiler warnings from this though if compiling with GCC’s
+		 * `-Wcast-function-type` warning.
+		 * 
+		 * If #func is %NULL, then only the pointers (and not what they are
+		 * pointing to) are copied to the new #GPtrArray.
+		 * 
+		 * The copy of #array will have the same #GDestroyNotify for its elements as
+		 * #array.
+		 * @param array #GPtrArray to duplicate
+		 * @param func a copy function used to copy every element in the array
+		 * @returns a deep copy of the initial #GPtrArray.
+		 */
+		public static copy(array: any[], func: CopyFunc | null): any[];
+		/**
+		 * Adds all pointers of #array to the end of the array #array_to_extend.
+		 * The array will grow in size automatically if needed. #array_to_extend is
+		 * modified in-place.
+		 * 
+		 * #func, as a #GCopyFunc, takes two arguments, the data to be copied
+		 * and a #user_data pointer. On common processor architectures, it's safe to
+		 * pass %NULL as #user_data if the copy function takes only one argument. You
+		 * may get compiler warnings from this though if compiling with GCC’s
+		 * `-Wcast-function-type` warning.
+		 * 
+		 * If #func is %NULL, then only the pointers (and not what they are
+		 * pointing to) are copied to the new #GPtrArray.
+		 * @param array_to_extend a #GPtrArray.
+		 * @param array a #GPtrArray to add to the end of #array_to_extend.
+		 * @param func a copy function used to copy every element in the array
+		 */
+		public static extend(array_to_extend: any[], array: any[], func: CopyFunc | null): void;
+		/**
+		 * Adds all the pointers in #array to the end of #array_to_extend, transferring
+		 * ownership of each element from #array to #array_to_extend and modifying
+		 * #array_to_extend in-place. #array is then freed.
+		 * 
+		 * As with {@link G.ptr_array_free}, #array will be destroyed if its reference count
+		 * is 1. If its reference count is higher, it will be decremented and the
+		 * length of #array set to zero.
+		 * @param array_to_extend a #GPtrArray.
+		 * @param array a #GPtrArray to add to the end of
+		 *     #array_to_extend.
+		 */
+		public static extend_and_steal(array_to_extend: any[], array: any[]): void;
+		/**
+		 * Checks whether #needle exists in #haystack. If the element is found, %TRUE is
+		 * returned and the element’s index is returned in #index_ (if non-%NULL).
+		 * Otherwise, %FALSE is returned and #index_ is undefined. If #needle exists
+		 * multiple times in #haystack, the index of the first instance is returned.
+		 * 
+		 * This does pointer comparisons only. If you want to use more complex equality
+		 * checks, such as string comparisons, use {@link G.ptr_array_find_with_equal_func}.
+		 * @param haystack pointer array to be searched
+		 * @param needle pointer to look for
+		 * @returns %TRUE if #needle is one of the elements of #haystack
+		 * 
+		 * return location for the index of
+		 *    the element, if found
+		 */
+		public static find(haystack: any[], needle: any | null): [ boolean, number | null ];
+		/**
+		 * Checks whether #needle exists in #haystack, using the given #equal_func.
+		 * If the element is found, %TRUE is returned and the element’s index is
+		 * returned in #index_ (if non-%NULL). Otherwise, %FALSE is returned and #index_
+		 * is undefined. If #needle exists multiple times in #haystack, the index of
+		 * the first instance is returned.
+		 * 
+		 * #equal_func is called with the element from the array as its first parameter,
+		 * and #needle as its second parameter. If #equal_func is %NULL, pointer
+		 * equality is used.
+		 * @param haystack pointer array to be searched
+		 * @param needle pointer to look for
+		 * @param equal_func the function to call for each element, which should
+		 *    return %TRUE when the desired element is found; or %NULL to use pointer
+		 *    equality
+		 * @returns %TRUE if #needle is one of the elements of #haystack
+		 * 
+		 * return location for the index of
+		 *    the element, if found
+		 */
+		public static find_with_equal_func(haystack: any[], needle: any | null, equal_func: EqualFunc | null): [ boolean, number | null ];
+		/**
+		 * Calls a function for each element of a #GPtrArray. #func must not
+		 * add elements to or remove elements from the array.
+		 * @param array a #GPtrArray
+		 * @param func the function to call for each array element
+		 */
+		public static foreach(array: any[], func: Func): void;
+		/**
+		 * Frees the memory allocated for the #GPtrArray. If #free_seg is %TRUE
+		 * it frees the memory block holding the elements as well. Pass %FALSE
+		 * if you want to free the #GPtrArray wrapper but preserve the
+		 * underlying array for use elsewhere. If the reference count of #array
+		 * is greater than one, the #GPtrArray wrapper is preserved but the
+		 * size of #array will be set to zero.
+		 * 
+		 * If array contents point to dynamically-allocated memory, they should
+		 * be freed separately if #free_seg is %TRUE and no #GDestroyNotify
+		 * function has been set for #array.
+		 * 
+		 * This function is not thread-safe. If using a #GPtrArray from multiple
+		 * threads, use only the atomic {@link G.ptr_array_ref} and g_ptr_array_unref()
+		 * functions.
+		 * @param array a #GPtrArray
+		 * @param free_seg if %TRUE the actual pointer array is freed as well
+		 * @returns the pointer array if #free_seg is
+		 *     %FALSE, otherwise %NULL. The pointer array should be freed using {@link G.free}.
+		 */
+		public static free(array: any[], free_seg: boolean): any | null;
+		/**
+		 * Inserts an element into the pointer array at the given index. The
+		 * array will grow in size automatically if necessary.
+		 * @param array a #GPtrArray
+		 * @param index_ the index to place the new element at, or -1 to append
+		 * @param data the pointer to add.
+		 */
+		public static insert(array: any[], index_: number, data: any | null): void;
+		/**
+		 * Creates a new #GPtrArray with a reference count of 1.
+		 * @returns the new #GPtrArray
+		 */
+		public static new(): any[];
+		/**
+		 * Creates a new #GPtrArray with #reserved_size pointers preallocated
+		 * and a reference count of 1. This avoids frequent reallocation, if
+		 * you are going to add many pointers to the array. Note however that
+		 * the size of the array is still 0. It also set #element_free_func
+		 * for freeing each element when the array is destroyed either via
+		 * {@link G.ptr_array_unref}, when g_ptr_array_free() is called with
+		 * #free_segment set to %TRUE or when removing elements.
+		 * @param reserved_size number of pointers preallocated
+		 * @param element_free_func A function to free elements with
+		 *     destroy #array or %NULL
+		 * @returns A new #GPtrArray
+		 */
+		public static new_full(reserved_size: number, element_free_func: DestroyNotify | null): any[];
+		/**
+		 * Creates a new #GPtrArray with a reference count of 1 and use
+		 * #element_free_func for freeing each element when the array is destroyed
+		 * either via {@link G.ptr_array_unref}, when g_ptr_array_free() is called with
+		 * #free_segment set to %TRUE or when removing elements.
+		 * @param element_free_func A function to free elements with
+		 *     destroy #array or %NULL
+		 * @returns A new #GPtrArray
+		 */
+		public static new_with_free_func(element_free_func: DestroyNotify | null): any[];
+		/**
+		 * Atomically increments the reference count of #array by one.
+		 * This function is thread-safe and may be called from any thread.
+		 * @param array a #GPtrArray
+		 * @returns The passed in #GPtrArray
+		 */
+		public static ref(array: any[]): any[];
+		/**
+		 * Removes the first occurrence of the given pointer from the pointer
+		 * array. The following elements are moved down one place. If #array
+		 * has a non-%NULL #GDestroyNotify function it is called for the
+		 * removed element.
+		 * 
+		 * It returns %TRUE if the pointer was removed, or %FALSE if the
+		 * pointer was not found.
+		 * @param array a #GPtrArray
+		 * @param data the pointer to remove
+		 * @returns %TRUE if the pointer is removed, %FALSE if the pointer
+		 *     is not found in the array
+		 */
+		public static remove(array: any[], data: any | null): boolean;
+		/**
+		 * Removes the first occurrence of the given pointer from the pointer
+		 * array. The last element in the array is used to fill in the space,
+		 * so this function does not preserve the order of the array. But it
+		 * is faster than {@link G.ptr_array_remove}. If #array has a non-%NULL
+		 * #GDestroyNotify function it is called for the removed element.
+		 * 
+		 * It returns %TRUE if the pointer was removed, or %FALSE if the
+		 * pointer was not found.
+		 * @param array a #GPtrArray
+		 * @param data the pointer to remove
+		 * @returns %TRUE if the pointer was found in the array
+		 */
+		public static remove_fast(array: any[], data: any | null): boolean;
+		/**
+		 * Removes the pointer at the given index from the pointer array.
+		 * The following elements are moved down one place. If #array has
+		 * a non-%NULL #GDestroyNotify function it is called for the removed
+		 * element. If so, the return value from this function will potentially point
+		 * to freed memory (depending on the #GDestroyNotify implementation).
+		 * @param array a #GPtrArray
+		 * @param index_ the index of the pointer to remove
+		 * @returns the pointer which was removed
+		 */
+		public static remove_index(array: any[], index_: number): any | null;
+		/**
+		 * Removes the pointer at the given index from the pointer array.
+		 * The last element in the array is used to fill in the space, so
+		 * this function does not preserve the order of the array. But it
+		 * is faster than {@link G.ptr_array_remove_index}. If #array has a non-%NULL
+		 * #GDestroyNotify function it is called for the removed element. If so, the
+		 * return value from this function will potentially point to freed memory
+		 * (depending on the #GDestroyNotify implementation).
+		 * @param array a #GPtrArray
+		 * @param index_ the index of the pointer to remove
+		 * @returns the pointer which was removed
+		 */
+		public static remove_index_fast(array: any[], index_: number): any | null;
+		/**
+		 * Removes the given number of pointers starting at the given index
+		 * from a #GPtrArray. The following elements are moved to close the
+		 * gap. If #array has a non-%NULL #GDestroyNotify function it is
+		 * called for the removed elements.
+		 * @param array a #GPtrArray
+		 * @param index_ the index of the first pointer to remove
+		 * @param length the number of pointers to remove
+		 * @returns the #array
+		 */
+		public static remove_range(array: any[], index_: number, length: number): any[];
+		/**
+		 * Sets a function for freeing each element when #array is destroyed
+		 * either via {@link G.ptr_array_unref}, when g_ptr_array_free() is called
+		 * with #free_segment set to %TRUE or when removing elements.
+		 * @param array A #GPtrArray
+		 * @param element_free_func A function to free elements with
+		 *     destroy #array or %NULL
+		 */
+		public static set_free_func(array: any[], element_free_func: DestroyNotify | null): void;
+		/**
+		 * Sets the size of the array. When making the array larger,
+		 * newly-added elements will be set to %NULL. When making it smaller,
+		 * if #array has a non-%NULL #GDestroyNotify function then it will be
+		 * called for the removed elements.
+		 * @param array a #GPtrArray
+		 * @param length the new length of the pointer array
+		 */
+		public static set_size(array: any[], length: number): void;
+		/**
+		 * Creates a new #GPtrArray with #reserved_size pointers preallocated
+		 * and a reference count of 1. This avoids frequent reallocation, if
+		 * you are going to add many pointers to the array. Note however that
+		 * the size of the array is still 0.
+		 * @param reserved_size number of pointers preallocated
+		 * @returns the new #GPtrArray
+		 */
+		public static sized_new(reserved_size: number): any[];
+		/**
+		 * Sorts the array, using #compare_func which should be a qsort()-style
+		 * comparison function (returns less than zero for first arg is less
+		 * than second arg, zero for equal, greater than zero if irst arg is
+		 * greater than second arg).
+		 * 
+		 * Note that the comparison function for g_ptr_array_sort() doesn't
+		 * take the pointers from the array as arguments, it takes pointers to
+		 * the pointers in the array. Here is a full example of usage:
+		 * 
+		 * |[<!-- language="C" -->
+		 * typedef struct
+		 * {
+		 *   gchar *name;
+		 *   gint size;
+		 * } FileListEntry;
+		 * 
+		 * static gint
+		 * sort_filelist (gconstpointer a, gconstpointer b)
+		 * {
+		 *   const FileListEntry *entry1 = *((FileListEntry **) a);
+		 *   const FileListEntry *entry2 = *((FileListEntry **) b);
+		 * 
+		 *   return g_ascii_strcasecmp (entry1->name, entry2->name);
+		 * }
+		 * 
+		 * …
+		 * g_autoptr (GPtrArray) file_list = NULL;
+		 * 
+		 * // initialize file_list array and load with many FileListEntry entries
+		 * ...
+		 * // now sort it with
+		 * g_ptr_array_sort (file_list, sort_filelist);
+		 * ]|
+		 * 
+		 * This is guaranteed to be a stable sort since version 2.32.
+		 * @param array a #GPtrArray
+		 * @param compare_func comparison function
+		 */
+		public static sort(array: any[], compare_func: CompareFunc): void;
+		/**
+		 * Like {@link G.ptr_array_sort}, but the comparison function has an extra
+		 * user data argument.
+		 * 
+		 * Note that the comparison function for g_ptr_array_sort_with_data()
+		 * doesn't take the pointers from the array as arguments, it takes
+		 * pointers to the pointers in the array. Here is a full example of use:
+		 * 
+		 * |[<!-- language="C" -->
+		 * typedef enum { SORT_NAME, SORT_SIZE } SortMode;
+		 * 
+		 * typedef struct
+		 * {
+		 *   gchar *name;
+		 *   gint size;
+		 * } FileListEntry;
+		 * 
+		 * static gint
+		 * sort_filelist (gconstpointer a, gconstpointer b, gpointer user_data)
+		 * {
+		 *   gint order;
+		 *   const SortMode sort_mode = GPOINTER_TO_INT (user_data);
+		 *   const FileListEntry *entry1 = *((FileListEntry **) a);
+		 *   const FileListEntry *entry2 = *((FileListEntry **) b);
+		 * 
+		 *   switch (sort_mode)
+		 *     {
+		 *     case SORT_NAME:
+		 *       order = g_ascii_strcasecmp (entry1->name, entry2->name);
+		 *       break;
+		 *     case SORT_SIZE:
+		 *       order = entry1->size - entry2->size;
+		 *       break;
+		 *     default:
+		 *       order = 0;
+		 *       break;
+		 *     }
+		 *   return order;
+		 * }
+		 * 
+		 * ...
+		 * g_autoptr (GPtrArray) file_list = NULL;
+		 * SortMode sort_mode;
+		 * 
+		 * // initialize file_list array and load with many FileListEntry entries
+		 * ...
+		 * // now sort it with
+		 * sort_mode = SORT_NAME;
+		 * g_ptr_array_sort_with_data (file_list,
+		 *                             sort_filelist,
+		 *                             GINT_TO_POINTER (sort_mode));
+		 * ]|
+		 * 
+		 * This is guaranteed to be a stable sort since version 2.32.
+		 * @param array a #GPtrArray
+		 * @param compare_func comparison function
+		 */
+		public static sort_with_data(array: any[], compare_func: CompareDataFunc): void;
+		/**
+		 * Frees the data in the array and resets the size to zero, while
+		 * the underlying array is preserved for use elsewhere and returned
+		 * to the caller.
+		 * 
+		 * Even if set, the #GDestroyNotify function will never be called
+		 * on the current contents of the array and the caller is
+		 * responsible for freeing the array elements.
+		 * 
+		 * An example of use:
+		 * |[<!-- language="C" -->
+		 * g_autoptr(GPtrArray) chunk_buffer = g_ptr_array_new_with_free_func (g_bytes_unref);
+		 * 
+		 * // Some part of your application appends a number of chunks to the pointer array.
+		 * g_ptr_array_add (chunk_buffer, g_bytes_new_static ("hello", 5));
+		 * g_ptr_array_add (chunk_buffer, g_bytes_new_static ("world", 5));
+		 * 
+		 * …
+		 * 
+		 * // Periodically, the chunks need to be sent as an array-and-length to some
+		 * // other part of the program.
+		 * GBytes **chunks;
+		 * gsize n_chunks;
+		 * 
+		 * chunks = g_ptr_array_steal (chunk_buffer, &n_chunks);
+		 * for (gsize i = 0; i < n_chunks; i++)
+		 *   {
+		 *     // Do something with each chunk here, and then free them, since
+		 *     // {@link G.ptr_array_steal} transfers ownership of all the elements and the
+		 *     // array to the caller.
+		 *     …
+		 * 
+		 *     g_bytes_unref (chunks[i]);
+		 *   }
+		 * 
+		 * g_free (chunks);
+		 * 
+		 * // After calling g_ptr_array_steal(), the pointer array can be reused for the
+		 * // next set of chunks.
+		 * g_assert (chunk_buffer->len == 0);
+		 * ]|
+		 * @param array a #GPtrArray.
+		 * @returns the element data, which should be
+		 *     freed using {@link G.free}.
+		 * 
+		 * pointer to retrieve the number of
+		 *    elements of the original array
+		 */
+		public static steal(array: any[]): [ any | null, number | null ];
+		/**
+		 * Removes the pointer at the given index from the pointer array.
+		 * The following elements are moved down one place. The #GDestroyNotify for
+		 * #array is *not* called on the removed element; ownership is transferred to
+		 * the caller of this function.
+		 * @param array a #GPtrArray
+		 * @param index_ the index of the pointer to steal
+		 * @returns the pointer which was removed
+		 */
+		public static steal_index(array: any[], index_: number): any | null;
+		/**
+		 * Removes the pointer at the given index from the pointer array.
+		 * The last element in the array is used to fill in the space, so
+		 * this function does not preserve the order of the array. But it
+		 * is faster than {@link G.ptr_array_steal_index}. The #GDestroyNotify for #array is
+		 * *not* called on the removed element; ownership is transferred to the caller
+		 * of this function.
+		 * @param array a #GPtrArray
+		 * @param index_ the index of the pointer to steal
+		 * @returns the pointer which was removed
+		 */
+		public static steal_index_fast(array: any[], index_: number): any | null;
+		/**
+		 * Atomically decrements the reference count of #array by one. If the
+		 * reference count drops to 0, the effect is the same as calling
+		 * {@link G.ptr_array_free} with #free_segment set to %TRUE. This function
+		 * is thread-safe and may be called from any thread.
+		 * @param array A #GPtrArray
+		 */
+		public static unref(array: any[]): void;
+		/**
 		 * points to the array of pointers, which may be moved when the
 		 *     array grows
 		 */
@@ -5808,6 +7919,11 @@ declare namespace imports.gi.GLib {
 	interface Queue {}
 	class Queue {
 		public constructor(options?: Partial<QueueInitOptions>);
+		/**
+		 * Creates a new #GQueue.
+		 * @returns a newly allocated #GQueue
+		 */
+		public static new(): Queue;
 		/**
 		 * a pointer to the first element of the queue
 		 */
@@ -6288,6 +8404,29 @@ declare namespace imports.gi.GLib {
 	class Rand {
 		public constructor(options?: Partial<RandInitOptions>);
 		/**
+		 * Creates a new random number generator initialized with a seed taken
+		 * either from `/dev/urandom` (if existing) or from the current time
+		 * (as a fallback).
+		 * 
+		 * On Windows, the seed is taken from {@link Rand.s}.
+		 * @returns the new #GRand
+		 */
+		public static new(): Rand;
+		/**
+		 * Creates a new random number generator initialized with #seed.
+		 * @param seed a value to initialize the random number generator
+		 * @returns the new #GRand
+		 */
+		public static new_with_seed(seed: number): Rand;
+		/**
+		 * Creates a new random number generator initialized with #seed.
+		 * @param seed an array of seeds to initialize the random number generator
+		 * @param seed_length an array of seeds to initialize the random number
+		 *     generator
+		 * @returns the new #GRand
+		 */
+		public static new_with_seed_array(seed: number, seed_length: number): Rand;
+		/**
 		 * Copies a #GRand into a new one with the same exact state as before.
 		 * This way you can take a snapshot of the random number generator for
 		 * replaying later.
@@ -6513,6 +8652,102 @@ declare namespace imports.gi.GLib {
 		 *   {@link G.regex_unref} when you are done with it
 		 */
 		public static new(pattern: string, compile_options: RegexCompileFlags, match_options: RegexMatchFlags): Regex | null;
+		/**
+		 * Checks whether #replacement is a valid replacement string
+		 * (see {@link G.regex_replace}), i.e. that all escape sequences in
+		 * it are valid.
+		 * 
+		 * If #has_references is not %NULL then #replacement is checked
+		 * for pattern references. For instance, replacement text 'foo\n'
+		 * does not contain references and may be evaluated without information
+		 * about actual match, but '\0\1' (whole match followed by first
+		 * subpattern) requires valid #GMatchInfo object.
+		 * @param replacement the replacement string
+		 * @returns whether #replacement is a valid replacement string
+		 * 
+		 * location to store information about
+		 *   references in #replacement or %NULL
+		 */
+		public static check_replacement(replacement: string): [ boolean, boolean | null ];
+		public static error_quark(): Quark;
+		/**
+		 * Escapes the nul characters in #string to "\x00".  It can be used
+		 * to compile a regex with embedded nul characters.
+		 * 
+		 * For completeness, #length can be -1 for a nul-terminated string.
+		 * In this case the output string will be of course equal to #string.
+		 * @param string the string to escape
+		 * @param length the length of #string
+		 * @returns a newly-allocated escaped string
+		 */
+		public static escape_nul(string: string, length: number): string;
+		/**
+		 * Escapes the special characters used for regular expressions
+		 * in #string, for instance "a.b*c" becomes "a\.b\*c". This
+		 * function is useful to dynamically generate regular expressions.
+		 * 
+		 * #string can contain nul characters that are replaced with "\0",
+		 * in this case remember to specify the correct length of #string
+		 * in #length.
+		 * @param string the string to escape
+		 * @param length the length of #string, in bytes, or -1 if #string is nul-terminated
+		 * @returns a newly-allocated escaped string
+		 */
+		public static escape_string(string: string[], length: number): string;
+		/**
+		 * Scans for a match in #string for #pattern.
+		 * 
+		 * This function is equivalent to {@link G.regex_match} but it does not
+		 * require to compile the pattern with g_regex_new(), avoiding some
+		 * lines of code when you need just to do a match without extracting
+		 * substrings, capture counts, and so on.
+		 * 
+		 * If this function is to be called on the same #pattern more than
+		 * once, it's more efficient to compile the pattern once with
+		 * g_regex_new() and then use g_regex_match().
+		 * @param pattern the regular expression
+		 * @param string the string to scan for matches
+		 * @param compile_options compile options for the regular expression, or 0
+		 * @param match_options match options, or 0
+		 * @returns %TRUE if the string matched, %FALSE otherwise
+		 */
+		public static match_simple(pattern: string, string: string, compile_options: RegexCompileFlags, match_options: RegexMatchFlags): boolean;
+		/**
+		 * Breaks the string on the pattern, and returns an array of
+		 * the tokens. If the pattern contains capturing parentheses,
+		 * then the text for each of the substrings will also be returned.
+		 * If the pattern does not match anywhere in the string, then the
+		 * whole string is returned as the first token.
+		 * 
+		 * This function is equivalent to {@link G.regex_split} but it does
+		 * not require to compile the pattern with g_regex_new(), avoiding
+		 * some lines of code when you need just to do a split without
+		 * extracting substrings, capture counts, and so on.
+		 * 
+		 * If this function is to be called on the same #pattern more than
+		 * once, it's more efficient to compile the pattern once with
+		 * g_regex_new() and then use g_regex_split().
+		 * 
+		 * As a special case, the result of splitting the empty string ""
+		 * is an empty vector, not a vector containing a single string.
+		 * The reason for this special case is that being able to represent
+		 * an empty vector is typically more useful than consistent handling
+		 * of empty elements. If you do need to represent empty elements,
+		 * you'll need to check for the empty string before calling this
+		 * function.
+		 * 
+		 * A pattern that can match empty strings splits #string into
+		 * separate characters wherever it matches the empty string between
+		 * characters. For example splitting "ab c" using as a separator
+		 * "\s*", you will get "a", "b" and "c".
+		 * @param pattern the regular expression
+		 * @param string the string to scan for matches
+		 * @param compile_options compile options for the regular expression, or 0
+		 * @param match_options match options, or 0
+		 * @returns a %NULL-terminated array of strings. Free
+		 * it using {@link G.strfreev}
+		 */
+		public static split_simple(pattern: string, string: string, compile_options: RegexCompileFlags, match_options: RegexMatchFlags): string[];
 		/**
 		 * Returns the number of capturing subpatterns in the pattern.
 		 * @returns the number of capturing subpatterns
@@ -6930,6 +9165,347 @@ declare namespace imports.gi.GLib {
 	class SList {
 		public constructor(options?: Partial<SListInitOptions>);
 		/**
+		 * Allocates space for one #GSList element. It is called by the
+		 * {@link G.slist_append}, g_slist_prepend(), g_slist_insert() and
+		 * g_slist_insert_sorted() functions and so is rarely used on its own.
+		 * @returns a pointer to the newly-allocated #GSList element.
+		 */
+		public static alloc(): GLib.SList;
+		/**
+		 * Adds a new element on to the end of the list.
+		 * 
+		 * The return value is the new start of the list, which may
+		 * have changed, so make sure you store the new value.
+		 * 
+		 * Note that {@link G.slist_append} has to traverse the entire list
+		 * to find the end, which is inefficient when adding multiple
+		 * elements. A common idiom to avoid the inefficiency is to prepend
+		 * the elements and reverse the list when all elements have been added.
+		 * 
+		 * |[<!-- language="C" -->
+		 * // Notice that these are initialized to the empty list.
+		 * GSList *list = NULL, *number_list = NULL;
+		 * 
+		 * // This is a list of strings.
+		 * list = g_slist_append (list, "first");
+		 * list = g_slist_append (list, "second");
+		 * 
+		 * // This is a list of integers.
+		 * number_list = g_slist_append (number_list, GINT_TO_POINTER (27));
+		 * number_list = g_slist_append (number_list, GINT_TO_POINTER (14));
+		 * ]|
+		 * @param list a #GSList
+		 * @param data the data for the new element
+		 * @returns the new start of the #GSList
+		 */
+		public static append(list: GLib.SList, data: any | null): GLib.SList;
+		/**
+		 * Adds the second #GSList onto the end of the first #GSList.
+		 * Note that the elements of the second #GSList are not copied.
+		 * They are used directly.
+		 * @param list1 a #GSList
+		 * @param list2 the #GSList to add to the end of the first #GSList
+		 * @returns the start of the new #GSList
+		 */
+		public static concat(list1: GLib.SList, list2: GLib.SList): GLib.SList;
+		/**
+		 * Copies a #GSList.
+		 * 
+		 * Note that this is a "shallow" copy. If the list elements
+		 * consist of pointers to data, the pointers are copied but
+		 * the actual data isn't. See {@link G.slist_copy_deep} if you need
+		 * to copy the data as well.
+		 * @param list a #GSList
+		 * @returns a copy of #list
+		 */
+		public static copy(list: GLib.SList): GLib.SList;
+		/**
+		 * Makes a full (deep) copy of a #GSList.
+		 * 
+		 * In contrast with {@link G.slist_copy}, this function uses #func to make a copy of
+		 * each list element, in addition to copying the list container itself.
+		 * 
+		 * #func, as a #GCopyFunc, takes two arguments, the data to be copied
+		 * and a #user_data pointer. On common processor architectures, it's safe to
+		 * pass %NULL as #user_data if the copy function takes only one argument. You
+		 * may get compiler warnings from this though if compiling with GCC’s
+		 * `-Wcast-function-type` warning.
+		 * 
+		 * For instance, if #list holds a list of GObjects, you can do:
+		 * |[<!-- language="C" -->
+		 * another_list = g_slist_copy_deep (list, (GCopyFunc) g_object_ref, NULL);
+		 * ]|
+		 * 
+		 * And, to entirely free the new list, you could do:
+		 * |[<!-- language="C" -->
+		 * g_slist_free_full (another_list, g_object_unref);
+		 * ]|
+		 * @param list a #GSList
+		 * @param func a copy function used to copy every element in the list
+		 * @returns a full copy of #list, use {@link G.slist_free_full} to free it
+		 */
+		public static copy_deep(list: GLib.SList, func: CopyFunc): GLib.SList;
+		/**
+		 * Removes the node link_ from the list and frees it.
+		 * Compare this to {@link G.slist_remove_link} which removes the node
+		 * without freeing it.
+		 * 
+		 * Removing arbitrary nodes from a singly-linked list requires time
+		 * that is proportional to the length of the list (ie. O(n)). If you
+		 * find yourself using g_slist_delete_link() frequently, you should
+		 * consider a different data structure, such as the doubly-linked
+		 * #GList.
+		 * @param list a #GSList
+		 * @param link_ node to delete
+		 * @returns the new head of #list
+		 */
+		public static delete_link(list: GLib.SList, link_: GLib.SList): GLib.SList;
+		/**
+		 * Finds the element in a #GSList which
+		 * contains the given data.
+		 * @param list a #GSList
+		 * @param data the element data to find
+		 * @returns the found #GSList element,
+		 *     or %NULL if it is not found
+		 */
+		public static find(list: GLib.SList, data: any | null): GLib.SList;
+		/**
+		 * Finds an element in a #GSList, using a supplied function to
+		 * find the desired element. It iterates over the list, calling
+		 * the given function which should return 0 when the desired
+		 * element is found. The function takes two #gconstpointer arguments,
+		 * the #GSList element's data as the first argument and the
+		 * given user data.
+		 * @param list a #GSList
+		 * @param data user data passed to the function
+		 * @param func the function to call for each element.
+		 *     It should return 0 when the desired element is found
+		 * @returns the found #GSList element, or %NULL if it is not found
+		 */
+		public static find_custom(list: GLib.SList, data: any | null, func: CompareFunc): GLib.SList;
+		/**
+		 * Calls a function for each element of a #GSList.
+		 * 
+		 * It is safe for #func to remove the element from #list, but it must
+		 * not modify any part of the list after that element.
+		 * @param list a #GSList
+		 * @param func the function to call with each element's data
+		 */
+		public static foreach(list: GLib.SList, func: Func): void;
+		/**
+		 * Frees all of the memory used by a #GSList.
+		 * The freed elements are returned to the slice allocator.
+		 * 
+		 * If list elements contain dynamically-allocated memory,
+		 * you should either use {@link G.slist_free_full} or free them manually
+		 * first.
+		 * 
+		 * It can be combined with g_steal_pointer() to ensure the list head pointer
+		 * is not left dangling:
+		 * |[<!-- language="C" -->
+		 * GSList *list_of_borrowed_things = …;  /<!-- -->* (transfer container) *<!-- -->/
+		 * g_slist_free (g_steal_pointer (&list_of_borrowed_things));
+		 * ]|
+		 * @param list the first link of a #GSList
+		 */
+		public static free(list: GLib.SList): void;
+		/**
+		 * Frees one #GSList element.
+		 * It is usually used after {@link G.slist_remove_link}.
+		 * @param list a #GSList element
+		 */
+		public static free_1(list: GLib.SList): void;
+		/**
+		 * Convenience method, which frees all the memory used by a #GSList, and
+		 * calls the specified destroy function on every element's data.
+		 * 
+		 * #free_func must not modify the list (eg, by removing the freed
+		 * element from it).
+		 * 
+		 * It can be combined with {@link G.steal_pointer} to ensure the list head pointer
+		 * is not left dangling ­— this also has the nice property that the head pointer
+		 * is cleared before any of the list elements are freed, to prevent double frees
+		 * from #free_func:
+		 * |[<!-- language="C" -->
+		 * GSList *list_of_owned_things = …;  /<!-- -->* (transfer full) (element-type GObject) *<!-- -->/
+		 * g_slist_free_full (g_steal_pointer (&list_of_owned_things), g_object_unref);
+		 * ]|
+		 * @param list the first link of a #GSList
+		 * @param free_func the function to be called to free each element's data
+		 */
+		public static free_full(list: GLib.SList, free_func: DestroyNotify): void;
+		/**
+		 * Gets the position of the element containing
+		 * the given data (starting from 0).
+		 * @param list a #GSList
+		 * @param data the data to find
+		 * @returns the index of the element containing the data,
+		 *     or -1 if the data is not found
+		 */
+		public static index(list: GLib.SList, data: any | null): number;
+		/**
+		 * Inserts a new element into the list at the given position.
+		 * @param list a #GSList
+		 * @param data the data for the new element
+		 * @param position the position to insert the element.
+		 *     If this is negative, or is larger than the number
+		 *     of elements in the list, the new element is added on
+		 *     to the end of the list.
+		 * @returns the new start of the #GSList
+		 */
+		public static insert(list: GLib.SList, data: any | null, position: number): GLib.SList;
+		/**
+		 * Inserts a node before #sibling containing #data.
+		 * @param slist a #GSList
+		 * @param sibling node to insert #data before
+		 * @param data data to put in the newly-inserted node
+		 * @returns the new head of the list.
+		 */
+		public static insert_before(slist: GLib.SList, sibling: GLib.SList, data: any | null): GLib.SList;
+		/**
+		 * Inserts a new element into the list, using the given
+		 * comparison function to determine its position.
+		 * @param list a #GSList
+		 * @param data the data for the new element
+		 * @param func the function to compare elements in the list.
+		 *     It should return a number > 0 if the first parameter
+		 *     comes after the second parameter in the sort order.
+		 * @returns the new start of the #GSList
+		 */
+		public static insert_sorted(list: GLib.SList, data: any | null, func: CompareFunc): GLib.SList;
+		/**
+		 * Inserts a new element into the list, using the given
+		 * comparison function to determine its position.
+		 * @param list a #GSList
+		 * @param data the data for the new element
+		 * @param func the function to compare elements in the list.
+		 *     It should return a number > 0 if the first parameter
+		 *     comes after the second parameter in the sort order.
+		 * @returns the new start of the #GSList
+		 */
+		public static insert_sorted_with_data(list: GLib.SList, data: any | null, func: CompareDataFunc): GLib.SList;
+		/**
+		 * Gets the last element in a #GSList.
+		 * 
+		 * This function iterates over the whole list.
+		 * @param list a #GSList
+		 * @returns the last element in the #GSList,
+		 *     or %NULL if the #GSList has no elements
+		 */
+		public static last(list: GLib.SList): GLib.SList;
+		/**
+		 * Gets the number of elements in a #GSList.
+		 * 
+		 * This function iterates over the whole list to
+		 * count its elements. To check whether the list is non-empty, it is faster to
+		 * check #list against %NULL.
+		 * @param list a #GSList
+		 * @returns the number of elements in the #GSList
+		 */
+		public static length(list: GLib.SList): number;
+		/**
+		 * Gets the element at the given position in a #GSList.
+		 * @param list a #GSList
+		 * @param n the position of the element, counting from 0
+		 * @returns the element, or %NULL if the position is off
+		 *     the end of the #GSList
+		 */
+		public static nth(list: GLib.SList, n: number): GLib.SList;
+		/**
+		 * Gets the data of the element at the given position.
+		 * @param list a #GSList
+		 * @param n the position of the element
+		 * @returns the element's data, or %NULL if the position
+		 *     is off the end of the #GSList
+		 */
+		public static nth_data(list: GLib.SList, n: number): any | null;
+		/**
+		 * Gets the position of the given element
+		 * in the #GSList (starting from 0).
+		 * @param list a #GSList
+		 * @param llink an element in the #GSList
+		 * @returns the position of the element in the #GSList,
+		 *     or -1 if the element is not found
+		 */
+		public static position(list: GLib.SList, llink: GLib.SList): number;
+		/**
+		 * Adds a new element on to the start of the list.
+		 * 
+		 * The return value is the new start of the list, which
+		 * may have changed, so make sure you store the new value.
+		 * 
+		 * |[<!-- language="C" -->
+		 * // Notice that it is initialized to the empty list.
+		 * GSList *list = NULL;
+		 * list = g_slist_prepend (list, "last");
+		 * list = g_slist_prepend (list, "first");
+		 * ]|
+		 * @param list a #GSList
+		 * @param data the data for the new element
+		 * @returns the new start of the #GSList
+		 */
+		public static prepend(list: GLib.SList, data: any | null): GLib.SList;
+		/**
+		 * Removes an element from a #GSList.
+		 * If two elements contain the same data, only the first is removed.
+		 * If none of the elements contain the data, the #GSList is unchanged.
+		 * @param list a #GSList
+		 * @param data the data of the element to remove
+		 * @returns the new start of the #GSList
+		 */
+		public static remove(list: GLib.SList, data: any | null): GLib.SList;
+		/**
+		 * Removes all list nodes with data equal to #data.
+		 * Returns the new head of the list. Contrast with
+		 * {@link G.slist_remove} which removes only the first node
+		 * matching the given data.
+		 * @param list a #GSList
+		 * @param data data to remove
+		 * @returns new head of #list
+		 */
+		public static remove_all(list: GLib.SList, data: any | null): GLib.SList;
+		/**
+		 * Removes an element from a #GSList, without
+		 * freeing the element. The removed element's next
+		 * link is set to %NULL, so that it becomes a
+		 * self-contained list with one element.
+		 * 
+		 * Removing arbitrary nodes from a singly-linked list
+		 * requires time that is proportional to the length of the list
+		 * (ie. O(n)). If you find yourself using {@link G.slist_remove_link}
+		 * frequently, you should consider a different data structure,
+		 * such as the doubly-linked #GList.
+		 * @param list a #GSList
+		 * @param link_ an element in the #GSList
+		 * @returns the new start of the #GSList, without the element
+		 */
+		public static remove_link(list: GLib.SList, link_: GLib.SList): GLib.SList;
+		/**
+		 * Reverses a #GSList.
+		 * @param list a #GSList
+		 * @returns the start of the reversed #GSList
+		 */
+		public static reverse(list: GLib.SList): GLib.SList;
+		/**
+		 * Sorts a #GSList using the given comparison function. The algorithm
+		 * used is a stable sort.
+		 * @param list a #GSList
+		 * @param compare_func the comparison function used to sort the #GSList.
+		 *     This function is passed the data from 2 elements of the #GSList
+		 *     and should return 0 if they are equal, a negative value if the
+		 *     first element comes before the second, or a positive value if
+		 *     the first element comes after the second.
+		 * @returns the start of the sorted #GSList
+		 */
+		public static sort(list: GLib.SList, compare_func: CompareFunc): GLib.SList;
+		/**
+		 * Like {@link G.slist_sort}, but the sort function accepts a user data argument.
+		 * @param list a #GSList
+		 * @param compare_func comparison function
+		 * @returns new head of the list
+		 */
+		public static sort_with_data(list: GLib.SList, compare_func: CompareDataFunc): GLib.SList;
+		/**
 		 * holds the element's data, which can be a pointer to any kind
 		 *        of data, or any integer value using the
 		 *        [Type Conversion Macros][glib-Type-Conversion-Macros]
@@ -6961,6 +9537,17 @@ declare namespace imports.gi.GLib {
 	interface Scanner {}
 	class Scanner {
 		public constructor(options?: Partial<ScannerInitOptions>);
+		/**
+		 * Creates a new #GScanner.
+		 * 
+		 * The #config_templ structure specifies the initial settings
+		 * of the scanner, which are copied into the #GScanner
+		 * #config field. If you pass %NULL then the default settings
+		 * are used.
+		 * @param config_templ the initial scanner settings
+		 * @returns the new #GScanner
+		 */
+		public static new(config_templ: ScannerConfig): Scanner;
 		/**
 		 * unused
 		 */
@@ -7343,6 +9930,137 @@ declare namespace imports.gi.GLib {
 	class Sequence {
 		public constructor(options?: Partial<SequenceInitOptions>);
 		/**
+		 * Calls #func for each item in the range (#begin, #end) passing
+		 * #user_data to the function. #func must not modify the sequence
+		 * itself.
+		 * @param begin a #GSequenceIter
+		 * @param end a #GSequenceIter
+		 * @param func a #GFunc
+		 */
+		public static foreach_range(begin: SequenceIter, end: SequenceIter, func: Func): void;
+		/**
+		 * Returns the data that #iter points to.
+		 * @param iter a #GSequenceIter
+		 * @returns the data that #iter points to
+		 */
+		public static get(iter: SequenceIter): any | null;
+		/**
+		 * Inserts a new item just before the item pointed to by #iter.
+		 * @param iter a #GSequenceIter
+		 * @param data the data for the new item
+		 * @returns an iterator pointing to the new item
+		 */
+		public static insert_before(iter: SequenceIter, data: any | null): SequenceIter;
+		/**
+		 * Moves the item pointed to by #src to the position indicated by #dest.
+		 * After calling this function #dest will point to the position immediately
+		 * after #src. It is allowed for #src and #dest to point into different
+		 * sequences.
+		 * @param src a #GSequenceIter pointing to the item to move
+		 * @param dest a #GSequenceIter pointing to the position to which
+		 *     the item is moved
+		 */
+		public static move(src: SequenceIter, dest: SequenceIter): void;
+		/**
+		 * Inserts the (#begin, #end) range at the destination pointed to by #dest.
+		 * The #begin and #end iters must point into the same sequence. It is
+		 * allowed for #dest to point to a different sequence than the one pointed
+		 * into by #begin and #end.
+		 * 
+		 * If #dest is %NULL, the range indicated by #begin and #end is
+		 * removed from the sequence. If #dest points to a place within
+		 * the (#begin, #end) range, the range does not move.
+		 * @param dest a #GSequenceIter
+		 * @param begin a #GSequenceIter
+		 * @param end a #GSequenceIter
+		 */
+		public static move_range(dest: SequenceIter, begin: SequenceIter, end: SequenceIter): void;
+		/**
+		 * Creates a new GSequence. The #data_destroy function, if non-%NULL will
+		 * be called on all items when the sequence is destroyed and on items that
+		 * are removed from the sequence.
+		 * @param data_destroy a #GDestroyNotify function, or %NULL
+		 * @returns a new #GSequence
+		 */
+		public static new(data_destroy: DestroyNotify | null): Sequence;
+		/**
+		 * Finds an iterator somewhere in the range (#begin, #end). This
+		 * iterator will be close to the middle of the range, but is not
+		 * guaranteed to be exactly in the middle.
+		 * 
+		 * The #begin and #end iterators must both point to the same sequence
+		 * and #begin must come before or be equal to #end in the sequence.
+		 * @param begin a #GSequenceIter
+		 * @param end a #GSequenceIter
+		 * @returns a #GSequenceIter pointing somewhere in the
+		 *    (#begin, #end) range
+		 */
+		public static range_get_midpoint(begin: SequenceIter, end: SequenceIter): SequenceIter;
+		/**
+		 * Removes the item pointed to by #iter. It is an error to pass the
+		 * end iterator to this function.
+		 * 
+		 * If the sequence has a data destroy function associated with it, this
+		 * function is called on the data for the removed item.
+		 * @param iter a #GSequenceIter
+		 */
+		public static remove(iter: SequenceIter): void;
+		/**
+		 * Removes all items in the (#begin, #end) range.
+		 * 
+		 * If the sequence has a data destroy function associated with it, this
+		 * function is called on the data for the removed items.
+		 * @param begin a #GSequenceIter
+		 * @param end a #GSequenceIter
+		 */
+		public static remove_range(begin: SequenceIter, end: SequenceIter): void;
+		/**
+		 * Changes the data for the item pointed to by #iter to be #data. If
+		 * the sequence has a data destroy function associated with it, that
+		 * function is called on the existing data that #iter pointed to.
+		 * @param iter a #GSequenceIter
+		 * @param data new data for the item
+		 */
+		public static set(iter: SequenceIter, data: any | null): void;
+		/**
+		 * Moves the data pointed to by #iter to a new position as indicated by
+		 * #cmp_func. This
+		 * function should be called for items in a sequence already sorted according
+		 * to #cmp_func whenever some aspect of an item changes so that #cmp_func
+		 * may return different values for that item.
+		 * 
+		 * #cmp_func is called with two items of the #seq, and #cmp_data.
+		 * It should return 0 if the items are equal, a negative value if
+		 * the first item comes before the second, and a positive value if
+		 * the second item comes before the first.
+		 * @param iter A #GSequenceIter
+		 * @param cmp_func the function used to compare items in the sequence
+		 * @param cmp_data user data passed to #cmp_func.
+		 */
+		public static sort_changed(iter: SequenceIter, cmp_func: CompareDataFunc, cmp_data: any | null): void;
+		/**
+		 * Like {@link G.sequence_sort_changed}, but uses
+		 * a #GSequenceIterCompareFunc instead of a #GCompareDataFunc as
+		 * the compare function.
+		 * 
+		 * #iter_cmp is called with two iterators pointing into the #GSequence that
+		 * #iter points into. It should
+		 * return 0 if the iterators are equal, a negative value if the first
+		 * iterator comes before the second, and a positive value if the second
+		 * iterator comes before the first.
+		 * @param iter a #GSequenceIter
+		 * @param iter_cmp the function used to compare iterators in the sequence
+		 * @param cmp_data user data passed to #cmp_func
+		 */
+		public static sort_changed_iter(iter: SequenceIter, iter_cmp: SequenceIterCompareFunc, cmp_data: any | null): void;
+		/**
+		 * Swaps the items pointed to by #a and #b. It is allowed for #a and #b
+		 * to point into difference sequences.
+		 * @param a a #GSequenceIter
+		 * @param b a #GSequenceIter
+		 */
+		public static swap(a: SequenceIter, b: SequenceIter): void;
+		/**
 		 * Adds a new item to the end of #seq.
 		 * @param data the data for the new item
 		 * @returns an iterator pointing to the new item
@@ -7632,6 +10350,66 @@ declare namespace imports.gi.GLib {
 		 * @returns the newly-created #GSource.
 		 */
 		public static new(source_funcs: SourceFuncs, struct_size: number): Source;
+		/**
+		 * Removes the source with the given ID from the default main context. You must
+		 * use {@link G.source_destroy} for sources added to a non-default main context.
+		 * 
+		 * The ID of a #GSource is given by g_source_get_id(), or will be
+		 * returned by the functions g_source_attach(), g_idle_add(),
+		 * g_idle_add_full(), g_timeout_add(), g_timeout_add_full(),
+		 * g_child_watch_add(), g_child_watch_add_full(), g_io_add_watch(), and
+		 * g_io_add_watch_full().
+		 * 
+		 * It is a programmer error to attempt to remove a non-existent source.
+		 * 
+		 * More specifically: source IDs can be reissued after a source has been
+		 * destroyed and therefore it is never valid to use this function with a
+		 * source ID which may have already been removed.  An example is when
+		 * scheduling an idle to run in another thread with g_idle_add(): the
+		 * idle may already have run and been removed by the time this function
+		 * is called on its (now invalid) source ID.  This source ID may have
+		 * been reissued, leading to the operation being performed against the
+		 * wrong source.
+		 * @param tag the ID of the source to remove.
+		 * @returns For historical reasons, this function always returns %TRUE
+		 */
+		public static remove(tag: number): boolean;
+		/**
+		 * Removes a source from the default main loop context given the
+		 * source functions and user data. If multiple sources exist with the
+		 * same source functions and user data, only one will be destroyed.
+		 * @param funcs The #source_funcs passed to {@link G.source_new}
+		 * @returns %TRUE if a source was found and removed.
+		 */
+		public static remove_by_funcs_user_data(funcs: SourceFuncs): boolean;
+		/**
+		 * Removes a source from the default main loop context given the user
+		 * data for the callback. If multiple sources exist with the same user
+		 * data, only one will be destroyed.
+		 * @returns %TRUE if a source was found and removed.
+		 */
+		public static remove_by_user_data(): boolean;
+		/**
+		 * Sets the name of a source using its ID.
+		 * 
+		 * This is a convenience utility to set source names from the return
+		 * value of {@link G.idle_add}, g_timeout_add(), etc.
+		 * 
+		 * It is a programmer error to attempt to set the name of a non-existent
+		 * source.
+		 * 
+		 * More specifically: source IDs can be reissued after a source has been
+		 * destroyed and therefore it is never valid to use this function with a
+		 * source ID which may have already been removed.  An example is when
+		 * scheduling an idle to run in another thread with g_idle_add(): the
+		 * idle may already have run and been removed by the time this function
+		 * is called on its (now invalid) source ID.  This source ID may have
+		 * been reissued, leading to the operation being performed against the
+		 * wrong source.
+		 * @param tag a #GSource ID
+		 * @param name debug name for the source
+		 */
+		public static set_name_by_id(tag: number, name: string): void;
 		public readonly callback_data: any;
 		public readonly callback_funcs: SourceCallbackFuncs;
 		public readonly source_funcs: SourceFuncs;
@@ -8525,6 +11303,15 @@ declare namespace imports.gi.GLib {
 	class StringChunk {
 		public constructor(options?: Partial<StringChunkInitOptions>);
 		/**
+		 * Creates a new #GStringChunk.
+		 * @param size the default size of the blocks of memory which are
+		 *     allocated to store the strings. If a particular string
+		 *     is larger than this default size, a larger block of
+		 *     memory will be allocated for it.
+		 * @returns a new #GStringChunk
+		 */
+		public static new(size: number): StringChunk;
+		/**
 		 * Frees all strings contained within the #GStringChunk.
 		 * After calling {@link G.string_chunk_clear} it is not safe to
 		 * access any of the strings which were contained within it.
@@ -8608,6 +11395,12 @@ declare namespace imports.gi.GLib {
 	class StrvBuilder {
 		public constructor(options?: Partial<StrvBuilderInitOptions>);
 		/**
+		 * Creates a new #GStrvBuilder with a reference count of 1.
+		 * Use {@link G.strv_builder_unref} on the returned value when no longer needed.
+		 * @returns the new #GStrvBuilder
+		 */
+		public static new(): StrvBuilder;
+		/**
 		 * Add a string to the end of the array.
 		 * 
 		 * Since 2.68
@@ -8680,6 +11473,11 @@ declare namespace imports.gi.GLib {
 	interface TestLogBuffer {}
 	class TestLogBuffer {
 		public constructor(options?: Partial<TestLogBufferInitOptions>);
+		/**
+		 * Internal function for gtester to decode test log messages, no ABI guarantees provided.
+		 * @returns 
+		 */
+		public static new(): TestLogBuffer;
 		public readonly data: String;
 		public readonly msgs: GLib.SList;
 		/**
@@ -8802,6 +11600,44 @@ declare namespace imports.gi.GLib {
 		 * @returns the new #GThread, or %NULL if an error occurred
 		 */
 		public static try_new(name: string | null, func: ThreadFunc, data: any | null): Thread;
+		public static error_quark(): Quark;
+		/**
+		 * Terminates the current thread.
+		 * 
+		 * If another thread is waiting for us using {@link G.thread_join} then the
+		 * waiting thread will be woken up and get #retval as the return value
+		 * of g_thread_join().
+		 * 
+		 * Calling g_thread_exit() with a parameter #retval is equivalent to
+		 * returning #retval from the function #func, as given to g_thread_new().
+		 * 
+		 * You must only call g_thread_exit() from a thread that you created
+		 * yourself with g_thread_new() or related APIs. You must not call
+		 * this function from a thread created with another threading library
+		 * or or from within a #GThreadPool.
+		 * @param retval the return value of this thread
+		 */
+		public static exit(retval: any | null): void;
+		/**
+		 * This function returns the #GThread corresponding to the
+		 * current thread. Note that this function does not increase
+		 * the reference count of the returned struct.
+		 * 
+		 * This function will return a #GThread even for threads that
+		 * were not created by GLib (i.e. those created by other threading
+		 * APIs). This may be useful for thread identification purposes
+		 * (i.e. comparisons) but you must not use GLib functions (such
+		 * as {@link G.thread_join}) on these threads.
+		 * @returns the #GThread representing the current thread
+		 */
+		public static self(): Thread;
+		/**
+		 * Causes the calling thread to voluntarily relinquish the CPU, so
+		 * that other threads can run.
+		 * 
+		 * This function is often used as a method to make busy wait less evil.
+		 */
+		public static yield(): void;
 		/**
 		 * Waits until #thread finishes, i.e. the function #func, as
 		 * given to {@link G.thread_new}, returns or g_thread_exit() is called.
@@ -8847,6 +11683,110 @@ declare namespace imports.gi.GLib {
 	interface ThreadPool {}
 	class ThreadPool {
 		public constructor(options?: Partial<ThreadPoolInitOptions>);
+		/**
+		 * This function will return the maximum #interval that a
+		 * thread will wait in the thread pool for new tasks before
+		 * being stopped.
+		 * 
+		 * If this function returns 0, threads waiting in the thread
+		 * pool for new work are not stopped.
+		 * @returns the maximum #interval (milliseconds) to wait
+		 *     for new tasks in the thread pool before stopping the
+		 *     thread
+		 */
+		public static get_max_idle_time(): number;
+		/**
+		 * Returns the maximal allowed number of unused threads.
+		 * @returns the maximal number of unused threads
+		 */
+		public static get_max_unused_threads(): number;
+		/**
+		 * Returns the number of currently unused threads.
+		 * @returns the number of currently unused threads
+		 */
+		public static get_num_unused_threads(): number;
+		/**
+		 * This function creates a new thread pool.
+		 * 
+		 * Whenever you call {@link G.thread_pool_push}, either a new thread is
+		 * created or an unused one is reused. At most #max_threads threads
+		 * are running concurrently for this thread pool. #max_threads = -1
+		 * allows unlimited threads to be created for this thread pool. The
+		 * newly created or reused thread now executes the function #func
+		 * with the two arguments. The first one is the parameter to
+		 * g_thread_pool_push() and the second one is #user_data.
+		 * 
+		 * Pass g_get_num_processors() to #max_threads to create as many threads as
+		 * there are logical processors on the system. This will not pin each thread to
+		 * a specific processor.
+		 * 
+		 * The parameter #exclusive determines whether the thread pool owns
+		 * all threads exclusive or shares them with other thread pools.
+		 * If #exclusive is %TRUE, #max_threads threads are started
+		 * immediately and they will run exclusively for this thread pool
+		 * until it is destroyed by g_thread_pool_free(). If #exclusive is
+		 * %FALSE, threads are created when needed and shared between all
+		 * non-exclusive thread pools. This implies that #max_threads may
+		 * not be -1 for exclusive thread pools. Besides, exclusive thread
+		 * pools are not affected by g_thread_pool_set_max_idle_time()
+		 * since their threads are never considered idle and returned to the
+		 * global pool.
+		 * 
+		 * #error can be %NULL to ignore errors, or non-%NULL to report
+		 * errors. An error can only occur when #exclusive is set to %TRUE
+		 * and not all #max_threads threads could be created.
+		 * See #GThreadError for possible errors that may occur.
+		 * Note, even in case of error a valid #GThreadPool is returned.
+		 * @param func a function to execute in the threads of the new thread pool
+		 * @param max_threads the maximal number of threads to execute concurrently
+		 *     in  the new thread pool, -1 means no limit
+		 * @param exclusive should this thread pool be exclusive?
+		 * @returns the new #GThreadPool
+		 */
+		public static new(func: Func, max_threads: number, exclusive: boolean): ThreadPool;
+		/**
+		 * This function creates a new thread pool similar to {@link G.thread_pool_new}
+		 * but allowing #item_free_func to be specified to free the data passed
+		 * to g_thread_pool_push() in the case that the #GThreadPool is stopped
+		 * and freed before all tasks have been executed.
+		 * @param func a function to execute in the threads of the new thread pool
+		 * @param item_free_func used to pass as a free function to
+		 *     {@link G.async_queue_new_full}
+		 * @param max_threads the maximal number of threads to execute concurrently
+		 *     in the new thread pool, `-1` means no limit
+		 * @param exclusive should this thread pool be exclusive?
+		 * @returns the new #GThreadPool
+		 */
+		public static new_full(func: Func, item_free_func: DestroyNotify | null, max_threads: number, exclusive: boolean): ThreadPool;
+		/**
+		 * This function will set the maximum #interval that a thread
+		 * waiting in the pool for new tasks can be idle for before
+		 * being stopped. This function is similar to calling
+		 * {@link G.thread_pool_stop_unused_threads} on a regular timeout,
+		 * except this is done on a per thread basis.
+		 * 
+		 * By setting #interval to 0, idle threads will not be stopped.
+		 * 
+		 * The default value is 15000 (15 seconds).
+		 * @param interval the maximum #interval (in milliseconds)
+		 *     a thread can be idle
+		 */
+		public static set_max_idle_time(interval: number): void;
+		/**
+		 * Sets the maximal number of unused threads to #max_threads.
+		 * If #max_threads is -1, no limit is imposed on the number
+		 * of unused threads.
+		 * 
+		 * The default value is 2.
+		 * @param max_threads maximal number of unused threads
+		 */
+		public static set_max_unused_threads(max_threads: number): void;
+		/**
+		 * Stops all currently unused threads. This does not change the
+		 * maximal number of unused threads. This function can be used to
+		 * regularly stop all unused threads e.g. from {@link G.timeout_add}.
+		 */
+		public static stop_unused_threads(): void;
 		/**
 		 * the function to execute in the threads of this pool
 		 */
@@ -8981,6 +11921,34 @@ declare namespace imports.gi.GLib {
 	interface TimeVal {}
 	class TimeVal {
 		public constructor(options?: Partial<TimeValInitOptions>);
+		/**
+		 * @deprecated
+		 * #GTimeVal is not year-2038-safe. Use
+		 *    {@link G.date_time_new_from_iso8601} instead.
+		 * 
+		 * Converts a string containing an ISO 8601 encoded date and time
+		 * to a #GTimeVal and puts it into #time_.
+		 * 
+		 * #iso_date must include year, month, day, hours, minutes, and
+		 * seconds. It can optionally include fractions of a second and a time
+		 * zone indicator. (In the absence of any time zone indication, the
+		 * timestamp is assumed to be in local time.)
+		 * 
+		 * Any leading or trailing space in #iso_date is ignored.
+		 * 
+		 * This function was deprecated, along with #GTimeVal itself, in GLib 2.62.
+		 * Equivalent functionality is available using code like:
+		 * |[
+		 * GDateTime *dt = g_date_time_new_from_iso8601 (iso8601_string, NULL);
+		 * gint64 time_val = g_date_time_to_unix (dt);
+		 * g_date_time_unref (dt);
+		 * ]|
+		 * @param iso_date an ISO 8601 encoded date string
+		 * @returns %TRUE if the conversion was successful.
+		 * 
+		 * a #GTimeVal
+		 */
+		public static from_iso8601(iso_date: string): [ boolean, TimeVal ];
 		/**
 		 * seconds
 		 */
@@ -9279,6 +12247,12 @@ declare namespace imports.gi.GLib {
 	class Timer {
 		public constructor(options?: Partial<TimerInitOptions>);
 		/**
+		 * Creates a new timer, and starts timing (i.e. {@link G.timer_start} is
+		 * implicitly called for you).
+		 * @returns a new #GTimer.
+		 */
+		public static new(): Timer;
+		/**
 		 * Resumes a timer that has previously been stopped with
 		 * {@link G.timer_stop}. g_timer_stop() must be called before using this
 		 * function.
@@ -9335,6 +12309,46 @@ declare namespace imports.gi.GLib {
 	interface TrashStack {}
 	class TrashStack {
 		public constructor(options?: Partial<TrashStackInitOptions>);
+		/**
+		 * @deprecated
+		 * #GTrashStack is deprecated without replacement
+		 * 
+		 * Returns the height of a #GTrashStack.
+		 * 
+		 * Note that execution of this function is of O(N) complexity
+		 * where N denotes the number of items on the stack.
+		 * @param stack_p a #GTrashStack
+		 * @returns the height of the stack
+		 */
+		public static height(stack_p: TrashStack): number;
+		/**
+		 * @deprecated
+		 * #GTrashStack is deprecated without replacement
+		 * 
+		 * Returns the element at the top of a #GTrashStack
+		 * which may be %NULL.
+		 * @param stack_p a #GTrashStack
+		 * @returns the element at the top of the stack
+		 */
+		public static peek(stack_p: TrashStack): any | null;
+		/**
+		 * @deprecated
+		 * #GTrashStack is deprecated without replacement
+		 * 
+		 * Pops a piece of memory off a #GTrashStack.
+		 * @param stack_p a #GTrashStack
+		 * @returns the element at the top of the stack
+		 */
+		public static pop(stack_p: TrashStack): any | null;
+		/**
+		 * @deprecated
+		 * #GTrashStack is deprecated without replacement
+		 * 
+		 * Pushes a piece of memory onto a #GTrashStack.
+		 * @param stack_p a #GTrashStack
+		 * @param data_p the piece of memory to push on the stack
+		 */
+		public static push(stack_p: TrashStack, data_p: any): void;
 		/**
 		 * pointer to the previous element of the stack,
 		 *     gets stored in the first `sizeof (gpointer)`
@@ -9791,6 +12805,419 @@ declare namespace imports.gi.GLib {
 	interface Uri {}
 	class Uri {
 		public constructor(options?: Partial<UriInitOptions>);
+		/**
+		 * Creates a new #GUri from the given components according to #flags.
+		 * 
+		 * See also {@link G.uri_build_with_user}, which allows specifying the
+		 * components of the "userinfo" separately.
+		 * @param flags flags describing how to build the #GUri
+		 * @param scheme the URI scheme
+		 * @param userinfo the userinfo component, or %NULL
+		 * @param host the host component, or %NULL
+		 * @param port the port, or `-1`
+		 * @param path the path component
+		 * @param query the query component, or %NULL
+		 * @param fragment the fragment, or %NULL
+		 * @returns a new #GUri
+		 */
+		public static build(flags: UriFlags, scheme: string, userinfo: string | null, host: string | null, port: number, path: string, query: string | null, fragment: string | null): Uri;
+		/**
+		 * Creates a new #GUri from the given components according to #flags
+		 * (%G_URI_FLAGS_HAS_PASSWORD is added unconditionally). The #flags must be
+		 * coherent with the passed values, in particular use `%`-encoded values with
+		 * %G_URI_FLAGS_ENCODED.
+		 * 
+		 * In contrast to {@link G.uri_build}, this allows specifying the components
+		 * of the ‘userinfo’ field separately. Note that #user must be non-%NULL
+		 * if either #password or #auth_params is non-%NULL.
+		 * @param flags flags describing how to build the #GUri
+		 * @param scheme the URI scheme
+		 * @param user the user component of the userinfo, or %NULL
+		 * @param password the password component of the userinfo, or %NULL
+		 * @param auth_params the auth params of the userinfo, or %NULL
+		 * @param host the host component, or %NULL
+		 * @param port the port, or `-1`
+		 * @param path the path component
+		 * @param query the query component, or %NULL
+		 * @param fragment the fragment, or %NULL
+		 * @returns a new #GUri
+		 */
+		public static build_with_user(flags: UriFlags, scheme: string, user: string | null, password: string | null, auth_params: string | null, host: string | null, port: number, path: string, query: string | null, fragment: string | null): Uri;
+		public static error_quark(): Quark;
+		/**
+		 * Escapes arbitrary data for use in a URI.
+		 * 
+		 * Normally all characters that are not ‘unreserved’ (i.e. ASCII
+		 * alphanumerical characters plus dash, dot, underscore and tilde) are
+		 * escaped. But if you specify characters in #reserved_chars_allowed
+		 * they are not escaped. This is useful for the ‘reserved’ characters
+		 * in the URI specification, since those are allowed unescaped in some
+		 * portions of a URI.
+		 * 
+		 * Though technically incorrect, this will also allow escaping nul
+		 * bytes as `%``00`.
+		 * @param unescaped the unescaped input data.
+		 * @param length the length of #unescaped
+		 * @param reserved_chars_allowed a string of reserved
+		 *   characters that are allowed to be used, or %NULL.
+		 * @returns an escaped version of #unescaped.
+		 *     The returned string should be freed when no longer needed.
+		 */
+		public static escape_bytes(unescaped: number[], length: number, reserved_chars_allowed: string | null): string;
+		/**
+		 * Escapes a string for use in a URI.
+		 * 
+		 * Normally all characters that are not "unreserved" (i.e. ASCII
+		 * alphanumerical characters plus dash, dot, underscore and tilde) are
+		 * escaped. But if you specify characters in #reserved_chars_allowed
+		 * they are not escaped. This is useful for the "reserved" characters
+		 * in the URI specification, since those are allowed unescaped in some
+		 * portions of a URI.
+		 * @param unescaped the unescaped input string.
+		 * @param reserved_chars_allowed a string of reserved
+		 *   characters that are allowed to be used, or %NULL.
+		 * @param allow_utf8 %TRUE if the result can include UTF-8 characters.
+		 * @returns an escaped version of #unescaped. The
+		 * returned string should be freed when no longer needed.
+		 */
+		public static escape_string(unescaped: string, reserved_chars_allowed: string | null, allow_utf8: boolean): string;
+		/**
+		 * Parses #uri_string according to #flags, to determine whether it is a valid
+		 * [absolute URI][relative-absolute-uris], i.e. it does not need to be resolved
+		 * relative to another URI using {@link G.uri_parse_relative}.
+		 * 
+		 * If it’s not a valid URI, an error is returned explaining how it’s invalid.
+		 * 
+		 * See g_uri_split(), and the definition of #GUriFlags, for more
+		 * information on the effect of #flags.
+		 * @param uri_string a string containing an absolute URI
+		 * @param flags flags for parsing #uri_string
+		 * @returns %TRUE if #uri_string is a valid absolute URI, %FALSE on error.
+		 */
+		public static is_valid(uri_string: string, flags: UriFlags): boolean;
+		/**
+		 * Joins the given components together according to #flags to create
+		 * an absolute URI string. #path may not be %NULL (though it may be the empty
+		 * string).
+		 * 
+		 * When #host is present, #path must either be empty or begin with a slash (`/`)
+		 * character. When #host is not present, #path cannot begin with two slash
+		 *    characters (`//`). See
+		 * [RFC 3986, section 3](https://tools.ietf.org/html/rfc3986#section-3).
+		 * 
+		 * See also {@link G.uri_join_with_user}, which allows specifying the
+		 * components of the ‘userinfo’ separately.
+		 * 
+		 * %G_URI_FLAGS_HAS_PASSWORD and %G_URI_FLAGS_HAS_AUTH_PARAMS are ignored if set
+		 * in #flags.
+		 * @param flags flags describing how to build the URI string
+		 * @param scheme the URI scheme, or %NULL
+		 * @param userinfo the userinfo component, or %NULL
+		 * @param host the host component, or %NULL
+		 * @param port the port, or `-1`
+		 * @param path the path component
+		 * @param query the query component, or %NULL
+		 * @param fragment the fragment, or %NULL
+		 * @returns an absolute URI string
+		 */
+		public static join(flags: UriFlags, scheme: string | null, userinfo: string | null, host: string | null, port: number, path: string, query: string | null, fragment: string | null): string;
+		/**
+		 * Joins the given components together according to #flags to create
+		 * an absolute URI string. #path may not be %NULL (though it may be the empty
+		 * string).
+		 * 
+		 * In contrast to {@link G.uri_join}, this allows specifying the components
+		 * of the ‘userinfo’ separately. It otherwise behaves the same.
+		 * 
+		 * %G_URI_FLAGS_HAS_PASSWORD and %G_URI_FLAGS_HAS_AUTH_PARAMS are ignored if set
+		 * in #flags.
+		 * @param flags flags describing how to build the URI string
+		 * @param scheme the URI scheme, or %NULL
+		 * @param user the user component of the userinfo, or %NULL
+		 * @param password the password component of the userinfo, or
+		 *   %NULL
+		 * @param auth_params the auth params of the userinfo, or
+		 *   %NULL
+		 * @param host the host component, or %NULL
+		 * @param port the port, or `-1`
+		 * @param path the path component
+		 * @param query the query component, or %NULL
+		 * @param fragment the fragment, or %NULL
+		 * @returns an absolute URI string
+		 */
+		public static join_with_user(flags: UriFlags, scheme: string | null, user: string | null, password: string | null, auth_params: string | null, host: string | null, port: number, path: string, query: string | null, fragment: string | null): string;
+		/**
+		 * Splits an URI list conforming to the text/uri-list
+		 * mime type defined in RFC 2483 into individual URIs,
+		 * discarding any comments. The URIs are not validated.
+		 * @param uri_list an URI list
+		 * @returns a newly allocated %NULL-terminated list
+		 *   of strings holding the individual URIs. The array should be freed
+		 *   with {@link G.strfreev}.
+		 */
+		public static list_extract_uris(uri_list: string): string[];
+		/**
+		 * Parses #uri_string according to #flags. If the result is not a
+		 * valid [absolute URI][relative-absolute-uris], it will be discarded, and an
+		 * error returned.
+		 * @param uri_string a string representing an absolute URI
+		 * @param flags flags describing how to parse #uri_string
+		 * @returns a new #GUri, or NULL on error.
+		 */
+		public static parse(uri_string: string, flags: UriFlags): Uri;
+		/**
+		 * Many URI schemes include one or more attribute/value pairs as part of the URI
+		 * value. This method can be used to parse them into a hash table. When an
+		 * attribute has multiple occurrences, the last value is the final returned
+		 * value. If you need to handle repeated attributes differently, use
+		 * #GUriParamsIter.
+		 * 
+		 * The #params string is assumed to still be `%`-encoded, but the returned
+		 * values will be fully decoded. (Thus it is possible that the returned values
+		 * may contain `=` or #separators, if the value was encoded in the input.)
+		 * Invalid `%`-encoding is treated as with the %G_URI_FLAGS_PARSE_RELAXED
+		 * rules for {@link G.uri_parse}. (However, if #params is the path or query string
+		 * from a #GUri that was parsed without %G_URI_FLAGS_PARSE_RELAXED and
+		 * %G_URI_FLAGS_ENCODED, then you already know that it does not contain any
+		 * invalid encoding.)
+		 * 
+		 * %G_URI_PARAMS_WWW_FORM is handled as documented for g_uri_params_iter_init().
+		 * 
+		 * If %G_URI_PARAMS_CASE_INSENSITIVE is passed to #flags, attributes will be
+		 * compared case-insensitively, so a params string `attr=123&Attr=456` will only
+		 * return a single attribute–value pair, `Attr=456`. Case will be preserved in
+		 * the returned attributes.
+		 * 
+		 * If #params cannot be parsed (for example, it contains two #separators
+		 * characters in a row), then #error is set and %NULL is returned.
+		 * @param params a `%`-encoded string containing `attribute=value`
+		 *   parameters
+		 * @param length the length of #params, or `-1` if it is nul-terminated
+		 * @param separators the separator byte character set between parameters. (usually
+		 *   `&`, but sometimes `;` or both `&;`). Note that this function works on
+		 *   bytes not characters, so it can't be used to delimit UTF-8 strings for
+		 *   anything but ASCII characters. You may pass an empty set, in which case
+		 *   no splitting will occur.
+		 * @param flags flags to modify the way the parameters are handled.
+		 * @returns 
+		 *     A hash table of attribute/value pairs, with both names and values
+		 *     fully-decoded; or %NULL on error.
+		 */
+		public static parse_params(params: string, length: number, separators: string, flags: UriParamsFlags): GLib.HashTable;
+		/**
+		 * Gets the scheme portion of a URI string.
+		 * [RFC 3986](https://tools.ietf.org/html/rfc3986#section-3) decodes the scheme
+		 * as:
+		 * |[
+		 * URI = scheme ":" hier-part [ "?" query ] [ "#" fragment ]
+		 * ]|
+		 * Common schemes include `file`, `https`, `svn+ssh`, etc.
+		 * @param uri a valid URI.
+		 * @returns The ‘scheme’ component of the URI, or
+		 *     %NULL on error. The returned string should be freed when no longer needed.
+		 */
+		public static parse_scheme(uri: string): string | null;
+		/**
+		 * Gets the scheme portion of a URI string.
+		 * [RFC 3986](https://tools.ietf.org/html/rfc3986#section-3) decodes the scheme
+		 * as:
+		 * |[
+		 * URI = scheme ":" hier-part [ "?" query ] [ "#" fragment ]
+		 * ]|
+		 * Common schemes include `file`, `https`, `svn+ssh`, etc.
+		 * 
+		 * Unlike {@link G.uri_parse_scheme}, the returned scheme is normalized to
+		 * all-lowercase and does not need to be freed.
+		 * @param uri a valid URI.
+		 * @returns The ‘scheme’ component of the URI, or
+		 *     %NULL on error. The returned string is normalized to all-lowercase, and
+		 *     interned via {@link G.intern_string}, so it does not need to be freed.
+		 */
+		public static peek_scheme(uri: string): string | null;
+		/**
+		 * Parses #uri_ref according to #flags and, if it is a
+		 * [relative URI][relative-absolute-uris], resolves it relative to
+		 * #base_uri_string. If the result is not a valid absolute URI, it will be
+		 * discarded, and an error returned.
+		 * 
+		 * (If #base_uri_string is %NULL, this just returns #uri_ref, or
+		 * %NULL if #uri_ref is invalid or not absolute.)
+		 * @param base_uri_string a string representing a base URI
+		 * @param uri_ref a string representing a relative or absolute URI
+		 * @param flags flags describing how to parse #uri_ref
+		 * @returns the resolved URI string,
+		 * or NULL on error.
+		 */
+		public static resolve_relative(base_uri_string: string | null, uri_ref: string, flags: UriFlags): string;
+		/**
+		 * Parses #uri_ref (which can be an
+		 * [absolute or relative URI][relative-absolute-uris]) according to #flags, and
+		 * returns the pieces. Any component that doesn't appear in #uri_ref will be
+		 * returned as %NULL (but note that all URIs always have a path component,
+		 * though it may be the empty string).
+		 * 
+		 * If #flags contains %G_URI_FLAGS_ENCODED, then `%`-encoded characters in
+		 * #uri_ref will remain encoded in the output strings. (If not,
+		 * then all such characters will be decoded.) Note that decoding will
+		 * only work if the URI components are ASCII or UTF-8, so you will
+		 * need to use %G_URI_FLAGS_ENCODED if they are not.
+		 * 
+		 * Note that the %G_URI_FLAGS_HAS_PASSWORD and
+		 * %G_URI_FLAGS_HAS_AUTH_PARAMS #flags are ignored by {@link G.uri_split},
+		 * since it always returns only the full userinfo; use
+		 * g_uri_split_with_user() if you want it split up.
+		 * @param uri_ref a string containing a relative or absolute URI
+		 * @param flags flags for parsing #uri_ref
+		 * @returns %TRUE if #uri_ref parsed successfully, %FALSE
+		 *   on error.
+		 * 
+		 * on return, contains
+		 *    the scheme (converted to lowercase), or %NULL
+		 * 
+		 * on return, contains
+		 *    the userinfo, or %NULL
+		 * 
+		 * on return, contains the
+		 *    host, or %NULL
+		 * 
+		 * on return, contains the
+		 *    port, or `-1`
+		 * 
+		 * on return, contains the
+		 *    path
+		 * 
+		 * on return, contains the
+		 *    query, or %NULL
+		 * 
+		 * on return, contains
+		 *    the fragment, or %NULL
+		 */
+		public static split(uri_ref: string, flags: UriFlags): [ boolean, string | null, string | null, string | null, number | null, string | null, string | null, string | null ];
+		/**
+		 * Parses #uri_string (which must be an [absolute URI][relative-absolute-uris])
+		 * according to #flags, and returns the pieces relevant to connecting to a host.
+		 * See the documentation for {@link G.uri_split} for more details; this is
+		 * mostly a wrapper around that function with simpler arguments.
+		 * However, it will return an error if #uri_string is a relative URI,
+		 * or does not contain a hostname component.
+		 * @param uri_string a string containing an absolute URI
+		 * @param flags flags for parsing #uri_string
+		 * @returns %TRUE if #uri_string parsed successfully,
+		 *   %FALSE on error.
+		 * 
+		 * on return, contains
+		 *    the scheme (converted to lowercase), or %NULL
+		 * 
+		 * on return, contains the
+		 *    host, or %NULL
+		 * 
+		 * on return, contains the
+		 *    port, or `-1`
+		 */
+		public static split_network(uri_string: string, flags: UriFlags): [ boolean, string | null, string | null, number | null ];
+		/**
+		 * Parses #uri_ref (which can be an
+		 * [absolute or relative URI][relative-absolute-uris]) according to #flags, and
+		 * returns the pieces. Any component that doesn't appear in #uri_ref will be
+		 * returned as %NULL (but note that all URIs always have a path component,
+		 * though it may be the empty string).
+		 * 
+		 * See {@link G.uri_split}, and the definition of #GUriFlags, for more
+		 * information on the effect of #flags. Note that #password will only
+		 * be parsed out if #flags contains %G_URI_FLAGS_HAS_PASSWORD, and
+		 * #auth_params will only be parsed out if #flags contains
+		 * %G_URI_FLAGS_HAS_AUTH_PARAMS.
+		 * @param uri_ref a string containing a relative or absolute URI
+		 * @param flags flags for parsing #uri_ref
+		 * @returns %TRUE if #uri_ref parsed successfully, %FALSE
+		 *   on error.
+		 * 
+		 * on return, contains
+		 *    the scheme (converted to lowercase), or %NULL
+		 * 
+		 * on return, contains
+		 *    the user, or %NULL
+		 * 
+		 * on return, contains
+		 *    the password, or %NULL
+		 * 
+		 * on return, contains
+		 *    the auth_params, or %NULL
+		 * 
+		 * on return, contains the
+		 *    host, or %NULL
+		 * 
+		 * on return, contains the
+		 *    port, or `-1`
+		 * 
+		 * on return, contains the
+		 *    path
+		 * 
+		 * on return, contains the
+		 *    query, or %NULL
+		 * 
+		 * on return, contains
+		 *    the fragment, or %NULL
+		 */
+		public static split_with_user(uri_ref: string, flags: UriFlags): [ boolean, string | null, string | null, string | null, string | null, string | null, number | null, string | null, string | null, string | null ];
+		/**
+		 * Unescapes a segment of an escaped string as binary data.
+		 * 
+		 * Note that in contrast to {@link G.uri_unescape_string}, this does allow
+		 * nul bytes to appear in the output.
+		 * 
+		 * If any of the characters in #illegal_characters appears as an escaped
+		 * character in #escaped_string, then that is an error and %NULL will be
+		 * returned. This is useful if you want to avoid for instance having a slash
+		 * being expanded in an escaped path element, which might confuse pathname
+		 * handling.
+		 * @param escaped_string A URI-escaped string
+		 * @param length the length (in bytes) of #escaped_string to escape, or `-1` if it
+		 *   is nul-terminated.
+		 * @param illegal_characters a string of illegal characters
+		 *   not to be allowed, or %NULL.
+		 * @returns an unescaped version of #escaped_string
+		 *     or %NULL on error (if decoding failed, using %G_URI_ERROR_FAILED error
+		 *     code). The returned #GBytes should be unreffed when no longer needed.
+		 */
+		public static unescape_bytes(escaped_string: string, length: number, illegal_characters: string | null): Bytes;
+		/**
+		 * Unescapes a segment of an escaped string.
+		 * 
+		 * If any of the characters in #illegal_characters or the NUL
+		 * character appears as an escaped character in #escaped_string, then
+		 * that is an error and %NULL will be returned. This is useful if you
+		 * want to avoid for instance having a slash being expanded in an
+		 * escaped path element, which might confuse pathname handling.
+		 * 
+		 * Note: `NUL` byte is not accepted in the output, in contrast to
+		 * {@link G.uri_unescape_bytes}.
+		 * @param escaped_string A string, may be %NULL
+		 * @param escaped_string_end Pointer to end of #escaped_string,
+		 *   may be %NULL
+		 * @param illegal_characters An optional string of illegal
+		 *   characters not to be allowed, may be %NULL
+		 * @returns an unescaped version of #escaped_string,
+		 * or %NULL on error. The returned string should be freed when no longer
+		 * needed.  As a special case if %NULL is given for #escaped_string, this
+		 * function will return %NULL.
+		 */
+		public static unescape_segment(escaped_string: string | null, escaped_string_end: string | null, illegal_characters: string | null): string | null;
+		/**
+		 * Unescapes a whole escaped string.
+		 * 
+		 * If any of the characters in #illegal_characters or the NUL
+		 * character appears as an escaped character in #escaped_string, then
+		 * that is an error and %NULL will be returned. This is useful if you
+		 * want to avoid for instance having a slash being expanded in an
+		 * escaped path element, which might confuse pathname handling.
+		 * @param escaped_string an escaped string to be unescaped.
+		 * @param illegal_characters a string of illegal characters
+		 *   not to be allowed, or %NULL.
+		 * @returns an unescaped version of #escaped_string.
+		 * The returned string should be freed when no longer needed.
+		 */
+		public static unescape_string(escaped_string: string, illegal_characters: string | null): string | null;
 		/**
 		 * Gets #uri's authentication parameters, which may contain
 		 * `%`-encoding, depending on the flags with which #uri was created.
@@ -10709,6 +14136,117 @@ declare namespace imports.gi.GLib {
 		 * @returns a floating reference to a new variant #GVariant instance
 		 */
 		public static new_variant(value: Variant): Variant;
+		/**
+		 * Determines if a given string is a valid D-Bus object path.  You
+		 * should ensure that a string is a valid D-Bus object path before
+		 * passing it to {@link G.variant_new_object_path}.
+		 * 
+		 * A valid object path starts with `/` followed by zero or more
+		 * sequences of characters separated by `/` characters.  Each sequence
+		 * must contain only the characters `[A-Z][a-z][0-9]_`.  No sequence
+		 * (including the one following the final `/` character) may be empty.
+		 * @param string a normal C nul-terminated string
+		 * @returns %TRUE if #string is a D-Bus object path
+		 */
+		public static is_object_path(string: string): boolean;
+		/**
+		 * Determines if a given string is a valid D-Bus type signature.  You
+		 * should ensure that a string is a valid D-Bus type signature before
+		 * passing it to {@link G.variant_new_signature}.
+		 * 
+		 * D-Bus type signatures consist of zero or more definite #GVariantType
+		 * strings in sequence.
+		 * @param string a normal C nul-terminated string
+		 * @returns %TRUE if #string is a D-Bus type signature
+		 */
+		public static is_signature(string: string): boolean;
+		/**
+		 * Parses a #GVariant from a text representation.
+		 * 
+		 * A single #GVariant is parsed from the content of #text.
+		 * 
+		 * The format is described [here][gvariant-text].
+		 * 
+		 * The memory at #limit will never be accessed and the parser behaves as
+		 * if the character at #limit is the nul terminator.  This has the
+		 * effect of bounding #text.
+		 * 
+		 * If #endptr is non-%NULL then #text is permitted to contain data
+		 * following the value that this function parses and #endptr will be
+		 * updated to point to the first character past the end of the text
+		 * parsed by this function.  If #endptr is %NULL and there is extra data
+		 * then an error is returned.
+		 * 
+		 * If #type is non-%NULL then the value will be parsed to have that
+		 * type.  This may result in additional parse errors (in the case that
+		 * the parsed value doesn't fit the type) but may also result in fewer
+		 * errors (in the case that the type would have been ambiguous, such as
+		 * with empty arrays).
+		 * 
+		 * In the event that the parsing is successful, the resulting #GVariant
+		 * is returned. It is never floating, and must be freed with
+		 * {@link G.variant_unref}.
+		 * 
+		 * In case of any error, %NULL will be returned.  If #error is non-%NULL
+		 * then it will be set to reflect the error that occurred.
+		 * 
+		 * Officially, the language understood by the parser is "any string
+		 * produced by g_variant_print()".
+		 * 
+		 * There may be implementation specific restrictions on deeply nested values,
+		 * which would result in a %G_VARIANT_PARSE_ERROR_RECURSION error. #GVariant is
+		 * guaranteed to handle nesting up to at least 64 levels.
+		 * @param type a #GVariantType, or %NULL
+		 * @param text a string containing a GVariant in text form
+		 * @param limit a pointer to the end of #text, or %NULL
+		 * @param endptr a location to store the end pointer, or %NULL
+		 * @returns a non-floating reference to a #GVariant, or %NULL
+		 */
+		public static parse(type: VariantType | null, text: string, limit: string | null, endptr: string | null): Variant;
+		/**
+		 * Pretty-prints a message showing the context of a #GVariant parse
+		 * error within the string for which parsing was attempted.
+		 * 
+		 * The resulting string is suitable for output to the console or other
+		 * monospace media where newlines are treated in the usual way.
+		 * 
+		 * The message will typically look something like one of the following:
+		 * 
+		 * |[
+		 * unterminated string constant:
+		 *   (1, 2, 3, 'abc
+		 *             ^^^^
+		 * ]|
+		 * 
+		 * or
+		 * 
+		 * |[
+		 * unable to find a common type:
+		 *   [1, 2, 3, 'str']
+		 *    ^        ^^^^^
+		 * ]|
+		 * 
+		 * The format of the message may change in a future version.
+		 * 
+		 * #error must have come from a failed attempt to {@link G.variant_parse} and
+		 * #source_str must be exactly the same string that caused the error.
+		 * If #source_str was not nul-terminated when you passed it to
+		 * g_variant_parse() then you must add nul termination before using this
+		 * function.
+		 * @param error a #GError from the #GVariantParseError domain
+		 * @param source_str the string that was given to the parser
+		 * @returns the printed message
+		 */
+		public static parse_error_print_context(error: Error, source_str: string): string;
+		public static parse_error_quark(): Quark;
+		/**
+		 * @deprecated
+		 * Use {@link G.variant_parse_error_quark} instead.
+		 * 
+		 * Same as {@link G.variant_error_quark}.
+		 * @returns 
+		 */
+		public static parser_get_error_quark(): Quark;
 		/**
 		 * Performs a byteswapping operation on the contents of #value.  The
 		 * result is that all multi-byte numeric data contained in #value is
@@ -12404,6 +15942,39 @@ declare namespace imports.gi.GLib {
 		 * Since 2.24
 		 */
 		public static new_tuple(items: VariantType[], length: number): VariantType;
+		public static checked_(arg0: string): VariantType;
+		public static string_get_depth_(type_string: string): number;
+		/**
+		 * Checks if #type_string is a valid GVariant type string.  This call is
+		 * equivalent to calling {@link G.variant_type_string_scan} and confirming
+		 * that the following character is a nul terminator.
+		 * @param type_string a pointer to any string
+		 * @returns %TRUE if #type_string is exactly one valid type string
+		 * 
+		 * Since 2.24
+		 */
+		public static string_is_valid(type_string: string): boolean;
+		/**
+		 * Scan for a single complete and valid GVariant type string in #string.
+		 * The memory pointed to by #limit (or bytes beyond it) is never
+		 * accessed.
+		 * 
+		 * If a valid type string is found, #endptr is updated to point to the
+		 * first character past the end of the string that was found and %TRUE
+		 * is returned.
+		 * 
+		 * If there is no valid type string starting at #string, or if the type
+		 * string does not end before #limit then %FALSE is returned.
+		 * 
+		 * For the simple case of checking if a string is a valid type string,
+		 * see {@link G.variant_type_string_is_valid}.
+		 * @param string a pointer to any string
+		 * @param limit the end of #string, or %NULL
+		 * @returns %TRUE if a valid type string was found
+		 * 
+		 * location to store the end pointer, or %NULL
+		 */
+		public static string_scan(string: string, limit: string | null): [ boolean, string | null ];
 		/**
 		 * Makes a copy of a #GVariantType.  It is appropriate to call
 		 * {@link G.variant_type_free} on the return value.  #type may not be %NULL.
@@ -16275,7 +19846,7 @@ declare namespace imports.gi.GLib {
 	 * value comes before the second, 0 if they are equal, or a positive
 	 * integer if the first value comes after the second.
 	 */
-	interface CompareDataFunc {
+	interface CompareDataFunc<T = any> {
 		/**
 		 * Specifies the type of a comparison function used to compare two
 		 * values.  The function should return a negative integer if the first
@@ -16286,7 +19857,7 @@ declare namespace imports.gi.GLib {
 		 * @returns negative value if #a < #b; zero if #a = #b; positive
 		 *          value if #a > #b
 		 */
-		(a: any | null, b: any | null): number;
+		(a: T | null, b: T | null): number;
 	}
 
 	/**
@@ -16295,7 +19866,7 @@ declare namespace imports.gi.GLib {
 	 * value comes before the second, 0 if they are equal, or a positive
 	 * integer if the first value comes after the second.
 	 */
-	interface CompareFunc {
+	interface CompareFunc<T = any> {
 		/**
 		 * Specifies the type of a comparison function used to compare two
 		 * values.  The function should return a negative integer if the first
@@ -16306,14 +19877,14 @@ declare namespace imports.gi.GLib {
 		 * @returns negative value if #a < #b; zero if #a = #b; positive
 		 *          value if #a > #b
 		 */
-		(a: any | null, b: any | null): number;
+		(a: T | null, b: T | null): number;
 	}
 
 	/**
 	 * A function of this signature is used to copy the node data
 	 * when doing a deep-copy of a tree.
 	 */
-	interface CopyFunc {
+	interface CopyFunc<T = any, K = any> {
 		/**
 		 * A function of this signature is used to copy the node data
 		 * when doing a deep-copy of a tree.
@@ -16321,7 +19892,7 @@ declare namespace imports.gi.GLib {
 		 * @param data Additional data
 		 * @returns A pointer to the copy
 		 */
-		(src: any, data: any | null): any;
+		(src: T, data: K | null): T;
 	}
 
 	/**
@@ -16479,13 +20050,13 @@ declare namespace imports.gi.GLib {
 	 * Specifies the type of functions passed to {@link G.list_foreach} and
 	 * g_slist_foreach().
 	 */
-	interface Func {
+	interface Func<T = any> {
 		/**
 		 * Specifies the type of functions passed to {@link G.list_foreach} and
 		 * g_slist_foreach().
 		 * @param data the element's data
 		 */
-		(data: any | null): void;
+		(data: T | null): void;
 	}
 
 	/**

@@ -5765,6 +5765,31 @@ declare namespace imports.gi.Gdk {
 	class Atom {
 		public constructor(options?: Partial<AtomInitOptions>);
 		/**
+		 * Finds or creates an atom corresponding to a given string.
+		 * @param atom_name a string.
+		 * @param only_if_exists if %TRUE, GDK is allowed to not create a new atom, but
+		 *   just return %GDK_NONE if the requested atom doesn’t already
+		 *   exists. Currently, the flag is ignored, since checking the
+		 *   existance of an atom is as expensive as creating it.
+		 * @returns the atom corresponding to #atom_name.
+		 */
+		public static intern(atom_name: string, only_if_exists: boolean): Atom;
+		/**
+		 * Finds or creates an atom corresponding to a given string.
+		 * 
+		 * Note that this function is identical to {@link Gdk.atom.intern} except
+		 * that if a new {@link Atom} is created the string itself is used rather
+		 * than a copy. This saves memory, but can only be used if the string
+		 * will always exist. It can be used with statically
+		 * allocated strings in the main program, but not with statically
+		 * allocated memory in dynamically loaded modules, if you expect to
+		 * ever unload the module again (e.g. do not use this function in
+		 * GTK+ theme engines).
+		 * @param atom_name a static string
+		 * @returns the atom corresponding to #atom_name
+		 */
+		public static intern_static_string(atom_name: string): Atom;
+		/**
 		 * Determines the string corresponding to an atom.
 		 * @returns a newly-allocated string containing the string
 		 *   corresponding to #atom. When you are done with the
@@ -5781,6 +5806,26 @@ declare namespace imports.gi.Gdk {
 	interface Color {}
 	class Color {
 		public constructor(options?: Partial<ColorInitOptions>);
+		/**
+		 * @deprecated
+		 * Use {@link RGBA}
+		 * 
+		 * Parses a textual specification of a color and fill in the
+		 * #red, #green, and #blue fields of a {@link Color}.
+		 * 
+		 * The string can either one of a large set of standard names
+		 * (taken from the X11 `rgb.txt` file), or it can be a hexadecimal
+		 * value in the form “\#rgb” “\#rrggbb”, “\#rrrgggbbb” or
+		 * “\#rrrrggggbbbb” where “r”, “g” and “b” are hex digits of
+		 * the red, green, and blue components of the color, respectively.
+		 * (White in the four forms is “\#fff”, “\#ffffff”, “\#fffffffff”
+		 * and “\#ffffffffffff”).
+		 * @param spec the string specifying the color
+		 * @returns %TRUE if the parsing succeeded
+		 * 
+		 * the {@link Color} to fill in
+		 */
+		public static parse(spec: string): [ boolean, Color ];
 		/**
 		 * For allocated colors, the pixel value used to
 		 *     draw this color on the screen. Not used anymore.

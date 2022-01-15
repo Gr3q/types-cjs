@@ -8029,6 +8029,15 @@ declare namespace imports.gi.Gst {
 		 */
 		public static new_wrapped_full(flags: MemoryFlags, data: number[], maxsize: number, offset: number, size: number, notify: GLib.DestroyNotify | null): Buffer;
 		/**
+		 * Get the maximum amount of memory blocks that a buffer can hold. This is a
+		 * compile time constant that can be queried with the function.
+		 * 
+		 * When more memory blocks are added, existing memory blocks will be merged
+		 * together to make room for the new block.
+		 * @returns the maximum amount of memory blocks that a buffer can hold.
+		 */
+		public static get_max_memory(): number;
+		/**
 		 * the parent structure
 		 */
 		public mini_object: MiniObject;
@@ -8777,6 +8786,15 @@ declare namespace imports.gi.Gst {
 		 */
 		public static new_simple(media_type: string, fieldname: string): Caps;
 		/**
+		 * Converts #caps from a string representation.
+		 * 
+		 * The current implementation of serialization will lead to unexpected results
+		 * when there are nested {@link Caps} / #GstStructure deeper than one level.
+		 * @param string a string to convert to {@link Caps}
+		 * @returns a newly allocated {@link Caps}
+		 */
+		public static from_string(string: string): Caps | null;
+		/**
 		 * the parent type
 		 */
 		public mini_object: MiniObject;
@@ -9205,6 +9223,16 @@ declare namespace imports.gi.Gst {
 		 * @returns a new, empty {@link CapsFeatures}
 		 */
 		public static new_valist(feature1: string, varargs: any[]): CapsFeatures;
+		/**
+		 * Creates a {@link CapsFeatures} from a string representation.
+		 * 
+		 * Free-function: gst_caps_features_free
+		 * @param features a string representation of a {@link CapsFeatures}.
+		 * @returns a new {@link CapsFeatures} or
+		 *     %NULL when the string could not be parsed. Free with
+		 *     {@link Gst.CapsFeatures.free} after use.
+		 */
+		public static from_string(features: string): CapsFeatures | null;
 		/**
 		 * Adds #feature to #features.
 		 * @param feature a feature.
@@ -11687,6 +11715,18 @@ declare namespace imports.gi.Gst {
 		 */
 		public static new_warning_with_details(src: Object | null, error: GLib.Error, debug: string, details: Structure | null): Message | null;
 		/**
+		 * Modifies a pointer to a {@link Message} to point to a different #GstMessage. The
+		 * modification is done atomically (so this is useful for ensuring thread safety
+		 * in some cases), and the reference counts are updated appropriately (the old
+		 * message is unreffed, the new one is reffed).
+		 * 
+		 * Either #new_message or the #GstMessage pointed to by #old_message may be %NULL.
+		 * @param new_message pointer to a {@link Message} that will
+		 *     replace the message pointed to by #old_message.
+		 * @returns %TRUE if #new_message was different from #old_message
+		 */
+		public static replace(new_message: Message | null): boolean;
+		/**
 		 * the parent structure
 		 */
 		public mini_object: MiniObject;
@@ -12343,6 +12383,45 @@ declare namespace imports.gi.Gst {
 	interface Meta {}
 	class Meta {
 		public constructor(options?: Partial<MetaInitOptions>);
+		public static api_type_get_tags(api: GObject.Type): string[];
+		/**
+		 * Check if #api was registered with #tag.
+		 * @param api an API
+		 * @param tag the tag to check
+		 * @returns %TRUE if #api was registered with #tag.
+		 */
+		public static api_type_has_tag(api: GObject.Type, tag: GLib.Quark): boolean;
+		/**
+		 * Register and return a GType for the #api and associate it with
+		 * #tags.
+		 * @param api an API to register
+		 * @param tags tags for #api
+		 * @returns a unique GType for #api.
+		 */
+		public static api_type_register(api: string, tags: string[]): GObject.Type;
+		/**
+		 * Lookup a previously registered meta info structure by its implementation name
+		 * #impl.
+		 * @param impl the name
+		 * @returns a {@link MetaInfo} with #impl, or
+		 * %NULL when no such metainfo exists.
+		 */
+		public static get_info(impl: string): MetaInfo | null;
+		/**
+		 * Register a new {@link Meta} implementation.
+		 * 
+		 * The same #info can be retrieved later with {@link Gst.meta.get_info} by using
+		 * #impl as the key.
+		 * @param api the type of the {@link Meta} API
+		 * @param impl the name of the {@link Meta} implementation
+		 * @param size the size of the {@link Meta} structure
+		 * @param init_func a {@link MetaInitFunction}
+		 * @param free_func a {@link MetaFreeFunction}
+		 * @param transform_func a {@link MetaTransformFunction}
+		 * @returns a {@link MetaInfo} that can be used to
+		 * access metadata.
+		 */
+		public static register(api: GObject.Type, impl: string, size: number, init_func: MetaInitFunction, free_func: MetaFreeFunction, transform_func: MetaTransformFunction): MetaInfo | null;
 		/**
 		 * extra flags for the metadata
 		 */
@@ -12454,6 +12533,33 @@ declare namespace imports.gi.Gst {
 	interface MiniObject {}
 	class MiniObject {
 		public constructor(options?: Partial<MiniObjectInitOptions>);
+		/**
+		 * Atomically modifies a pointer to point to a new mini-object.
+		 * The reference count of #olddata is decreased and the reference count of
+		 * #newdata is increased.
+		 * 
+		 * Either #newdata and the value pointed to by #olddata may be %NULL.
+		 * @param newdata pointer to new mini-object
+		 * @returns %TRUE if #newdata was different from #olddata
+		 */
+		public static replace(newdata: MiniObject | null): boolean;
+		/**
+		 * Replace the current {@link MiniObject} pointer to by #olddata with %NULL and
+		 * return the old value.
+		 * @returns the {@link MiniObject} at #oldata
+		 */
+		public static steal(): MiniObject | null;
+		/**
+		 * Modifies a pointer to point to a new mini-object. The modification
+		 * is done atomically. This version is similar to {@link Gst.mini.object_replace}
+		 * except that it does not increase the refcount of #newdata and thus
+		 * takes ownership of #newdata.
+		 * 
+		 * Either #newdata and the value pointed to by #olddata may be %NULL.
+		 * @param newdata pointer to new mini-object
+		 * @returns %TRUE if #newdata was different from #olddata
+		 */
+		public static take(newdata: MiniObject): boolean;
 		/**
 		 * the GType of the object
 		 */
@@ -12725,6 +12831,11 @@ declare namespace imports.gi.Gst {
 	class ParentBufferMeta {
 		public constructor(options?: Partial<ParentBufferMetaInitOptions>);
 		/**
+		 * Get the global {@link MetaInfo} describing  the #GstParentBufferMeta meta.
+		 * @returns The {@link MetaInfo}
+		 */
+		public static get_info(): MetaInfo;
+		/**
 		 * the {@link Buffer} on which a reference is being held.
 		 */
 		public buffer: Buffer;
@@ -12858,6 +12969,29 @@ declare namespace imports.gi.Gst {
 	interface Poll {}
 	class Poll {
 		public constructor(options?: Partial<PollInitOptions>);
+		/**
+		 * Create a new file descriptor set. If #controllable, it
+		 * is possible to restart or flush a call to {@link Gst.Poll.wait} with
+		 * gst_poll_restart() and gst_poll_set_flushing() respectively.
+		 * 
+		 * Free-function: gst_poll_free
+		 * @param controllable whether it should be possible to control a wait.
+		 * @returns a new {@link Poll}, or %NULL in
+		 *     case of an error.  Free with {@link Gst.Poll.free}.
+		 */
+		public static new(controllable: boolean): Poll | null;
+		/**
+		 * Create a new poll object that can be used for scheduling cancellable
+		 * timeouts.
+		 * 
+		 * A timeout is performed with {@link Gst.Poll.wait}. Multiple timeouts can be
+		 * performed from different threads.
+		 * 
+		 * Free-function: gst_poll_free
+		 * @returns a new {@link Poll}, or %NULL in
+		 *     case of an error.  Free with {@link Gst.Poll.free}.
+		 */
+		public static new_timer(): Poll | null;
 		/**
 		 * Add a file descriptor to the file descriptor set.
 		 * @param fd a file descriptor.
@@ -13180,6 +13314,7 @@ declare namespace imports.gi.Gst {
 	interface ProtectionMeta {}
 	class ProtectionMeta {
 		public constructor(options?: Partial<ProtectionMetaInitOptions>);
+		public static get_info(): MetaInfo;
 		/**
 		 * the parent {@link Meta}.
 		 */
@@ -13954,6 +14089,11 @@ declare namespace imports.gi.Gst {
 	interface ReferenceTimestampMeta {}
 	class ReferenceTimestampMeta {
 		public constructor(options?: Partial<ReferenceTimestampMetaInitOptions>);
+		/**
+		 * Get the global {@link MetaInfo} describing  the #GstReferenceTimestampMeta meta.
+		 * @returns The {@link MetaInfo}
+		 */
+		public static get_info(): MetaInfo;
 		/**
 		 * identifier for the timestamp reference.
 		 */
@@ -14742,6 +14882,19 @@ declare namespace imports.gi.Gst {
 		 */
 		public static new_valist(name: string, firstfield: string, varargs: any[]): Structure;
 		/**
+		 * Atomically modifies a pointer to point to a new structure.
+		 * The {@link Structure} #oldstr_ptr is pointing to is freed and
+		 * #newstr is taken ownership over.
+		 * 
+		 * Either #newstr and the value pointed to by #oldstr_ptr may be %NULL.
+		 * 
+		 * It is a programming error if both #newstr and the value pointed to by
+		 * #oldstr_ptr refer to the same, non-%NULL structure.
+		 * @param newstr a new {@link Structure}
+		 * @returns %TRUE if #newstr was different from #oldstr_ptr
+		 */
+		public static take(newstr: Structure | null): boolean;
+		/**
 		 * the GType of a structure
 		 */
 		public type: GObject.Type;
@@ -15381,6 +15534,19 @@ declare namespace imports.gi.Gst {
 		 *     when no longer needed.
 		 */
 		public static new_valist(var_args: any[]): TagList;
+		/**
+		 * Copies the contents for the given tag into the value,
+		 * merging multiple values into one if multiple values are associated
+		 * with the tag.
+		 * You must {@link G.value_unset} the value after use.
+		 * @param list list to get the tag from
+		 * @param tag tag to read out
+		 * @returns %TRUE, if a value was copied, %FALSE if the tag didn't exist in the
+		 *          given list.
+		 * 
+		 * uninitialized #GValue to copy into
+		 */
+		public static copy_value(list: TagList, tag: string): [ boolean, GObject.Value ];
 		/**
 		 * the parent type
 		 */
@@ -16068,6 +16234,25 @@ declare namespace imports.gi.Gst {
 	class TypeFind {
 		public constructor(options?: Partial<TypeFindInitOptions>);
 		/**
+		 * Registers a new typefind function to be used for typefinding. After
+		 * registering this function will be available for typefinding.
+		 * This function is typically called during an element's plugin initialization.
+		 * @param plugin A {@link Plugin}, or %NULL for a static typefind function
+		 * @param name The name for registering
+		 * @param rank The rank (or importance) of this typefind function
+		 * @param func The {@link TypeFindFunction} to use
+		 * @param extensions Optional comma-separated list of extensions
+		 *     that could belong to this type
+		 * @param possible_caps Optionally the caps that could be returned when typefinding
+		 *                 succeeds
+		 * @param data Optional user data. This user data must be available until the plugin
+		 *        is unloaded.
+		 * @param data_notify a #GDestroyNotify that will be called on #data when the plugin
+		 *        is unloaded.
+		 * @returns %TRUE on success, %FALSE otherwise
+		 */
+		public static register(plugin: Plugin | null, name: string, rank: number, func: TypeFindFunction, extensions: string | null, possible_caps: Caps | null, data: any | null, data_notify: GLib.DestroyNotify): boolean;
+		/**
 		 * The data used by the caller of the typefinding function.
 		 */
 		public data: any;
@@ -16162,6 +16347,104 @@ declare namespace imports.gi.Gst {
 		 * @returns A new {@link Uri} object.
 		 */
 		public static new(scheme: string | null, userinfo: string | null, host: string | null, port: number, path: string | null, query: string | null, fragment: string | null): Uri;
+		/**
+		 * @deprecated
+		 * Use GstURI instead.
+		 * 
+		 * Constructs a URI for a given valid protocol and location.
+		 * 
+		 * Free-function: g_free
+		 * @param protocol Protocol for URI
+		 * @param location Location for URI
+		 * @returns a new string for this URI. Returns %NULL if the
+		 *     given URI protocol is not valid, or the given location is %NULL.
+		 */
+		public static construct(protocol: string, location: string): string;
+		/**
+		 * Parses a URI string into a new {@link Uri} object. Will return NULL if the URI
+		 * cannot be parsed.
+		 * @param uri The URI string to parse.
+		 * @returns A new {@link Uri} object, or NULL.
+		 */
+		public static from_string(uri: string): Uri | null;
+		/**
+		 * Parses a URI string into a new {@link Uri} object. Will return NULL if the URI
+		 * cannot be parsed. This is identical to {@link Gst.uri.from_string} except that
+		 * the userinfo and fragment components of the URI will not be unescaped while
+		 * parsing.
+		 * 
+		 * Use this when you need to extract a username and password from the userinfo
+		 * such as https://user:password#example.com since either may contain
+		 * a URI-escaped ':' character. gst_uri_from_string() will unescape the entire
+		 * userinfo component, which will make it impossible to know which ':'
+		 * delineates the username and password.
+		 * 
+		 * The same applies to the fragment component of the URI, such as
+		 * https://example.com/path#fragment which may contain a URI-escaped '#'.
+		 * @param uri The URI string to parse.
+		 * @returns A new {@link Uri} object, or NULL.
+		 */
+		public static from_string_escaped(uri: string): Uri | null;
+		/**
+		 * Extracts the location out of a given valid URI, ie. the protocol and "://"
+		 * are stripped from the URI, which means that the location returned includes
+		 * the hostname if one is specified. The returned string must be freed using
+		 * {@link G.free}.
+		 * 
+		 * Free-function: g_free
+		 * @param uri A URI string
+		 * @returns the location for this URI. Returns
+		 *     %NULL if the URI isn't valid. If the URI does not contain a location, an
+		 *     empty string is returned.
+		 */
+		public static get_location(uri: string): string | null;
+		/**
+		 * Extracts the protocol out of a given valid URI. The returned string must be
+		 * freed using {@link G.free}.
+		 * @param uri A URI string
+		 * @returns The protocol for this URI.
+		 */
+		public static get_protocol(uri: string): string | null;
+		/**
+		 * Checks if the protocol of a given valid URI matches #protocol.
+		 * @param uri a URI string
+		 * @param protocol a protocol string (e.g. "http")
+		 * @returns %TRUE if the protocol matches.
+		 */
+		public static has_protocol(uri: string, protocol: string): boolean;
+		/**
+		 * Tests if the given string is a valid URI identifier. URIs start with a valid
+		 * scheme followed by ":" and maybe a string identifying the location.
+		 * @param uri A URI string
+		 * @returns %TRUE if the string is a valid URI
+		 */
+		public static is_valid(uri: string): boolean;
+		/**
+		 * This is a convenience function to join two URI strings and return the result.
+		 * The returned string should be {@link G.free}'d after use.
+		 * @param base_uri The percent-encoded base URI.
+		 * @param ref_uri The percent-encoded reference URI to join to the #base_uri.
+		 * @returns A string representing the percent-encoded join of
+		 *          the two URIs.
+		 */
+		public static join_strings(base_uri: string, ref_uri: string): string;
+		/**
+		 * Checks if an element exists that supports the given URI protocol. Note
+		 * that a positive return value does not imply that a subsequent call to
+		 * {@link Gst.Element.make_from_uri} is guaranteed to work.
+		 * @param type Whether to check for a source or a sink
+		 * @param protocol Protocol that should be checked for (e.g. "http" or "smb")
+		 * @returns %TRUE
+		 */
+		public static protocol_is_supported(type: URIType, protocol: string): boolean;
+		/**
+		 * Tests if the given string is a valid protocol identifier. Protocols
+		 * must consist of alphanumeric characters, '+', '-' and '.' and must
+		 * start with a alphabetic character. See RFC 3986 Section 3.1.
+		 * @param protocol A string
+		 * @returns %TRUE if the string is a valid protocol identifier, %FALSE otherwise.
+		 */
+		public static protocol_is_valid(protocol: string): boolean;
 		/**
 		 * Append a path onto the end of the path in the URI. The path is not
 		 * normalized, call {@link #gst.uri_normalize} to normalize the path.

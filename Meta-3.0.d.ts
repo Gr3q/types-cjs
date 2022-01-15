@@ -1269,6 +1269,9 @@ declare namespace imports.gi.Meta {
 	interface Compositor {}
 	class Compositor {
 		public constructor(options?: Partial<CompositorInitOptions>);
+		public static new(display: Display): Compositor;
+		public static on_shadow_factory_changed(): void;
+		public static toggle_send_frame_timings(screen: Screen): void;
 		public add_window(window: Window): void;
 		public destroy(): void;
 		public flash_screen(screen: Screen): void;
@@ -1460,6 +1463,10 @@ declare namespace imports.gi.Meta {
 	interface Theme {}
 	class Theme {
 		public constructor(options?: Partial<ThemeInitOptions>);
+		public static get_current(): Theme;
+		public static load(theme_name: string): Theme;
+		public static new(): Theme;
+		public static set_current(name: string, force_reload: boolean): void;
 		public free(): void;
 		public validate(): boolean;
 	}

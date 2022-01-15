@@ -5178,6 +5178,23 @@ declare namespace imports.gi.Soup {
 		 */
 		public static new(name: string, value: string, domain: string, path: string, max_age: number): Cookie;
 		/**
+		 * Parses #header and returns a {@link Cookie}. (If #header contains
+		 * multiple cookies, only the first one will be parsed.)
+		 * 
+		 * If #header does not have "path" or "domain" attributes, they will
+		 * be defaulted from #origin. If #origin is %NULL, path will default
+		 * to "/", but domain will be left as %NULL. Note that this is not a
+		 * valid state for a #SoupCookie, and you will need to fill in some
+		 * appropriate string for the domain if you want to actually make use
+		 * of the cookie.
+		 * @param header a cookie string (eg, the value of a Set-Cookie header)
+		 * @param origin origin of the cookie, or %NULL
+		 * @returns a new {@link Cookie}, or %NULL if it could
+		 * not be parsed, or contained an illegal "domain" attribute for a
+		 * cookie originating from #origin.
+		 */
+		public static parse(header: string, origin: URI): Cookie | null;
+		/**
 		 * the cookie name
 		 */
 		public name: string;
@@ -6193,6 +6210,13 @@ declare namespace imports.gi.Soup {
 	interface MessageHeadersIter {}
 	class MessageHeadersIter {
 		public constructor(options?: Partial<MessageHeadersIterInitOptions>);
+		/**
+		 * Initializes #iter for iterating #hdrs.
+		 * @param hdrs a %SoupMessageHeaders
+		 * @returns a pointer to a %SoupMessageHeadersIter
+		 * structure
+		 */
+		public static init(hdrs: MessageHeaders): MessageHeadersIter;
 		public readonly dummy: any[];
 		/**
 		 * Yields the next name/value pair in the %SoupMessageHeaders being
@@ -6459,6 +6483,49 @@ declare namespace imports.gi.Soup {
 		 * @returns a parsed {@link URI}.
 		 */
 		public static new_with_base(base: URI, uri_string: string): URI;
+		/**
+		 * Fully %<!-- -->-decodes #part.
+		 * 
+		 * In the past, this would return %NULL if #part contained invalid
+		 * percent-encoding, but now it just ignores the problem (as
+		 * {@link Soup.URI.new} already did).
+		 * @param part a URI part
+		 * @returns the decoded URI part.
+		 */
+		public static decode(part: string): string;
+		/**
+		 * This %<!-- -->-encodes the given URI part and returns the escaped
+		 * version in allocated memory, which the caller must free when it is
+		 * done.
+		 * @param part a URI part
+		 * @param escape_extra additional reserved characters to
+		 * escape (or %NULL)
+		 * @returns the encoded URI part
+		 */
+		public static encode(part: string, escape_extra: string | null): string;
+		/**
+		 * %<!-- -->-decodes any "unreserved" characters (or characters in
+		 * #unescape_extra) in #part, and %<!-- -->-encodes any non-ASCII
+		 * characters, spaces, and non-printing characters in #part.
+		 * 
+		 * "Unreserved" characters are those that are not allowed to be used
+		 * for punctuation according to the URI spec. For example, letters are
+		 * unreserved, so {@link Soup.uri.normalize} will turn
+		 * <literal>http://example.com/foo/b%<!-- -->61r</literal> into
+		 * <literal>http://example.com/foo/bar</literal>, which is guaranteed
+		 * to mean the same thing. However, "/" is "reserved", so
+		 * <literal>http://example.com/foo%<!-- -->2Fbar</literal> would not
+		 * be changed, because it might mean something different to the
+		 * server.
+		 * 
+		 * In the past, this would return %NULL if #part contained invalid
+		 * percent-encoding, but now it just ignores the problem (as
+		 * soup_uri_new() already did).
+		 * @param part a URI part
+		 * @param unescape_extra reserved characters to unescape (or %NULL)
+		 * @returns the normalized URI part
+		 */
+		public static normalize(part: string, unescape_extra: string | null): string;
 		/**
 		 * the URI scheme (eg, "http")
 		 */

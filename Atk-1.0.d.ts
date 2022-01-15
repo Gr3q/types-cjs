@@ -1288,6 +1288,12 @@ declare namespace imports.gi.Atk {
 	class Attribute {
 		public constructor(options?: Partial<AttributeInitOptions>);
 		/**
+		 * Frees the memory used by an {@link AttributeSet}, including all its
+		 * #AtkAttributes.
+		 * @param attrib_set The {@link AttributeSet} to free
+		 */
+		public static set_free(attrib_set: AttributeSet): void;
+		/**
 		 * The attribute name.
 		 */
 		public name: string;

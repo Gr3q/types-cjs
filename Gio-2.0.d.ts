@@ -22196,6 +22196,15 @@ declare namespace imports.gi.Gio {
 	class DBusAnnotationInfo {
 		public constructor(options?: Partial<DBusAnnotationInfoInitOptions>);
 		/**
+		 * Looks up the value of an annotation.
+		 * 
+		 * The cost of this function is O(n) in number of annotations.
+		 * @param annotations A %NULL-terminated array of annotations or %NULL.
+		 * @param name The name of the annotation to look up.
+		 * @returns The value or %NULL if not found. Do not free, it is owned by #annotations.
+		 */
+		public static lookup(annotations: DBusAnnotationInfo[] | null, name: string): string | null;
+		/**
 		 * The reference count or -1 if statically allocated.
 		 */
 		public ref_count: number;
@@ -23189,6 +23198,33 @@ declare namespace imports.gi.Gio {
 	class IOExtensionPoint {
 		public constructor(options?: Partial<IOExtensionPointInitOptions>);
 		/**
+		 * Registers #type as extension for the extension point with name
+		 * #extension_point_name.
+		 * 
+		 * If #type has already been registered as an extension for this
+		 * extension point, the existing #GIOExtension object is returned.
+		 * @param extension_point_name the name of the extension point
+		 * @param type the #GType to register as extension
+		 * @param extension_name the name for the extension
+		 * @param priority the priority for the extension
+		 * @returns a #GIOExtension object for #GType
+		 */
+		public static implement(extension_point_name: string, type: GObject.Type, extension_name: string, priority: number): IOExtension;
+		/**
+		 * Looks up an existing extension point.
+		 * @param name the name of the extension point
+		 * @returns the #GIOExtensionPoint, or %NULL if there
+		 *    is no registered extension point with the given name.
+		 */
+		public static lookup(name: string): IOExtensionPoint;
+		/**
+		 * Registers an extension point.
+		 * @param name The name of the extension point
+		 * @returns the new #GIOExtensionPoint. This object is
+		 *    owned by GIO and should not be freed.
+		 */
+		public static register(name: string): IOExtensionPoint;
+		/**
 		 * Finds a #GIOExtension for an extension point by name.
 		 * @param name the name of the extension to get
 		 * @returns the #GIOExtension for #extension_point that has the
@@ -23228,6 +23264,17 @@ declare namespace imports.gi.Gio {
 	interface IOModuleScope {}
 	class IOModuleScope {
 		public constructor(options?: Partial<IOModuleScopeInitOptions>);
+		/**
+		 * Create a new scope for loading of IO modules. A scope can be used for
+		 * blocking duplicate modules, or blocking a module you don't want to load.
+		 * 
+		 * Specify the %G_IO_MODULE_SCOPE_BLOCK_DUPLICATES flag to block modules
+		 * which have the same base name as a module that has already been seen
+		 * in this scope.
+		 * @param flags flags for the new scope
+		 * @returns the new module scope
+		 */
+		public static new(flags: IOModuleScopeFlags): IOModuleScope;
 		/**
 		 * Block modules with the given #basename from being loaded when
 		 * this scope is used with {@link G.io_modules_scan_all_in_directory_with_scope}
@@ -23843,6 +23890,21 @@ declare namespace imports.gi.Gio {
 		 */
 		public static new_from_data(data: GLib.Bytes): Resource;
 		/**
+		 * Loads a binary resource bundle and creates a #GResource representation of it, allowing
+		 * you to query it for data.
+		 * 
+		 * If you want to use this resource in the global resource namespace you need
+		 * to register it with {@link G.resources_register}.
+		 * 
+		 * If #filename is empty or the data in it is corrupt,
+		 * %G_RESOURCE_ERROR_INTERNAL will be returned. If #filename doesn’t exist, or
+		 * there is an error in reading it, an error from g_mapped_file_new() will be
+		 * returned.
+		 * @param filename the path of a filename to load, in the GLib filename encoding
+		 * @returns a new #GResource, or %NULL on error
+		 */
+		public static load(filename: string): Resource;
+		/**
 		 * Registers the resource with the process-global set of resources.
 		 * Once a resource is registered the files in it can be accessed
 		 * with the global resource lookup functions like {@link G.resources_lookup_data}.
@@ -24274,6 +24336,23 @@ declare namespace imports.gi.Gio {
 		 */
 		public static new_from_directory(directory: string, parent: SettingsSchemaSource | null, trusted: boolean): SettingsSchemaSource;
 		/**
+		 * Gets the default system schema source.
+		 * 
+		 * This function is not required for normal uses of #GSettings but it
+		 * may be useful to authors of plugin management systems or to those who
+		 * want to introspect the content of schemas.
+		 * 
+		 * If no schemas are installed, %NULL will be returned.
+		 * 
+		 * The returned source may actually consist of multiple schema sources
+		 * from different directories, depending on which directories were given
+		 * in `XDG_DATA_DIRS` and `GSETTINGS_SCHEMA_DIR`. For this reason, all
+		 * lookups performed against the default source should probably be done
+		 * recursively.
+		 * @returns the default schema source
+		 */
+		public static get_default(): SettingsSchemaSource | null;
+		/**
 		 * Lists the schemas in a given source.
 		 * 
 		 * If #recursive is %TRUE then include parent sources.  If %FALSE then
@@ -24370,6 +24449,12 @@ declare namespace imports.gi.Gio {
 		 * @returns a new #GSrvTarget.
 		 */
 		public static new(hostname: string, port: number, priority: number, weight: number): SrvTarget;
+		/**
+		 * Sorts #targets in place according to the algorithm in RFC 2782.
+		 * @param targets a #GList of #GSrvTarget
+		 * @returns the head of the sorted list.
+		 */
+		public static list_sort(targets: GLib.List): GLib.List;
 		/**
 		 * Copies #target
 		 * @returns a copy of #target
@@ -24530,6 +24615,20 @@ declare namespace imports.gi.Gio {
 	interface UnixMountPoint {}
 	class UnixMountPoint {
 		public constructor(options?: Partial<UnixMountPointInitOptions>);
+		/**
+		 * Gets a #GUnixMountPoint for a given mount path. If #time_read is set, it
+		 * will be filled with a unix timestamp for checking if the mount points have
+		 * changed since with {@link G.unix_mount_points_changed_since}.
+		 * 
+		 * If more mount points have the same mount path, the last matching mount point
+		 * is returned.
+		 * @param mount_path path for a possible unix mount point.
+		 * @returns a #GUnixMountPoint, or %NULL if no match
+		 * is found.
+		 * 
+		 * guint64 to contain a timestamp.
+		 */
+		public static at(mount_path: string): [ UnixMountPoint | null, number | null ];
 		/**
 		 * Compares two unix mount points.
 		 * @param mount2 a #GUnixMount.

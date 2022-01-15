@@ -17435,6 +17435,12 @@ declare namespace imports.gi.Clutter {
 		 */
 		public static new(x_1: number, y_1: number, x_2: number, y_2: number): ActorBox;
 		/**
+		 * Allocates a new {@link ActorBox}.
+		 * @returns the newly allocated {@link ActorBox}.
+		 *   Use {@link Clutter.ActorBox.free} to free its resources
+		 */
+		public static alloc(): ActorBox;
+		/**
 		 * X coordinate of the top left corner
 		 */
 		public x1: number;
@@ -17874,6 +17880,73 @@ declare namespace imports.gi.Clutter {
 		 */
 		public static new(red: number, green: number, blue: number, alpha: number): Color;
 		/**
+		 * Converts a color expressed in HLS (hue, luminance and saturation)
+		 * values into a {@link Color}.
+		 * @param hue hue value, in the 0 .. 360 range
+		 * @param luminance luminance value, in the 0 .. 1 range
+		 * @param saturation saturation value, in the 0 .. 1 range
+		 * @returns return location for a {@link Color}
+		 */
+		public static from_hls(hue: number, luminance: number, saturation: number): Color;
+		/**
+		 * Converts #pixel from the packed representation of a four 8 bit channel
+		 * color to a {@link Color}.
+		 * @param pixel a 32 bit packed integer containing a color
+		 * @returns return location for a {@link Color}
+		 */
+		public static from_pixel(pixel: number): Color;
+		/**
+		 * Parses a string definition of a color, filling the {@link Color}.red,
+		 * #ClutterColor.green, #ClutterColor.blue and #ClutterColor.alpha fields
+		 * of #color.
+		 * 
+		 * The #color is not allocated.
+		 * 
+		 * The format of #str can be either one of:
+		 * 
+		 *   - a standard name (as taken from the X11 rgb.txt file)
+		 *   - an hexadecimal value in the form: `#rgb`, `#rrggbb`, `#rgba`, or `#rrggbbaa`
+		 *   - a RGB color in the form: `rgb(r, g, b)`
+		 *   - a RGB color in the form: `rgba(r, g, b, a)`
+		 *   - a HSL color in the form: `hsl(h, s, l)`
+		 *    -a HSL color in the form: `hsla(h, s, l, a)`
+		 * 
+		 * where 'r', 'g', 'b' and 'a' are (respectively) the red, green, blue color
+		 * intensities and the opacity. The 'h', 's' and 'l' are (respectively) the
+		 * hue, saturation and luminance values.
+		 * 
+		 * In the rgb() and rgba() formats, the 'r', 'g', and 'b' values are either
+		 * integers between 0 and 255, or percentage values in the range between 0%
+		 * and 100%; the percentages require the '%' character. The 'a' value, if
+		 * specified, can only be a floating point value between 0.0 and 1.0.
+		 * 
+		 * In the hls() and hlsa() formats, the 'h' value (hue) is an angle between
+		 * 0 and 360.0 degrees; the 'l' and 's' values (luminance and saturation) are
+		 * percentage values in the range between 0% and 100%. The 'a' value, if specified,
+		 * can only be a floating point value between 0.0 and 1.0.
+		 * 
+		 * Whitespace inside the definitions is ignored; no leading whitespace
+		 * is allowed.
+		 * 
+		 * If the alpha component is not specified then it is assumed to be set to
+		 * be fully opaque.
+		 * @param str a string specifiying a color
+		 * @returns %TRUE if parsing succeeded, and %FALSE otherwise
+		 * 
+		 * return location for a {@link Color}
+		 */
+		public static from_string(str: string): [ boolean, Color ];
+		/**
+		 * Retrieves a static color for the given #color name
+		 * 
+		 * Static colors are created by Clutter and are guaranteed to always be
+		 * available and valid
+		 * @param color the named global color
+		 * @returns a pointer to a static color; the returned pointer
+		 *   is owned by Clutter and it should never be modified or freed
+		 */
+		public static get_static(color: StaticColor): Color;
+		/**
 		 * red component, between 0 and 255
 		 */
 		public red: number;
@@ -18306,6 +18379,11 @@ declare namespace imports.gi.Clutter {
 	class Matrix {
 		public constructor(options?: Partial<MatrixInitOptions>);
 		/**
+		 * Allocates enough memory to hold a {@link Matrix}.
+		 * @returns the newly allocated {@link Matrix}
+		 */
+		public static alloc(): Matrix;
+		/**
 		 * Frees the memory allocated by {@link Clutter.matrix.alloc}.
 		 */
 		public free(): void;
@@ -18684,6 +18762,14 @@ declare namespace imports.gi.Clutter {
 		 */
 		public static alloc(): Point;
 		/**
+		 * A point centered at (0, 0).
+		 * 
+		 * The returned value can be used as a guard.
+		 * @returns a point centered in (0, 0); the returned {@link Point}
+		 *   is owned by Clutter and it should not be modified or freed.
+		 */
+		public static zero(): Point;
+		/**
 		 * X coordinate, in pixels
 		 */
 		public x: number;
@@ -18760,6 +18846,16 @@ declare namespace imports.gi.Clutter {
 		 *   Use {@link Clutter.Rect.free} to free its resources
 		 */
 		public static alloc(): Rect;
+		/**
+		 * A {@link Rect} with #ClutterRect.origin set at (0, 0) and a size
+		 * of 0.
+		 * 
+		 * The returned value can be used as a guard.
+		 * @returns a rectangle with origin in (0, 0) and a size of 0.
+		 *   The returned {@link Rect} is owned by Clutter and it should not
+		 *   be modified or freed.
+		 */
+		public static zero(): Rect;
 		/**
 		 * the origin of the rectangle
 		 */
@@ -19191,6 +19287,25 @@ declare namespace imports.gi.Clutter {
 		 * @deprecated
 		 * There is no direct replacement for this API
 		 * 
+		 * Creates a new timeout pool source. A timeout pool should be used when
+		 * multiple timeout functions, running at the same priority, are needed and
+		 * the {@link GObject.timeout_add} API might lead to starvation of the time slice of
+		 * the main loop. A timeout pool allocates a single time slice of the main
+		 * loop and runs every timeout function inside it. The timeout pool is
+		 * always sorted, so that the extraction of the next timeout function is
+		 * a constant time operation.
+		 * @param priority the priority of the timeout pool. Typically this will
+		 *   be #G_PRIORITY_DEFAULT
+		 * @returns the newly created {@link TimeoutPool}. The created pool
+		 *   is owned by the GLib default context and will be automatically
+		 *   destroyed when the context is destroyed. It is possible to force
+		 *   the destruction of the timeout pool using {@link GObject.source_destroy}
+		 */
+		public static new(priority: number): TimeoutPool;
+		/**
+		 * @deprecated
+		 * There is no direct replacement for this API
+		 * 
 		 * Sets a function to be called at regular intervals, and puts it inside
 		 * the #pool. The function is repeatedly called until it returns %FALSE,
 		 * at which point the timeout is automatically destroyed and the function
@@ -19418,6 +19533,85 @@ declare namespace imports.gi.Clutter {
 	interface Units {}
 	class Units {
 		public constructor(options?: Partial<UnitsInitOptions>);
+		/**
+		 * Stores a value in centimeters inside #units
+		 * @param cm centimeters
+		 * @returns a {@link Units}
+		 */
+		public static from_cm(cm: number): Units;
+		/**
+		 * Stores a value in em inside #units, using the default font
+		 * name as returned by {@link Clutter.Backend.get_font_name}
+		 * @param em em
+		 * @returns a {@link Units}
+		 */
+		public static from_em(em: number): Units;
+		/**
+		 * Stores a value in em inside #units using #font_name
+		 * @param font_name the font name and size
+		 * @param em em
+		 * @returns a {@link Units}
+		 */
+		public static from_em_for_font(font_name: string | null, em: number): Units;
+		/**
+		 * Stores a value in millimiters inside #units
+		 * @param mm millimeters
+		 * @returns a {@link Units}
+		 */
+		public static from_mm(mm: number): Units;
+		/**
+		 * Stores a value in pixels inside #units
+		 * @param px pixels
+		 * @returns a {@link Units}
+		 */
+		public static from_pixels(px: number): Units;
+		/**
+		 * Stores a value in typographic points inside #units
+		 * @param pt typographic points
+		 * @returns a {@link Units}
+		 */
+		public static from_pt(pt: number): Units;
+		/**
+		 * Parses a value and updates #units with it
+		 * 
+		 * A {@link Units} expressed in string should match:
+		 * 
+		 * |[
+		 *   units: wsp* unit-value wsp* unit-name? wsp*
+		 *   unit-value: number
+		 *   unit-name: 'px' | 'pt' | 'mm' | 'em' | 'cm'
+		 *   number: digit+
+		 *           | digit* sep digit+
+		 *   sep: '.' | ','
+		 *   digit: '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
+		 *   wsp: (#0x20 | #0x9 | #0xA | #0xB | #0xC | #0xD)+
+		 * ]|
+		 * 
+		 * For instance, these are valid strings:
+		 * 
+		 * |[
+		 *   10 px
+		 *   5.1 em
+		 *   24 pt
+		 *   12.6 mm
+		 *   .3 cm
+		 * ]|
+		 * 
+		 * While these are not:
+		 * 
+		 * |[
+		 *   42 cats
+		 *   omg!1!ponies
+		 * ]|
+		 * 
+		 * If no unit is specified, pixels are assumed.
+		 * @param str the string to convert
+		 * @returns %TRUE if the string was successfully parsed,
+		 *   and %FALSE otherwise
+		 * 
+		 * a {@link Units}
+		 */
+		public static from_string(str: string): [ boolean, Units ];
 		public readonly unit_type: UnitType;
 		public readonly value: number;
 		public readonly pixels: number;
