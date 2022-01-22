@@ -51,6 +51,7 @@
 /// <reference path="./cinnamon/ui/appletManager.d.ts" />
 /// <reference path="./cinnamon/ui/backgroundManager.d.ts" />
 /// <reference path="./cinnamon/ui/boxpointer.d.ts" />
+/// <reference path="./cinnamon/ui/checkBox.d.ts" />
 /// <reference path="./cinnamon/ui/cinnamonDBus.d.ts" />
 /// <reference path="./cinnamon/ui/desklet.d.ts" />
 /// <reference path="./cinnamon/ui/deskletManager.d.ts" />

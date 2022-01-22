@@ -1,6 +1,14 @@
 declare namespace imports.ui.dnd {
 
-	export enum DragMotionResult {
+	const DND_ANIMATION_TIME: number
+	/** Time to scale down to maxDragActorSize */
+	const SCALE_ANIMATION_TIME: number
+	/** Time to animate to original position on cancel */
+	const SNAP_BACK_ANIMATION_TIME: number
+	/** Time to animate to original position on success */
+	const REVERT_ANIMATION_TIME: number
+
+	enum DragMotionResult {
 		NO_DROP = 0,
 		COPY_DROP = 1,
 		MOVE_DROP = 2,
@@ -8,7 +16,14 @@ declare namespace imports.ui.dnd {
 		CONTINUE = 4
 	}
 
-	export enum DragDropResult {
+	class DRAG_CURSOR_MAP {
+		static readonly 0: imports.gi.Cinnamon.Cursor.DND_UNSUPPORTED_TARGET
+		static readonly 1: imports.gi.Cinnamon.Cursor.DND_COPY
+		static readonly 2: imports.gi.Cinnamon.Cursor.DND_MOVE
+		static readonly 3: imports.gi.Cinnamon.Cursor.POINTING_HAND
+	}
+
+	enum DragDropResult {
 		FAILURE = 0,
 		SUCCESS = 1,
 		CONTINUE = 2
@@ -16,13 +31,13 @@ declare namespace imports.ui.dnd {
 
 	function _getEventHandlerActor(): gi.Clutter.Actor;
 
-	export function addDragMonitor(monitor: any): void;
+	function addDragMonitor(monitor: any): void;
 
-	export function removeDragMonitor(monitor: any): void;
+	function removeDragMonitor(monitor: any): void;
 
-	export function isDragging(): boolean;
+	function isDragging(): boolean;
 
-	export interface DraggableParams {
+	interface DraggableParams {
 		manualMode?: boolean;
 		restoreOnSuccess?: boolean;
 		overrideX?: number;
@@ -31,18 +46,66 @@ declare namespace imports.ui.dnd {
 		dragActorOpacity?: number;
 	}
 
-	export class Draggable {
+	interface DragTarget extends imports.gi.St.Widget {
+		_delegate: {
+			handleDragOver: (source: imports.ui.applet.Applet | imports.ui.desklet.Desklet, actor: imports.gi.Clutter.Actor, x: number, y: number, time: number) => imports.ui.dnd.DragMotionResult
+			handleDragOut?: () => void
+			acceptDrop: (source: imports.ui.applet.Applet | imports.ui.desklet.Desklet, actor: imports.gi.Clutter.Actor, x: number, y: number, time: number) => boolean
+		}
+	}
+
+	interface DraggableActor extends imports.gi.St.Widget {
+		_delegate?: {
+			getDragActor: () => imports.gi.St.Widget
+			getDragActorSource: () => imports.gi.St.BoxLayout
+		}
+	}
+
+	class Draggable {
 		public readonly Name: string;
-		public readonly actor: gi.Clutter.Actor;
-		public readonly target: any;
+		public readonly actor: DraggableActor;
+		public readonly target: null | DragTarget;
 		public readonly inhibit: boolean;
-		public readonly recentDropTarget: any;
+		public readonly recentDropTarget: undefined | null | DragTarget;
 		public readonly buttonPressEventId: number;
 		public readonly destroyEventId: number;
+		/**  The mouse button has been pressed and has not yet been released. */
+		private _buttonDown: boolean
+		/**  The drag has been started, and has not been dropped or cancelled yet. */
+		private _dragInProgress: boolean
+		/** The drag is over and the item is in the process of animating to its original position (snapping back or reverting). */
+		private _animationInProgress: boolean
+		private _dragCancellable: boolean
+		private _eventsGrabbed: boolean
 
-		constructor(actor: gi.Clutter.Actor, params?: DraggableParams, target?: any)
+		private _onEventId: number | null
+		private _dragStartX: number | null
+		private _dragStartY: number | null
+		private _actorDestroyed: boolean | null
+		private _restoreOnSuccess: boolean
+		private _dragActorMaxSize: undefined | number
+		private _dragActorOpacity: undefined | number
+		private _overrideX: undefined | number
+		private _overrideY: undefined | number
+		private _dragActor: Exclude<DraggableActor['_delegate'], undefined>['getDragActor'] | imports.gi.St.Widget | undefined
+		private _updateHoverId: undefined | number
+		private _dragX: number | undefined
+		private _dragY: number | undefined
+		private _dragOrigParent: undefined | imports.gi.Clutter.Actor
+		private _dragActorSource: Exclude<DraggableActor['_delegate'], undefined>['getDragActorSource'] | imports.gi.St.Widget | undefined
+		private _dragOffsetX: undefined | number
+		private _dragOffsetY: undefined | number
+		private _dragOrigX: undefined | number
+		private _dragOrigY: undefined | number
+		private _dragOrigScale: undefined | number
+		private _dragOrigOpacity: undefined | number
+		private _snapBackX: undefined | number
+		private _snapBackY: undefined | number
+		private _snapBackScale: undefined | number
 
-		private _onButtonPress(actor: gi.Clutter.Actor, event: gi.Clutter.Event): void;
+		constructor(actor: gi.Clutter.Actor, params?: DraggableParams, target?: DragTarget)
+
+		private _onButtonPress(actor: gi.Clutter.Actor, event: gi.Clutter.ButtonEvent): void;
 
 		private _grabActor(): void;
 
@@ -88,7 +151,15 @@ declare namespace imports.ui.dnd {
 
 		private _cancelDrag(eventTime: number): void;
 
+		private _restoreDragActor(eventTime: number): void
+
 		private _onAnimationComplete(dragActor: gi.Clutter.Actor, eventTime: number): void;
+
+		private _dragComplete(): void
+
+		public connect(event: 'drag-begin', cb: (actor: this, time: number) => void): number
+		public connect(event: 'drag-end', cb: (actor: this, time: number) => void): number
+		public connect(event: 'drag-cancelled', cb: (actor: this, time: number) => void): number
 	}
 
 	/**
@@ -111,9 +182,9 @@ declare namespace imports.ui.dnd {
 	 * @param params Additional parameters
 	 * @param target 
 	 */
-	export function makeDraggable(actor: gi.Clutter.Actor, params?: DraggableParams, target?: any): Draggable;
+	function makeDraggable(actor: gi.Clutter.Actor, params?: DraggableParams, target?: DragTarget): Draggable;
 
-	export class GenericDragItemContainer {
+	class GenericDragItemContainer {
 		public readonly actor: gi.Clutter.Actor;
 		animatingOut: boolean;
 		child: gi.Clutter.Actor;
@@ -139,9 +210,9 @@ declare namespace imports.ui.dnd {
 		public get childOpacity(): number;
 	}
 
-	export class GenericDragPlaceholderItem extends GenericDragItemContainer { }
+	class GenericDragPlaceholderItem extends GenericDragItemContainer { }
 
-	export class LauncherDraggable {
+	class LauncherDraggable {
 		public readonly launchersBox: any;
 		constructor(launchersBox: any);
 
