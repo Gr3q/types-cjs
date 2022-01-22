@@ -51,6 +51,7 @@ declare namespace imports.ui.dnd {
 			handleDragOver: (source: imports.ui.applet.Applet | imports.ui.desklet.Desklet, actor: imports.gi.Clutter.Actor, x: number, y: number, time: number) => imports.ui.dnd.DragMotionResult
 			handleDragOut?: () => void
 			acceptDrop: (source: imports.ui.applet.Applet | imports.ui.desklet.Desklet, actor: imports.gi.Clutter.Actor, x: number, y: number, time: number) => boolean
+			cancelDrag?: (source: imports.ui.desklet.Desklet, actor: imports.gi.St.Widget) => boolean
 		}
 	}
 
