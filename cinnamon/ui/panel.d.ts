@@ -356,6 +356,11 @@ declare namespace imports.ui.panel {
 
 	type PanelVisibility = "true" | "false" | "intel";
 
+	interface PanelActor extends gi.Cinnamon.GenericContainer {
+		_delegate: Panel
+	}
+
+
 	/**
 	 * #Panel:A panel object on the monitor
 	 *
@@ -379,7 +384,7 @@ declare namespace imports.ui.panel {
 		/** where the panel is on the screen */
 		public readonly panelPosition: PanelLoc;
 		/** the actor of the panel */
-		public readonly actor: gi.Cinnamon.GenericContainer;
+		public readonly actor: PanelActor;
 
 		public readonly height: number;
 		public readonly margin_top: number;

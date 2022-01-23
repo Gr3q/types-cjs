@@ -58,6 +58,11 @@ declare namespace imports.ui.applet {
 		force_loaded: boolean;
 	}
 
+	interface AppletActor extends gi.St.BoxLayout {
+		_actor: Applet,
+		_delegate: Applet
+	}
+
 	/**
 	 Base applet class
 	*
@@ -65,7 +70,7 @@ declare namespace imports.ui.applet {
 	*/
 	export class Applet {
 		/** Actor of the applet */
-		public readonly actor: gi.St.BoxLayout;
+		public readonly actor: AppletActor;
 		/**  Instance id of the applet */
 		public readonly instance_id: number;
 		/** The panel object containing the applet. This is set by
