@@ -65,6 +65,7 @@
 /// <reference path="./cinnamon/ui/keybindings.d.ts" />
 /// <reference path="./cinnamon/ui/keyboard.d.ts" />
 /// <reference path="./cinnamon/ui/layout.d.ts" />
+/// <reference path="./cinnamon/ui/lightbox.d.ts" />
 /// <reference path="./cinnamon/ui/lookingGlass.d.ts" />
 /// <reference path="./cinnamon/ui/magnifier.d.ts" />
 /// <reference path="./cinnamon/ui/main.d.ts" />
