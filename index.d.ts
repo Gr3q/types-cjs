@@ -29,14 +29,14 @@
 /// <reference path="./xfixes-4.0.d.ts" />
 /// <reference path="./xrandr-1.3.d.ts" />
 
-/// <reference path="./extensions/ByteArray.d.ts" />
-/// <reference path="./extensions/cairo-1.0.d.ts" />
-/// <reference path="./extensions/Clutter-1.0.d.ts" />
-/// <reference path="./extensions/Gio-2.0.d.ts" />
-/// <reference path="./extensions/GLib-2.0.d.ts" />
-/// <reference path="./extensions/GObject-2.0.d.ts" />
-/// <reference path="./extensions/Soup-2.4.d.ts" />
-/// <reference path="./extensions/St-1.0.d.ts" />
+/// <reference path="./manual-overrides/ByteArray.d.ts" />
+/// <reference path="./manual-overrides/cairo-1.0.d.ts" />
+/// <reference path="./manual-overrides/Clutter-1.0.d.ts" />
+/// <reference path="./manual-overrides/Gio-2.0.d.ts" />
+/// <reference path="./manual-overrides/GLib-2.0.d.ts" />
+/// <reference path="./manual-overrides/GObject-2.0.d.ts" />
+/// <reference path="./manual-overrides/Soup-2.4.d.ts" />
+/// <reference path="./manual-overrides/St-1.0.d.ts" />
 
 /// <reference path="./cinnamon/misc/config.d.ts" />
 /// <reference path="./cinnamon/misc/gnomeSession.d.ts" />
