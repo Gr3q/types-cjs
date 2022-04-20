@@ -1,5 +1,9 @@
 declare namespace imports.ui.modalDialog {
 
+    const FADE_IN_BUTTONS_TIME: number
+    const FADE_OUT_DIALOG_TIME: number 
+    const OPEN_AND_CLOSE_TIME: number
+
     enum State {
         OPENED = 0,
         CLOSED = 1,
@@ -19,7 +23,12 @@ declare namespace imports.ui.modalDialog {
         action: () => void
         /** a keyboard key - easisest to use a respective Clutter Constant, such as Clutter.KEY_Escape */
         key?: number
+        focused?: boolean
     }
+
+    interface ActionKeys {
+        [key: number]: () => void;
+      }
 
     /**
      * #ModalDialog:
@@ -37,23 +46,21 @@ declare namespace imports.ui.modalDialog {
      * the #ConfirmDialog and #NotifyDialog classes may be used instead.
      */
     class ModalDialog {
+        public state: number;
+        private _hasModal: boolean;
+        private _cinnamonReactive: boolean;
+        private _group: imports.gi.St.Widget;
+        private _actionKeys: ActionKeys;
+        private _backgroundBin: imports.gi.St.Bin;
+        private _dialogLayout: imports.gi.St.BoxLayout;
+        private _lightbox: imports.ui.lightbox.Lightbox | undefined;
+        private _eventBlocker: imports.gi.Clutter.Group | undefined;
+        public contentLayout: imports.gi.St.BoxLayout;
+        private _buttonLayout: imports.gi.St.BoxLayout;
+        private _initialKeyFocus: imports.gi.St.Widget;
+        private _savedKeyFocus: null | imports.gi.Clutter.Actor;
 
-        public state: State
-        protected _hasModal: boolean
-        protected _cinnamonReactive: boolean
-        protected _group: imports.gi.St.Widget
-        protected _activeKeys: any
-        protected _backgrounddBin: imports.gi.St.Bin
-        protected _dialogLayout: imports.gi.St.BoxLayout
-        protected _lightbox: lightbox.Lightbox
-        public stack: any
-        protected _eventBlocker: any
-        public contentLayout: imports.gi.St.BoxLayout
-        protected _buttonLayout: imports.gi.St.BoxLayout
-        protected _initialKeyFocus: imports.gi.St.BoxLayout
-        protected _savedKeyFocus: null
-
-        constructor(params: ModalDialogOptions)
+        constructor(params?: Partial<ModalDialogOptions>)
 
         /**
          * destroy:
@@ -96,7 +103,7 @@ declare namespace imports.ui.modalDialog {
          */
         setButtons: (buttons: DialogButton[]) => void
 
-        protected _onKeyPressEvent(actor: imports.gi.St.Widget, event: any): void
+        protected _onKeyPressEvent(actor: imports.gi.St.Widget, keyPressEvent: imports.gi.Clutter.KeyEvent): void
         protected _onGroupDestroy(): void
         protected _fadeOpen(): void
         public setInitialKeyFocus(actor: imports.gi.Clutter.Actor): void
@@ -247,8 +254,8 @@ declare namespace imports.ui.modalDialog {
          * Adds a text label displaying @text to the OSD
          * 
          */
-        addText(text: string, params: Parameters<imports.gi.St.BoxLayout['add']>[1]): void
-        addActor(actor: imports.gi.St.Widget, params: Parameters<imports.gi.St.BoxLayout['add']>[1]): void
+        addText(text: string, params?: Partial<imports.gi.St.BoxLayoutChildInitOptions>): void
+        addActor(actor: imports.gi.St.Widget, params?: Partial<imports.gi.St.BoxLayoutChildInitOptions>): void
 
     }
 }
