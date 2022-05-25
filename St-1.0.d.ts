@@ -629,7 +629,7 @@ declare namespace imports.gi.St {
 		 * @returns the #ClutterText used by {@link Entry}. The entry is
 		 * owned by the #StEntry and should not be unref'ed by the application.
 		 */
-		get_clutter_text(): Clutter.Actor;
+		get_clutter_text(): Clutter.Text;
 		/**
 		 * Gets the text that is displayed when the entry is empty and unfocused
 		 * @returns the current value of the hint property. This string is owned by the
@@ -919,7 +919,7 @@ declare namespace imports.gi.St {
 		 * @returns ethe #ClutterText used by {@link Label}. The label
 		 * is owned by the #StLabel and should not be unref'ed by the application.
 		 */
-		get_clutter_text(): Clutter.Actor;
+		get_clutter_text(): Clutter.Text;
 		/**
 		 * Get the text displayed on the label
 		 * @returns the text for the label. This must not be freed by the application

@@ -21,7 +21,7 @@ declare namespace imports.ui.tweener {
 
 	/** The target's properties with number type */
 	type TweeningExtraParams<T extends object = object> = {
-		[Property in keyof T as T[Property] extends number? Property : never]?: T[Property];
+		[Property in keyof T as T[Property] extends (number | boolean)? Property : never]?: T[Property];
 	};
 
 	export interface TweeningParameters {

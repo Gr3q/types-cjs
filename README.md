@@ -4,10 +4,14 @@ Typescript declarations for CJS - Cinnamon JavaScript
 
 ## Usage
 
-This only works on a system where Cinnamon DM is installed and running off of Cinnamon's JS engine.
+This only works on a system where Cinnamon DM is installed and running code off of Cinnamon's JS (cjs) engine.
 
-To use the the declarations create a file named `ci.d.ts` in your project with the contents:
+To use the the declarations add types in tsconfig.json
 
-```ts
-import "@ci-types/cjs";
+```json
+{
+    "compileOptions": {
+        "types": ["@ci-types/cjs"]
+    }
+}
 ```
