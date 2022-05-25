@@ -239,13 +239,13 @@ declare namespace imports.ui.windowManager {
         protected _tiling: any[];
         protected _mapping: any[];
         protected _destroying: any[];
-		protected _snapOsd: null;
-		protected _workspace_osd_array: any[];
-		protected _tilePreview: null;
-		protected _hudPreview: null;
-		protected _dimmedWindows: any[];
+		protected _snapOsd: modalDialog.InfoOSD | null;
+		protected _workspace_osd_array: modalDialog.InfoOSD[];
+		protected _tilePreview: TilePreview | null;
+		protected _hudPreview: HudPreview | null;
+		protected _dimmedWindows: imports.gi.Meta.Window[];
 		protected _animationBlockCount: number;
-		protected __switchData: null;
+		protected _switchData: null;
 
 		public readonly effects: {
 			map: imports.ui.windowEffects.Map,
