@@ -69,7 +69,7 @@ declare namespace imports.cairo {
     }
 }
 
-/** DEPRECATED. Mainloop is simply a layer of convenience and backwards-compatibility over some GLib functions (such as `GLib.timeout_add()` which in GJS is mapped to `g_timeout_add_full()`). It's use is not generally recommended anymore */
+/** @deprecated Mainloop is simply a layer of convenience and backwards-compatibility over some GLib functions (such as `GLib.timeout_add()` which in GJS is mapped to `g_timeout_add_full()`). It's use is not generally recommended anymore */
 declare namespace imports.mainloop {
     /**
      * Calls callback function after given seconds
