@@ -150,7 +150,7 @@ declare namespace imports.gi.Gst {
 		/**
 		 * the list of children in this bin
 		 */
-		readonly children: GLib.List;
+		readonly children: Element[];
 		/**
 		 * updated whenever #children changes
 		 */
@@ -162,7 +162,7 @@ declare namespace imports.gi.Gst {
 		/**
 		 * queued and cached messages
 		 */
-		readonly messages: GLib.List;
+		readonly messages: Message[];
 		/**
 		 * the bin is currently calculating its state
 		 */
@@ -2140,7 +2140,7 @@ declare namespace imports.gi.Gst {
 		 * @returns a #GList of
 		 *   {@link Device}
 		 */
-		get_devices(): GLib.List | null;
+		get_devices(): Device[] | null;
 		/**
 		 * Get a list of the currently selected device provider factories.
 		 * 
@@ -2276,7 +2276,7 @@ declare namespace imports.gi.Gst {
 		/**
 		 * a #GList of the {@link Device} objects
 		 */
-		readonly devices: GLib.List;
+		readonly devices: any[];
 		can_monitor(): boolean;
 		/**
 		 * Posts a message on the provider's {@link Bus} to inform applications that
@@ -2321,7 +2321,7 @@ declare namespace imports.gi.Gst {
 		 * @returns a #GList of
 		 *   {@link Device}
 		 */
-		get_devices(): GLib.List;
+		get_devices(): Device[];
 		/**
 		 * Retrieves the factory that was used to create this device provider.
 		 * @returns the {@link DeviceProviderFactory} used for
@@ -2520,7 +2520,7 @@ declare namespace imports.gi.Gst {
 		 * a #GList of {@link DeviceProviderFactory} device providers. Use
 		 * {@link Gst.PluginFeature.list_free} after usage.
 		 */
-		public static list_get_device_providers(minrank: Rank): GLib.List;
+		public static list_get_device_providers(minrank: Rank): DeviceProviderFactory[];
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -2657,7 +2657,7 @@ declare namespace imports.gi.Gst {
 		/**
 		 * list of pads
 		 */
-		readonly pads: GLib.List;
+		readonly pads: Pad[];
 		/**
 		 * number of source pads of the element.
 		 */
@@ -2665,7 +2665,7 @@ declare namespace imports.gi.Gst {
 		/**
 		 * list of source pads
 		 */
-		readonly srcpads: GLib.List;
+		readonly srcpads: Pad[];
 		/**
 		 * number of sink pads of the element.
 		 */
@@ -2673,7 +2673,7 @@ declare namespace imports.gi.Gst {
 		/**
 		 * list of sink pads
 		 */
-		readonly sinkpads: GLib.List;
+		readonly sinkpads: Pad[];
 		/**
 		 * updated whenever the a pad is added or removed
 		 */
@@ -2681,7 +2681,7 @@ declare namespace imports.gi.Gst {
 		/**
 		 * list of contexts
 		 */
-		readonly contexts: GLib.List;
+		readonly contexts: Context[];
 		/**
 		 * Abort the state change of the element. This function is used
 		 * by elements that do asynchronous state changes and find out
@@ -2872,7 +2872,7 @@ declare namespace imports.gi.Gst {
 		 * MT safe.
 		 * @returns List of {@link Context}
 		 */
-		get_contexts(): GLib.List;
+		get_contexts(): Context[];
 		/**
 		 * Returns the current clock time of the element, as in, the time of the
 		 * element's clock, or GST_CLOCK_TIME_NONE if there is no clock.
@@ -2914,7 +2914,7 @@ declare namespace imports.gi.Gst {
 		 * @returns the #GList of
 		 *     pad templates.
 		 */
-		get_pad_template_list(): GLib.List;
+		get_pad_template_list(): PadTemplate[];
 		/**
 		 * Retrieves a pad from the element by name (e.g. "src_\%d"). This version only
 		 * retrieves request pads. The pad should be released with
@@ -3714,7 +3714,7 @@ declare namespace imports.gi.Gst {
 		 * @returns the
 		 *     static pad templates
 		 */
-		get_static_pad_templates(): GLib.List;
+		get_static_pad_templates(): StaticPadTemplate[];
 		/**
 		 * Gets a %NULL-terminated array of protocols this element supports or %NULL if
 		 * no protocols are supported. You may not change the contents of the returned
@@ -3806,7 +3806,7 @@ declare namespace imports.gi.Gst {
 		 *     {@link ElementFactory} elements that match the given requisites.
 		 *     Use #gst_plugin_feature_list_free after usage.
 		 */
-		public static list_filter(list: GLib.List, caps: Caps, direction: PadDirection, subsetonly: boolean): GLib.List;
+		public static list_filter(list: ElementFactory[], caps: Caps, direction: PadDirection, subsetonly: boolean): ElementFactory[];
 		/**
 		 * Get a list of factories that match the given #type. Only elements
 		 * with a rank greater or equal to #minrank will be returned.
@@ -3817,7 +3817,7 @@ declare namespace imports.gi.Gst {
 		 *     {@link ElementFactory} elements. Use {@link Gst.PluginFeature.list_free} after
 		 *     usage.
 		 */
-		public static list_get_elements(type: ElementFactoryListType, minrank: Rank): GLib.List;
+		public static list_get_elements(type: ElementFactoryListType, minrank: Rank): ElementFactory[];
 		/**
 		 * Create a new element of the type defined by the given element factory.
 		 * If name is %NULL, then the element will receive a guaranteed unique name,
@@ -4469,7 +4469,7 @@ declare namespace imports.gi.Gst {
 		 * 
 		 * MT safe. Grabs and releases the LOCK of each object in the list.
 		 */
-		public static check_uniqueness(list: GLib.List, name: string): boolean;
+		public static check_uniqueness(list: Object[], name: string): boolean;
 		/**
 		 * A default deep_notify signal callback for an object. The user data
 		 * should contain a pointer to an array of strings that should be excluded
@@ -6289,7 +6289,7 @@ declare namespace imports.gi.Gst {
 		 * Unrefs each member of #list, then frees the list.
 		 * @param list list of {@link Plugin}
 		 */
-		public static list_free(list: GLib.List): void;
+		public static list_free(list: Plugin[]): void;
 		/**
 		 * Load the named plugin. Refs the plugin.
 		 * @param name name of plugin to load
@@ -6440,19 +6440,19 @@ declare namespace imports.gi.Gst {
 		 * @returns a copy of #list,
 		 *     with each feature's reference count incremented.
 		 */
-		public static list_copy(list: GLib.List): GLib.List;
+		public static list_copy(list: PluginFeature[]): PluginFeature[];
 		/**
 		 * Debug the plugin feature names in #list.
 		 * @param list a #GList of
 		 *     plugin features
 		 */
-		public static list_debug(list: GLib.List): void;
+		public static list_debug(list: PluginFeature[]): void;
 		/**
 		 * Unrefs each member of #list, then frees the list.
 		 * @param list list
 		 *     of {@link PluginFeature}
 		 */
-		public static list_free(list: GLib.List): void;
+		public static list_free(list: PluginFeature[]): void;
 		/**
 		 * Compares the two given {@link PluginFeature} instances. This function can be
 		 * used as a #GCompareFunc when sorting by rank and then by name.
@@ -6587,7 +6587,7 @@ declare namespace imports.gi.Gst {
 		 * 
 		 * MT safe.
 		 */
-		feature_filter(filter: PluginFeatureFilter, first: boolean): GLib.List;
+		feature_filter(filter: PluginFeatureFilter, first: boolean): PluginFeature[];
 		/**
 		 * Find the pluginfeature with the given name and type in the registry.
 		 * @param name the pluginfeature name to find
@@ -6618,14 +6618,14 @@ declare namespace imports.gi.Gst {
 		 * 
 		 * MT safe.
 		 */
-		get_feature_list(type: GObject.Type): GLib.List;
+		get_feature_list(type: GObject.Type): PluginFeature[];
 		/**
 		 * Retrieves a #GList of features of the plugin with name #name.
 		 * @param name a plugin name.
 		 * @returns a #GList of
 		 *     {@link PluginFeature}. Use {@link Gst.PluginFeature.list_free} after usage.
 		 */
-		get_feature_list_by_plugin(name: string): GLib.List;
+		get_feature_list_by_plugin(name: string): PluginFeature[];
 		/**
 		 * Returns the registry's feature list cookie. This changes
 		 * every time a feature is added or removed from the registry.
@@ -6640,7 +6640,7 @@ declare namespace imports.gi.Gst {
 		 * 
 		 * MT safe.
 		 */
-		get_plugin_list(): GLib.List;
+		get_plugin_list(): Plugin[];
 		/**
 		 * Look up a plugin in the given registry with the given filename.
 		 * If found, plugin is reffed.
@@ -6671,7 +6671,7 @@ declare namespace imports.gi.Gst {
 		 * 
 		 * MT safe.
 		 */
-		plugin_filter(filter: PluginFilter, first: boolean): GLib.List;
+		plugin_filter(filter: PluginFilter, first: boolean): Plugin[];
 		/**
 		 * Remove the feature from the registry.
 		 * 
@@ -7466,7 +7466,7 @@ declare namespace imports.gi.Gst {
 		 * @returns the list of all
 		 *     registered {@link TracerFactory}.
 		 */
-		public static get_list(): GLib.List;
+		public static get_list(): TracerFactory[];
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -7633,7 +7633,7 @@ declare namespace imports.gi.Gst {
 		 * @returns the list of all
 		 *     registered {@link TypeFindFactory}.
 		 */
-		public static get_list(): GLib.List;
+		public static get_list(): TypeFindFactory[];
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -10190,7 +10190,7 @@ declare namespace imports.gi.Gst {
 		 * @returns a new select-streams event or %NULL in case of
 		 * an error (like an empty streams list).
 		 */
-		public static new_select_streams(streams: GLib.List): Event;
+		public static new_select_streams(streams: string[]): Event;
 		/**
 		 * Create a new sink-message event. The purpose of the sink-message event is
 		 * to instruct a sink to post the message contained in the event synchronized
@@ -10512,7 +10512,7 @@ declare namespace imports.gi.Gst {
 		 * Parse the SELECT_STREAMS event and retrieve the contained streams.
 		 * @returns the streams
 		 */
-		public parse_select_streams(): GLib.List;
+		public parse_select_streams(): string[];
 		/**
 		 * Parse the sink-message event. Unref #msg after usage.
 		 * @returns a pointer to store the {@link Message} in.
@@ -10747,7 +10747,7 @@ declare namespace imports.gi.Gst {
 		 * 
 		 * MT safe.
 		 */
-		public static new_list(type: GObject.Type, lock: GLib.Mutex, master_cookie: number, list: GLib.List, owner: GObject.Object, item: IteratorItemFunction): Iterator;
+		public static new_list(type: GObject.Type, lock: GLib.Mutex, master_cookie: number, list: any[], owner: GObject.Object, item: IteratorItemFunction): Iterator;
 		/**
 		 * This {@link Iterator} is a convenient iterator for the common
 		 * case where a #GstIterator needs to be returned but only
@@ -16095,7 +16095,7 @@ declare namespace imports.gi.Gst {
 		 * Gets the list of {@link TocEntry} of #toc.
 		 * @returns A #GList of {@link TocEntry} for #entry
 		 */
-		public get_entries(): GLib.List;
+		public get_entries(): TocEntry[];
 		public get_scope(): TocScope;
 		/**
 		 * Gets the tags for #toc.
@@ -16169,7 +16169,7 @@ declare namespace imports.gi.Gst {
 		 * Gets the sub-entries of #entry.
 		 * @returns A #GList of {@link TocEntry} of #entry
 		 */
-		public get_sub_entries(): GLib.List;
+		public get_sub_entries(): TocEntry[];
 		/**
 		 * Gets the tags for #entry.
 		 * @returns A {@link TagList} for #entry
@@ -16498,7 +16498,7 @@ declare namespace imports.gi.Gst {
 		 * @returns The
 		 *          fragment hash table from the URI.
 		 */
-		public get_media_fragment_table(): GLib.HashTable | null;
+		public get_media_fragment_table(): string[] | null;
 		/**
 		 * Extract the path string from the URI object.
 		 * @returns The path from the URI. Once finished
@@ -16511,7 +16511,7 @@ declare namespace imports.gi.Gst {
 		 *          strings or %NULL if no path segments are available. Free the list
 		 *          when no longer needed with g_list_free_full(list, g_free).
 		 */
-		public get_path_segments(): GLib.List;
+		public get_path_segments(): string[];
 		/**
 		 * Extract the path string from the URI object as a percent encoded URI path.
 		 * @returns The path from the URI. Once finished
@@ -16529,7 +16529,7 @@ declare namespace imports.gi.Gst {
 		 * @returns A list of keys from
 		 *          the URI query. Free the list with {@link G.list_free}.
 		 */
-		public get_query_keys(): GLib.List;
+		public get_query_keys(): string[];
 		/**
 		 * Get a percent encoded URI query string from the #uri.
 		 * @returns A percent encoded query string. Use
@@ -16546,7 +16546,7 @@ declare namespace imports.gi.Gst {
 		 * @returns The query
 		 *          hash table from the URI.
 		 */
-		public get_query_table(): GLib.HashTable | null;
+		public get_query_table(): string[] | null;
 		/**
 		 * Get the value associated with the #query_key key. Will return %NULL if the
 		 * key has no value or if the key does not exist in the URI query table. Because
@@ -16669,7 +16669,7 @@ declare namespace imports.gi.Gst {
 		 *                 path list to set.
 		 * @returns %TRUE if the path segments were set successfully.
 		 */
-		public set_path_segments(path_segments: GLib.List | null): boolean;
+		public set_path_segments(path_segments: string[] | null): boolean;
 		/**
 		 * Sets or unsets the path in the URI.
 		 * @param path The new percent encoded path to set with path segments separated by
@@ -16698,7 +16698,7 @@ declare namespace imports.gi.Gst {
 		 *               query table to use.
 		 * @returns %TRUE if the new table was successfully used for the query table.
 		 */
-		public set_query_table(query_table: GLib.HashTable | null): boolean;
+		public set_query_table(query_table: string[] | null): boolean;
 		/**
 		 * This inserts or replaces a key in the query table. A #query_value of %NULL
 		 * indicates that the key has no associated value, but will still be present in
@@ -21909,7 +21909,7 @@ declare namespace imports.gi.Gst {
 	 * @returns the list of
 	 *     debug categories
 	 */
-	function debug_get_all_categories(): GLib.SList;
+	function debug_get_all_categories(): DebugCategory[];
 
 	/**
 	 * Changes the coloring mode for debug output.
@@ -23017,7 +23017,7 @@ declare namespace imports.gi.Gst {
 	 * @returns A #GList of
 	 * {@link Tracer} objects
 	 */
-	function tracing_get_active_tracers(): GLib.List;
+	function tracing_get_active_tracers(): Tracer[];
 
 	/**
 	 * Register #func to be called when the trace hook #detail is getting invoked.

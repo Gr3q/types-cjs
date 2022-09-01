@@ -210,8 +210,8 @@ declare namespace imports.gi.WebKit2 {
 		 *    preceding the current item or %NULL.
 		 */
 		get_back_item(): BackForwardListItem | null;
-		get_back_list(): GLib.List;
-		get_back_list_with_limit(limit: number): GLib.List;
+		get_back_list(): BackForwardListItem[];
+		get_back_list_with_limit(limit: number): BackForwardListItem[];
 		/**
 		 * Returns the current item in #back_forward_list.
 		 * @returns a #WebKitBackForwardListItem
@@ -224,8 +224,8 @@ declare namespace imports.gi.WebKit2 {
 		 *    following the current item or %NULL.
 		 */
 		get_forward_item(): BackForwardListItem | null;
-		get_forward_list(): GLib.List;
-		get_forward_list_with_limit(limit: number): GLib.List;
+		get_forward_list(): BackForwardListItem[];
+		get_forward_list_with_limit(limit: number): BackForwardListItem[];
 		get_length(): number;
 		/**
 		 * Returns the item at a given index relative to the current item.
@@ -396,7 +396,7 @@ declare namespace imports.gi.WebKit2 {
 		 * @returns a #GList of
 		 *    #WebKitContextMenuItem<!-- -->s
 		 */
-		get_items(): GLib.List;
+		get_items(): ContextMenuItem[];
 		/**
 		 * Gets the length of the #menu.
 		 * @returns the number of #WebKitContextMenuItem<!-- -->s in #menu
@@ -488,7 +488,7 @@ declare namespace imports.gi.WebKit2 {
 		 * @param items a #GList of #WebKitContextMenuItem
 		 * @returns The newly created #WebKitContextMenu object
 		 */
-		public static new_with_items(items: GLib.List): ContextMenu;
+		public static new_with_items(items: ContextMenuItem[]): ContextMenu;
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -691,7 +691,7 @@ declare namespace imports.gi.WebKit2 {
 		 * @param result a #GAsyncResult
 		 * @returns A #GList of #SoupCookie instances.
 		 */
-		get_cookies_finish(result: Gio.AsyncResult): GLib.List;
+		get_cookies_finish(result: Gio.AsyncResult): Soup.Cookie[];
 		/**
 		 * @deprecated
 		 * Use {@link Webkit.website_data_manager_fetch} instead.
@@ -1429,7 +1429,7 @@ declare namespace imports.gi.WebKit2 {
 		 * @returns a #GHashTable with the form
 		 *    text fields, or %NULL if the form doesn't contain text fields.
 		 */
-		get_text_fields(): GLib.HashTable | null;
+		get_text_fields(): any[] | null;
 		/**
 		 * Get lists with the names and values of the text fields contained in
 		 * the form associated to #request. Note that names and values may be
@@ -1735,7 +1735,7 @@ declare namespace imports.gi.WebKit2 {
 		 * 
 		 * location to store the position of cursor in preedit string
 		 */
-		get_preedit(): [ text: string | null, underlines: GLib.List | null, cursor_offset: number | null ];
+		get_preedit(): [ text: string | null, underlines: InputMethodUnderline[] | null, cursor_offset: number | null ];
 		/**
 		 * Notify #context that cursor area changed in input associated.
 		 * @param x the x coordinate of cursor location
@@ -2208,7 +2208,7 @@ declare namespace imports.gi.WebKit2 {
 		 * as a list of #WebKitMimeInfo.
 		 * @returns a #GList of #WebKitMimeInfo.
 		 */
-		get_mime_info_list(): GLib.List;
+		get_mime_info_list(): MimeInfo[];
 		get_name(): string;
 		get_path(): string;
 	}
@@ -4526,7 +4526,7 @@ declare namespace imports.gi.WebKit2 {
 		 * @returns a #GList of #WebKitPlugin. You must free the #GList with
 		 *    {@link G.list_free} and unref the #WebKitPlugin<!-- -->s with g_object_unref() when you're done with them.
 		 */
-		get_plugins_finish(result: Gio.AsyncResult): GLib.List;
+		get_plugins_finish(result: Gio.AsyncResult): Plugin[];
 		/**
 		 * Returns the current process model. For more information about this value
 		 * see {@link Webkit.web_context_set_process_model}.
@@ -4602,7 +4602,7 @@ declare namespace imports.gi.WebKit2 {
 		 * @param allowed_origins a #GList of security origins
 		 * @param disallowed_origins a #GList of security origins
 		 */
-		initialize_notification_permissions(allowed_origins: GLib.List, disallowed_origins: GLib.List): void;
+		initialize_notification_permissions(allowed_origins: SecurityOrigin[], disallowed_origins: SecurityOrigin[]): void;
 		/**
 		 * Get whether automation is allowed in #context.
 		 * See also {@link Webkit.web_context_set_automation_allowed}.
@@ -6996,7 +6996,7 @@ declare namespace imports.gi.WebKit2 {
 		 * @returns a #GList of #WebKitWebsiteData. You must free the #GList with
 		 *    {@link G.list_free} and unref the #WebKitWebsiteData<!-- -->s with webkit_website_data_unref() when you're done with them.
 		 */
-		fetch_finish(result: Gio.AsyncResult): GLib.List;
+		fetch_finish(result: Gio.AsyncResult): WebsiteData[];
 		/**
 		 * Get the #WebKitWebsiteDataManager:base-cache-directory property.
 		 * @returns the base directory for Website cache, or %NULL if
@@ -7061,7 +7061,7 @@ declare namespace imports.gi.WebKit2 {
 		 *    You must free the #GList with {@link G.list_free} and unref the #WebKitITPThirdParty<!-- -->s with
 		 *    webkit_itp_third_party_unref() when you're done with them.
 		 */
-		get_itp_summary_finish(result: Gio.AsyncResult): GLib.List;
+		get_itp_summary_finish(result: Gio.AsyncResult): ITPThirdParty[];
 		/**
 		 * Get the #WebKitWebsiteDataManager:local-storage-directory property.
 		 * @returns the directory where local storage data is stored or %NULL if #manager is ephemeral.
@@ -7112,7 +7112,7 @@ declare namespace imports.gi.WebKit2 {
 		 * @param cancellable a #GCancellable or %NULL to ignore
 		 * @param callback a #GAsyncReadyCallback to call when the request is satisfied
 		 */
-		remove(types: WebsiteDataTypes, website_data: GLib.List, cancellable: Gio.Cancellable | null, callback: Gio.AsyncReadyCallback | null): void;
+		remove(types: WebsiteDataTypes, website_data: WebsiteData[], cancellable: Gio.Cancellable | null, callback: Gio.AsyncReadyCallback | null): void;
 		/**
 		 * Finish an asynchronous operation started with {@link Webkit.website_data_manager_remove}.
 		 * @param result a #GAsyncResult
@@ -7556,7 +7556,7 @@ declare namespace imports.gi.WebKit2 {
 		 * Get the list of #WebKitITPFirstParty under which #itp_third_party has been seen.
 		 * @returns a #GList of #WebKitITPFirstParty
 		 */
-		public get_first_parties(): GLib.List;
+		public get_first_parties(): ITPFirstParty[];
 		/**
 		 * Atomically increments the reference count of #itp_third_party by one.
 		 * This function is MT-safe and may be called from any thread.

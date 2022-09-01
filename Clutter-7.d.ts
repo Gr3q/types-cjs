@@ -1003,7 +1003,7 @@ declare namespace imports.gi.Clutter {
 		 *   owned by the #ClutterActor. Use {@link GObject.list_free} to free the resources
 		 *   allocated by the returned #GList
 		 */
-		get_actions(): GLib.List;
+		get_actions(): Action[];
 		/**
 		 * Gets the layout box an actor has been assigned. The allocation can
 		 * only be assumed valid inside a paint() method; anywhere else, it
@@ -1080,7 +1080,7 @@ declare namespace imports.gi.Clutter {
 		 *   owned by the #ClutterActor. Use {@link GObject.list_free} to free the resources
 		 *   allocated by the returned #GList
 		 */
-		get_constraints(): GLib.List;
+		get_constraints(): Constraint[];
 		/**
 		 * Retrieves the contents of #self.
 		 * @returns a pointer to the {@link Content} instance,
@@ -1178,7 +1178,7 @@ declare namespace imports.gi.Clutter {
 		 *   list are owned by Clutter and they should not be freed. You should
 		 *   free the returned list using {@link GObject.list_free} when done
 		 */
-		get_effects(): GLib.List;
+		get_effects(): Effect[];
 		/**
 		 * Retrieves the first child of #self.
 		 * 
@@ -2058,7 +2058,7 @@ declare namespace imports.gi.Clutter {
 		 *   its contents are owned by the #ClutterActor and the list may not be
 		 *   freed or modified.
 		 */
-		peek_stage_views(): GLib.List;
+		peek_stage_views(): StageView[];
 		/**
 		 * Asks #actor to perform a pick.
 		 * @param pick_context
@@ -6086,7 +6086,7 @@ declare namespace imports.gi.Clutter {
 		 *   list of {@link InputDevice}, or %NULL. The contents of the list are
 		 *   owned by the device. Use {@link GObject.list_free} when done
 		 */
-		get_physical_devices(): GLib.List;
+		get_physical_devices(): InputDevice[];
 		/**
 		 * Retrieves the {@link Stage} underneath the pointer of #device
 		 * @returns a pointer to the {@link Stage} or %NULL
@@ -7745,7 +7745,7 @@ declare namespace imports.gi.Clutter {
 		 * @returns a
 		 *   list of nodes in the path.
 		 */
-		get_nodes(): GLib.SList;
+		get_nodes(): PathNode[];
 		/**
 		 * The value in #progress represents a position along the path where
 		 * 0.0 is the beginning and 1.0 is the end of the path. An
@@ -8203,7 +8203,7 @@ declare namespace imports.gi.Clutter {
 		 *   {@link Script} instance. Use {@link GObject.list_free} on the returned list when
 		 *   done.
 		 */
-		list_objects(): GLib.List;
+		list_objects(): GObject.Object[];
 		/**
 		 * Loads the definitions from #data into #script and merges with
 		 * the currently loaded ones, if any.
@@ -8427,8 +8427,8 @@ declare namespace imports.gi.Clutter {
 		 *   Clutter and may not be freed, the returned list should be freed using
 		 *   {@link GObject.list_free} when done.
 		 */
-		list_devices(): GLib.List;
-		peek_devices(): GLib.List;
+		list_devices(): InputDevice[];
+		peek_devices(): any[];
 		set_kbd_a11y_settings(settings: KbdA11ySettings): void;
 		/**
 		 * Sets the dwell click type
@@ -9083,7 +9083,7 @@ declare namespace imports.gi.Clutter {
 		is_redraw_queued_on_view(view: StageView): boolean;
 		paint_to_buffer(rect: cairo.RectangleInt, scale: number, data: number, stride: number, format: Cogl.PixelFormat, paint_flags: PaintFlag): boolean;
 		paint_to_framebuffer(framebuffer: Cogl.Framebuffer, rect: cairo.RectangleInt, scale: number, paint_flags: PaintFlag): void;
-		peek_stage_views(): GLib.List;
+		peek_stage_views(): any[];
 		/**
 		 * Makes a screenshot of the stage in RGBA 8bit data, returns a
 		 * linear buffer with #width * 4 as rowstride.
@@ -9298,7 +9298,7 @@ declare namespace imports.gi.Clutter {
 		 *   allocated list of {@link Stage} objects. Use {@link GObject.slist_free} to
 		 *   deallocate it when done.
 		 */
-		list_stages(): GLib.SList;
+		list_stages(): Stage[];
 		/**
 		 * Lists all currently used stages.
 		 * @returns a pointer
@@ -9306,7 +9306,7 @@ declare namespace imports.gi.Clutter {
 		 *   is owned by the #ClutterStageManager and should never be modified
 		 *   or freed
 		 */
-		peek_stages(): GLib.SList;
+		peek_stages(): Stage[];
 		/**
 		 * The ::stage-added signal is emitted each time a new {@link Stage}
 		 * has been added to the stage manager.
@@ -13579,7 +13579,7 @@ declare namespace imports.gi.Clutter {
 		 *   of {@link Actor}<!-- -->s. Use {@link GObject.list_free} on the returned
 		 *   list when done.
 		 */
-		get_children(): GLib.List;
+		get_children(): Actor[];
 		/**
 		 * @deprecated
 		 * Use {@link Clutter.Actor.set_child_below_sibling} instead.

@@ -701,7 +701,7 @@ declare namespace imports.gi.CinnamonDesktop {
 		 * of the strings themselves, those are internally allocated and must
 		 * not be modified.
 		 */
-		get_all_layouts(): GLib.List;
+		get_all_layouts(): string[];
 		/**
 		 * Returns a list of all option group identifiers we know about.
 		 * @returns the list
@@ -709,7 +709,7 @@ declare namespace imports.gi.CinnamonDesktop {
 		 * not of the strings themselves, those are internally allocated and
 		 * must not be modified.
 		 */
-		get_all_option_groups(): GLib.List;
+		get_all_option_groups(): string[];
 		/**
 		 * Retrieves information about a layout. Both #display_name and
 		 * #short_name are suitable to show in UIs and might be localized if
@@ -771,7 +771,7 @@ declare namespace imports.gi.CinnamonDesktop {
 		 * the strings themselves, those are internally allocated and must not
 		 * be modified.
 		 */
-		get_options_for_group(group_id: string): GLib.List;
+		get_options_for_group(group_id: string): string[];
 		connect(signal: "notify::parent_object", callback: (owner: this, ...args: any) => void): number;
 
 	}

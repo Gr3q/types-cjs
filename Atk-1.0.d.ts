@@ -817,8 +817,8 @@ declare namespace imports.gi.Atk {
 	 * use {@link Registry} instead.
 	 */
 	interface IRegistry {
-		readonly factory_type_registry: GLib.HashTable;
-		readonly factory_singleton_cache: GLib.HashTable;
+		readonly factory_type_registry: any[];
+		readonly factory_singleton_cache: any[];
 		/**
 		 * Gets an {@link ObjectFactory} appropriate for creating #AtkObjects
 		 * appropriate for #type.
@@ -1720,7 +1720,7 @@ declare namespace imports.gi.Atk {
 		public get_value_and_text: {(obj: Value): [ value: number, text: string | null ];};
 		public get_range: {(obj: Value): Range | null;};
 		public get_increment: {(obj: Value): number;};
-		public get_sub_ranges: {(obj: Value): GLib.SList;};
+		public get_sub_ranges: {(obj: Value): Range[];};
 		public set_value: {(obj: Value, new_value: number): void;};
 	}
 
@@ -3683,7 +3683,7 @@ declare namespace imports.gi.Atk {
 		 * {@link Range} which each of the subranges defined for this object. Free
 		 * the returns list with {@link GObject.slist_free}.
 		 */
-		get_sub_ranges(): GLib.SList;
+		get_sub_ranges(): Range[];
 		/**
 		 * Gets the current value and the human readable text alternative of
 		 * #obj. #text is a newly created string, that must be freed by the

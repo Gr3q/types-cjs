@@ -394,7 +394,7 @@ declare namespace imports.gi.Meta {
 		show_window_menu_for_rect(window: Window, menu: WindowMenuType, rect: Rectangle): void;
 		size_change_window(window: Window, which_change: SizeChange, old_frame_rect: Rectangle, old_buffer_rect: Rectangle): void;
 		switch_workspace(from: Workspace, to: Workspace, direction: MotionDirection): void;
-		sync_stack(stack: GLib.List): void;
+		sync_stack(stack: any[]): void;
 		sync_updates_frozen(window: Window): void;
 		sync_window_geometry(window: Window, did_placement: boolean): void;
 		unmanage(): void;
@@ -617,7 +617,7 @@ declare namespace imports.gi.Meta {
 		 * @param workspace origin workspace
 		 * @returns List of windows
 		 */
-		get_tab_list(type: TabList, workspace: Workspace | null): GLib.List;
+		get_tab_list(type: TabList, workspace: Workspace | null): Window[];
 		/**
 		 * Determine the next window that should be displayed for Alt-TAB
 		 * functionality.
@@ -662,7 +662,7 @@ declare namespace imports.gi.Meta {
 		 * @param windows Set of windows
 		 * @returns Input windows sorted by stacking order, from lowest to highest
 		 */
-		sort_windows_by_stacking(windows: GLib.SList): GLib.SList;
+		sort_windows_by_stacking(windows: Window[]): Window[];
 		supports_extended_barriers(): boolean;
 		unfreeze_keyboard(timestamp: number): void;
 		ungrab_accelerator(action_id: number): boolean;
@@ -1076,7 +1076,7 @@ declare namespace imports.gi.Meta {
 		 * @param selection_type Selection to query
 		 * @returns The supported mimetypes
 		 */
-		get_mimetypes(selection_type: SelectionType): GLib.List;
+		get_mimetypes(selection_type: SelectionType): string[];
 		/**
 		 * Sets #owner as the owner of the selection given by #selection_type,
 		 * unsets any previous owner there was.
@@ -1135,7 +1135,7 @@ declare namespace imports.gi.Meta {
 		 * Returns the list of supported mimetypes.
 		 * @returns The supported mimetypes
 		 */
-		get_mimetypes(): GLib.List;
+		get_mimetypes(): string[];
 		/**
 		 * Returns #TRUE if the source is active on a selection.
 		 * @returns #TRUE if the source owns a selection.
@@ -1362,7 +1362,7 @@ declare namespace imports.gi.Meta {
 		 * @returns a launch context.
 		 */
 		create_launcher(): LaunchContext;
-		get_sequences(): GLib.SList;
+		get_sequences(): any[];
 		connect(signal: "changed", callback: (owner: this, object: any | null) => void): number;
 
 		connect(signal: "notify::display", callback: (owner: this, ...args: any) => void): number;
@@ -2145,14 +2145,14 @@ declare namespace imports.gi.Meta {
 		 * and also sticky windows. Override-redirect windows are not included.
 		 * @returns the list of windows.
 		 */
-		list_windows(): GLib.List;
+		list_windows(): Window[];
 		/**
 		 * Sets a list of struts that will be used in addition to the struts
 		 * of the windows in the workspace when computing the work area of
 		 * the workspace.
 		 * @param struts list of {@link Strut}
 		 */
-		set_builtin_struts(struts: GLib.SList): void;
+		set_builtin_struts(struts: Strut[]): void;
 		connect(signal: "window-added", callback: (owner: this, object: Window) => void): number;
 		connect(signal: "window-removed", callback: (owner: this, object: Window) => void): number;
 
@@ -2205,7 +2205,7 @@ declare namespace imports.gi.Meta {
 		 *   index, or %NULL if the index is out of range.
 		 */
 		get_workspace_by_index(index: number): Workspace | null;
-		get_workspaces(): GLib.List;
+		get_workspaces(): Workspace[];
 		/**
 		 * Explicitly set the layout of workspaces. Once this has been called, the contents of the
 		 * _NET_DESKTOP_LAYOUT property on the root window are completely ignored.
@@ -2408,7 +2408,7 @@ declare namespace imports.gi.Meta {
 		public constructor(options?: Partial<GroupInitOptions>);
 		public get_size(): number;
 		public get_startup_id(): string;
-		public list_windows(): GLib.SList;
+		public list_windows(): Window[];
 		public property_notify(event: any): boolean;
 		public update_layers(): void;
 	}
@@ -4312,7 +4312,7 @@ declare namespace imports.gi.Meta {
 
 	function get_top_window_group_for_display(display: Display): Clutter.Actor;
 
-	function get_window_actors(display: Display): GLib.List;
+	function get_window_actors(display: Display): Clutter.Actor[];
 
 	function get_window_group_for_display(display: Display): Clutter.Actor;
 
@@ -4546,7 +4546,7 @@ declare namespace imports.gi.Meta {
 	 */
 	function set_wm_name(wm_name: string): void;
 
-	function show_dialog(type: string, message: string, timeout: string, display: string, ok_text: string, cancel_text: string, icon_name: string, transient_for: number, columns: GLib.SList, entries: GLib.SList): GLib.Pid;
+	function show_dialog(type: string, message: string, timeout: string, display: string, ok_text: string, cancel_text: string, icon_name: string, transient_for: number, columns: any[], entries: any[]): GLib.Pid;
 
 	function test_init(): void;
 

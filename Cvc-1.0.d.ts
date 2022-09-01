@@ -53,14 +53,14 @@ declare namespace imports.gi.Cvc {
 		get_id(): number;
 		get_index(): number;
 		get_name(): string;
-		get_ports(): GLib.List;
+		get_ports(): MixerCardPort[];
 		get_profile(): MixerCardProfile;
-		get_profiles(): GLib.List;
+		get_profiles(): MixerCardProfile[];
 		set_icon_name(name: string): boolean;
 		set_name(name: string): boolean;
-		set_ports(ports: GLib.List): boolean;
+		set_ports(ports: MixerCardPort[]): boolean;
 		set_profile(profile: string): boolean;
-		set_profiles(profiles: GLib.List): boolean;
+		set_profiles(profiles: MixerCardProfile[]): boolean;
 		connect(signal: "notify::human-profile", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::icon-name", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::id", callback: (owner: this, ...args: any) => void): number;
@@ -102,17 +102,17 @@ declare namespace imports.gi.Cvc {
 		change_output(output: MixerUIDevice): void;
 		change_profile_on_selected_device(device: MixerUIDevice, profile: string): boolean;
 		close(): boolean;
-		get_cards(): GLib.SList;
+		get_cards(): MixerCard[];
 		get_default_sink(): MixerStream;
 		get_default_source(): MixerStream;
 		get_event_sink_input(): MixerStream;
-		get_sink_inputs(): GLib.SList;
-		get_sinks(): GLib.SList;
-		get_source_outputs(): GLib.SList;
-		get_sources(): GLib.SList;
+		get_sink_inputs(): MixerSinkInput[];
+		get_sinks(): MixerSink[];
+		get_source_outputs(): MixerSourceOutput[];
+		get_sources(): MixerSource[];
 		get_state(): MixerControlState;
 		get_stream_from_device(device: MixerUIDevice): MixerStream;
-		get_streams(): GLib.SList;
+		get_streams(): MixerStream[];
 		get_vol_max_amplified(): number;
 		get_vol_max_norm(): number;
 		lookup_card_id(id: number): MixerCard;
@@ -318,7 +318,7 @@ declare namespace imports.gi.Cvc {
 		get_is_muted(): boolean;
 		get_name(): string;
 		get_port(): MixerStreamPort;
-		get_ports(): GLib.List;
+		get_ports(): MixerStreamPort[];
 		get_sysfs_path(): string;
 		get_volume(): number;
 		is_event_stream(): boolean;
@@ -339,7 +339,7 @@ declare namespace imports.gi.Cvc {
 		set_is_virtual(is_event_stream: boolean): boolean;
 		set_name(name: string): boolean;
 		set_port(port: string): boolean;
-		set_ports(ports: GLib.List): boolean;
+		set_ports(ports: MixerStreamPort[]): boolean;
 		set_sysfs_path(sysfs_path: string): boolean;
 		set_volume(volume: number): boolean;
 		connect(signal: "monitor-suspend", callback: (owner: this) => void): number;
@@ -422,9 +422,9 @@ declare namespace imports.gi.Cvc {
 		get_matching_profile(profile: string): string;
 		get_origin(): string;
 		get_port(): string;
-		get_profiles(): GLib.List;
+		get_profiles(): MixerCardProfile[];
 		get_stream_id(): number;
-		get_supported_profiles(): GLib.List;
+		get_supported_profiles(): MixerCardProfile[];
 		get_top_priority_profile(): string;
 		get_user_preferred_profile(): string;
 		has_ports(): boolean;
@@ -451,7 +451,7 @@ declare namespace imports.gi.Cvc {
 		 *    in a second iteration.
 		 * @param in_profiles a list of GvcMixerCardProfile
 		 */
-		set_profiles(in_profiles: GLib.List): void;
+		set_profiles(in_profiles: MixerCardProfile[]): void;
 		set_user_preferred_profile(profile: string): void;
 		should_profiles_be_hidden(): boolean;
 		connect(signal: "notify::card", callback: (owner: this, ...args: any) => void): number;
@@ -499,7 +499,7 @@ declare namespace imports.gi.Cvc {
 		public priority: number;
 		public available: number;
 		public direction: number;
-		public profiles: GLib.List;
+		public profiles: any[];
 	}
 
 	export interface MixerCardProfileInitOptions {}

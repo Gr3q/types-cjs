@@ -240,7 +240,7 @@ declare namespace imports.gi.Soup {
 		 * Frees #space.
 		 * @param space the return value from {@link Soup.Auth.get_protection_space}
 		 */
-		free_protection_space(space: GLib.SList): void;
+		free_protection_space(space: any[]): void;
 		/**
 		 * Generates an appropriate "Authorization" header for #msg. (The
 		 * session will only call this if {@link Soup.Auth.is_authenticated}
@@ -272,7 +272,7 @@ declare namespace imports.gi.Soup {
 		 * @returns the list of
 		 * paths, which can be freed with {@link Soup.Auth.free_protection_space}.
 		 */
-		get_protection_space(source_uri: URI): GLib.SList;
+		get_protection_space(source_uri: URI): string[];
 		/**
 		 * Returns #auth's realm. This is an identifier that distinguishes
 		 * separate authentication spaces on a given server, and may be some
@@ -282,7 +282,7 @@ declare namespace imports.gi.Soup {
 		 */
 		get_realm(): string;
 		get_saved_password(user: string): string;
-		get_saved_users(): GLib.SList;
+		get_saved_users(): string[];
 		/**
 		 * Returns #auth's scheme name. (Eg, "Basic", "Digest", or "NTLM")
 		 * @returns the scheme name
@@ -943,7 +943,7 @@ declare namespace imports.gi.Soup {
 		 * return
 		 *   location for Content-Type parameters (eg, "charset"), or %NULL
 		 */
-		sniff(msg: Message, buffer: Buffer): [ string, GLib.HashTable | null ];
+		sniff(msg: Message, buffer: Buffer): [ string, string[] | null ];
 	}
 
 	type ContentSnifferInitOptionsMixin = GObject.ObjectInitOptions & SessionFeatureInitOptions
@@ -1023,7 +1023,7 @@ declare namespace imports.gi.Soup {
 		 * @returns a #GSList
 		 * with all the cookies in the #jar.
 		 */
-		all_cookies(): GLib.SList;
+		all_cookies(): Cookie[];
 		/**
 		 * Deletes #cookie from #jar, emitting the 'changed' signal.
 		 * @param cookie a {@link Cookie}
@@ -1051,7 +1051,7 @@ declare namespace imports.gi.Soup {
 		 * @returns a #GSList
 		 * with the cookies in the #jar that would be sent with a request to #uri.
 		 */
-		get_cookie_list(uri: URI, for_http: boolean): GLib.SList;
+		get_cookie_list(uri: URI, for_http: boolean): Cookie[];
 		/**
 		 * This is an extended version of {@link Soup.CookieJar.get_cookie_list} that
 		 * provides more information required to use SameSite cookies. See the
@@ -1068,7 +1068,7 @@ declare namespace imports.gi.Soup {
 		 * @returns a #GSList
 		 * with the cookies in the #jar that would be sent with a request to #uri.
 		 */
-		get_cookie_list_with_same_site_info(uri: URI, top_level: URI | null, site_for_cookies: URI | null, for_http: boolean, is_safe_method: boolean, is_top_level_navigation: boolean): GLib.SList;
+		get_cookie_list_with_same_site_info(uri: URI, top_level: URI | null, site_for_cookies: URI | null, for_http: boolean, is_safe_method: boolean, is_top_level_navigation: boolean): Cookie[];
 		/**
 		 * Retrieves (in Cookie-header form) the list of cookies that would
 		 * be sent with a request to #uri.
@@ -1270,7 +1270,7 @@ declare namespace imports.gi.Soup {
 		 * list of domains. Use {@link G.list_free_full} and g_free() to free the
 		 * list.
 		 */
-		get_domains(session_policies: boolean): GLib.List;
+		get_domains(session_policies: boolean): string[];
 		/**
 		 * Gets a list with the policies in #enforcer.
 		 * @param session_policies whether to include session policies
@@ -1278,7 +1278,7 @@ declare namespace imports.gi.Soup {
 		 * allocated list of policies. Use {@link G.list_free_full} and
 		 * soup_hsts_policy_free() to free the list.
 		 */
-		get_policies(session_policies: boolean): GLib.List;
+		get_policies(session_policies: boolean): HSTSPolicy[];
 		/**
 		 * Gets whether #hsts_enforcer has a currently valid policy for #domain.
 		 * @param domain a domain.
@@ -1608,7 +1608,7 @@ declare namespace imports.gi.Soup {
 		 * @returns the handler ID from {@link G.signal_connect}
 		 */
 		add_status_code_handler(signal: string, status_code: number, callback: GObject.Callback): number;
-		content_sniffed(content_type: string, params: GLib.HashTable): void;
+		content_sniffed(content_type: string, params: any[]): void;
 		/**
 		 * This disables the actions of {@link SessionFeature}<!-- -->s with the
 		 * given #feature_type (or a subclass of that type) on #msg, so that
@@ -1883,7 +1883,7 @@ declare namespace imports.gi.Soup {
 		 * 
 		 * @returns Callback ID
 		 */
-		connect(signal: "content-sniffed", callback: (owner: this, type: string, params: GLib.HashTable) => void): number;
+		connect(signal: "content-sniffed", callback: (owner: this, type: string, params: string[]) => void): number;
 		/**
 		 * Emitted when all HTTP processing is finished for a message.
 		 * (After {@link Message.got_body} for client-side messages, or
@@ -2816,7 +2816,7 @@ declare namespace imports.gi.Soup {
 		 * @returns a
 		 * list of listening sockets.
 		 */
-		get_listeners(): GLib.SList;
+		get_listeners(): Gio.Socket[];
 		/**
 		 * @deprecated
 		 * If you are using {@link Soup.Server.listen}, etc, then use
@@ -2839,7 +2839,7 @@ declare namespace imports.gi.Soup {
 		 * @returns a list of
 		 * {@link URIs}, which you must free when you are done with it.
 		 */
-		get_uris(): GLib.SList;
+		get_uris(): URI[];
 		/**
 		 * Checks whether #server is capable of https.
 		 * 
@@ -3580,7 +3580,7 @@ declare namespace imports.gi.Soup {
 		 * @returns 
 		 * a list of features. You must free the list, but not its contents
 		 */
-		get_features(feature_type: GObject.Type): GLib.SList;
+		get_features(feature_type: GObject.Type): SessionFeature[];
 		/**
 		 * Tests if #session has at a feature of type #feature_type (which can
 		 * be the type of either a {@link SessionFeature}, or else a subtype of
@@ -4572,7 +4572,7 @@ declare namespace imports.gi.Soup {
 		 * Get the extensions chosen via negotiation with the peer.
 		 * @returns a #GList of {@link WebsocketExtension} objects
 		 */
-		get_extensions(): GLib.List;
+		get_extensions(): WebsocketExtension[];
 		/**
 		 * Get the I/O stream the WebSocket is communicating over.
 		 * @returns the WebSocket's I/O stream.
@@ -4779,7 +4779,7 @@ declare namespace imports.gi.Soup {
 		 * @param extensions a #GList of {@link WebsocketExtension} objects
 		 * @returns a new {@link WebsocketConnection}
 		 */
-		public static new_with_extensions(stream: Gio.IOStream, uri: URI, type: WebsocketConnectionType, origin: string | null, protocol: string | null, extensions: GLib.List): WebsocketConnection;
+		public static new_with_extensions(stream: Gio.IOStream, uri: URI, type: WebsocketConnectionType, origin: string | null, protocol: string | null, extensions: WebsocketExtension[]): WebsocketConnection;
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -4792,7 +4792,7 @@ declare namespace imports.gi.Soup {
 		 * @param params the parameters, or %NULL
 		 * @returns %TRUE if extension could be configured with the given parameters, or %FALSE otherwise
 		 */
-		configure(connection_type: WebsocketConnectionType, params: GLib.HashTable | null): boolean;
+		configure(connection_type: WebsocketConnectionType, params: any[] | null): boolean;
 		/**
 		 * Get the parameters strings to be included in the request header. If the extension
 		 * doesn't include any parameter in the request, this function returns %NULL.
@@ -5940,7 +5940,7 @@ declare namespace imports.gi.Soup {
 		 * return
 		 * location for the Content-Disposition parameters, or %NULL
 		 */
-		public get_content_disposition(): [ boolean, string, GLib.HashTable ];
+		public get_content_disposition(): [ boolean, string, string[] ];
 		/**
 		 * Gets the message body length that #hdrs declare. This will only
 		 * be non-0 if {@link Soup.MessageHeaders.get_encoding} returns
@@ -5976,7 +5976,7 @@ declare namespace imports.gi.Soup {
 		 *   return location for the Content-Type parameters (eg, "charset"), or
 		 *   %NULL
 		 */
-		public get_content_type(): [ string | null, GLib.HashTable | null ];
+		public get_content_type(): [ string | null, string[] | null ];
 		/**
 		 * Gets the message body encoding that #hdrs declare. This may not
 		 * always correspond to the encoding used on the wire; eg, a HEAD
@@ -6116,7 +6116,7 @@ declare namespace imports.gi.Soup {
 		 * @param params additional
 		 * parameters, or %NULL
 		 */
-		public set_content_disposition(disposition: string, params: GLib.HashTable | null): void;
+		public set_content_disposition(disposition: string, params: string[] | null): void;
 		/**
 		 * Sets the message body length that #hdrs will declare, and sets
 		 * #hdrs's encoding to %SOUP_ENCODING_CONTENT_LENGTH.
@@ -6154,7 +6154,7 @@ declare namespace imports.gi.Soup {
 		 * @param params additional
 		 * parameters, or %NULL
 		 */
-		public set_content_type(content_type: string, params: GLib.HashTable | null): void;
+		public set_content_type(content_type: string, params: string[] | null): void;
 		/**
 		 * Sets the message body encoding that #hdrs will declare. In particular,
 		 * you should use this if you are going to send a request or response in
@@ -6680,7 +6680,7 @@ declare namespace imports.gi.Soup {
 		 * @param form a #GHashTable containing HTML form
 		 * information
 		 */
-		public set_query_from_form(form: GLib.HashTable): void;
+		public set_query_from_form(form: string[]): void;
 		/**
 		 * Sets #uri's scheme to #scheme. This will also set #uri's port to
 		 * the default port for #scheme, if known.
@@ -8305,7 +8305,7 @@ declare namespace imports.gi.Soup {
 		 *   component of #msg's Request-URI
 		 * @param client additional contextual information about the client
 		 */
-		(server: Server, msg: Message, path: string, query: GLib.HashTable | null, client: ClientContext): void;
+		(server: Server, msg: Message, path: string, query: string[] | null, client: ClientContext): void;
 	}
 
 	/**
@@ -8464,7 +8464,7 @@ declare namespace imports.gi.Soup {
 	 * Frees #cookies.
 	 * @param cookies a #GSList of {@link Cookie}
 	 */
-	function cookies_free(cookies: GLib.SList): void;
+	function cookies_free(cookies: Cookie[]): void;
 
 	/**
 	 * Parses #msg's Cookie request header and returns a #GSList of
@@ -8478,7 +8478,7 @@ declare namespace imports.gi.Soup {
 	 * of {@link Cookie}<!-- -->s, which can be freed with
 	 * {@link Soup.cookies.free}.
 	 */
-	function cookies_from_request(msg: Message): GLib.SList;
+	function cookies_from_request(msg: Message): Cookie[];
 
 	/**
 	 * Parses #msg's Set-Cookie response headers and returns a #GSList of
@@ -8489,7 +8489,7 @@ declare namespace imports.gi.Soup {
 	 * of {@link Cookie}<!-- -->s, which can be freed with
 	 * {@link Soup.cookies.free}.
 	 */
-	function cookies_from_response(msg: Message): GLib.SList;
+	function cookies_from_response(msg: Message): Cookie[];
 
 	/**
 	 * Serializes a #GSList of {@link Cookie} into a string suitable for
@@ -8497,7 +8497,7 @@ declare namespace imports.gi.Soup {
 	 * @param cookies a #GSList of {@link Cookie}
 	 * @returns the serialization of #cookies
 	 */
-	function cookies_to_cookie_header(cookies: GLib.SList): string;
+	function cookies_to_cookie_header(cookies: Cookie[]): string;
 
 	/**
 	 * Adds the name and value of each cookie in #cookies to #msg's
@@ -8508,7 +8508,7 @@ declare namespace imports.gi.Soup {
 	 * @param cookies a #GSList of {@link Cookie}
 	 * @param msg a {@link Message}
 	 */
-	function cookies_to_request(cookies: GLib.SList, msg: Message): void;
+	function cookies_to_request(cookies: Cookie[], msg: Message): void;
 
 	/**
 	 * Appends a "Set-Cookie" response header to #msg for each cookie in
@@ -8517,7 +8517,7 @@ declare namespace imports.gi.Soup {
 	 * @param cookies a #GSList of {@link Cookie}
 	 * @param msg a {@link Message}
 	 */
-	function cookies_to_response(cookies: GLib.SList, msg: Message): void;
+	function cookies_to_response(cookies: Cookie[], msg: Message): void;
 
 	/**
 	 * Decodes #form, which is an urlencoded dataset as defined in the
@@ -8527,7 +8527,7 @@ declare namespace imports.gi.Soup {
 	 * table containing the name/value pairs from #encoded_form, which you
 	 * can free with {@link G.hash_table_destroy}.
 	 */
-	function form_decode(encoded_form: string): GLib.HashTable;
+	function form_decode(encoded_form: string): string[];
 
 	/**
 	 * Decodes the "multipart/form-data" request in #msg; this is a
@@ -8562,7 +8562,7 @@ declare namespace imports.gi.Soup {
 	 * 
 	 * return location for the uploaded file data, or %NULL
 	 */
-	function form_decode_multipart(msg: Message, file_control_name: string | null): [ GLib.HashTable | null, string | null, string | null, Buffer | null ];
+	function form_decode_multipart(msg: Message, file_control_name: string | null): [ string[] | null, string | null, string | null, Buffer | null ];
 
 	/**
 	 * Encodes the given field names and values into a value of type
@@ -8601,7 +8601,7 @@ declare namespace imports.gi.Soup {
 	 * name/value pairs (as strings)
 	 * @returns the encoded form
 	 */
-	function form_encode_hash(form_data_set: GLib.HashTable): string;
+	function form_encode_hash(form_data_set: string[]): string;
 
 	/**
 	 * See {@link Soup.form.encode}. This is mostly an internal method, used by
@@ -8643,7 +8643,7 @@ declare namespace imports.gi.Soup {
 	 * @param form_data_set the data to send to #uri
 	 * @returns the new %SoupMessage
 	 */
-	function form_request_new_from_hash(method: string, uri: string, form_data_set: GLib.HashTable): Message;
+	function form_request_new_from_hash(method: string, uri: string, form_data_set: string[]): Message;
 
 	/**
 	 * Creates a new %SoupMessage and sets it up to send #multipart to
@@ -8718,14 +8718,14 @@ declare namespace imports.gi.Soup {
 	 * @param list a #GSList returned from {@link Soup.header.parse_list} or
 	 * soup_header_parse_quality_list()
 	 */
-	function header_free_list(list: GLib.SList): void;
+	function header_free_list(list: any[]): void;
 
 	/**
 	 * Frees #param_list.
 	 * @param param_list a #GHashTable returned from {@link Soup.header.parse_param_list}
 	 * or soup_header_parse_semi_param_list()
 	 */
-	function header_free_param_list(param_list: GLib.HashTable): void;
+	function header_free_param_list(param_list: string[]): void;
 
 	/**
 	 * Appends something like <literal>#name=#value</literal> to #string,
@@ -8765,7 +8765,7 @@ declare namespace imports.gi.Soup {
 	 * @returns a #GSList of
 	 * list elements, as allocated strings
 	 */
-	function header_parse_list(header: string): GLib.SList;
+	function header_parse_list(header: string): string[];
 
 	/**
 	 * Parses a header which is a comma-delimited list of something like:
@@ -8782,7 +8782,7 @@ declare namespace imports.gi.Soup {
 	 * #GHashTable of list elements, which can be freed with
 	 * {@link Soup.header.free_param_list}.
 	 */
-	function header_parse_param_list(header: string): GLib.HashTable;
+	function header_parse_param_list(header: string): string[];
 
 	/**
 	 * A strict version of {@link Soup.header.parse_param_list}
@@ -8798,7 +8798,7 @@ declare namespace imports.gi.Soup {
 	 * {@link Soup.header.free_param_list} or %NULL if there are duplicate
 	 * elements.
 	 */
-	function header_parse_param_list_strict(header: string): GLib.HashTable | null;
+	function header_parse_param_list_strict(header: string): string[] | null;
 
 	/**
 	 * Parses a header whose content is a list of items with optional
@@ -8815,7 +8815,7 @@ declare namespace imports.gi.Soup {
 	 * on
 	 * return, will contain a list of unacceptable values
 	 */
-	function header_parse_quality_list(header: string): [ GLib.SList, GLib.SList | null ];
+	function header_parse_quality_list(header: string): [ string[], string[] | null ];
 
 	/**
 	 * Parses a header which is a semicolon-delimited list of something
@@ -8832,7 +8832,7 @@ declare namespace imports.gi.Soup {
 	 * #GHashTable of list elements, which can be freed with
 	 * {@link Soup.header.free_param_list}.
 	 */
-	function header_parse_semi_param_list(header: string): GLib.HashTable;
+	function header_parse_semi_param_list(header: string): string[];
 
 	/**
 	 * A strict version of {@link Soup.header.parse_semi_param_list}
@@ -8848,7 +8848,7 @@ declare namespace imports.gi.Soup {
 	 * {@link Soup.header.free_param_list} or %NULL if there are duplicate
 	 * elements.
 	 */
-	function header_parse_semi_param_list_strict(header: string): GLib.HashTable | null;
+	function header_parse_semi_param_list_strict(header: string): string[] | null;
 
 	/**
 	 * Parses the headers of an HTTP request or response in #str and
@@ -9147,7 +9147,7 @@ declare namespace imports.gi.Soup {
 	 * @param key the key
 	 * @param type a #GType
 	 */
-	function value_hash_insert(hash: GLib.HashTable, key: string, type: GObject.Type): void;
+	function value_hash_insert(hash: string[], key: string, type: GObject.Type): void;
 
 	/**
 	 * Inserts the given data into #hash. As with
@@ -9156,7 +9156,7 @@ declare namespace imports.gi.Soup {
 	 * @param hash a value hash
 	 * @param first_key the key for the first value
 	 */
-	function value_hash_insert_vals(hash: GLib.HashTable, first_key: string): void;
+	function value_hash_insert_vals(hash: string[], first_key: string): void;
 
 	/**
 	 * Inserts #value into #hash. (Unlike with {@link G.hash_table_insert}, both
@@ -9165,7 +9165,7 @@ declare namespace imports.gi.Soup {
 	 * @param key the key
 	 * @param value a value
 	 */
-	function value_hash_insert_value(hash: GLib.HashTable, key: string, value: GObject.Value): void;
+	function value_hash_insert_value(hash: string[], key: string, value: GObject.Value): void;
 
 	/**
 	 * Looks up #key in #hash and stores its value into the provided
@@ -9176,7 +9176,7 @@ declare namespace imports.gi.Soup {
 	 * @returns %TRUE if #hash contained a value with key #key and
 	 * type #type, %FALSE if not.
 	 */
-	function value_hash_lookup(hash: GLib.HashTable, key: string, type: GObject.Type): boolean;
+	function value_hash_lookup(hash: string[], key: string, type: GObject.Type): boolean;
 
 	/**
 	 * Looks up a number of keys in #hash and returns their values.
@@ -9188,7 +9188,7 @@ declare namespace imports.gi.Soup {
 	 * value, since there is no way to tell which keys were found
 	 * and which were not.
 	 */
-	function value_hash_lookup_vals(hash: GLib.HashTable, first_key: string): boolean;
+	function value_hash_lookup_vals(hash: string[], first_key: string): boolean;
 
 	/**
 	 * Creates a #GHashTable whose keys are strings and whose values
@@ -9196,7 +9196,7 @@ declare namespace imports.gi.Soup {
 	 * @returns a new
 	 * empty #GHashTable
 	 */
-	function value_hash_new(): GLib.HashTable;
+	function value_hash_new(): string[];
 
 	/**
 	 * Creates a #GHashTable whose keys are strings and whose values
@@ -9207,7 +9207,7 @@ declare namespace imports.gi.Soup {
 	 * @returns a new
 	 * #GHashTable, initialized with the given values
 	 */
-	function value_hash_new_with_vals(first_key: string): GLib.HashTable;
+	function value_hash_new_with_vals(first_key: string): string[];
 
 	/**
 	 * Adds the necessary headers to #msg to request a WebSocket
@@ -9287,7 +9287,7 @@ declare namespace imports.gi.Soup {
 	 * a
 	 *   #GList of {@link WebsocketExtension} objects
 	 */
-	function websocket_client_verify_handshake_with_extensions(msg: Message, supported_extensions: GObject.TypeClass[] | null): [ boolean, GLib.List | null ];
+	function websocket_client_verify_handshake_with_extensions(msg: Message, supported_extensions: GObject.TypeClass[] | null): [ boolean, WebsocketExtension[] | null ];
 
 	function websocket_error_get_quark(): GLib.Quark;
 
@@ -9406,7 +9406,7 @@ declare namespace imports.gi.Soup {
 	 * a
 	 *   #GList of {@link WebsocketExtension} objects
 	 */
-	function websocket_server_process_handshake_with_extensions(msg: Message, expected_origin: string | null, protocols: string[] | null, supported_extensions: GObject.TypeClass[] | null): [ boolean, GLib.List | null ];
+	function websocket_server_process_handshake_with_extensions(msg: Message, expected_origin: string | null, protocols: string[] | null, supported_extensions: GObject.TypeClass[] | null): [ boolean, WebsocketExtension[] | null ];
 
 	/**
 	 * This creates an XML-RPC fault response and returns it as a string.
