@@ -70,7 +70,7 @@ declare namespace imports.gi.Cinnamon {
 		get_n_windows(): number;
 		get_name(): string;
 		get_nodisplay(): boolean;
-		get_pids(): GLib.SList;
+		get_pids(): number[];
 		get_state(): AppState;
 		get_tree_entry(): CMenu.TreeEntry;
 		/**
@@ -80,7 +80,7 @@ declare namespace imports.gi.Cinnamon {
 		 * and finally by the time the user last interacted with them.
 		 * @returns List of windows
 		 */
-		get_windows(): GLib.SList;
+		get_windows(): Meta.Window[];
 		is_on_workspace(workspace: Meta.Workspace): boolean;
 		/**
 		 * A window backed application is one which represents just an open
@@ -89,7 +89,7 @@ declare namespace imports.gi.Cinnamon {
 		 * @returns 
 		 */
 		is_window_backed(): boolean;
-		launch(timestamp: number, uris: GLib.List, workspace: number): [ boolean, string ];
+		launch(timestamp: number, uris: string[], workspace: number): [ boolean, string ];
 		/**
 		 * Launch an application using the dedicated gpu (if available)
 		 * @param timestamp Event timestamp, or 0 for current event timestamp
@@ -99,7 +99,7 @@ declare namespace imports.gi.Cinnamon {
 		 * 
 		 * Returned startup notification ID, or %NULL if none
 		 */
-		launch_offloaded(timestamp: number, uris: GLib.List, workspace: number): [ boolean, string ];
+		launch_offloaded(timestamp: number, uris: string[], workspace: number): [ boolean, string ];
 		/**
 		 * Request that the application create a new window.
 		 * @param workspace open on this workspace, or -1 for default
@@ -138,13 +138,13 @@ declare namespace imports.gi.Cinnamon {
 	 * use {@link AppSystem} instead.
 	 */
 	interface IAppSystem {
-		get_all(): GLib.SList;
+		get_all(): App[];
 		/**
 		 * Returns the set of applications which currently have at least one
 		 * open window in the given context.
 		 * @returns Active applications
 		 */
-		get_running(): GLib.SList;
+		get_running(): App[];
 		get_tree(): CMenu.Tree;
 		/**
 		 * Find a {@link App} corresponding to an id.
@@ -202,7 +202,7 @@ declare namespace imports.gi.Cinnamon {
 		 * This function does not perform I/O.
 		 * @returns Cached recent file infos
 		 */
-		get_all(): GLib.SList;
+		get_all(): Gtk.RecentInfo[];
 		connect(signal: "changed", callback: (owner: this) => void): number;
 
 	}
@@ -531,7 +531,7 @@ declare namespace imports.gi.Cinnamon {
 		 * @param rectangles a list of #MetaRectangle
 		 * describing the input region.
 		 */
-		set_stage_input_region(rectangles: GLib.SList): void;
+		set_stage_input_region(rectangles: Meta.Rectangle[]): void;
 		/**
 		 * Ensures that clutter is aware of the current pointer position,
 		 * causing enter and leave events to be emitted if the pointer moved
@@ -1139,7 +1139,7 @@ declare namespace imports.gi.Cinnamon {
 		 * @returns A {@link App}, or %NULL if none
 		 */
 		get_app_from_pid(pid: number): App;
-		get_startup_sequences(): GLib.SList;
+		get_startup_sequences(): StartupSequence[];
 		get_window_app(metawin: Meta.Window): App;
 		/**
 		 * The CinnamonWindowTracker associates certain kinds of windows with
@@ -1330,7 +1330,7 @@ declare namespace imports.gi.Cinnamon {
 	 */
 	function get_file_contents_utf8_sync(path: string): string;
 
-	function parse_search_provider(data: string): [ boolean, string, string, GLib.List, string ];
+	function parse_search_provider(data: string): [ boolean, string, string, string[], string ];
 
 	/**
 	 * Set a double uniform on a ClutterShaderEffect.

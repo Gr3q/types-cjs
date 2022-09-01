@@ -2206,8 +2206,8 @@ declare namespace imports.gi.GObject {
 	 */
 	interface ITypeModule {
 		readonly use_count: number;
-		readonly type_infos: GLib.SList;
-		readonly interface_infos: GLib.SList;
+		readonly type_infos: any[];
+		readonly interface_infos: any[];
 		/**
 		 * the name of the module
 		 */
@@ -3593,7 +3593,7 @@ declare namespace imports.gi.GObject {
 		 *          #GList of all #GParamSpecs owned by #owner_type in
 		 *          the pool#GParamSpecs.
 		 */
-		public list_owned(owner_type: GObject.Type): GLib.List;
+		public list_owned(owner_type: GObject.Type): ParamSpec[];
 		/**
 		 * Looks up a #GParamSpec in the pool.
 		 * @param param_name the name to look for

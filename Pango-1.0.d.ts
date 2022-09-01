@@ -1033,7 +1033,7 @@ declare namespace imports.gi.Pango {
 		 *   `PangoLayout` and must be used with care. It will become invalid on any
 		 *   change to the layout's text or properties.
 		 */
-		get_lines(): GLib.SList;
+		get_lines(): LayoutLine[];
 		/**
 		 * Returns the lines of the #layout as a list.
 		 * 
@@ -1046,7 +1046,7 @@ declare namespace imports.gi.Pango {
 		 *   change to the layout's text or properties. No changes should be made to
 		 *   the lines.
 		 */
-		get_lines_readonly(): GLib.SList;
+		get_lines_readonly(): LayoutLine[];
 		/**
 		 * Retrieves an array of logical attributes for each character in
 		 * the #layout.
@@ -1899,7 +1899,7 @@ declare namespace imports.gi.Pango {
 		/**
 		 * extra attributes for this segment.
 		 */
-		public extra_attrs: GLib.SList;
+		public extra_attrs: any[];
 	}
 
 	export interface AttrClassInitOptions {}
@@ -2080,7 +2080,7 @@ declare namespace imports.gi.Pango {
 		 *   this value, call [method#Pango.Attribute.destroy] on each
 		 *   value and {@link G.slist_free} on the list.
 		 */
-		public get_attrs(): GLib.SList;
+		public get_attrs(): Attribute[];
 		/**
 		 * Get the font and other attributes at the current
 		 * iterator position.
@@ -2101,7 +2101,7 @@ declare namespace imports.gi.Pango {
 		 *   order to free this value, you must call
 		 *   [method#Pango.Attribute.destroy] on each member.
 		 */
-		public get_font(desc: FontDescription): [ language: Language | null, extra_attrs: GLib.SList | null ];
+		public get_font(desc: FontDescription): [ language: Language | null, extra_attrs: Attribute[] | null ];
 		/**
 		 * Advance the iterator until the next change of style.
 		 * @returns %FALSE if the iterator is at the end
@@ -2228,7 +2228,7 @@ declare namespace imports.gi.Pango {
 		 *   call [method#Pango.Attribute.destroy] on each value and
 		 *   {@link G.slist_free} on the list.
 		 */
-		public get_attributes(): GLib.SList;
+		public get_attributes(): Attribute[];
 		/**
 		 * Create a iterator initialized to the beginning of the list.
 		 * 
@@ -3192,7 +3192,7 @@ declare namespace imports.gi.Pango {
 		 *   the elements using [method#Pango.GlyphItem.free], the list using
 		 *   {@link G.slist_free}.
 		 */
-		public apply_attrs(text: string, list: AttrList): GLib.SList;
+		public apply_attrs(text: string, list: AttrList): GlyphItem[];
 		/**
 		 * Make a deep copy of an existing `PangoGlyphItem` structure.
 		 * @returns the newly allocated `PangoGlyphItem`
@@ -3986,7 +3986,7 @@ declare namespace imports.gi.Pango {
 		 * list of runs in the
 		 *   line, from left to right
 		 */
-		public runs: GLib.SList;
+		public runs: LayoutRun[];
 		/**
 		 * #TRUE if this is the first line of the paragraph
 		 */
@@ -6509,7 +6509,7 @@ declare namespace imports.gi.Pango {
 	 *   [struct#Pango.Item] structures. The items should be freed using
 	 *   [method#Pango.Item.free] probably in combination with {@link G.list_free_full}.
 	 */
-	function itemize(context: Context, text: string, start_index: number, length: number, attrs: AttrList, cached_iter: AttrIterator | null): GLib.List;
+	function itemize(context: Context, text: string, start_index: number, length: number, attrs: AttrList, cached_iter: AttrIterator | null): Item[];
 
 	/**
 	 * Like {@link `pango.itemize}`, but with an explicitly specified base direction.
@@ -6530,7 +6530,7 @@ declare namespace imports.gi.Pango {
 	 *   [struct#Pango.Item] structures. The items should be freed using
 	 *   [method#Pango.Item.free] probably in combination with {@link G.list_free_full}.
 	 */
-	function itemize_with_base_dir(context: Context, base_dir: Direction, text: string, start_index: number, length: number, attrs: AttrList, cached_iter: AttrIterator | null): GLib.List;
+	function itemize_with_base_dir(context: Context, base_dir: Direction, text: string, start_index: number, length: number, attrs: AttrList, cached_iter: AttrIterator | null): Item[];
 
 	/**
 	 * Convert a language tag to a `PangoLanguage`.
@@ -6819,7 +6819,7 @@ declare namespace imports.gi.Pango {
 	 * @returns a `GList`
 	 *   of `PangoItem` structures in visual order.
 	 */
-	function reorder_items(logical_items: GLib.List): GLib.List;
+	function reorder_items(logical_items: Item[]): Item[];
 
 	/**
 	 * Scans an integer.

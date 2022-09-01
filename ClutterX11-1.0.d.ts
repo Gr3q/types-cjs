@@ -272,7 +272,7 @@ declare namespace imports.gi.ClutterX11 {
 	 *   pointer to the internal list of input devices; the returned list is
 	 *   owned by Clutter and should not be modified or freed
 	 */
-	function get_input_devices(): GLib.SList;
+	function get_input_devices(): Clutter.InputDevice[];
 
 	/**
 	 * Retrieves the root window.

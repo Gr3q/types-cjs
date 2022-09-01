@@ -608,7 +608,7 @@ declare namespace imports.gi.Cogl {
 		 *    should not be modified or freed
 		 *    Deprecated: 1.16: Use {@link Cogl.pipeline_get_layers} instead
 		 */
-		public get_layers(): GLib.List;
+		public get_layers(): MaterialLayer[];
 		/**
 		 * @deprecated
 		 * Use {@link Cogl.pipeline_get_n_layers} instead

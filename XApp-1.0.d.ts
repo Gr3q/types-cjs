@@ -15,7 +15,7 @@ declare namespace imports.gi.XApp {
 		 * @returns a new #GtkActionGroup populated with a list of favorites, or NULL
 		 *             if there are no favorites.
 		 */
-		create_actions(mimetypes: string | null): GLib.List;
+		create_actions(mimetypes: string | null): Gtk.Action[];
 		/**
 		 * Generates a GtkMenu widget populated with favorites. The callback will be called when
 		 * a menu item has been activated, and will include the uri of the respective item.
@@ -47,7 +47,7 @@ declare namespace imports.gi.XApp {
 		 * @returns a list of {@link FavoriteInfos}.
 		 *             Free the list with #g_list_free, free elements with #xapp_favorite_info_free.
 		 */
-		get_favorites(mimetypes: string | null): GLib.List;
+		get_favorites(mimetypes: string | null): FavoriteInfo[];
 		get_n_favorites(): number;
 		/**
 		 * Opens a favorite in its default app.
@@ -285,7 +285,7 @@ declare namespace imports.gi.XApp {
 		 * @param name the name of the category as it will be displayed in the category list
 		 * @param icons a list of icon names to add to the new category
 		 */
-		add_custom_category(name: string, icons: GLib.List): void;
+		add_custom_category(name: string, icons: string[]): void;
 		/**
 		 * Returns the default icon (if set).
 		 * @returns the default icon, or NULL if none is set
@@ -1180,7 +1180,7 @@ declare namespace imports.gi.XApp {
 		 * List known icon proxies.
 		 * @returns a #GList of icons
 		 */
-		list_icons(): GLib.List;
+		list_icons(): StatusIconMonitor[];
 		/**
 		 * This signal is emitted by the monitor when it has discovered a new
 		 * {@link StatusIcon} on the bus.

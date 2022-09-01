@@ -3271,14 +3271,14 @@ declare namespace imports.gi.GLib {
 		 * @param key a key to insert
 		 * @returns %TRUE if the key did not exist yet
 		 */
-		public static add(hash_table: GLib.HashTable, key: any | null): boolean;
+		public static add(hash_table: any[], key: any | null): boolean;
 		/**
 		 * Checks if #key is in #hash_table.
 		 * @param hash_table a #GHashTable
 		 * @param key a key to check
 		 * @returns %TRUE if #key is in #hash_table, %FALSE otherwise.
 		 */
-		public static contains(hash_table: GLib.HashTable, key: any | null): boolean;
+		public static contains(hash_table: any[], key: any | null): boolean;
 		/**
 		 * Destroys all keys and values in the #GHashTable and decrements its
 		 * reference count by 1. If keys and/or values are dynamically allocated,
@@ -3288,7 +3288,7 @@ declare namespace imports.gi.GLib {
 		 * destruction phase.
 		 * @param hash_table a #GHashTable
 		 */
-		public static destroy(hash_table: GLib.HashTable): void;
+		public static destroy(hash_table: any[]): void;
 		/**
 		 * Calls the given function for key/value pairs in the #GHashTable
 		 * until #predicate returns %TRUE. The function is passed the key
@@ -3309,7 +3309,7 @@ declare namespace imports.gi.GLib {
 		 *     for which #predicate evaluates to %TRUE. If no pair with the
 		 *     requested property is found, %NULL is returned.
 		 */
-		public static find(hash_table: GLib.HashTable, predicate: HRFunc): any | null;
+		public static find(hash_table: any[], predicate: HRFunc): any | null;
 		/**
 		 * Calls the given function for each of the key/value pairs in the
 		 * #GHashTable.  The function is passed the key and value of each
@@ -3326,7 +3326,7 @@ declare namespace imports.gi.GLib {
 		 * @param hash_table a #GHashTable
 		 * @param func the function to call for each key/value pair
 		 */
-		public static foreach(hash_table: GLib.HashTable, func: HFunc): void;
+		public static foreach(hash_table: any[], func: HFunc): void;
 		/**
 		 * Calls the given function for each key/value pair in the
 		 * #GHashTable. If the function returns %TRUE, then the key/value
@@ -3340,7 +3340,7 @@ declare namespace imports.gi.GLib {
 		 * @param func the function to call for each key/value pair
 		 * @returns the number of key/value pairs removed
 		 */
-		public static foreach_remove(hash_table: GLib.HashTable, func: HRFunc): number;
+		public static foreach_remove(hash_table: any[], func: HRFunc): number;
 		/**
 		 * Calls the given function for each key/value pair in the
 		 * #GHashTable. If the function returns %TRUE, then the key/value
@@ -3353,7 +3353,7 @@ declare namespace imports.gi.GLib {
 		 * @param func the function to call for each key/value pair
 		 * @returns the number of key/value pairs removed.
 		 */
-		public static foreach_steal(hash_table: GLib.HashTable, func: HRFunc): number;
+		public static foreach_steal(hash_table: any[], func: HRFunc): number;
 		/**
 		 * Retrieves every key inside #hash_table. The returned data is valid
 		 * until changes to the hash release those keys.
@@ -3367,7 +3367,7 @@ declare namespace imports.gi.GLib {
 		 *     hash table and should not be modified or freed. Use {@link G.list_free}
 		 *     when done using the list.
 		 */
-		public static get_keys(hash_table: GLib.HashTable): GLib.List;
+		public static get_keys(hash_table: any[]): any[];
 		/**
 		 * Retrieves every key inside #hash_table, as an array.
 		 * 
@@ -3392,7 +3392,7 @@ declare namespace imports.gi.GLib {
 		 * 
 		 * the length of the returned array
 		 */
-		public static get_keys_as_array(hash_table: GLib.HashTable): [ any[], number | null ];
+		public static get_keys_as_array(hash_table: any[]): [ any[], number | null ];
 		/**
 		 * Retrieves every value inside #hash_table. The returned data
 		 * is valid until #hash_table is modified.
@@ -3406,7 +3406,7 @@ declare namespace imports.gi.GLib {
 		 *     hash table and should not be modified or freed. Use {@link G.list_free}
 		 *     when done using the list.
 		 */
-		public static get_values(hash_table: GLib.HashTable): GLib.List;
+		public static get_values(hash_table: any[]): any[];
 		/**
 		 * Inserts a new key and value into a #GHashTable.
 		 * 
@@ -3425,7 +3425,7 @@ declare namespace imports.gi.GLib {
 		 * @param value the value to associate with the key
 		 * @returns %TRUE if the key did not exist yet
 		 */
-		public static insert(hash_table: GLib.HashTable, key: any | null, value: any | null): boolean;
+		public static insert(hash_table: any[], key: any | null, value: any | null): boolean;
 		/**
 		 * Looks up a key in a #GHashTable. Note that this function cannot
 		 * distinguish between a key that is not present and one which is present
@@ -3435,7 +3435,7 @@ declare namespace imports.gi.GLib {
 		 * @param key the key to look up
 		 * @returns the associated value, or %NULL if the key is not found
 		 */
-		public static lookup(hash_table: GLib.HashTable, key: any | null): any | null;
+		public static lookup(hash_table: any[], key: any | null): any | null;
 		/**
 		 * Looks up a key in the #GHashTable, returning the original key and the
 		 * associated value and a #gboolean which is %TRUE if the key was found. This
@@ -3454,7 +3454,7 @@ declare namespace imports.gi.GLib {
 		 * return location for the value associated
 		 * with the key
 		 */
-		public static lookup_extended(hash_table: GLib.HashTable, lookup_key: any | null): [ boolean, any | null, any | null ];
+		public static lookup_extended(hash_table: any[], lookup_key: any | null): [ boolean, any | null, any | null ];
 		/**
 		 * Creates a new #GHashTable with a reference count of 1.
 		 * 
@@ -3476,7 +3476,7 @@ declare namespace imports.gi.GLib {
 		 * @param key_equal_func a function to check two keys for equality
 		 * @returns a new #GHashTable
 		 */
-		public static new(hash_func: HashFunc, key_equal_func: EqualFunc): GLib.HashTable;
+		public static new(hash_func: HashFunc, key_equal_func: EqualFunc): any[];
 		/**
 		 * Creates a new #GHashTable like {@link G.hash_table_new} with a reference
 		 * count of 1 and allows to specify functions to free the memory
@@ -3499,14 +3499,14 @@ declare namespace imports.gi.GLib {
 		 *     if you don't want to supply such a function.
 		 * @returns a new #GHashTable
 		 */
-		public static new_full(hash_func: HashFunc, key_equal_func: EqualFunc, key_destroy_func: DestroyNotify | null, value_destroy_func: DestroyNotify | null): GLib.HashTable;
+		public static new_full(hash_func: HashFunc, key_equal_func: EqualFunc, key_destroy_func: DestroyNotify | null, value_destroy_func: DestroyNotify | null): any[];
 		/**
 		 * Atomically increments the reference count of #hash_table by one.
 		 * This function is MT-safe and may be called from any thread.
 		 * @param hash_table a valid #GHashTable
 		 * @returns the passed in #GHashTable
 		 */
-		public static ref(hash_table: GLib.HashTable): GLib.HashTable;
+		public static ref(hash_table: any[]): any[];
 		/**
 		 * Removes a key and its associated value from a #GHashTable.
 		 * 
@@ -3518,7 +3518,7 @@ declare namespace imports.gi.GLib {
 		 * @param key the key to remove
 		 * @returns %TRUE if the key was found and removed from the #GHashTable
 		 */
-		public static remove(hash_table: GLib.HashTable, key: any | null): boolean;
+		public static remove(hash_table: any[], key: any | null): boolean;
 		/**
 		 * Removes all keys and their associated values from a #GHashTable.
 		 * 
@@ -3528,7 +3528,7 @@ declare namespace imports.gi.GLib {
 		 * values are freed yourself.
 		 * @param hash_table a #GHashTable
 		 */
-		public static remove_all(hash_table: GLib.HashTable): void;
+		public static remove_all(hash_table: any[]): void;
 		/**
 		 * Inserts a new key and value into a #GHashTable similar to
 		 * {@link G.hash_table_insert}. The difference is that if the key
@@ -3546,13 +3546,13 @@ declare namespace imports.gi.GLib {
 		 * @param value the value to associate with the key
 		 * @returns %TRUE if the key did not exist yet
 		 */
-		public static replace(hash_table: GLib.HashTable, key: any | null, value: any | null): boolean;
+		public static replace(hash_table: any[], key: any | null, value: any | null): boolean;
 		/**
 		 * Returns the number of elements contained in the #GHashTable.
 		 * @param hash_table a #GHashTable
 		 * @returns the number of key/value pairs in the #GHashTable.
 		 */
-		public static size(hash_table: GLib.HashTable): number;
+		public static size(hash_table: any[]): number;
 		/**
 		 * Removes a key and its associated value from a #GHashTable without
 		 * calling the key and value destroy functions.
@@ -3560,13 +3560,13 @@ declare namespace imports.gi.GLib {
 		 * @param key the key to remove
 		 * @returns %TRUE if the key was found and removed from the #GHashTable
 		 */
-		public static steal(hash_table: GLib.HashTable, key: any | null): boolean;
+		public static steal(hash_table: any[], key: any | null): boolean;
 		/**
 		 * Removes all keys and their associated values from a #GHashTable
 		 * without calling the key and value destroy functions.
 		 * @param hash_table a #GHashTable
 		 */
-		public static steal_all(hash_table: GLib.HashTable): void;
+		public static steal_all(hash_table: any[]): void;
 		/**
 		 * Looks up a key in the #GHashTable, stealing the original key and the
 		 * associated value and returning %TRUE if the key was found. If the key was
@@ -3588,7 +3588,7 @@ declare namespace imports.gi.GLib {
 		 * return location
 		 *    for the value associated with the key
 		 */
-		public static steal_extended(hash_table: GLib.HashTable, lookup_key: any | null): [ boolean, any | null, any | null ];
+		public static steal_extended(hash_table: any[], lookup_key: any | null): [ boolean, any | null, any | null ];
 		/**
 		 * Atomically decrements the reference count of #hash_table by one.
 		 * If the reference count drops to 0, all keys and values will be
@@ -3596,7 +3596,7 @@ declare namespace imports.gi.GLib {
 		 * This function is MT-safe and may be called from any thread.
 		 * @param hash_table a valid #GHashTable
 		 */
-		public static unref(hash_table: GLib.HashTable): void;
+		public static unref(hash_table: any[]): void;
 	}
 
 	export interface HashTableIterInitOptions {}
@@ -3622,7 +3622,7 @@ declare namespace imports.gi.GLib {
 		 * Returns the #GHashTable associated with #iter.
 		 * @returns the #GHashTable associated with #iter.
 		 */
-		public get_hash_table(): GLib.HashTable;
+		public get_hash_table(): any[];
 		/**
 		 * Initializes a key/value pair iterator and associates it with
 		 * #hash_table. Modifying the hash table after calling this function
@@ -3643,7 +3643,7 @@ declare namespace imports.gi.GLib {
 		 * ]|
 		 * @param hash_table a #GHashTable
 		 */
-		public init(hash_table: GLib.HashTable): void;
+		public init(hash_table: any[]): void;
 		/**
 		 * Advances #iter and retrieves the key and/or value that are now
 		 * pointed to as a result of this advancement. If %FALSE is returned,
@@ -5284,7 +5284,7 @@ declare namespace imports.gi.GLib {
 		 * ]|
 		 * @param list the first link of a #GList
 		 */
-		public static free(list: GLib.List): void;
+		public static free(list: any[]): void;
 		/**
 		 * Frees one #GList element, but does not update links from the next and
 		 * previous elements in the list, so you should not call this function on an
@@ -5293,7 +5293,7 @@ declare namespace imports.gi.GLib {
 		 * It is usually used after {@link G.list_remove_link}.
 		 * @param list a #GList element
 		 */
-		public static free_1(list: GLib.List): void;
+		public static free_1(list: any[]): void;
 		/**
 		 * Convenience method, which frees all the memory used by a #GList,
 		 * and calls #free_func on every element's data.
@@ -5312,7 +5312,7 @@ declare namespace imports.gi.GLib {
 		 * @param list the first link of a #GList
 		 * @param free_func the function to be called to free each element's data
 		 */
-		public static free_full(list: GLib.List, free_func: DestroyNotify): void;
+		public static free_full(list: any[], free_func: DestroyNotify): void;
 		/**
 		 * Gets the position of the element containing
 		 * the given data (starting from 0).
@@ -5402,7 +5402,7 @@ declare namespace imports.gi.GLib {
 		 * @param list a #GList, this must point to the top of the list
 		 * @returns the number of elements in the #GList
 		 */
-		public static length(list: GLib.List): number;
+		public static length(list: any[]): number;
 		/**
 		 * Gets the element at the given position in a #GList.
 		 * 
@@ -6155,7 +6155,7 @@ declare namespace imports.gi.GLib {
 		 * processed.
 		 * @returns the element stack, which must not be modified
 		 */
-		public get_element_stack(): GLib.SList;
+		public get_element_stack(): any[];
 		/**
 		 * Retrieves the current line number and the number of the character on
 		 * that line. Intended for use in error messages; there are no strict
@@ -7927,11 +7927,11 @@ declare namespace imports.gi.GLib {
 		/**
 		 * a pointer to the first element of the queue
 		 */
-		public head: GLib.List;
+		public head: any[];
 		/**
 		 * a pointer to the last element of the queue
 		 */
-		public tail: GLib.List;
+		public tail: any[];
 		/**
 		 * the number of elements in the queue
 		 */
@@ -7960,13 +7960,13 @@ declare namespace imports.gi.GLib {
 		 * #link_ must be part of #queue.
 		 * @param link_ a #GList link that must be part of #queue
 		 */
-		public delete_link(link_: GLib.List): void;
+		public delete_link(link_: any[]): void;
 		/**
 		 * Finds the first link in #queue which contains #data.
 		 * @param data data to find
 		 * @returns the first link in #queue which contains #data
 		 */
-		public find(data: any | null): GLib.List;
+		public find(data: any | null): any[];
 		/**
 		 * Finds an element in a #GQueue, using a supplied function to find the
 		 * desired element. It iterates over the queue, calling the given function
@@ -7978,7 +7978,7 @@ declare namespace imports.gi.GLib {
 		 *     when the desired element is found
 		 * @returns the found link, or %NULL if it wasn't found
 		 */
-		public find_custom(data: any | null, func: CompareFunc): GLib.List;
+		public find_custom(data: any | null, func: CompareFunc): any[];
 		/**
 		 * Calls #func for each element in the queue passing #user_data to the
 		 * function.
@@ -8034,7 +8034,7 @@ declare namespace imports.gi.GLib {
 		 *   push at the head of the queue.
 		 * @param data the data to insert
 		 */
-		public insert_after(sibling: GLib.List | null, data: any | null): void;
+		public insert_after(sibling: any[] | null, data: any | null): void;
 		/**
 		 * Inserts #link_ into #queue after #sibling.
 		 * 
@@ -8043,7 +8043,7 @@ declare namespace imports.gi.GLib {
 		 *   push at the head of the queue.
 		 * @param link_ a #GList link to insert which must not be part of any other list.
 		 */
-		public insert_after_link(sibling: GLib.List | null, link_: GLib.List): void;
+		public insert_after_link(sibling: any[] | null, link_: any[]): void;
 		/**
 		 * Inserts #data into #queue before #sibling.
 		 * 
@@ -8053,7 +8053,7 @@ declare namespace imports.gi.GLib {
 		 *   push at the tail of the queue.
 		 * @param data the data to insert
 		 */
-		public insert_before(sibling: GLib.List | null, data: any | null): void;
+		public insert_before(sibling: any[] | null, data: any | null): void;
 		/**
 		 * Inserts #link_ into #queue before #sibling.
 		 * 
@@ -8062,7 +8062,7 @@ declare namespace imports.gi.GLib {
 		 *   push at the tail of the queue.
 		 * @param link_ a #GList link to insert which must not be part of any other list.
 		 */
-		public insert_before_link(sibling: GLib.List | null, link_: GLib.List): void;
+		public insert_before_link(sibling: any[] | null, link_: any[]): void;
 		/**
 		 * Inserts #data into #queue using #func to determine the new position.
 		 * @param data the data to insert
@@ -8084,7 +8084,7 @@ declare namespace imports.gi.GLib {
 		 * @returns the position of #link_, or -1 if the link is
 		 *     not part of #queue
 		 */
-		public link_index(link_: GLib.List): number;
+		public link_index(link_: any[]): number;
 		/**
 		 * Returns the first element of the queue.
 		 * @returns the data of the first element in the queue, or %NULL
@@ -8095,7 +8095,7 @@ declare namespace imports.gi.GLib {
 		 * Returns the first link in #queue.
 		 * @returns the first link in #queue, or %NULL if #queue is empty
 		 */
-		public peek_head_link(): GLib.List;
+		public peek_head_link(): any[];
 		/**
 		 * Returns the #n'th element of #queue.
 		 * @param n the position of the element
@@ -8109,7 +8109,7 @@ declare namespace imports.gi.GLib {
 		 * @returns the link at the #n'th position, or %NULL
 		 *     if #n is off the end of the list
 		 */
-		public peek_nth_link(n: number): GLib.List;
+		public peek_nth_link(n: number): any[];
 		/**
 		 * Returns the last element of the queue.
 		 * @returns the data of the last element in the queue, or %NULL
@@ -8120,7 +8120,7 @@ declare namespace imports.gi.GLib {
 		 * Returns the last link in #queue.
 		 * @returns the last link in #queue, or %NULL if #queue is empty
 		 */
-		public peek_tail_link(): GLib.List;
+		public peek_tail_link(): any[];
 		/**
 		 * Removes the first element of the queue and returns its data.
 		 * @returns the data of the first element in the queue, or %NULL
@@ -8132,7 +8132,7 @@ declare namespace imports.gi.GLib {
 		 * @returns the #GList element at the head of the queue, or %NULL
 		 *     if the queue is empty
 		 */
-		public pop_head_link(): GLib.List;
+		public pop_head_link(): any[];
 		/**
 		 * Removes the #n'th element of #queue and returns its data.
 		 * @param n the position of the element
@@ -8144,7 +8144,7 @@ declare namespace imports.gi.GLib {
 		 * @param n the link's position
 		 * @returns the #n'th link, or %NULL if #n is off the end of #queue
 		 */
-		public pop_nth_link(n: number): GLib.List;
+		public pop_nth_link(n: number): any[];
 		/**
 		 * Removes the last element of the queue and returns its data.
 		 * @returns the data of the last element in the queue, or %NULL
@@ -8156,7 +8156,7 @@ declare namespace imports.gi.GLib {
 		 * @returns the #GList element at the tail of the queue, or %NULL
 		 *     if the queue is empty
 		 */
-		public pop_tail_link(): GLib.List;
+		public pop_tail_link(): any[];
 		/**
 		 * Adds a new element at the head of the queue.
 		 * @param data the data for the new element.
@@ -8166,7 +8166,7 @@ declare namespace imports.gi.GLib {
 		 * Adds a new element at the head of the queue.
 		 * @param link_ a single #GList element, not a list with more than one element
 		 */
-		public push_head_link(link_: GLib.List): void;
+		public push_head_link(link_: any[]): void;
 		/**
 		 * Inserts a new element into #queue at the given position.
 		 * @param data the data for the new element
@@ -8182,7 +8182,7 @@ declare namespace imports.gi.GLib {
 		 *     #queue.
 		 * @param link_ the link to add to #queue
 		 */
-		public push_nth_link(n: number, link_: GLib.List): void;
+		public push_nth_link(n: number, link_: any[]): void;
 		/**
 		 * Adds a new element at the tail of the queue.
 		 * @param data the data for the new element
@@ -8192,7 +8192,7 @@ declare namespace imports.gi.GLib {
 		 * Adds a new element at the tail of the queue.
 		 * @param link_ a single #GList element, not a list with more than one element
 		 */
-		public push_tail_link(link_: GLib.List): void;
+		public push_tail_link(link_: any[]): void;
 		/**
 		 * Removes the first element in #queue that contains #data.
 		 * @param data the data to remove
@@ -8224,7 +8224,7 @@ declare namespace imports.gi.GLib {
 		 * #link_ must be part of #queue.
 		 * @param link_ a #GList link that must be part of #queue
 		 */
-		public unlink(link_: GLib.List): void;
+		public unlink(link_: any[]): void;
 	}
 
 	export interface RWLockInitOptions {}
@@ -9170,7 +9170,7 @@ declare namespace imports.gi.GLib {
 		 * g_slist_insert_sorted() functions and so is rarely used on its own.
 		 * @returns a pointer to the newly-allocated #GSList element.
 		 */
-		public static alloc(): GLib.SList;
+		public static alloc(): any[];
 		/**
 		 * Adds a new element on to the end of the list.
 		 * 
@@ -9198,7 +9198,7 @@ declare namespace imports.gi.GLib {
 		 * @param data the data for the new element
 		 * @returns the new start of the #GSList
 		 */
-		public static append(list: GLib.SList, data: any | null): GLib.SList;
+		public static append(list: any[], data: any | null): any[];
 		/**
 		 * Adds the second #GSList onto the end of the first #GSList.
 		 * Note that the elements of the second #GSList are not copied.
@@ -9207,7 +9207,7 @@ declare namespace imports.gi.GLib {
 		 * @param list2 the #GSList to add to the end of the first #GSList
 		 * @returns the start of the new #GSList
 		 */
-		public static concat(list1: GLib.SList, list2: GLib.SList): GLib.SList;
+		public static concat(list1: any[], list2: any[]): any[];
 		/**
 		 * Copies a #GSList.
 		 * 
@@ -9218,7 +9218,7 @@ declare namespace imports.gi.GLib {
 		 * @param list a #GSList
 		 * @returns a copy of #list
 		 */
-		public static copy(list: GLib.SList): GLib.SList;
+		public static copy(list: any[]): any[];
 		/**
 		 * Makes a full (deep) copy of a #GSList.
 		 * 
@@ -9244,7 +9244,7 @@ declare namespace imports.gi.GLib {
 		 * @param func a copy function used to copy every element in the list
 		 * @returns a full copy of #list, use {@link G.slist_free_full} to free it
 		 */
-		public static copy_deep(list: GLib.SList, func: CopyFunc): GLib.SList;
+		public static copy_deep(list: any[], func: CopyFunc): any[];
 		/**
 		 * Removes the node link_ from the list and frees it.
 		 * Compare this to {@link G.slist_remove_link} which removes the node
@@ -9259,7 +9259,7 @@ declare namespace imports.gi.GLib {
 		 * @param link_ node to delete
 		 * @returns the new head of #list
 		 */
-		public static delete_link(list: GLib.SList, link_: GLib.SList): GLib.SList;
+		public static delete_link(list: any[], link_: any[]): any[];
 		/**
 		 * Finds the element in a #GSList which
 		 * contains the given data.
@@ -9268,7 +9268,7 @@ declare namespace imports.gi.GLib {
 		 * @returns the found #GSList element,
 		 *     or %NULL if it is not found
 		 */
-		public static find(list: GLib.SList, data: any | null): GLib.SList;
+		public static find(list: any[], data: any | null): any[];
 		/**
 		 * Finds an element in a #GSList, using a supplied function to
 		 * find the desired element. It iterates over the list, calling
@@ -9282,7 +9282,7 @@ declare namespace imports.gi.GLib {
 		 *     It should return 0 when the desired element is found
 		 * @returns the found #GSList element, or %NULL if it is not found
 		 */
-		public static find_custom(list: GLib.SList, data: any | null, func: CompareFunc): GLib.SList;
+		public static find_custom(list: any[], data: any | null, func: CompareFunc): any[];
 		/**
 		 * Calls a function for each element of a #GSList.
 		 * 
@@ -9291,7 +9291,7 @@ declare namespace imports.gi.GLib {
 		 * @param list a #GSList
 		 * @param func the function to call with each element's data
 		 */
-		public static foreach(list: GLib.SList, func: Func): void;
+		public static foreach(list: any[], func: Func): void;
 		/**
 		 * Frees all of the memory used by a #GSList.
 		 * The freed elements are returned to the slice allocator.
@@ -9308,13 +9308,13 @@ declare namespace imports.gi.GLib {
 		 * ]|
 		 * @param list the first link of a #GSList
 		 */
-		public static free(list: GLib.SList): void;
+		public static free(list: any[]): void;
 		/**
 		 * Frees one #GSList element.
 		 * It is usually used after {@link G.slist_remove_link}.
 		 * @param list a #GSList element
 		 */
-		public static free_1(list: GLib.SList): void;
+		public static free_1(list: any[]): void;
 		/**
 		 * Convenience method, which frees all the memory used by a #GSList, and
 		 * calls the specified destroy function on every element's data.
@@ -9333,7 +9333,7 @@ declare namespace imports.gi.GLib {
 		 * @param list the first link of a #GSList
 		 * @param free_func the function to be called to free each element's data
 		 */
-		public static free_full(list: GLib.SList, free_func: DestroyNotify): void;
+		public static free_full(list: any[], free_func: DestroyNotify): void;
 		/**
 		 * Gets the position of the element containing
 		 * the given data (starting from 0).
@@ -9342,7 +9342,7 @@ declare namespace imports.gi.GLib {
 		 * @returns the index of the element containing the data,
 		 *     or -1 if the data is not found
 		 */
-		public static index(list: GLib.SList, data: any | null): number;
+		public static index(list: any[], data: any | null): number;
 		/**
 		 * Inserts a new element into the list at the given position.
 		 * @param list a #GSList
@@ -9353,7 +9353,7 @@ declare namespace imports.gi.GLib {
 		 *     to the end of the list.
 		 * @returns the new start of the #GSList
 		 */
-		public static insert(list: GLib.SList, data: any | null, position: number): GLib.SList;
+		public static insert(list: any[], data: any | null, position: number): any[];
 		/**
 		 * Inserts a node before #sibling containing #data.
 		 * @param slist a #GSList
@@ -9361,7 +9361,7 @@ declare namespace imports.gi.GLib {
 		 * @param data data to put in the newly-inserted node
 		 * @returns the new head of the list.
 		 */
-		public static insert_before(slist: GLib.SList, sibling: GLib.SList, data: any | null): GLib.SList;
+		public static insert_before(slist: any[], sibling: any[], data: any | null): any[];
 		/**
 		 * Inserts a new element into the list, using the given
 		 * comparison function to determine its position.
@@ -9372,7 +9372,7 @@ declare namespace imports.gi.GLib {
 		 *     comes after the second parameter in the sort order.
 		 * @returns the new start of the #GSList
 		 */
-		public static insert_sorted(list: GLib.SList, data: any | null, func: CompareFunc): GLib.SList;
+		public static insert_sorted(list: any[], data: any | null, func: CompareFunc): any[];
 		/**
 		 * Inserts a new element into the list, using the given
 		 * comparison function to determine its position.
@@ -9383,7 +9383,7 @@ declare namespace imports.gi.GLib {
 		 *     comes after the second parameter in the sort order.
 		 * @returns the new start of the #GSList
 		 */
-		public static insert_sorted_with_data(list: GLib.SList, data: any | null, func: CompareDataFunc): GLib.SList;
+		public static insert_sorted_with_data(list: any[], data: any | null, func: CompareDataFunc): any[];
 		/**
 		 * Gets the last element in a #GSList.
 		 * 
@@ -9392,7 +9392,7 @@ declare namespace imports.gi.GLib {
 		 * @returns the last element in the #GSList,
 		 *     or %NULL if the #GSList has no elements
 		 */
-		public static last(list: GLib.SList): GLib.SList;
+		public static last(list: any[]): any[];
 		/**
 		 * Gets the number of elements in a #GSList.
 		 * 
@@ -9402,7 +9402,7 @@ declare namespace imports.gi.GLib {
 		 * @param list a #GSList
 		 * @returns the number of elements in the #GSList
 		 */
-		public static length(list: GLib.SList): number;
+		public static length(list: any[]): number;
 		/**
 		 * Gets the element at the given position in a #GSList.
 		 * @param list a #GSList
@@ -9410,7 +9410,7 @@ declare namespace imports.gi.GLib {
 		 * @returns the element, or %NULL if the position is off
 		 *     the end of the #GSList
 		 */
-		public static nth(list: GLib.SList, n: number): GLib.SList;
+		public static nth(list: any[], n: number): any[];
 		/**
 		 * Gets the data of the element at the given position.
 		 * @param list a #GSList
@@ -9418,7 +9418,7 @@ declare namespace imports.gi.GLib {
 		 * @returns the element's data, or %NULL if the position
 		 *     is off the end of the #GSList
 		 */
-		public static nth_data(list: GLib.SList, n: number): any | null;
+		public static nth_data(list: any[], n: number): any | null;
 		/**
 		 * Gets the position of the given element
 		 * in the #GSList (starting from 0).
@@ -9427,7 +9427,7 @@ declare namespace imports.gi.GLib {
 		 * @returns the position of the element in the #GSList,
 		 *     or -1 if the element is not found
 		 */
-		public static position(list: GLib.SList, llink: GLib.SList): number;
+		public static position(list: any[], llink: any[]): number;
 		/**
 		 * Adds a new element on to the start of the list.
 		 * 
@@ -9444,7 +9444,7 @@ declare namespace imports.gi.GLib {
 		 * @param data the data for the new element
 		 * @returns the new start of the #GSList
 		 */
-		public static prepend(list: GLib.SList, data: any | null): GLib.SList;
+		public static prepend(list: any[], data: any | null): any[];
 		/**
 		 * Removes an element from a #GSList.
 		 * If two elements contain the same data, only the first is removed.
@@ -9453,7 +9453,7 @@ declare namespace imports.gi.GLib {
 		 * @param data the data of the element to remove
 		 * @returns the new start of the #GSList
 		 */
-		public static remove(list: GLib.SList, data: any | null): GLib.SList;
+		public static remove(list: any[], data: any | null): any[];
 		/**
 		 * Removes all list nodes with data equal to #data.
 		 * Returns the new head of the list. Contrast with
@@ -9463,7 +9463,7 @@ declare namespace imports.gi.GLib {
 		 * @param data data to remove
 		 * @returns new head of #list
 		 */
-		public static remove_all(list: GLib.SList, data: any | null): GLib.SList;
+		public static remove_all(list: any[], data: any | null): any[];
 		/**
 		 * Removes an element from a #GSList, without
 		 * freeing the element. The removed element's next
@@ -9479,13 +9479,13 @@ declare namespace imports.gi.GLib {
 		 * @param link_ an element in the #GSList
 		 * @returns the new start of the #GSList, without the element
 		 */
-		public static remove_link(list: GLib.SList, link_: GLib.SList): GLib.SList;
+		public static remove_link(list: any[], link_: any[]): any[];
 		/**
 		 * Reverses a #GSList.
 		 * @param list a #GSList
 		 * @returns the start of the reversed #GSList
 		 */
-		public static reverse(list: GLib.SList): GLib.SList;
+		public static reverse(list: any[]): any[];
 		/**
 		 * Sorts a #GSList using the given comparison function. The algorithm
 		 * used is a stable sort.
@@ -9497,14 +9497,14 @@ declare namespace imports.gi.GLib {
 		 *     the first element comes after the second.
 		 * @returns the start of the sorted #GSList
 		 */
-		public static sort(list: GLib.SList, compare_func: CompareFunc): GLib.SList;
+		public static sort(list: any[], compare_func: CompareFunc): any[];
 		/**
 		 * Like {@link G.slist_sort}, but the sort function accepts a user data argument.
 		 * @param list a #GSList
 		 * @param compare_func comparison function
 		 * @returns new head of the list
 		 */
-		public static sort_with_data(list: GLib.SList, compare_func: CompareDataFunc): GLib.SList;
+		public static sort_with_data(list: any[], compare_func: CompareDataFunc): any[];
 		/**
 		 * holds the element's data, which can be a pointer to any kind
 		 *        of data, or any integer value using the
@@ -9514,7 +9514,7 @@ declare namespace imports.gi.GLib {
 		/**
 		 * contains the link to the next element in the list.
 		 */
-		public next: GLib.SList;
+		public next: any[];
 	}
 
 	export interface ScannerInitOptions {}
@@ -9604,7 +9604,7 @@ declare namespace imports.gi.GLib {
 		 * char number of the last token from {@link G.scanner_peek_next_token}
 		 */
 		public next_position: number;
-		public readonly symbol_table: GLib.HashTable;
+		public readonly symbol_table: any[];
 		public readonly input_fd: number;
 		public readonly text: string;
 		public readonly text_end: string;
@@ -10418,7 +10418,7 @@ declare namespace imports.gi.GLib {
 		public readonly priority: number;
 		public readonly flags: number;
 		public readonly source_id: number;
-		public readonly poll_fds: GLib.SList;
+		public readonly poll_fds: any[];
 		public readonly prev: Source;
 		public readonly next: Source;
 		public readonly name: string;
@@ -11479,7 +11479,7 @@ declare namespace imports.gi.GLib {
 		 */
 		public static new(): TestLogBuffer;
 		public readonly data: String;
-		public readonly msgs: GLib.SList;
+		public readonly msgs: any[];
 		/**
 		 * Internal function for gtester to free test log messages, no ABI guarantees provided.
 		 */
@@ -13003,7 +13003,7 @@ declare namespace imports.gi.GLib {
 		 *     A hash table of attribute/value pairs, with both names and values
 		 *     fully-decoded; or %NULL on error.
 		 */
-		public static parse_params(params: string, length: number, separators: string, flags: UriParamsFlags): GLib.HashTable;
+		public static parse_params(params: string, length: number, separators: string, flags: UriParamsFlags): string[];
 		/**
 		 * Gets the scheme portion of a URI string.
 		 * [RFC 3986](https://tools.ietf.org/html/rfc3986#section-3) decodes the scheme
@@ -22543,7 +22543,7 @@ declare namespace imports.gi.GLib {
 	 * @param list_ptr a #GList return location
 	 * @param destroy the function to pass to {@link G.list_free_full} or %NULL to not free elements
 	 */
-	function clear_list(list_ptr: GLib.List, destroy: DestroyNotify | null): void;
+	function clear_list(list_ptr: any[], destroy: DestroyNotify | null): void;
 
 	/**
 	 * Clears a reference to a variable.
@@ -22573,7 +22573,7 @@ declare namespace imports.gi.GLib {
 	 * @param slist_ptr a #GSList return location
 	 * @param destroy the function to pass to {@link G.slist_free_full} or %NULL to not free elements
 	 */
-	function clear_slist(slist_ptr: GLib.SList, destroy: DestroyNotify | null): void;
+	function clear_slist(slist_ptr: any[], destroy: DestroyNotify | null): void;
 
 	/**
 	 * This wraps the close() call; in case of error, %errno will be
@@ -24369,7 +24369,7 @@ declare namespace imports.gi.GLib {
 	 * @param key a key to insert
 	 * @returns %TRUE if the key did not exist yet
 	 */
-	function hash_table_add(hash_table: GLib.HashTable, key: any | null): boolean;
+	function hash_table_add(hash_table: any[], key: any | null): boolean;
 
 	/**
 	 * Checks if #key is in #hash_table.
@@ -24377,7 +24377,7 @@ declare namespace imports.gi.GLib {
 	 * @param key a key to check
 	 * @returns %TRUE if #key is in #hash_table, %FALSE otherwise.
 	 */
-	function hash_table_contains(hash_table: GLib.HashTable, key: any | null): boolean;
+	function hash_table_contains(hash_table: any[], key: any | null): boolean;
 
 	/**
 	 * Destroys all keys and values in the #GHashTable and decrements its
@@ -24388,7 +24388,7 @@ declare namespace imports.gi.GLib {
 	 * destruction phase.
 	 * @param hash_table a #GHashTable
 	 */
-	function hash_table_destroy(hash_table: GLib.HashTable): void;
+	function hash_table_destroy(hash_table: any[]): void;
 
 	/**
 	 * Inserts a new key and value into a #GHashTable.
@@ -24408,7 +24408,7 @@ declare namespace imports.gi.GLib {
 	 * @param value the value to associate with the key
 	 * @returns %TRUE if the key did not exist yet
 	 */
-	function hash_table_insert(hash_table: GLib.HashTable, key: any | null, value: any | null): boolean;
+	function hash_table_insert(hash_table: any[], key: any | null, value: any | null): boolean;
 
 	/**
 	 * Looks up a key in a #GHashTable. Note that this function cannot
@@ -24419,7 +24419,7 @@ declare namespace imports.gi.GLib {
 	 * @param key the key to look up
 	 * @returns the associated value, or %NULL if the key is not found
 	 */
-	function hash_table_lookup(hash_table: GLib.HashTable, key: any | null): any | null;
+	function hash_table_lookup(hash_table: any[], key: any | null): any | null;
 
 	/**
 	 * Looks up a key in the #GHashTable, returning the original key and the
@@ -24439,7 +24439,7 @@ declare namespace imports.gi.GLib {
 	 * return location for the value associated
 	 * with the key
 	 */
-	function hash_table_lookup_extended(hash_table: GLib.HashTable, lookup_key: any | null): [ boolean, any | null, any | null ];
+	function hash_table_lookup_extended(hash_table: any[], lookup_key: any | null): [ boolean, any | null, any | null ];
 
 	/**
 	 * Removes a key and its associated value from a #GHashTable.
@@ -24452,7 +24452,7 @@ declare namespace imports.gi.GLib {
 	 * @param key the key to remove
 	 * @returns %TRUE if the key was found and removed from the #GHashTable
 	 */
-	function hash_table_remove(hash_table: GLib.HashTable, key: any | null): boolean;
+	function hash_table_remove(hash_table: any[], key: any | null): boolean;
 
 	/**
 	 * Removes all keys and their associated values from a #GHashTable.
@@ -24463,7 +24463,7 @@ declare namespace imports.gi.GLib {
 	 * values are freed yourself.
 	 * @param hash_table a #GHashTable
 	 */
-	function hash_table_remove_all(hash_table: GLib.HashTable): void;
+	function hash_table_remove_all(hash_table: any[]): void;
 
 	/**
 	 * Inserts a new key and value into a #GHashTable similar to
@@ -24482,14 +24482,14 @@ declare namespace imports.gi.GLib {
 	 * @param value the value to associate with the key
 	 * @returns %TRUE if the key did not exist yet
 	 */
-	function hash_table_replace(hash_table: GLib.HashTable, key: any | null, value: any | null): boolean;
+	function hash_table_replace(hash_table: any[], key: any | null, value: any | null): boolean;
 
 	/**
 	 * Returns the number of elements contained in the #GHashTable.
 	 * @param hash_table a #GHashTable
 	 * @returns the number of key/value pairs in the #GHashTable.
 	 */
-	function hash_table_size(hash_table: GLib.HashTable): number;
+	function hash_table_size(hash_table: any[]): number;
 
 	/**
 	 * Removes a key and its associated value from a #GHashTable without
@@ -24498,14 +24498,14 @@ declare namespace imports.gi.GLib {
 	 * @param key the key to remove
 	 * @returns %TRUE if the key was found and removed from the #GHashTable
 	 */
-	function hash_table_steal(hash_table: GLib.HashTable, key: any | null): boolean;
+	function hash_table_steal(hash_table: any[], key: any | null): boolean;
 
 	/**
 	 * Removes all keys and their associated values from a #GHashTable
 	 * without calling the key and value destroy functions.
 	 * @param hash_table a #GHashTable
 	 */
-	function hash_table_steal_all(hash_table: GLib.HashTable): void;
+	function hash_table_steal_all(hash_table: any[]): void;
 
 	/**
 	 * Looks up a key in the #GHashTable, stealing the original key and the
@@ -24528,7 +24528,7 @@ declare namespace imports.gi.GLib {
 	 * return location
 	 *    for the value associated with the key
 	 */
-	function hash_table_steal_extended(hash_table: GLib.HashTable, lookup_key: any | null): [ boolean, any | null, any | null ];
+	function hash_table_steal_extended(hash_table: any[], lookup_key: any | null): [ boolean, any | null, any | null ];
 
 	/**
 	 * Atomically decrements the reference count of #hash_table by one.
@@ -24537,7 +24537,7 @@ declare namespace imports.gi.GLib {
 	 * This function is MT-safe and may be called from any thread.
 	 * @param hash_table a valid #GHashTable
 	 */
-	function hash_table_unref(hash_table: GLib.HashTable): void;
+	function hash_table_unref(hash_table: any[]): void;
 
 	/**
 	 * Destroys a #GHook, given its ID.
@@ -30456,7 +30456,7 @@ declare namespace imports.gi.GLib {
 	 *     A hash table of attribute/value pairs, with both names and values
 	 *     fully-decoded; or %NULL on error.
 	 */
-	function uri_parse_params(params: string, length: number, separators: string, flags: UriParamsFlags): GLib.HashTable;
+	function uri_parse_params(params: string, length: number, separators: string, flags: UriParamsFlags): string[];
 
 	/**
 	 * Gets the scheme portion of a URI string.

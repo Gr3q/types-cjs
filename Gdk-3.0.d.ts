@@ -679,7 +679,7 @@ declare namespace imports.gi.Gdk {
 		 * @returns 
 		 *     A #GList of {@link Atoms}, free with {@link G.list_free}.
 		 */
-		list_axes(): GLib.List;
+		list_axes(): Atom[];
 		/**
 		 * If the device if of type %GDK_DEVICE_TYPE_MASTER, it will return
 		 * the list of slave devices attached to it, otherwise it will return
@@ -689,7 +689,7 @@ declare namespace imports.gi.Gdk {
 		 *          freed with {@link G.list_free}, the contents of the list are
 		 *          owned by GTK+ and should not be freed.
 		 */
-		list_slave_devices(): GLib.List | null;
+		list_slave_devices(): Device[] | null;
 		/**
 		 * Specifies how an axis of a device is used.
 		 * @param index_ the index of the axis
@@ -885,7 +885,7 @@ declare namespace imports.gi.Gdk {
 		 *          freed with g_list_free (). The list elements are owned by
 		 *          GTK+ and must not be freed or unreffed.
 		 */
-		list_devices(type: DeviceType): GLib.List;
+		list_devices(type: DeviceType): Device[];
 		/**
 		 * The ::device-added signal is emitted either when a new master
 		 * pointer is created, or when a slave (Hardware) input device
@@ -1341,13 +1341,13 @@ declare namespace imports.gi.Gdk {
 		 * @returns 
 		 *     a list of {@link Device}
 		 */
-		list_devices(): GLib.List;
+		list_devices(): Device[];
 		/**
 		 * Returns the list of seats known to #display.
 		 * @returns the
 		 *          list of seats known to the {@link Display}
 		 */
-		list_seats(): GLib.List;
+		list_seats(): Seat[];
 		/**
 		 * Indicates to the GUI environment that the application has
 		 * finished loading, using a given identifier.
@@ -1666,7 +1666,7 @@ declare namespace imports.gi.Gdk {
 		 *     allocated #GSList of {@link Display} objects. Free with {@link G.slist_free}
 		 *     when you are done with it.
 		 */
-		list_displays(): GLib.SList;
+		list_displays(): Display[];
 		/**
 		 * Opens a display.
 		 * @param name the name of the display to open
@@ -1819,7 +1819,7 @@ declare namespace imports.gi.Gdk {
 		 * Retrieves the list of targets of the context.
 		 * @returns a #GList of targets
 		 */
-		list_targets(): GLib.List;
+		list_targets(): Atom[];
 		/**
 		 * Requests the drag and drop operation to be managed by #context.
 		 * When a drag and drop operation becomes managed, the {@link DragContext}
@@ -3130,7 +3130,7 @@ declare namespace imports.gi.Gdk {
 		 * @returns 
 		 *     list of toplevel windows, free with {@link G.list_free}
 		 */
-		get_toplevel_windows(): GLib.List;
+		get_toplevel_windows(): Window[];
 		/**
 		 * @deprecated
 		 * Use per-monitor information instead
@@ -3172,7 +3172,7 @@ declare namespace imports.gi.Gdk {
 		 * @returns a
 		 *     list of {@link Windows} for the current window stack, or %NULL.
 		 */
-		get_window_stack(): GLib.List | null;
+		get_window_stack(): Window[] | null;
 		/**
 		 * Returns whether windows with an RGBA visual can reasonably
 		 * be expected to have their alpha channel drawn correctly on
@@ -3194,7 +3194,7 @@ declare namespace imports.gi.Gdk {
 		 * @returns 
 		 *     a list of visuals; the list must be freed, but not its contents
 		 */
-		list_visuals(): GLib.List;
+		list_visuals(): Visual[];
 		/**
 		 * Determines the name to pass to {@link Gdk.Display.open} to get
 		 * a {@link Display} with this screen as the default screen.
@@ -3375,7 +3375,7 @@ declare namespace imports.gi.Gdk {
 		 *          The list must be freed with {@link G.list_free}, the elements are owned
 		 *          by GDK and must not be freed.
 		 */
-		get_slaves(capabilities: SeatCapabilities): GLib.List;
+		get_slaves(capabilities: SeatCapabilities): Device[];
 		/**
 		 * Grabs the seat so that all events corresponding to the given #capabilities
 		 * are passed to this application until the seat is ungrabbed with {@link Gdk.Seat.ungrab},
@@ -4143,7 +4143,7 @@ declare namespace imports.gi.Gdk {
 		 * @returns 
 		 *     list of child windows inside #window
 		 */
-		get_children(): GLib.List;
+		get_children(): Window[];
 		/**
 		 * Gets the list of children of #window known to GDK with a
 		 * particular #user_data set on it.
@@ -4156,7 +4156,7 @@ declare namespace imports.gi.Gdk {
 		 * @returns 
 		 *     list of child windows inside #window
 		 */
-		get_children_with_user_data(): GLib.List;
+		get_children_with_user_data(): Window[];
 		/**
 		 * Computes the region of a window that potentially can be written
 		 * to by drawing primitives. This region may not take into account
@@ -4814,7 +4814,7 @@ declare namespace imports.gi.Gdk {
 		 * @returns 
 		 *     a reference to the list of child windows in #window
 		 */
-		peek_children(): GLib.List;
+		peek_children(): Window[];
 		/**
 		 * Sends one or more expose events to #window. The areas in each
 		 * expose event will cover the entire update area for the window (see
@@ -5170,7 +5170,7 @@ declare namespace imports.gi.Gdk {
 		 * @param pixbufs 
 		 *     A list of pixbufs, of different sizes.
 		 */
-		set_icon_list(pixbufs: GLib.List): void;
+		set_icon_list(pixbufs: GdkPixbuf.Pixbuf[]): void;
 		/**
 		 * Windows may have a name used while minimized, distinct from the
 		 * name they display in their titlebar. Most of the time this is a bad
@@ -10823,7 +10823,7 @@ declare namespace imports.gi.Gdk {
 	 *     as list of {@link Atoms}
 	 * @returns a newly created {@link DragContext}
 	 */
-	function drag_begin(window: Window, targets: GLib.List): DragContext;
+	function drag_begin(window: Window, targets: Atom[]): DragContext;
 
 	/**
 	 * Starts a drag and creates a new drag context for it.
@@ -10835,7 +10835,7 @@ declare namespace imports.gi.Gdk {
 	 *     as list of {@link Atoms}
 	 * @returns a newly created {@link DragContext}
 	 */
-	function drag_begin_for_device(window: Window, device: Device, targets: GLib.List): DragContext;
+	function drag_begin_for_device(window: Window, device: Device, targets: Atom[]): DragContext;
 
 	/**
 	 * Starts a drag and creates a new drag context for it.
@@ -10849,7 +10849,7 @@ declare namespace imports.gi.Gdk {
 	 * @param y_root the y coordinate where the drag nominally started
 	 * @returns a newly created {@link DragContext}
 	 */
-	function drag_begin_from_point(window: Window, device: Device, targets: GLib.List, x_root: number, y_root: number): DragContext;
+	function drag_begin_from_point(window: Window, device: Device, targets: Atom[], x_root: number, y_root: number): DragContext;
 
 	/**
 	 * Drops on the current destination.
@@ -11311,7 +11311,7 @@ declare namespace imports.gi.Gdk {
 	 * @returns 
 	 *     a list of visuals; the list must be freed, but not its contents
 	 */
-	function list_visuals(): GLib.List;
+	function list_visuals(): Visual[];
 
 	/**
 	 * Indicates to the GUI environment that the application has finished

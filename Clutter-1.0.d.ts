@@ -1437,7 +1437,7 @@ declare namespace imports.gi.Clutter {
 		 *   owned by the #ClutterActor. Use {@link GObject.list_free} to free the resources
 		 *   allocated by the returned #GList
 		 */
-		get_actions(): GLib.List;
+		get_actions(): Action[];
 		/**
 		 * Gets the layout box an actor has been assigned. The allocation can
 		 * only be assumed valid inside a paint() method; anywhere else, it
@@ -1580,7 +1580,7 @@ declare namespace imports.gi.Clutter {
 		 *   owned by the #ClutterActor. Use {@link GObject.list_free} to free the resources
 		 *   allocated by the returned #GList
 		 */
-		get_constraints(): GLib.List;
+		get_constraints(): Constraint[];
 		/**
 		 * Retrieves the contents of #self.
 		 * @returns a pointer to the {@link Content} instance,
@@ -1686,7 +1686,7 @@ declare namespace imports.gi.Clutter {
 		 *   list are owned by Clutter and they should not be freed. You should
 		 *   free the returned list using {@link GObject.list_free} when done
 		 */
-		get_effects(): GLib.List;
+		get_effects(): Effect[];
 		/**
 		 * Retrieves the first child of #self.
 		 * 
@@ -5090,7 +5090,7 @@ declare namespace imports.gi.Clutter {
 		 *   by the #ClutterAnimator, but you should free the returned list when done,
 		 *   using {@link GObject.list_free}
 		 */
-		get_keys(object: GObject.Object | null, property_name: string | null, progress: number): GLib.List;
+		get_keys(object: GObject.Object | null, property_name: string | null, progress: number): AnimatorKey[];
 		/**
 		 * @deprecated
 		 * Use {@link KeyframeTransition} instead
@@ -5443,7 +5443,7 @@ declare namespace imports.gi.Clutter {
 		 *   actors. You should free the returned list with {@link GObject.slist_free} when
 		 *   finished using it.
 		 */
-		get_actors(): GLib.SList;
+		get_actors(): Actor[];
 		/**
 		 * Retrieves the {@link Alpha} object bound to #behave.
 		 * @returns a {@link Alpha} object, or %NULL if no alpha
@@ -8184,7 +8184,7 @@ declare namespace imports.gi.Clutter {
 		 *   a newly allocated list of {@link InputDevice} objects. Use
 		 *   {@link GObject.slist_free} to deallocate it when done
 		 */
-		list_devices(): GLib.SList;
+		list_devices(): InputDevice[];
 		/**
 		 * Lists all currently registered input devices
 		 * @returns 
@@ -8192,7 +8192,7 @@ declare namespace imports.gi.Clutter {
 		 *   returned list is owned by the #ClutterDeviceManager and should never
 		 *   be modified or freed
 		 */
-		peek_devices(): GLib.SList;
+		peek_devices(): InputDevice[];
 		/**
 		 * The ::device-added signal is emitted each time a device has been
 		 * added to the {@link DeviceManager}
@@ -9722,7 +9722,7 @@ declare namespace imports.gi.Clutter {
 		 *   list of {@link InputDevice}, or %NULL. The contents of the list are
 		 *   owned by the device. Use {@link GObject.list_free} when done
 		 */
-		get_slave_devices(): GLib.List;
+		get_slave_devices(): InputDevice[];
 		/**
 		 * Gets the vendor ID of this device.
 		 * @returns the vendor ID
@@ -11838,7 +11838,7 @@ declare namespace imports.gi.Clutter {
 		 * @returns a
 		 *   list of nodes in the path.
 		 */
-		get_nodes(): GLib.SList;
+		get_nodes(): PathNode[];
 		/**
 		 * The value in #progress represents a position along the path where
 		 * 0.0 is the beginning and 1.0 is the end of the path. An
@@ -12327,7 +12327,7 @@ declare namespace imports.gi.Clutter {
 		 *   not increase the reference count of the returned timelines. Use
 		 *   {@link GObject.slist_free} on the returned list to deallocate its resources.
 		 */
-		list_timelines(): GLib.SList;
+		list_timelines(): Timeline[];
 		/**
 		 * Pauses a playing score #score.
 		 */
@@ -12589,7 +12589,7 @@ declare namespace imports.gi.Clutter {
 		 *   {@link Script} instance. Use {@link GObject.list_free} on the returned list when
 		 *   done.
 		 */
-		list_objects(): GLib.List;
+		list_objects(): GObject.Object[];
 		/**
 		 * Loads the definitions from #data into #script and merges with
 		 * the currently loaded ones, if any.
@@ -14028,7 +14028,7 @@ declare namespace imports.gi.Clutter {
 		 *   allocated list of {@link Stage} objects. Use {@link GObject.slist_free} to
 		 *   deallocate it when done.
 		 */
-		list_stages(): GLib.SList;
+		list_stages(): Stage[];
 		/**
 		 * Lists all currently used stages.
 		 * @returns a pointer
@@ -14036,7 +14036,7 @@ declare namespace imports.gi.Clutter {
 		 *   is owned by the #ClutterStageManager and should never be modified
 		 *   or freed
 		 */
-		peek_stages(): GLib.SList;
+		peek_stages(): Stage[];
 		/**
 		 * @deprecated
 		 * Calling this function has no effect
@@ -14169,7 +14169,7 @@ declare namespace imports.gi.Clutter {
 		 *   modified or freed. Use {@link GObject.list_free} to free the resources allocated
 		 *   by the returned list when done using it
 		 */
-		get_keys(source_state_name: string | null, target_state_name: string | null, object: GObject.Object | null, property_name: string | null): GLib.List;
+		get_keys(source_state_name: string | null, target_state_name: string | null, object: GObject.Object | null, property_name: string | null): StateKey[];
 		/**
 		 * @deprecated
 		 * Use {@link KeyframeTransition} and
@@ -14197,7 +14197,7 @@ declare namespace imports.gi.Clutter {
 		 *   {@link GObject.list_free} to free the resources allocated by the returned list when
 		 *   done using it
 		 */
-		get_states(): GLib.List;
+		get_states(): string[];
 		/**
 		 * @deprecated
 		 * Use {@link KeyframeTransition} and
@@ -19993,7 +19993,7 @@ declare namespace imports.gi.Clutter {
 		 *   of {@link Actor}<!-- -->s. Use {@link GObject.list_free} on the returned
 		 *   list when done.
 		 */
-		get_children(): GLib.List;
+		get_children(): Actor[];
 		/**
 		 * @deprecated
 		 * Use {@link Clutter.Actor.set_child_below_sibling} instead.

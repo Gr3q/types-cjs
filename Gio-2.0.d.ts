@@ -76,7 +76,7 @@ declare namespace imports.gi.Gio {
 		 * @param files a #GList of #GFile objects
 		 * @returns a display string for the display.
 		 */
-		get_display(info: AppInfo, files: GLib.List): string | null;
+		get_display(info: AppInfo, files: File[]): string | null;
 		/**
 		 * Gets the complete environment variable list to be passed to
 		 * the child process when #context is used to launch an application.
@@ -97,7 +97,7 @@ declare namespace imports.gi.Gio {
 		 * @returns a startup notification ID for the application, or %NULL if
 		 *     not supported.
 		 */
-		get_startup_notify_id(info: AppInfo, files: GLib.List): string | null;
+		get_startup_notify_id(info: AppInfo, files: File[]): string | null;
 		/**
 		 * Called when an application has failed to launch, so that it can cancel
 		 * the application startup notification started in {@link G.app_launch_context_get_startup_notify_id}.
@@ -3695,7 +3695,7 @@ declare namespace imports.gi.Gio {
 		 *   list should be freed with {@link G.list_free} after each element has
 		 *   been freed with g_object_unref().
 		 */
-		get_connections(): GLib.List;
+		get_connections(): DBusConnection[];
 		/**
 		 * Gets the #GDBusInterfaceSkeletonFlags that describes what the behavior
 		 * of #interface_
@@ -6487,7 +6487,7 @@ declare namespace imports.gi.Gio {
 		 * @param pid_callback_data User data for #callback
 		 * @returns %TRUE on successful launch, %FALSE otherwise.
 		 */
-		launch_uris_as_manager(uris: GLib.List, launch_context: AppLaunchContext | null, spawn_flags: GLib.SpawnFlags, user_setup: GLib.SpawnChildSetupFunc | null, user_setup_data: any | null, pid_callback: DesktopAppLaunchCallback | null, pid_callback_data: any | null): boolean;
+		launch_uris_as_manager(uris: string[], launch_context: AppLaunchContext | null, spawn_flags: GLib.SpawnFlags, user_setup: GLib.SpawnChildSetupFunc | null, user_setup_data: any | null, pid_callback: DesktopAppLaunchCallback | null, pid_callback_data: any | null): boolean;
 		/**
 		 * Equivalent to {@link G.desktop_app_info_launch_uris_as_manager} but allows
 		 * you to pass in file descriptors for the stdin, stdout and stderr streams
@@ -6508,7 +6508,7 @@ declare namespace imports.gi.Gio {
 		 * @param stderr_fd file descriptor to use for child's stderr, or -1
 		 * @returns %TRUE on successful launch, %FALSE otherwise.
 		 */
-		launch_uris_as_manager_with_fds(uris: GLib.List, launch_context: AppLaunchContext | null, spawn_flags: GLib.SpawnFlags, user_setup: GLib.SpawnChildSetupFunc | null, user_setup_data: any | null, pid_callback: DesktopAppLaunchCallback | null, pid_callback_data: any | null, stdin_fd: number, stdout_fd: number, stderr_fd: number): boolean;
+		launch_uris_as_manager_with_fds(uris: string[], launch_context: AppLaunchContext | null, spawn_flags: GLib.SpawnFlags, user_setup: GLib.SpawnChildSetupFunc | null, user_setup_data: any | null, pid_callback: DesktopAppLaunchCallback | null, pid_callback_data: any | null, stdin_fd: number, stdout_fd: number, stderr_fd: number): boolean;
 		/**
 		 * Returns the list of "additional application actions" supported on the
 		 * desktop file, as per the desktop file specification.
@@ -6584,7 +6584,7 @@ declare namespace imports.gi.Gio {
 		 * @returns a list of #GDesktopAppInfo
 		 * objects.
 		 */
-		public static get_implementations(_interface: string): GLib.List;
+		public static get_implementations(_interface: string): DesktopAppInfo[];
 		/**
 		 * Searches desktop files for ones that match #search_string.
 		 * 
@@ -6702,7 +6702,7 @@ declare namespace imports.gi.Gio {
 		 * @returns a #GList of
 		 *     #GEmblems that is owned by #emblemed
 		 */
-		get_emblems(): GLib.List;
+		get_emblems(): Emblem[];
 		/**
 		 * Gets the main icon for #emblemed.
 		 * @returns a #GIcon that is owned by #emblemed
@@ -6915,7 +6915,7 @@ declare namespace imports.gi.Gio {
 		 *     {@link G.list_free} and unref the infos with g_object_unref() when you're
 		 *     done with them.
 		 */
-		next_files_finish(result: AsyncResult): GLib.List;
+		next_files_finish(result: AsyncResult): FileInfo[];
 		/**
 		 * Sets the file enumerator as having pending operations.
 		 * @param pending a boolean value.
@@ -12320,7 +12320,7 @@ declare namespace imports.gi.Gio {
 		 * must unref each of the addresses and free the list when you are
 		 * done with it. (You can use {@link G.resolver_free_addresses} to do this.)
 		 */
-		lookup_by_name(hostname: string, cancellable: Cancellable | null): GLib.List;
+		lookup_by_name(hostname: string, cancellable: Cancellable | null): InetAddress[];
 		/**
 		 * Begins asynchronously resolving #hostname to determine its
 		 * associated IP address(es), and eventually calls #callback, which
@@ -12343,7 +12343,7 @@ declare namespace imports.gi.Gio {
 		 * of #GInetAddress, or %NULL on error. See {@link G.resolver_lookup_by_name}
 		 * for more details.
 		 */
-		lookup_by_name_finish(result: AsyncResult): GLib.List;
+		lookup_by_name_finish(result: AsyncResult): InetAddress[];
 		/**
 		 * This differs from {@link G.resolver_lookup_by_name} in that you can modify
 		 * the lookup behavior with #flags. For example this can be used to limit
@@ -12356,7 +12356,7 @@ declare namespace imports.gi.Gio {
 		 * must unref each of the addresses and free the list when you are
 		 * done with it. (You can use {@link G.resolver_free_addresses} to do this.)
 		 */
-		lookup_by_name_with_flags(hostname: string, flags: ResolverNameLookupFlags, cancellable: Cancellable | null): GLib.List;
+		lookup_by_name_with_flags(hostname: string, flags: ResolverNameLookupFlags, cancellable: Cancellable | null): InetAddress[];
 		/**
 		 * Begins asynchronously resolving #hostname to determine its
 		 * associated IP address(es), and eventually calls #callback, which
@@ -12380,7 +12380,7 @@ declare namespace imports.gi.Gio {
 		 * of #GInetAddress, or %NULL on error. See {@link G.resolver_lookup_by_name}
 		 * for more details.
 		 */
-		lookup_by_name_with_flags_finish(result: AsyncResult): GLib.List;
+		lookup_by_name_with_flags_finish(result: AsyncResult): InetAddress[];
 		/**
 		 * Synchronously performs a DNS record lookup for the given #rrname and returns
 		 * a list of records as #GVariant tuples. See #GResolverRecordType for
@@ -12400,7 +12400,7 @@ declare namespace imports.gi.Gio {
 		 * when you are done with it. (You can use {@link G.list_free_full} with
 		 * g_variant_unref() to do this.)
 		 */
-		lookup_records(rrname: string, record_type: ResolverRecordType, cancellable: Cancellable | null): GLib.List;
+		lookup_records(rrname: string, record_type: ResolverRecordType, cancellable: Cancellable | null): GLib.Variant[];
 		/**
 		 * Begins asynchronously performing a DNS lookup for the given
 		 * #rrname, and eventually calls #callback, which must call
@@ -12427,7 +12427,7 @@ declare namespace imports.gi.Gio {
 		 * when you are done with it. (You can use {@link G.list_free_full} with
 		 * g_variant_unref() to do this.)
 		 */
-		lookup_records_finish(result: AsyncResult): GLib.List;
+		lookup_records_finish(result: AsyncResult): GLib.Variant[];
 		/**
 		 * Synchronously performs a DNS SRV lookup for the given #service and
 		 * #protocol in the given #domain and returns an array of #GSrvTarget.
@@ -12459,7 +12459,7 @@ declare namespace imports.gi.Gio {
 		 * list when you are done with it. (You can use {@link G.resolver_free_targets} to do
 		 * this.)
 		 */
-		lookup_service(service: string, protocol: string, domain: string, cancellable: Cancellable | null): GLib.List;
+		lookup_service(service: string, protocol: string, domain: string, cancellable: Cancellable | null): SrvTarget[];
 		/**
 		 * Begins asynchronously performing a DNS SRV lookup for the given
 		 * #service and #protocol in the given #domain, and eventually calls
@@ -12485,7 +12485,7 @@ declare namespace imports.gi.Gio {
 		 * #GSrvTarget, or %NULL on error. See {@link G.resolver_lookup_service} for more
 		 * details.
 		 */
-		lookup_service_finish(result: AsyncResult): GLib.List;
+		lookup_service_finish(result: AsyncResult): SrvTarget[];
 		/**
 		 * Sets #resolver to be the application's default resolver (reffing
 		 * #resolver, and unreffing the previous default resolver, if any).
@@ -12540,7 +12540,7 @@ declare namespace imports.gi.Gio {
 		 * by hand.)
 		 * @param addresses a #GList of #GInetAddress
 		 */
-		public static free_addresses(addresses: GLib.List): void;
+		public static free_addresses(addresses: any[]): void;
 		/**
 		 * Frees #targets (which should be the return value from
 		 * {@link G.resolver_lookup_service} or g_resolver_lookup_service_finish()).
@@ -12548,7 +12548,7 @@ declare namespace imports.gi.Gio {
 		 * results by hand.)
 		 * @param targets a #GList of #GSrvTarget
 		 */
-		public static free_targets(targets: GLib.List): void;
+		public static free_targets(targets: any[]): void;
 		/**
 		 * Gets the default #GResolver. You should unref it when you are done
 		 * with it. #GResolver may use its reference count as a hint about how
@@ -19651,7 +19651,7 @@ declare namespace imports.gi.Gio {
 		 * #GList containing #GTlsCertificate objects. You must free the list
 		 * and its contents when you are done with it.
 		 */
-		public static list_new_from_file(file: string): GLib.List;
+		public static list_new_from_file(file: string): TlsCertificate[];
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -20248,7 +20248,7 @@ declare namespace imports.gi.Gio {
 		 * @returns a newly allocated list of #GTlsCertificate
 		 * objects. Use {@link GObject.unref} on each certificate, and g_list_free() on the release the list.
 		 */
-		lookup_certificates_issued_by(issuer_raw_dn: number[], interaction: TlsInteraction | null, flags: TlsDatabaseLookupFlags, cancellable: Cancellable | null): GLib.List;
+		lookup_certificates_issued_by(issuer_raw_dn: number[], interaction: TlsInteraction | null, flags: TlsDatabaseLookupFlags, cancellable: Cancellable | null): TlsCertificate[];
 		/**
 		 * Asynchronously look up certificates issued by this issuer in the database. See
 		 * {@link G.tls_database_lookup_certificates_issued_by} for more information.
@@ -20270,7 +20270,7 @@ declare namespace imports.gi.Gio {
 		 * @returns a newly allocated list of #GTlsCertificate
 		 * objects. Use {@link GObject.unref} on each certificate, and g_list_free() on the release the list.
 		 */
-		lookup_certificates_issued_by_finish(result: AsyncResult): GLib.List;
+		lookup_certificates_issued_by_finish(result: AsyncResult): TlsCertificate[];
 		/**
 		 * Determines the validity of a certificate chain, outside the context
 		 * of a TLS session.
@@ -21658,7 +21658,7 @@ declare namespace imports.gi.Gio {
 		 * its elements have been unreffed with g_object_unref().
 		 * @returns a #GList of connected #GDrive objects.
 		 */
-		get_connected_drives(): GLib.List;
+		get_connected_drives(): Drive[];
 		/**
 		 * Finds a #GMount object by its UUID (see {@link G.mount_get_uuid})
 		 * @param uuid the UUID to look for
@@ -21673,7 +21673,7 @@ declare namespace imports.gi.Gio {
 		 * its elements have been unreffed with g_object_unref().
 		 * @returns a #GList of #GMount objects.
 		 */
-		get_mounts(): GLib.List;
+		get_mounts(): Mount[];
 		/**
 		 * Finds a #GVolume object by its UUID (see {@link G.volume_get_uuid})
 		 * @param uuid the UUID to look for
@@ -21688,7 +21688,7 @@ declare namespace imports.gi.Gio {
 		 * its elements have been unreffed with g_object_unref().
 		 * @returns a #GList of #GVolume objects.
 		 */
-		get_volumes(): GLib.List;
+		get_volumes(): Volume[];
 		/**
 		 * Emitted when a drive changes.
 		 * @param signal 
@@ -22119,10 +22119,10 @@ declare namespace imports.gi.Gio {
 		public get_description: {(appinfo: AppInfo): string | null;};
 		public get_executable: {(appinfo: AppInfo): string;};
 		public get_icon: {(appinfo: AppInfo): Icon | null;};
-		public launch: {(appinfo: AppInfo, files: GLib.List | null, context: AppLaunchContext | null): boolean;};
+		public launch: {(appinfo: AppInfo, files: File[] | null, context: AppLaunchContext | null): boolean;};
 		public supports_uris: {(appinfo: AppInfo): boolean;};
 		public supports_files: {(appinfo: AppInfo): boolean;};
-		public launch_uris: {(appinfo: AppInfo, uris: GLib.List | null, context: AppLaunchContext | null): boolean;};
+		public launch_uris: {(appinfo: AppInfo, uris: string[] | null, context: AppLaunchContext | null): boolean;};
 		public should_show: {(appinfo: AppInfo): boolean;};
 		public set_as_default_for_type: {(appinfo: AppInfo, content_type: string): boolean;};
 		public set_as_default_for_extension: {(appinfo: AppInfo, extension: string): boolean;};
@@ -22135,7 +22135,7 @@ declare namespace imports.gi.Gio {
 		public get_display_name: {(appinfo: AppInfo): string;};
 		public set_as_last_used_for_type: {(appinfo: AppInfo, content_type: string): boolean;};
 		public get_supported_types: {(appinfo: AppInfo): string[];};
-		public launch_uris_async: {(appinfo: AppInfo, uris: GLib.List | null, context: AppLaunchContext | null, cancellable: Cancellable | null, callback: AsyncReadyCallback | null): void;};
+		public launch_uris_async: {(appinfo: AppInfo, uris: string[] | null, context: AppLaunchContext | null, cancellable: Cancellable | null, callback: AsyncReadyCallback | null): void;};
 		public launch_uris_finish: {(appinfo: AppInfo, result: AsyncResult): boolean;};
 	}
 
@@ -22594,7 +22594,7 @@ declare namespace imports.gi.Gio {
 		 */
 		public readonly parent_iface: GObject.TypeInterface;
 		public get_object_path: {(object: DBusObject): string;};
-		public get_interfaces: {(object: DBusObject): GLib.List;};
+		public get_interfaces: {(object: DBusObject): DBusInterface[];};
 		public get_interface: {(object: DBusObject, interface_name: string): DBusInterface | null;};
 		public interface_added: {(object: DBusObject, interface_: DBusInterface): void;};
 		public interface_removed: {(object: DBusObject, interface_: DBusInterface): void;};
@@ -22612,7 +22612,7 @@ declare namespace imports.gi.Gio {
 		 */
 		public readonly parent_iface: GObject.TypeInterface;
 		public get_object_path: {(manager: DBusObjectManager): string;};
-		public get_objects: {(manager: DBusObjectManager): GLib.List;};
+		public get_objects: {(manager: DBusObjectManager): DBusObject[];};
 		public get_object: {(manager: DBusObjectManager, object_path: string): DBusObject | null;};
 		public get_interface: {(manager: DBusObjectManager, object_path: string, interface_name: string): DBusInterface | null;};
 		public object_added: {(manager: DBusObjectManager, object: DBusObject): void;};
@@ -22772,7 +22772,7 @@ declare namespace imports.gi.Gio {
 		public get_name: {(drive: Drive): string;};
 		public get_icon: {(drive: Drive): Icon;};
 		public has_volumes: {(drive: Drive): boolean;};
-		public get_volumes: {(drive: Drive): GLib.List;};
+		public get_volumes: {(drive: Drive): Volume[];};
 		public is_media_removable: {(drive: Drive): boolean;};
 		public has_media: {(drive: Drive): boolean;};
 		public is_media_check_automatic: {(drive: Drive): boolean;};
@@ -23238,7 +23238,7 @@ declare namespace imports.gi.Gio {
 		 *     #GIOExtensions. The list is owned by GIO and should not be
 		 *     modified.
 		 */
-		public get_extensions(): GLib.List;
+		public get_extensions(): IOExtension[];
 		/**
 		 * Gets the required type for #extension_point.
 		 * @returns the #GType that all implementations must have,
@@ -24454,7 +24454,7 @@ declare namespace imports.gi.Gio {
 		 * @param targets a #GList of #GSrvTarget
 		 * @returns the head of the sorted list.
 		 */
-		public static list_sort(targets: GLib.List): GLib.List;
+		public static list_sort(targets: any[]): any[];
 		/**
 		 * Copies #target
 		 * @returns a copy of #target
@@ -25565,7 +25565,7 @@ declare namespace imports.gi.Gio {
 		 * @param context a #GAppLaunchContext or %NULL
 		 * @returns %TRUE on successful launch, %FALSE otherwise.
 		 */
-		launch(files: GLib.List | null, context: AppLaunchContext | null): boolean;
+		launch(files: File[] | null, context: AppLaunchContext | null): boolean;
 		/**
 		 * Launches the application. This passes the #uris to the launched application
 		 * as arguments, using the optional #context to get information
@@ -25581,7 +25581,7 @@ declare namespace imports.gi.Gio {
 		 * @param context a #GAppLaunchContext or %NULL
 		 * @returns %TRUE on successful launch, %FALSE otherwise.
 		 */
-		launch_uris(uris: GLib.List | null, context: AppLaunchContext | null): boolean;
+		launch_uris(uris: string[] | null, context: AppLaunchContext | null): boolean;
 		/**
 		 * Async version of {@link G.app_info_launch_uris}.
 		 * 
@@ -25594,7 +25594,7 @@ declare namespace imports.gi.Gio {
 		 * @param cancellable a #GCancellable
 		 * @param callback a #GAsyncReadyCallback to call when the request is done
 		 */
-		launch_uris_async(uris: GLib.List | null, context: AppLaunchContext | null, cancellable: Cancellable | null, callback: AsyncReadyCallback | null): void;
+		launch_uris_async(uris: string[] | null, context: AppLaunchContext | null, cancellable: Cancellable | null, callback: AsyncReadyCallback | null): void;
 		/**
 		 * Finishes a {@link G.app_info_launch_uris_async} operation.
 		 * @param result a #GAsyncResult
@@ -25734,7 +25734,7 @@ declare namespace imports.gi.Gio {
 		 * the `Hidden` key set.
 		 * @returns a newly allocated #GList of references to #GAppInfos.
 		 */
-		public static get_all(): GLib.List;
+		public static get_all(): AppInfo[];
 		/**
 		 * Gets a list of all #GAppInfos for a given content type,
 		 * including the recommended and fallback #GAppInfos. See
@@ -25744,7 +25744,7 @@ declare namespace imports.gi.Gio {
 		 * @returns #GList of #GAppInfos
 		 *     for given #content_type or %NULL on error.
 		 */
-		public static get_all_for_type(content_type: string): GLib.List;
+		public static get_all_for_type(content_type: string): AppInfo[];
 		/**
 		 * Gets the default #GAppInfo for a given content type.
 		 * @param content_type the content type to find a #GAppInfo for
@@ -25772,7 +25772,7 @@ declare namespace imports.gi.Gio {
 		 * @returns #GList of #GAppInfos
 		 *     for given #content_type or %NULL on error.
 		 */
-		public static get_fallback_for_type(content_type: string): GLib.List;
+		public static get_fallback_for_type(content_type: string): AppInfo[];
 		/**
 		 * Gets a list of recommended #GAppInfos for a given content type, i.e.
 		 * those applications which claim to support the given content type exactly,
@@ -25784,7 +25784,7 @@ declare namespace imports.gi.Gio {
 		 * @returns #GList of #GAppInfos
 		 *     for given #content_type or %NULL on error.
 		 */
-		public static get_recommended_for_type(content_type: string): GLib.List;
+		public static get_recommended_for_type(content_type: string): AppInfo[];
 		/**
 		 * Utility function that launches the default application
 		 * registered to handle the specified uri. Synchronous I/O
@@ -26420,7 +26420,7 @@ declare namespace imports.gi.Gio {
 		 *   The returned list must be freed by {@link G.list_free} after each element has been freed
 		 *   with g_object_unref().
 		 */
-		get_interfaces(): GLib.List;
+		get_interfaces(): DBusInterface[];
 		/**
 		 * Gets the object path for #object.
 		 * @returns A string owned by #object. Do not free.
@@ -26503,7 +26503,7 @@ declare namespace imports.gi.Gio {
 		 *   {@link G.list_free} after each element has been freed with
 		 *   g_object_unref().
 		 */
-		get_objects(): GLib.List;
+		get_objects(): DBusObject[];
 		/**
 		 * Emitted when #interface is added to #object.
 		 * 
@@ -27014,7 +27014,7 @@ declare namespace imports.gi.Gio {
 		 * its elements have been unreffed with g_object_unref().
 		 * @returns #GList containing any #GVolume objects on the given #drive.
 		 */
-		get_volumes(): GLib.List;
+		get_volumes(): Volume[];
 		/**
 		 * Checks if the #drive has media. Note that the OS may not be polling
 		 * the drive for media changes; see {@link G.drive_is_media_check_automatic}
@@ -27202,7 +27202,7 @@ declare namespace imports.gi.Gio {
 		 * Each item in the list is a #GByteArray which contains the complete
 		 * subject DN of the certificate authority.
 		 */
-		readonly accepted_cas: GLib.List;
+		readonly accepted_cas: any[];
 		/**
 		 * A #GSocketConnectable describing the identity of the server that
 		 * is expected on the other end of the connection.
@@ -32110,7 +32110,7 @@ declare namespace imports.gi.Gio {
 		 * Each item in the list is a #GByteArray which contains the complete
 		 * subject DN of the certificate authority.
 		 */
-		readonly accepted_cas: GLib.List;
+		readonly accepted_cas: any[];
 		/**
 		 * A #GSocketConnectable describing the identity of the server that
 		 * is expected on the other end of the connection.
@@ -36111,7 +36111,7 @@ declare namespace imports.gi.Gio {
 	 * the `Hidden` key set.
 	 * @returns a newly allocated #GList of references to #GAppInfos.
 	 */
-	function app_info_get_all(): GLib.List;
+	function app_info_get_all(): AppInfo[];
 
 	/**
 	 * Gets a list of all #GAppInfos for a given content type,
@@ -36122,7 +36122,7 @@ declare namespace imports.gi.Gio {
 	 * @returns #GList of #GAppInfos
 	 *     for given #content_type or %NULL on error.
 	 */
-	function app_info_get_all_for_type(content_type: string): GLib.List;
+	function app_info_get_all_for_type(content_type: string): AppInfo[];
 
 	/**
 	 * Gets the default #GAppInfo for a given content type.
@@ -36153,7 +36153,7 @@ declare namespace imports.gi.Gio {
 	 * @returns #GList of #GAppInfos
 	 *     for given #content_type or %NULL on error.
 	 */
-	function app_info_get_fallback_for_type(content_type: string): GLib.List;
+	function app_info_get_fallback_for_type(content_type: string): AppInfo[];
 
 	/**
 	 * Gets a list of recommended #GAppInfos for a given content type, i.e.
@@ -36166,7 +36166,7 @@ declare namespace imports.gi.Gio {
 	 * @returns #GList of #GAppInfos
 	 *     for given #content_type or %NULL on error.
 	 */
-	function app_info_get_recommended_for_type(content_type: string): GLib.List;
+	function app_info_get_recommended_for_type(content_type: string): AppInfo[];
 
 	/**
 	 * Utility function that launches the default application
@@ -36690,7 +36690,7 @@ declare namespace imports.gi.Gio {
 	 * @returns list of the registered
 	 *     content types
 	 */
-	function content_types_get_registered(): GLib.List;
+	function content_types_get_registered(): string[];
 
 	/**
 	 * Escape #string so it can appear in a D-Bus address as the value
@@ -37304,7 +37304,7 @@ declare namespace imports.gi.Gio {
 	 *      {@link G.type_module_unuse} on all the modules. Free the list
 	 *      with g_list_free().
 	 */
-	function io_modules_load_all_in_directory(dirname: string): GLib.List;
+	function io_modules_load_all_in_directory(dirname: string): IOModule[];
 
 	/**
 	 * Loads all the modules in the specified directory.
@@ -37322,7 +37322,7 @@ declare namespace imports.gi.Gio {
 	 *      {@link G.type_module_unuse} on all the modules. Free the list
 	 *      with g_list_free().
 	 */
-	function io_modules_load_all_in_directory_with_scope(dirname: string, scope: IOModuleScope): GLib.List;
+	function io_modules_load_all_in_directory_with_scope(dirname: string, scope: IOModuleScope): IOModule[];
 
 	/**
 	 * Scans all the modules in the specified directory, ensuring that
@@ -37763,7 +37763,7 @@ declare namespace imports.gi.Gio {
 	 * @param targets a #GList of #GSrvTarget
 	 * @returns the head of the sorted list.
 	 */
-	function srv_target_list_sort(targets: GLib.List): GLib.List;
+	function srv_target_list_sort(targets: any[]): any[];
 
 	/**
 	 * Gets the default #GTlsBackend for the system.
@@ -38050,7 +38050,7 @@ declare namespace imports.gi.Gio {
 	 * 
 	 * guint64 to contain a timestamp.
 	 */
-	function unix_mount_points_get(): [ GLib.List, number | null ];
+	function unix_mount_points_get(): [ UnixMountPoint[], number | null ];
 
 	/**
 	 * Checks if the unix mounts have changed since a given unix time.
@@ -38069,7 +38069,7 @@ declare namespace imports.gi.Gio {
 	 * 
 	 * guint64 to contain a timestamp, or %NULL
 	 */
-	function unix_mounts_get(): [ GLib.List, number | null ];
+	function unix_mounts_get(): [ UnixMountEntry[], number | null ];
 
 	/**
 	 * The value returned by handlers of the signals generated by

@@ -1413,7 +1413,7 @@ declare namespace imports.gi.Gtk {
 		 * @returns a #GSList of proxy widgets. The list is owned by GTK+
 		 * and must not be modified.
 		 */
-		get_proxies(): GLib.SList;
+		get_proxies(): Widget[];
 		/**
 		 * @deprecated
 		 * Use {@link G.action_get_enabled} on a #GAction
@@ -1989,7 +1989,7 @@ declare namespace imports.gi.Gtk {
 		 * Lists the actions in the action group.
 		 * @returns an allocated list of the action objects in the action group
 		 */
-		list_actions(): GLib.List;
+		list_actions(): Action[];
 		/**
 		 * Removes an action object from the action group.
 		 * @param action an action
@@ -3241,7 +3241,7 @@ declare namespace imports.gi.Gtk {
 		 * deletion.
 		 * @returns a #GList of {@link Window}
 		 */
-		get_windows(): GLib.List;
+		get_windows(): Window[];
 		/**
 		 * Inform the session manager that certain types of actions should be
 		 * inhibited. This is not guaranteed to work on all platforms and for
@@ -4791,7 +4791,7 @@ declare namespace imports.gi.Gtk {
 		 *   constructed by the {@link Builder} instance. It should be freed by
 		 *   {@link G.slist_free}
 		 */
-		get_objects(): GLib.SList;
+		get_objects(): GObject.Object[];
 		/**
 		 * Gets the translation domain of #builder.
 		 * @returns the translation domain. This string is owned
@@ -6213,7 +6213,7 @@ declare namespace imports.gi.Gtk {
 		 * @returns A #GList of {@link CellRenderers}.
 		 *       The returned list is internal and should not be freed.
 		 */
-		get_focus_siblings(renderer: CellRenderer): GLib.List;
+		get_focus_siblings(renderer: CellRenderer): CellRenderer[];
 		/**
 		 * Retrieves a cell area’s initial minimum and natural height.
 		 * 
@@ -10755,7 +10755,7 @@ declare namespace imports.gi.Gtk {
 		 * {@link Gtk.Container.forall} for details on what constitutes an "internal" child.
 		 * @returns a newly-allocated list of the container’s non-internal children.
 		 */
-		get_children(): GLib.List;
+		get_children(): Widget[];
 		/**
 		 * @deprecated
 		 * For overriding focus behavior, use the
@@ -10776,7 +10776,7 @@ declare namespace imports.gi.Gtk {
 		 *                     no additional reference count is added to the
 		 *                     individual widgets in the focus chain.
 		 */
-		get_focus_chain(): [ boolean, GLib.List ];
+		get_focus_chain(): [ boolean, Widget[] ];
 		/**
 		 * Returns the current focus child widget inside #container. This is not the
 		 * currently focused widget. That can be obtained by calling
@@ -10883,7 +10883,7 @@ declare namespace imports.gi.Gtk {
 		 * @param focusable_widgets 
 		 *     the new focus chain
 		 */
-		set_focus_chain(focusable_widgets: GLib.List): void;
+		set_focus_chain(focusable_widgets: Widget[]): void;
 		/**
 		 * Sets, or unsets if #child is %NULL, the focused child of #container.
 		 * 
@@ -11219,7 +11219,7 @@ declare namespace imports.gi.Gtk {
 		 * Get a list of children.
 		 * @returns 
 		 */
-		get_children(): GLib.List;
+		get_children(): CellAccessible[];
 		remove_child(child: CellAccessible): void;
 	}
 
@@ -15818,7 +15818,7 @@ declare namespace imports.gi.Gtk {
 		 *     A #GList containing the {@link Widget} for each selected child.
 		 *     Free with {@link G.list_free} when done.
 		 */
-		get_selected_children(): GLib.List;
+		get_selected_children(): FlowBoxChild[];
 		/**
 		 * Gets the selection mode of #box.
 		 * @returns the {@link SelectionMode}
@@ -17437,7 +17437,7 @@ declare namespace imports.gi.Gtk {
 		 * @returns The list
 		 *   of {@link Gestures}, free with {@link G.list_free}
 		 */
-		get_group(): GLib.List;
+		get_group(): Gesture[];
 		/**
 		 * Returns the last event that was processed for #sequence.
 		 * 
@@ -17480,7 +17480,7 @@ declare namespace imports.gi.Gtk {
 		 *          and must not be freed or modified, the list itself must be deleted
 		 *          through {@link G.list_free}
 		 */
-		get_sequences(): GLib.List;
+		get_sequences(): Gdk.EventSequence[];
 		/**
 		 * Returns the user-defined window that receives the events
 		 * handled by #gesture. See {@link Gtk.Gesture.set_window} for more
@@ -20502,7 +20502,7 @@ declare namespace imports.gi.Gtk {
 		 *     free each element in the list with {@link G.free}, then free the list
 		 *     itself with g_list_free().
 		 */
-		list_contexts(): GLib.List;
+		list_contexts(): string[];
 		/**
 		 * Lists the icons in the current icon theme. Only a subset
 		 * of the icons can be listed by providing a context string.
@@ -20520,7 +20520,7 @@ declare namespace imports.gi.Gtk {
 		 *     first free each element in the list with {@link G.free}, then
 		 *     free the list itself with g_list_free().
 		 */
-		list_icons(context: string | null): GLib.List;
+		list_icons(context: string | null): string[];
 		/**
 		 * Looks up an icon in an icon theme, scales it to the given size
 		 * and renders it into a pixbuf. This is a convenience function;
@@ -21161,7 +21161,7 @@ declare namespace imports.gi.Gtk {
 		 * ]|
 		 * @returns A #GList containing a {@link TreePath} for each selected row.
 		 */
-		get_selected_items(): GLib.List;
+		get_selected_items(): TreePath[];
 		/**
 		 * Gets the selection mode of the #icon_view.
 		 * @returns the current selection mode
@@ -24270,7 +24270,7 @@ declare namespace imports.gi.Gtk {
 		 *     A #GList containing the {@link Widget} for each selected child.
 		 *     Free with {@link G.list_free} when done.
 		 */
-		get_selected_rows(): GLib.List;
+		get_selected_rows(): ListBoxRow[];
 		/**
 		 * Gets the selection mode of the listbox.
 		 * @returns a {@link SelectionMode}
@@ -25809,7 +25809,7 @@ declare namespace imports.gi.Gtk {
 		 * @returns the list
 		 *     of menus attached to his widget.
 		 */
-		public static get_for_attach_widget(widget: Widget): GLib.List;
+		public static get_for_attach_widget(widget: Widget): Widget[];
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -29530,7 +29530,7 @@ declare namespace imports.gi.Gtk {
 		 * g_slist_free_full (list, (GDestroyNotify) g_object_unref);
 		 * ]|
 		 */
-		list_shortcuts(): GLib.SList;
+		list_shortcuts(): Gio.File[];
 		/**
 		 * Removes an application-specific shortcut that has been previously been
 		 * inserted with {@link Gtk.PlacesSidebar.add_shortcut}.  If the #location is not a
@@ -29685,7 +29685,7 @@ declare namespace imports.gi.Gtk {
 		 * 
 		 * @returns Callback ID
 		 */
-		connect(signal: "drag-action-requested", callback: (owner: this, context: Gdk.DragContext, dest_file: Gio.File, source_file_list: GLib.List) => number): number;
+		connect(signal: "drag-action-requested", callback: (owner: this, context: Gdk.DragContext, dest_file: Gio.File, source_file_list: Gio.File[]) => number): number;
 		/**
 		 * The places sidebar emits this signal when the user completes a
 		 * drag-and-drop operation and one of the sidebar's items is the
@@ -29702,7 +29702,7 @@ declare namespace imports.gi.Gtk {
 		 * 
 		 * @returns Callback ID
 		 */
-		connect(signal: "drag-perform-drop", callback: (owner: this, dest_file: Gio.File, source_file_list: GLib.List, action: number) => void): number;
+		connect(signal: "drag-perform-drop", callback: (owner: this, dest_file: Gio.File, source_file_list: Gio.File[], action: number) => void): number;
 		/**
 		 * The places sidebar emits this signal when it starts a new operation
 		 * because the user clicked on some location that needs mounting.
@@ -32260,7 +32260,7 @@ declare namespace imports.gi.Gtk {
 		 * ]|
 		 * @returns the list representing the radio group for this object
 		 */
-		get_group(): GLib.SList;
+		get_group(): RadioAction[];
 		/**
 		 * Joins a radio action object to the group of another radio action object.
 		 * 
@@ -32294,7 +32294,7 @@ declare namespace imports.gi.Gtk {
 		 * Sets the radio group for the radio action object.
 		 * @param group a list representing a radio group, or %NULL
 		 */
-		set_group(group: GLib.SList | null): void;
+		set_group(group: RadioAction[] | null): void;
 		/**
 		 * The ::changed signal is emitted on every member of a radio group when the
 		 * active member is changed. The signal gets emitted after the ::activate signals
@@ -32363,7 +32363,7 @@ declare namespace imports.gi.Gtk {
 		 * as #radio_button. The returned list is owned by the radio button
 		 * and must not be modified or freed.
 		 */
-		get_group(): GLib.SList;
+		get_group(): RadioButton[];
 		/**
 		 * Joins a {@link RadioButton} object to the group of another #GtkRadioButton object
 		 * 
@@ -32395,7 +32395,7 @@ declare namespace imports.gi.Gtk {
 		 * @param group an existing radio
 		 *     button group, such as one returned from {@link Gtk.RadioButton.get_group}, or %NULL.
 		 */
-		set_group(group: GLib.SList | null): void;
+		set_group(group: RadioButton[] | null): void;
 		/**
 		 * Emitted when the group of radio buttons that a radio button belongs
 		 * to changes. This is emitted when a radio button switches from
@@ -32520,7 +32520,7 @@ declare namespace imports.gi.Gtk {
 		 *         radio button group, or %NULL if you are creating a new group.
 		 * @returns a new radio button
 		 */
-		public static new(group: GLib.SList | null): Widget;
+		public static new(group: RadioButton[] | null): Widget;
 		/**
 		 * Creates a new {@link RadioButton}, adding it to the same group as
 		 * #radio_group_member. As with {@link Gtk.RadioButton.new}, a widget
@@ -32536,7 +32536,7 @@ declare namespace imports.gi.Gtk {
 		 * @param label the text label to display next to the radio button.
 		 * @returns a new radio button.
 		 */
-		public static new_with_label(group: GLib.SList | null, label: string): Widget;
+		public static new_with_label(group: RadioButton[] | null, label: string): Widget;
 		/**
 		 * Creates a new {@link RadioButton} with a text label, adding it to
 		 * the same group as #radio_group_member.
@@ -32556,7 +32556,7 @@ declare namespace imports.gi.Gtk {
 		 *         mnemonic character
 		 * @returns a new {@link RadioButton}
 		 */
-		public static new_with_mnemonic(group: GLib.SList | null, label: string): Widget;
+		public static new_with_mnemonic(group: RadioButton[] | null, label: string): Widget;
 		/**
 		 * Creates a new {@link RadioButton} containing a label. The label
 		 * will be created using {@link Gtk.Label.new_with_mnemonic}, so underscores
@@ -32601,7 +32601,7 @@ declare namespace imports.gi.Gtk {
 		 * @returns the group
 		 *     of #radio_menu_item
 		 */
-		get_group(): GLib.SList;
+		get_group(): RadioMenuItem[];
 		/**
 		 * Joins a {@link RadioMenuItem} object to the group of another #GtkRadioMenuItem
 		 * object.
@@ -32634,7 +32634,7 @@ declare namespace imports.gi.Gtk {
 		 * Sets the group of a radio menu item, or changes it.
 		 * @param group the new group, or %NULL.
 		 */
-		set_group(group: GLib.SList | null): void;
+		set_group(group: RadioMenuItem[] | null): void;
 		connect(signal: "group-changed", callback: (owner: this) => void): number;
 
 		connect(signal: "notify::check_menu_item", callback: (owner: this, ...args: any) => void): number;
@@ -32696,7 +32696,7 @@ declare namespace imports.gi.Gtk {
 		 *   radio menu item is to be attached, or %NULL
 		 * @returns a new {@link RadioMenuItem}
 		 */
-		public static new(group: GLib.SList | null): Widget;
+		public static new(group: RadioMenuItem[] | null): Widget;
 		/**
 		 * Creates a new {@link RadioMenuItem} adding it to the same group as #group.
 		 * @param group An existing {@link RadioMenuItem}
@@ -32710,7 +32710,7 @@ declare namespace imports.gi.Gtk {
 		 * @param label the text for the label
 		 * @returns A new {@link RadioMenuItem}
 		 */
-		public static new_with_label(group: GLib.SList | null, label: string): Widget;
+		public static new_with_label(group: RadioMenuItem[] | null, label: string): Widget;
 		/**
 		 * Creates a new GtkRadioMenuItem whose child is a simple GtkLabel.
 		 * The new {@link RadioMenuItem} is added to the same group as #group.
@@ -32729,7 +32729,7 @@ declare namespace imports.gi.Gtk {
 		 *         mnemonic character
 		 * @returns a new {@link RadioMenuItem}
 		 */
-		public static new_with_mnemonic(group: GLib.SList | null, label: string): Widget;
+		public static new_with_mnemonic(group: RadioMenuItem[] | null, label: string): Widget;
 		/**
 		 * Creates a new GtkRadioMenuItem containing a label. The label will be
 		 * created using {@link Gtk.Label.new_with_mnemonic}, so underscores in label
@@ -32773,12 +32773,12 @@ declare namespace imports.gi.Gtk {
 		 * Returns the radio button group #button belongs to.
 		 * @returns The group #button belongs to.
 		 */
-		get_group(): GLib.SList;
+		get_group(): RadioButton[];
 		/**
 		 * Adds #button to #group, removing it from the group it belonged to before.
 		 * @param group an existing radio button group, or %NULL
 		 */
-		set_group(group: GLib.SList | null): void;
+		set_group(group: RadioButton[] | null): void;
 	}
 
 	type RadioToolButtonInitOptionsMixin = ToggleToolButtonInitOptions & Atk.ImplementorIfaceInitOptions & ActionableInitOptions & ActivatableInitOptions & BuildableInitOptions
@@ -32812,7 +32812,7 @@ declare namespace imports.gi.Gtk {
 		 *   existing radio button group, or %NULL if you are creating a new group
 		 * @returns The new {@link RadioToolButton}
 		 */
-		public static new(group: GLib.SList | null): ToolItem;
+		public static new(group: RadioButton[] | null): ToolItem;
 		/**
 		 * @deprecated
 		 * Use {@link Gtk.RadioToolButton.new} instead.
@@ -32825,7 +32825,7 @@ declare namespace imports.gi.Gtk {
 		 * @param stock_id the name of a stock item
 		 * @returns The new {@link RadioToolButton}
 		 */
-		public static new_from_stock(group: GLib.SList | null, stock_id: string): ToolItem;
+		public static new_from_stock(group: RadioButton[] | null, stock_id: string): ToolItem;
 		/**
 		 * Creates a new {@link RadioToolButton} adding it to the same group as #gruup
 		 * @param group An existing {@link RadioToolButton}, or %NULL
@@ -33848,7 +33848,7 @@ declare namespace imports.gi.Gtk {
 		 *   {@link Gtk.RecentInfo.unref} on each item inside the list, and then
 		 *   free the list itself using g_list_free().
 		 */
-		get_items(): GLib.List;
+		get_items(): RecentInfo[];
 		/**
 		 * Checks whether there is a recently used resource registered
 		 * with #uri inside the recent manager.
@@ -35644,7 +35644,7 @@ declare namespace imports.gi.Gtk {
 		 * Holds a hash table representation of the {@link Settings.gtk_color_scheme}
 		 * setting, mapping color names to #GdkColors.
 		 */
-		readonly color_hash: GLib.HashTable;
+		readonly color_hash: string[];
 		gtk_alternative_button_order: boolean;
 		/**
 		 * Controls the direction of the sort indicators in sorted list and tree
@@ -36886,7 +36886,7 @@ declare namespace imports.gi.Gtk {
 		 * @returns a #GSList of
 		 *   widgets. The list is owned by GTK+ and should not be modified.
 		 */
-		get_widgets(): GLib.SList;
+		get_widgets(): Widget[];
 		/**
 		 * Removes a widget from a {@link SizeGroup}.
 		 * @param widget the {@link Widget} to remove
@@ -39573,7 +39573,7 @@ declare namespace imports.gi.Gtk {
 		 *          of the list are owned by GTK+, but you must free the list
 		 *          itself with {@link G.list_free} when you are done with it.
 		 */
-		list_classes(): GLib.List;
+		list_classes(): string[];
 		/**
 		 * Returns the list of regions currently defined in #context.
 		 * @returns a #GList of
@@ -39581,7 +39581,7 @@ declare namespace imports.gi.Gtk {
 		 *          of the list are owned by GTK+, but you must free the list
 		 *          itself with {@link G.list_free} when you are done with it.
 		 */
-		list_regions(): GLib.List;
+		list_regions(): string[];
 		/**
 		 * Looks up and resolves a color name in the #context color map.
 		 * @param color_name color name to lookup
@@ -41739,7 +41739,7 @@ declare namespace imports.gi.Gtk {
 		 * The returned list should be freed with {@link G.list_free}.
 		 * @returns list of widgets anchored at #anchor
 		 */
-		get_widgets(): GLib.List;
+		get_widgets(): Widget[];
 	}
 
 	type TextChildAnchorInitOptionsMixin = GObject.ObjectInitOptions
@@ -45471,7 +45471,7 @@ declare namespace imports.gi.Gtk {
 	 * use {@link ToplevelAccessible} instead.
 	 */
 	interface IToplevelAccessible {
-		get_children(): GLib.List;
+		get_children(): Window[];
 	}
 
 	type ToplevelAccessibleInitOptionsMixin = Atk.ObjectInitOptions
@@ -45956,7 +45956,7 @@ declare namespace imports.gi.Gtk {
 		 * 
 		 * A pointer to set to the #GtkTreeModel, or %NULL.
 		 */
-		get_selected_rows(): [ GLib.List, TreeModel | null ];
+		get_selected_rows(): [ TreePath[], TreeModel | null ];
 		/**
 		 * Returns the tree view associated with #selection.
 		 * @returns A {@link TreeView}
@@ -46640,7 +46640,7 @@ declare namespace imports.gi.Gtk {
 		 * The returned list must be freed with g_list_free ().
 		 * @returns A list of {@link TreeViewColumn} s
 		 */
-		get_columns(): GLib.List;
+		get_columns(): TreeViewColumn[];
 		/**
 		 * Fills in #path and #focus_column with the current path and focus column.  If
 		 * the cursor isn’t currently set, then *#path will be %NULL.  If no column
@@ -48265,7 +48265,7 @@ declare namespace imports.gi.Gtk {
 		 *   action groups. The list is owned by GTK+
 		 *   and should not be modified.
 		 */
-		get_action_groups(): GLib.List;
+		get_action_groups(): ActionGroup[];
 		/**
 		 * @deprecated
 		 * Tearoff menus are deprecated and should not
@@ -48284,7 +48284,7 @@ declare namespace imports.gi.Gtk {
 		 * @returns a newly-allocated #GSList of
 		 * all toplevel widgets of the requested types.  Free the returned list with {@link G.slist_free}.
 		 */
-		get_toplevels(types: UIManagerItemType): GLib.SList;
+		get_toplevels(types: UIManagerItemType): Widget[];
 		/**
 		 * Creates a [UI definition][XML-UI] of the merged UI.
 		 * @returns A newly allocated string containing an XML representation of
@@ -51029,7 +51029,7 @@ declare namespace imports.gi.Gtk {
 		 * @returns 
 		 *     a newly allocated #GList of closures
 		 */
-		list_accel_closures(): GLib.List;
+		list_accel_closures(): GObject.Closure[];
 		/**
 		 * Retrieves a %NULL-terminated array of strings containing the prefixes of
 		 * #GActionGroup's available to #widget.
@@ -51051,7 +51051,7 @@ declare namespace imports.gi.Gtk {
 		 *  mnemonic labels; free this list
 		 *  with {@link G.list_free} when you are done with it.
 		 */
-		list_mnemonic_labels(): GLib.List;
+		list_mnemonic_labels(): Widget[];
 		/**
 		 * This function is only for use in widget implementations. Causes
 		 * a widget to be mapped if it isn’t already.
@@ -54393,7 +54393,7 @@ declare namespace imports.gi.Gtk {
 		 * member won’t be incremented.
 		 * @returns copy of window’s icon list
 		 */
-		get_icon_list(): GLib.List;
+		get_icon_list(): GdkPixbuf.Pixbuf[];
 		/**
 		 * Returns the name of the themed icon for the window,
 		 * see {@link Gtk.Window.set_icon_name}.
@@ -55217,7 +55217,7 @@ declare namespace imports.gi.Gtk {
 		 * set the icon on transient windows.
 		 * @param list list of #GdkPixbuf
 		 */
-		set_icon_list(list: GLib.List): void;
+		set_icon_list(list: GdkPixbuf.Pixbuf[]): void;
 		/**
 		 * Sets the icon for the window from a named themed icon.
 		 * See the docs for {@link IconTheme} for more details.
@@ -55741,7 +55741,7 @@ declare namespace imports.gi.Gtk {
 		 * incremented.
 		 * @returns copy of default icon list
 		 */
-		public static get_default_icon_list(): GLib.List;
+		public static get_default_icon_list(): GdkPixbuf.Pixbuf[];
 		/**
 		 * Returns the fallback icon name for windows that has been set
 		 * with {@link Gtk.Window.set_default_icon_name}. The returned
@@ -55760,7 +55760,7 @@ declare namespace imports.gi.Gtk {
 		 * then unref all the widgets afterwards.
 		 * @returns list of toplevel widgets
 		 */
-		public static list_toplevels(): GLib.List;
+		public static list_toplevels(): Widget[];
 		/**
 		 * By default, after showing the first {@link Window}, GTK+ calls
 		 * {@link Gdk.notify.startup_complete}.  Call this function to disable
@@ -55797,7 +55797,7 @@ declare namespace imports.gi.Gtk {
 		 * See gtk_window_set_icon_list() for more details.
 		 * @param list a list of #GdkPixbuf
 		 */
-		public static set_default_icon_list(list: GLib.List): void;
+		public static set_default_icon_list(list: GdkPixbuf.Pixbuf[]): void;
 		/**
 		 * Sets an icon to be used as fallback for windows that haven't
 		 * had {@link Gtk.Window.set_icon_list} called on them from a named
@@ -55861,7 +55861,7 @@ declare namespace imports.gi.Gtk {
 		 * @returns A
 		 *   newly-allocated list of windows inside the group.
 		 */
-		list_windows(): GLib.List;
+		list_windows(): Window[];
 		/**
 		 * Removes a window from a {@link WindowGroup}.
 		 * @param window the {@link Window} to remove
@@ -56088,7 +56088,7 @@ declare namespace imports.gi.Gtk {
 		 * @param binding_args 
 		 *     list of {@link BindingArg} signal arguments
 		 */
-		public static add_signall(binding_set: BindingSet, keyval: number, modifiers: Gdk.ModifierType, signal_name: string, binding_args: GLib.SList): void;
+		public static add_signall(binding_set: BindingSet, keyval: number, modifiers: Gdk.ModifierType, signal_name: string, binding_args: BindingArg[]): void;
 		/**
 		 * Remove a binding previously installed via
 		 * {@link Gtk.BindingEntry.add_signal} on #binding_set.
@@ -56192,15 +56192,15 @@ declare namespace imports.gi.Gtk {
 		/**
 		 * unused
 		 */
-		public widget_path_pspecs: GLib.SList;
+		public widget_path_pspecs: any[];
 		/**
 		 * unused
 		 */
-		public widget_class_pspecs: GLib.SList;
+		public widget_class_pspecs: any[];
 		/**
 		 * unused
 		 */
-		public class_branch_pspecs: GLib.SList;
+		public class_branch_pspecs: any[];
 		/**
 		 * the key binding entries in this binding set
 		 */
@@ -56367,7 +56367,7 @@ declare namespace imports.gi.Gtk {
 		public set_cell_data_func: {(cell_layout: CellLayout, cell: CellRenderer, func: CellLayoutDataFunc | null, func_data: any | null, destroy: GLib.DestroyNotify): void;};
 		public clear_attributes: {(cell_layout: CellLayout, cell: CellRenderer): void;};
 		public reorder: {(cell_layout: CellLayout, cell: CellRenderer, position: number): void;};
-		public get_cells: {(cell_layout: CellLayout): GLib.List;};
+		public get_cells: {(cell_layout: CellLayout): CellRenderer[];};
 		public get_area: {(cell_layout: CellLayout): CellArea | null;};
 	}
 
@@ -57270,7 +57270,7 @@ declare namespace imports.gi.Gtk {
 		 * @returns a newly allocated list of newly
 		 *    allocated {@link PaperSize} objects
 		 */
-		public static get_paper_sizes(include_custom: boolean): GLib.List;
+		public static get_paper_sizes(include_custom: boolean): PaperSize[];
 		/**
 		 * Copies an existing {@link PaperSize}.
 		 * @returns a copy of #other
@@ -57541,11 +57541,11 @@ declare namespace imports.gi.Gtk {
 		public unselect_uri: {(chooser: RecentChooser, uri: string): void;};
 		public select_all: {(chooser: RecentChooser): void;};
 		public unselect_all: {(chooser: RecentChooser): void;};
-		public get_items: {(chooser: RecentChooser): GLib.List;};
+		public get_items: {(chooser: RecentChooser): RecentInfo[];};
 		public get_recent_manager: {(chooser: RecentChooser): RecentManager;};
 		public add_filter: {(chooser: RecentChooser, filter: RecentFilter): void;};
 		public remove_filter: {(chooser: RecentChooser, filter: RecentFilter): void;};
-		public list_filters: {(chooser: RecentChooser): GLib.SList;};
+		public list_filters: {(chooser: RecentChooser): RecentFilter[];};
 		public set_sort_func: {(chooser: RecentChooser, sort_func: RecentSortFunc, sort_data: any | null, data_destroy: GLib.DestroyNotify | null): void;};
 		public item_activated: {(chooser: RecentChooser): void;};
 		public selection_changed: {(chooser: RecentChooser): void;};
@@ -59270,7 +59270,7 @@ declare namespace imports.gi.Gtk {
 		 * meaningful order.
 		 * @returns list of {@link TextMark}
 		 */
-		public get_marks(): GLib.SList;
+		public get_marks(): TextMark[];
 		/**
 		 * Returns the character offset of an iterator.
 		 * Each character in a {@link TextBuffer} has an offset,
@@ -59307,7 +59307,7 @@ declare namespace imports.gi.Gtk {
 		 * itself.
 		 * @returns list of {@link TextTag}
 		 */
-		public get_tags(): GLib.SList;
+		public get_tags(): TextTag[];
 		/**
 		 * Returns text in the given range.  If the range
 		 * contains non-text elements such as images, the character and byte
@@ -59328,7 +59328,7 @@ declare namespace imports.gi.Gtk {
 		 * @param toggled_on %TRUE to get toggled-on tags
 		 * @returns tags toggled at this point
 		 */
-		public get_toggled_tags(toggled_on: boolean): GLib.SList;
+		public get_toggled_tags(toggled_on: boolean): TextTag[];
 		/**
 		 * Returns the number of bytes from the start of the
 		 * line to the given #iter, not counting bytes that
@@ -60221,7 +60221,7 @@ declare namespace imports.gi.Gtk {
 		 *          are owned by GTK+, but you should use {@link G.slist_free} to
 		 *          free the list itself.
 		 */
-		public iter_list_classes(pos: number): GLib.SList;
+		public iter_list_classes(pos: number): string[];
 		/**
 		 * @deprecated
 		 * The use of regions is deprecated.
@@ -60234,7 +60234,7 @@ declare namespace imports.gi.Gtk {
 		 *          are owned by GTK+, but you should use {@link G.slist_free} to
 		 *          free the list itself.
 		 */
-		public iter_list_regions(pos: number): GLib.SList;
+		public iter_list_regions(pos: number): string[];
 		/**
 		 * Removes the class #name from the widget at position #pos in
 		 * the hierarchy defined in #path.
@@ -61242,7 +61242,7 @@ declare namespace imports.gi.Gtk {
 		 *     been newly allocated and should be freed with {@link G.list_free}
 		 *     when no longer needed.
 		 */
-		get_cells(): GLib.List;
+		get_cells(): CellRenderer[];
 		/**
 		 * Adds the #cell to the end of #cell_layout. If #expand is %FALSE, then the
 		 * #cell is allocated no more space than it needs. Any unused space is
@@ -61947,7 +61947,7 @@ declare namespace imports.gi.Gtk {
 		 *    the current folder. Free the returned list with {@link G.slist_free},
 		 *    and the filenames with g_free().
 		 */
-		get_filenames(): GLib.SList;
+		get_filenames(): string[];
 		/**
 		 * Lists all the selected files and subfolders in the current folder of #chooser
 		 * as #GFile. An internal function, see {@link Gtk.FileChooser.get_uris}.
@@ -61956,7 +61956,7 @@ declare namespace imports.gi.Gtk {
 		 *   current folder.  Free the returned list with {@link G.slist_free}, and
 		 *   the files with g_object_unref().
 		 */
-		get_files(): GLib.SList;
+		get_files(): Gio.File[];
 		/**
 		 * Gets the current filter; see {@link Gtk.FileChooser.set_filter}.
 		 * @returns the current filter, or %NULL
@@ -62035,7 +62035,7 @@ declare namespace imports.gi.Gtk {
 		 *   files and subfolders in the current folder. Free the returned list
 		 *   with {@link G.slist_free}, and the filenames with g_free().
 		 */
-		get_uris(): GLib.SList;
+		get_uris(): string[];
 		/**
 		 * Gets whether a stock label should be drawn with the name of the previewed
 		 * file.  See {@link Gtk.FileChooser.set_use_preview_label}.
@@ -62051,7 +62051,7 @@ declare namespace imports.gi.Gtk {
 		 *  contents of the list are owned by GTK+, but you must free the list
 		 *  itself with {@link G.slist_free} when you are done with it.
 		 */
-		list_filters(): GLib.SList;
+		list_filters(): FileFilter[];
 		/**
 		 * Queries the list of shortcut folders in the file chooser, as set by
 		 * {@link Gtk.FileChooser.add_shortcut_folder_uri}.
@@ -62059,7 +62059,7 @@ declare namespace imports.gi.Gtk {
 		 * folder URIs, or %NULL if there are no shortcut folders.  Free the
 		 * returned list with {@link G.slist_free}, and the URIs with g_free().
 		 */
-		list_shortcut_folder_uris(): GLib.SList | null;
+		list_shortcut_folder_uris(): string[] | null;
 		/**
 		 * Queries the list of shortcut folders in the file chooser, as set by
 		 * {@link Gtk.FileChooser.add_shortcut_folder}.
@@ -62068,7 +62068,7 @@ declare namespace imports.gi.Gtk {
 		 * Free the returned list with {@link G.slist_free}, and the filenames with
 		 * g_free().
 		 */
-		list_shortcut_folders(): GLib.SList | null;
+		list_shortcut_folders(): string[] | null;
 		/**
 		 * Removes a 'choice' that has been added with {@link Gtk.FileChooser.add_choice}.
 		 * @param id the ID of the choice to remove
@@ -63209,7 +63209,7 @@ declare namespace imports.gi.Gtk {
 		 *   use {@link Gtk.RecentInfo.unref} on every item of the list, and then free
 		 *   the list itself using g_list_free().
 		 */
-		get_items(): GLib.List;
+		get_items(): RecentInfo[];
 		/**
 		 * Gets the number of items returned by {@link Gtk.RecentChooser.get_items}
 		 * and gtk_recent_chooser_get_uris().
@@ -63280,7 +63280,7 @@ declare namespace imports.gi.Gtk {
 		 *   of {@link RecentFilter} objects.  You
 		 *   should just free the returned list using {@link G.slist_free}.
 		 */
-		list_filters(): GLib.SList;
+		list_filters(): RecentFilter[];
 		/**
 		 * Removes #filter from the list of {@link RecentFilter} objects held by #chooser.
 		 * @param filter a {@link RecentFilter}
@@ -69222,7 +69222,7 @@ declare namespace imports.gi.Gtk {
 	 * @returns a list of
 	 *     all accel groups which are attached to #object
 	 */
-	function accel_groups_from_object(object: GObject.Object): GLib.SList;
+	function accel_groups_from_object(object: GObject.Object): AccelGroup[];
 
 	/**
 	 * Gets the modifier mask.
@@ -69414,7 +69414,7 @@ declare namespace imports.gi.Gtk {
 	 * @param binding_args 
 	 *     list of {@link BindingArg} signal arguments
 	 */
-	function binding_entry_add_signall(binding_set: BindingSet, keyval: number, modifiers: Gdk.ModifierType, signal_name: string, binding_args: GLib.SList): void;
+	function binding_entry_add_signall(binding_set: BindingSet, keyval: number, modifiers: Gdk.ModifierType, signal_name: string, binding_args: BindingArg[]): void;
 
 	/**
 	 * Remove a binding previously installed via
@@ -70533,7 +70533,7 @@ declare namespace imports.gi.Gtk {
 	 * @returns a newly allocated list of newly
 	 *    allocated {@link PaperSize} objects
 	 */
-	function paper_size_get_paper_sizes(include_custom: boolean): GLib.List;
+	function paper_size_get_paper_sizes(include_custom: boolean): PaperSize[];
 
 	/**
 	 * Parses command line arguments, and initializes global
@@ -71374,7 +71374,7 @@ declare namespace imports.gi.Gtk {
 	 * and each string in the list must be freed with g_free().
 	 * @returns a list of known stock IDs
 	 */
-	function stock_list_ids(): GLib.SList;
+	function stock_list_ids(): string[];
 
 	/**
 	 * Fills #item with the registered values for #stock_id, returning %TRUE

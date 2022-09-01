@@ -134,7 +134,7 @@ declare namespace imports.gi.Meta {
 		 * @returns xid of the leader window.
 		 */
 		get_leader_window(): xlib.Window;
-		get_screens(): GLib.SList;
+		get_screens(): Screen[];
 		get_shape_event_base(): number;
 		/**
 		 * Determine the active window that should be displayed for Alt-TAB.
@@ -152,7 +152,7 @@ declare namespace imports.gi.Meta {
 		 * @param workspace origin workspace
 		 * @returns List of windows
 		 */
-		get_tab_list(type: TabList, screen: Screen, workspace: Workspace): GLib.List;
+		get_tab_list(type: TabList, screen: Screen, workspace: Workspace): Window[];
 		/**
 		 * Determine the next window that should be displayed for Alt-TAB
 		 * functionality.
@@ -174,7 +174,7 @@ declare namespace imports.gi.Meta {
 		 * @param flags options for listing
 		 * @returns the list of windows.
 		 */
-		list_windows(flags: ListWindowsFlags): GLib.SList;
+		list_windows(flags: ListWindowsFlags): Window[];
 		lookup_group(group_leader: xlib.Window): Group;
 		/**
 		 * Rebuild all keybindings (typically done after adding, removing, or changing
@@ -221,7 +221,7 @@ declare namespace imports.gi.Meta {
 		 * @param windows Set of windows
 		 * @returns Input windows sorted by stacking order, from lowest to highest
 		 */
-		sort_windows_by_stacking(windows: GLib.SList): GLib.SList;
+		sort_windows_by_stacking(windows: Window[]): Window[];
 		unmanage_screen(screen: Screen, timestamp: number): void;
 		/**
 		 * Xserver time can wraparound, thus comparing two timestamps needs to take
@@ -434,7 +434,7 @@ declare namespace imports.gi.Meta {
 		 * The height of the screen
 		 */
 		get_size(): [ width: number, height: number ];
-		get_startup_sequences(): GLib.SList;
+		get_startup_sequences(): any[];
 		/**
 		 * Gets the workspace object for one of a screen's workspaces given the workspace
 		 * index. It's valid to call this function with an out-of-range index and it
@@ -444,7 +444,7 @@ declare namespace imports.gi.Meta {
 		 *   if the index is out of range.
 		 */
 		get_workspace_by_index(index: number): Workspace;
-		get_workspaces(): GLib.List;
+		get_workspaces(): Workspace[];
 		get_xroot(): xlib.Window;
 		grab_all_keys(timestamp: number): boolean;
 		/**
@@ -1225,14 +1225,14 @@ declare namespace imports.gi.Meta {
 		 * and also sticky windows. Override-redirect windows are not included.
 		 * @returns the list of windows.
 		 */
-		list_windows(): GLib.List;
+		list_windows(): Window[];
 		/**
 		 * Sets a list of struts that will be used in addition to the struts
 		 * of the windows in the workspace when computing the work area of
 		 * the workspace.
 		 * @param struts list of {@link Strut}
 		 */
-		set_builtin_struts(struts: GLib.SList): void;
+		set_builtin_struts(struts: Strut[]): void;
 		update_window_hints(): void;
 		connect(signal: "window-added", callback: (owner: this, object: Window) => void): number;
 		connect(signal: "window-removed", callback: (owner: this, object: Window) => void): number;
@@ -1289,7 +1289,7 @@ declare namespace imports.gi.Meta {
 		public show_window(window: Window, effect: CompEffect): void;
 		public switch_workspace(screen: Screen, from: Workspace, to: Workspace, direction: MotionDirection): void;
 		public sync_screen_size(screen: Screen, width: number, height: number): void;
-		public sync_stack(screen: Screen, stack: GLib.List): void;
+		public sync_stack(screen: Screen, stack: any[]): void;
 		public sync_window_geometry(window: Window, did_placement: boolean): void;
 		public tile_window(window: Window, old_rect: Rectangle, new_rect: Rectangle): void;
 		public unmanage_screen(screen: Screen): void;
@@ -1328,7 +1328,7 @@ declare namespace imports.gi.Meta {
 		public constructor(options?: Partial<GroupInitOptions>);
 		public get_size(): number;
 		public get_startup_id(): string;
-		public list_windows(): GLib.SList;
+		public list_windows(): Window[];
 		public property_notify(event: any): boolean;
 		public update_layers(): void;
 	}
@@ -1364,7 +1364,7 @@ declare namespace imports.gi.Meta {
 		public name: string;
 		public schema: string;
 		public action: KeyBindingAction;
-		public bindings: GLib.SList;
+		public bindings: any[];
 		public add_shift: boolean;
 		public per_window: boolean;
 		public builtin: boolean;
@@ -2110,7 +2110,7 @@ declare namespace imports.gi.Meta {
 	 */
 	function frame_type_to_string(type: FrameType): string;
 
-	function free_gslist_and_elements(list_to_deep_free: GLib.SList): void;
+	function free_gslist_and_elements(list_to_deep_free: any[]): void;
 
 	function g_utf8_strndup(src: string, n: number): string;
 
@@ -2142,7 +2142,7 @@ declare namespace imports.gi.Meta {
 
 	function get_top_window_group_for_screen(screen: Screen): Clutter.Actor;
 
-	function get_window_actors(screen: Screen): GLib.List;
+	function get_window_actors(screen: Screen): Clutter.Actor[];
 
 	function get_window_group_for_screen(screen: Screen): Clutter.Actor;
 
@@ -2275,7 +2275,7 @@ declare namespace imports.gi.Meta {
 
 	function prefs_get_keybinding_action(name: string): KeyBindingAction;
 
-	function prefs_get_keybindings(): GLib.List;
+	function prefs_get_keybindings(): KeyPref[];
 
 	function prefs_get_legacy_snap(): boolean;
 
@@ -2396,7 +2396,7 @@ declare namespace imports.gi.Meta {
 
 	function set_wm_name(wm_name: string): void;
 
-	function show_dialog(type: string, message: string, timeout: string, display: string, ok_text: string, cancel_text: string, transient_for: number, columns: GLib.SList, entries: GLib.SList): GLib.Pid;
+	function show_dialog(type: string, message: string, timeout: string, display: string, ok_text: string, cancel_text: string, transient_for: number, columns: any[], entries: any[]): GLib.Pid;
 
 	function theme_get_current(): Theme;
 

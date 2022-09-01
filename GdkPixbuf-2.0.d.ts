@@ -265,7 +265,7 @@ declare namespace imports.gi.GdkPixbuf {
 		 * @returns a #GHashTable
 		 *   of key/values pairs
 		 */
-		get_options(): GLib.HashTable;
+		get_options(): string[];
 		/**
 		 * Queries a pointer to the pixel data of a pixbuf.
 		 * 
@@ -1194,7 +1194,7 @@ declare namespace imports.gi.GdkPixbuf {
 		 * @returns A list of
 		 *   support image formats.
 		 */
-		public static get_formats(): GLib.SList;
+		public static get_formats(): PixbufFormat[];
 		/**
 		 * Initalizes the gdk-pixbuf loader modules referenced by the `loaders.cache`
 		 * file present inside that directory.

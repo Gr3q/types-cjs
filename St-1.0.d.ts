@@ -1593,7 +1593,7 @@ declare namespace imports.gi.St {
 		 * this is associated with the CSS "user" stylesheet.
 		 */
 		theme_stylesheet: string;
-		get_custom_stylesheets(): GLib.SList;
+		get_custom_stylesheets(): string[];
 		load_stylesheet(path: string): boolean;
 		unload_stylesheet(path: string): void;
 		connect(signal: "custom-stylesheets-changed", callback: (owner: this) => void): number;
@@ -2249,7 +2249,7 @@ declare namespace imports.gi.St {
 		 * @returns 
 		 *   #widget's focusable children
 		 */
-		get_focus_chain(): GLib.List;
+		get_focus_chain(): Clutter.Actor[];
 		/**
 		 * If {@link Widget.track_hover} is set, this returns whether the pointer
 		 * is currently over the widget.
