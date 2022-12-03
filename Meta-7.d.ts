@@ -502,11 +502,10 @@ declare namespace imports.gi.Meta {
 		 * @param settings the #GSettings object where #name is stored
 		 * @param flags flags to specify binding details
 		 * @param handler function to run when the keybinding is invoked
-		 * @param free_data function to free #user_data
 		 * @returns the corresponding keybinding action if the keybinding was
 		 *          added successfully, otherwise %META_KEYBINDING_ACTION_NONE
 		 */
-		add_keybinding(name: string, settings: Gio.Settings, flags: KeyBindingFlags, handler: KeyHandlerFunc, free_data: GLib.DestroyNotify): number;
+		add_keybinding(name: string, settings: Gio.Settings, flags: KeyBindingFlags, handler: KeyHandlerFunc): number;
 		begin_grab_op(window: Window, op: GrabOp, pointer_already_grabbed: boolean, frame_action: boolean, button: number, modmask: number, timestamp: number, root_x: number, root_y: number): boolean;
 		/**
 		 * Sets the mouse-mode flag to %FALSE, which means that motion events are
@@ -617,7 +616,7 @@ declare namespace imports.gi.Meta {
 		 * @param workspace origin workspace
 		 * @returns List of windows
 		 */
-		get_tab_list(type: TabList, workspace: Workspace | null): Window[];
+		get_tab_list(type: TabList, workspace?: Workspace | null): Window[];
 		/**
 		 * Determine the next window that should be displayed for Alt-TAB
 		 * functionality.
@@ -637,7 +636,7 @@ declare namespace imports.gi.Meta {
 		 * @param sequence a #ClutterEventSequence
 		 * @returns #TRUE if the sequence emulates pointer behavior
 		 */
-		is_pointer_emulating_sequence(sequence: Clutter.EventSequence | null): boolean;
+		is_pointer_emulating_sequence(sequence?: Clutter.EventSequence | null): boolean;
 		/**
 		 * Remove keybinding #name; the function will fail if #name is not a known
 		 * keybinding or has not been added with {@link Meta.Display.add_keybinding}.
@@ -825,8 +824,8 @@ declare namespace imports.gi.Meta {
 		 * The device to listen to idletime on.
 		 */
 		device: Clutter.InputDevice;
-		add_idle_watch(interval_msec: number, callback: IdleMonitorWatchFunc | null, notify: GLib.DestroyNotify): number;
-		add_user_active_watch(callback: IdleMonitorWatchFunc | null, notify: GLib.DestroyNotify): number;
+		add_idle_watch(interval_msec: number, callback?: IdleMonitorWatchFunc | null): number;
+		add_user_active_watch(callback?: IdleMonitorWatchFunc | null): number;
 		get_idletime(): number;
 		/**
 		 * Removes an idle time watcher, previously added by
@@ -1094,7 +1093,7 @@ declare namespace imports.gi.Meta {
 		 * @param cancellable Cancellable
 		 * @param callback User callback
 		 */
-		transfer_async(selection_type: SelectionType, mimetype: string, size: number, output: Gio.OutputStream, cancellable: Gio.Cancellable | null, callback: Gio.AsyncReadyCallback | null): void;
+		transfer_async(selection_type: SelectionType, mimetype: string, size: number, output: Gio.OutputStream, cancellable?: Gio.Cancellable | null, callback?: Gio.AsyncReadyCallback | null): void;
 		/**
 		 * Finishes the transfer of a queried mimetype.
 		 * @param result The async result
@@ -1141,7 +1140,7 @@ declare namespace imports.gi.Meta {
 		 * @returns #TRUE if the source owns a selection.
 		 */
 		is_active(): boolean;
-		read_async(mimetype: string, cancellable: Gio.Cancellable | null, callback: Gio.AsyncReadyCallback | null): void;
+		read_async(mimetype: string, cancellable?: Gio.Cancellable | null, callback?: Gio.AsyncReadyCallback | null): void;
 		/**
 		 * Finishes a read from the selection source.
 		 * @param result The async result
@@ -1272,7 +1271,7 @@ declare namespace imports.gi.Meta {
 		 * @returns a new cairo surface to be freed with
 		 * {@link Cairo.Surface.destroy}.
 		 */
-		get_image(clip: cairo.RectangleInt | null): cairo.Surface | null;
+		get_image(clip?: cairo.RectangleInt | null): cairo.Surface | null;
 		get_texture(): Cogl.Texture;
 		set_create_mipmaps(create_mipmaps: boolean): void;
 		set_mask_texture(mask_texture: Cogl.Texture): void;
@@ -1304,14 +1303,14 @@ declare namespace imports.gi.Meta {
 		 * @param description description of the played sound
 		 * @param cancellable cancellable for the request
 		 */
-		play_from_file(file: Gio.File, description: string, cancellable: Gio.Cancellable | null): void;
+		play_from_file(file: Gio.File, description: string, cancellable?: Gio.Cancellable | null): void;
 		/**
 		 * Plays a sound from the sound theme.
 		 * @param name sound theme name of the event
 		 * @param description description of the event
 		 * @param cancellable cancellable for the request
 		 */
-		play_from_theme(name: string, description: string, cancellable: Gio.Cancellable | null): void;
+		play_from_theme(name: string, description: string, cancellable?: Gio.Cancellable | null): void;
 	}
 
 	type SoundPlayerInitOptionsMixin = GObject.ObjectInitOptions
@@ -1866,7 +1865,7 @@ declare namespace imports.gi.Meta {
 		 * interface element displaying the icon, and is relative to the root window.
 		 * @param rect rectangle with the desired geometry or %NULL.
 		 */
-		set_icon_geometry(rect: Rectangle | null): void;
+		set_icon_geometry(rect?: Rectangle | null): void;
 		shade(timestamp: number): void;
 		shove_titlebar_onscreen(): void;
 		showing_on_its_workspace(): boolean;
@@ -1982,7 +1981,7 @@ declare namespace imports.gi.Meta {
 		 * @returns a new cairo surface to be freed with
 		 * {@link Cairo.Surface.destroy}.
 		 */
-		get_image(clip: cairo.RectangleInt | null): cairo.Surface | null;
+		get_image(clip?: cairo.RectangleInt | null): cairo.Surface | null;
 		/**
 		 * Gets the {@link Window} object that the the #MetaWindowActor is displaying
 		 * @returns the displayed {@link Window}
@@ -4238,45 +4237,32 @@ declare namespace imports.gi.Meta {
 	 * @returns 
 	 */
 	function activate_session(): boolean;
-
 	function add_clutter_debug_flags(debug_flags: Clutter.DebugFlag, draw_flags: Clutter.DrawDebugFlag, pick_flags: Clutter.PickDebugFlag): void;
-
 	function add_debug_paint_flag(flag: DebugPaintFlag): void;
-
 	/**
 	 * Ensure log messages for the given topic #topic
 	 * will be printed.
 	 * @param topic Topic for which logging will be started
 	 */
 	function add_verbose_topic(topic: DebugTopic): void;
-
 	function bug(format: string): void;
-
 	function clutter_init(): void;
-
 	function debug_spew_real(format: string): void;
-
 	/**
 	 * Disables unredirection, can be useful in situations where having
 	 * unredirected windows is undesirable like when recording a video.
 	 * @param display a {@link Display}
 	 */
 	function disable_unredirect_for_display(display: Display): void;
-
 	/**
 	 * Enables unredirection which reduces the overhead for apps like games.
 	 * @param display a {@link Display}
 	 */
 	function enable_unredirect_for_display(display: Display): void;
-
 	function exit(code: ExitCode): void;
-
 	function external_binding_name_for_action(keybinding_action: number): string;
-
 	function fatal(format: string): void;
-
 	function focus_stage_window(display: Display, timestamp: number): void;
-
 	/**
 	 * Converts a frame type enum value to the name string that would
 	 * appear in the theme definition file.
@@ -4284,48 +4270,33 @@ declare namespace imports.gi.Meta {
 	 * @returns the string value
 	 */
 	function frame_type_to_string(type: FrameType): string;
-
 	function g_utf8_strndup(src: string, n: number): string;
-
 	/**
 	 * Accessor for the singleton MetaBackend.
 	 * @returns The only {@link Backend} there is.
 	 */
 	function get_backend(): Backend;
-
 	function get_debug_paint_flags(): DebugPaintFlag;
-
 	function get_feedback_group_for_display(display: Display): Clutter.Actor;
-
 	function get_locale_direction(): LocaleDirection;
-
 	/**
 	 * Returns a #GOptionContext initialized with mutter-related options.
 	 * Parse the command-line args with this before calling meta_init().
 	 * @returns the #GOptionContext
 	 */
 	function get_option_context(): GLib.OptionContext;
-
 	function get_replace_current_wm(): boolean;
-
 	function get_stage_for_display(display: Display): Clutter.Actor;
-
 	function get_top_window_group_for_display(display: Display): Clutter.Actor;
-
 	function get_window_actors(display: Display): Clutter.Actor[];
-
 	function get_window_group_for_display(display: Display): Clutter.Actor;
-
 	function gravity_to_string(gravity: Gravity): string;
-
 	/**
 	 * Initialize mutter. Call this after {@link Meta.get.option_context} and
 	 * meta_plugin_manager_set_plugin_type(), and before meta_run().
 	 */
 	function init(): void;
-
 	function is_debugging(): boolean;
-
 	/**
 	 * Returns %TRUE if this instance of Mutter comes from Mutter
 	 * restarting itself (for example to enable/disable stereo.)
@@ -4334,7 +4305,6 @@ declare namespace imports.gi.Meta {
 	 * @returns 
 	 */
 	function is_restart(): boolean;
-
 	/**
 	 * Returns whether X synchronisation is currently enabled.
 	 * 
@@ -4346,22 +4316,17 @@ declare namespace imports.gi.Meta {
 	 * %FALSE otherwise.
 	 */
 	function is_syncing(): boolean;
-
 	function is_verbose(): boolean;
-
 	function is_wayland_compositor(): boolean;
-
 	/**
 	 * Allows users to register a custom handler for a
 	 * builtin key binding.
 	 * @param name The name of the keybinding to set
 	 * @param handler The new handler function
-	 * @param free_data Will be called when this handler is overridden.
 	 * @returns %TRUE if the binding known as #name was found,
 	 * %FALSE otherwise.
 	 */
-	function keybindings_set_custom_handler(name: string, handler: KeyHandlerFunc | null, free_data: GLib.DestroyNotify): boolean;
-
+	function keybindings_set_custom_handler(name: string, handler: KeyHandlerFunc | null): boolean;
 	/**
 	 * Sets up a callback  to be called at some later time. #when determines the
 	 * particular later occasion at which it is called. This is much like {@link G.idle_add},
@@ -4371,113 +4336,62 @@ declare namespace imports.gi.Meta {
 	 * of the stage, not the next one.
 	 * @param when enumeration value determining the phase at which to run the callback
 	 * @param func callback to run later
-	 * @param data data to pass to the callback
-	 * @param notify function to call to destroy #data when it is no longer in use, or %NULL
 	 * @returns an integer ID (guaranteed to be non-zero) that can be used
 	 *  to cancel the callback and prevent it from being run.
 	 */
-	function later_add(when: LaterType, func: GLib.SourceFunc, data: any | null, notify: GLib.DestroyNotify): number;
-
+	function later_add(when: LaterType, func: GLib.SourceFunc): number;
 	/**
 	 * Removes a callback added with {@link Meta.later.add}
 	 * @param later_id the integer ID returned from {@link Meta.later.add}
 	 */
 	function later_remove(later_id: number): void;
-
 	function pop_no_msg_prefix(): void;
-
 	function preference_to_string(pref: Preference): string;
-
 	function prefs_add_listener(func: PrefsChangedFunc): void;
-
 	function prefs_bell_is_audible(): boolean;
-
 	function prefs_change_workspace_name(i: number, name: string): void;
-
 	function prefs_get_action_double_click_titlebar(): GDesktopEnums.TitlebarAction;
-
 	function prefs_get_action_middle_click_titlebar(): GDesktopEnums.TitlebarAction;
-
 	function prefs_get_action_right_click_titlebar(): GDesktopEnums.TitlebarAction;
-
 	function prefs_get_attach_modal_dialogs(): boolean;
-
 	function prefs_get_auto_maximize(): boolean;
-
 	function prefs_get_auto_raise(): boolean;
-
 	function prefs_get_auto_raise_delay(): number;
-
 	function prefs_get_button_layout(): ButtonLayout;
-
 	function prefs_get_center_new_windows(): boolean;
-
 	function prefs_get_check_alive_timeout(): number;
-
 	function prefs_get_compositing_manager(): boolean;
-
 	function prefs_get_cursor_size(): number;
-
 	function prefs_get_cursor_theme(): string;
-
 	function prefs_get_disable_workarounds(): boolean;
-
 	function prefs_get_drag_threshold(): number;
-
 	function prefs_get_draggable_border_width(): number;
-
 	function prefs_get_dynamic_workspaces(): boolean;
-
 	function prefs_get_edge_tiling(): boolean;
-
 	function prefs_get_focus_change_on_pointer_rest(): boolean;
-
 	function prefs_get_focus_mode(): GDesktopEnums.FocusMode;
-
 	function prefs_get_focus_new_windows(): GDesktopEnums.FocusNewWindows;
-
 	function prefs_get_force_fullscreen(): boolean;
-
 	function prefs_get_gnome_accessibility(): boolean;
-
 	function prefs_get_gnome_animations(): boolean;
-
 	function prefs_get_keybinding_action(name: string): KeyBindingAction;
-
 	function prefs_get_mouse_button_menu(): number;
-
 	function prefs_get_mouse_button_mods(): VirtualModifier;
-
 	function prefs_get_mouse_button_resize(): number;
-
 	function prefs_get_num_workspaces(): number;
-
 	function prefs_get_raise_on_click(): boolean;
-
 	function prefs_get_show_fallback_app_menu(): boolean;
-
 	function prefs_get_titlebar_font(): Pango.FontDescription;
-
 	function prefs_get_visual_bell(): boolean;
-
 	function prefs_get_visual_bell_type(): GDesktopEnums.VisualBellType;
-
 	function prefs_get_workspace_name(i: number): string;
-
 	function prefs_get_workspaces_only_on_primary(): boolean;
-
 	function prefs_init(): void;
-
 	function prefs_remove_listener(func: PrefsChangedFunc): void;
-
 	function prefs_set_force_fullscreen(whether: boolean): void;
-
 	function prefs_set_num_workspaces(n_workspaces: number): void;
-
 	function prefs_set_show_fallback_app_menu(whether: boolean): void;
-
 	function push_no_msg_prefix(): void;
-
 	/**
 	 * Stops Mutter. This tells the event loop to stop processing; it is
 	 * rather dangerous to use this because this will leave the user with
@@ -4487,9 +4401,7 @@ declare namespace imports.gi.Meta {
 	 * @param code The success or failure code to return to the calling process.
 	 */
 	function quit(code: ExitCode): void;
-
 	function rect(x: number, y: number, width: number, height: number): Rectangle;
-
 	/**
 	 * Registers mutter with the session manager.  Call this after completing your own
 	 * initialization.
@@ -4498,11 +4410,8 @@ declare namespace imports.gi.Meta {
 	 * next phase of startup and potentially display windows.
 	 */
 	function register_with_session(): void;
-
 	function remove_clutter_debug_flags(debug_flags: Clutter.DebugFlag, draw_flags: Clutter.DrawDebugFlag, pick_flags: Clutter.PickDebugFlag): void;
-
 	function remove_debug_paint_flag(flag: DebugPaintFlag): void;
-
 	/**
 	 * Stop printing log messages for the given topic #topic.  Note
 	 * that this method does not stack with {@link Meta.add.verbose_topic};
@@ -4512,7 +4421,6 @@ declare namespace imports.gi.Meta {
 	 * @param topic Topic for which logging will be stopped
 	 */
 	function remove_verbose_topic(topic: DebugTopic): void;
-
 	/**
 	 * Starts the process of restarting the compositor. Note that Mutter's
 	 * involvement here is to make the restart visually smooth for the
@@ -4524,54 +4432,37 @@ declare namespace imports.gi.Meta {
 	 * @param message message to display to the user, or %NULL
 	 */
 	function restart(message: string | null): void;
-
 	/**
 	 * Runs mutter. Call this after completing initialization that doesn't require
 	 * an event loop.
 	 * @returns mutter's exit status
 	 */
 	function run(): number;
-
 	/**
 	 * Set the value to use for the _GNOME_WM_KEYBINDINGS property. To take
 	 * effect, it is necessary to call this function before meta_init().
 	 * @param wm_keybindings value for _GNOME_WM_KEYBINDINGS
 	 */
 	function set_gnome_wm_keybindings(wm_keybindings: string): void;
-
 	/**
 	 * Set the value to use for the _NET_WM_NAME property. To take effect,
 	 * it is necessary to call this function before meta_init().
 	 * @param wm_name value for _NET_WM_NAME
 	 */
 	function set_wm_name(wm_name: string): void;
-
 	function show_dialog(type: string, message: string, timeout: string, display: string, ok_text: string, cancel_text: string, icon_name: string, transient_for: number, columns: any[], entries: any[]): GLib.Pid;
-
 	function test_init(): void;
-
 	function theme_get_default(): Theme;
-
 	function theme_new(): Theme;
-
 	function topic_real(topic: DebugTopic, format: string): void;
-
 	function unsigned_long_equal(v1: any | null, v2: any | null): number;
-
 	function unsigned_long_hash(v: any | null): number;
-
 	function verbose_real(format: string): void;
-
 	function warning(format: string): void;
-
 	function x11_error_trap_pop(x11_display: X11Display): void;
-
 	function x11_error_trap_pop_with_return(x11_display: X11Display): number;
-
 	function x11_error_trap_push(x11_display: X11Display): void;
-
 	function x11_init_gdk_display(): boolean;
-
 	const CURRENT_TIME: number;
 
 	const DEFAULT_ICON_NAME: string;

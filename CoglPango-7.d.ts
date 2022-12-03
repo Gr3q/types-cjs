@@ -32,27 +32,23 @@ declare namespace imports.gi.CoglPango {
 	 * @param layout A #PangoLayout
 	 */
 	function ensure_glyph_cache_for_layout(layout: Pango.Layout): void;
-
 	/**
 	 * Clears the glyph cache for #font_map.
 	 * @param font_map a {@link FontMap}
 	 */
 	function font_map_clear_glyph_cache(font_map: FontMap): void;
-
 	/**
 	 * Create a #PangoContext for the given #font_map.
 	 * @param font_map a {@link FontMap}
 	 * @returns the newly created context: free with {@link GObject.unref}.
 	 */
 	function font_map_create_context(font_map: FontMap): Pango.Context;
-
 	/**
 	 * Retrieves the {@link Renderer} for the passed #font_map.
 	 * @param font_map a {@link FontMap}
 	 * @returns a #PangoRenderer
 	 */
 	function font_map_get_renderer(font_map: FontMap): Pango.Renderer;
-
 	/**
 	 * Retrieves whether the {@link Renderer} used by #font_map will use
 	 * mipmapping when rendering the glyphs.
@@ -60,13 +56,11 @@ declare namespace imports.gi.CoglPango {
 	 * @returns %TRUE if mipmapping is used, %FALSE otherwise.
 	 */
 	function font_map_get_use_mipmapping(font_map: FontMap): boolean;
-
 	/**
 	 * Creates a new font map.
 	 * @returns the newly created #PangoFontMap
 	 */
 	function font_map_new(): Pango.FontMap;
-
 	/**
 	 * Sets the resolution for the #font_map. This is a scale factor
 	 * between points specified in a #PangoFontDescription and Cogl units.
@@ -77,7 +71,6 @@ declare namespace imports.gi.CoglPango {
 	 *       actually involved; the terminology is conventional.)
 	 */
 	function font_map_set_resolution(font_map: FontMap, dpi: number): void;
-
 	/**
 	 * Sets whether the renderer for the passed font map should use
 	 * mipmapping when rendering a #PangoLayout.
@@ -85,7 +78,6 @@ declare namespace imports.gi.CoglPango {
 	 * @param value %TRUE to enable the use of mipmapping
 	 */
 	function font_map_set_use_mipmapping(font_map: FontMap, value: boolean): void;
-
 	/**
 	 * Draws a solidly coloured #layout on the given #framebuffer at (#x,
 	 * #y) within the #framebuffer<!-- -->'s current model-view coordinate
@@ -97,7 +89,6 @@ declare namespace imports.gi.CoglPango {
 	 * @param color color to use when rendering the layout
 	 */
 	function show_layout(framebuffer: Cogl.Framebuffer, layout: Pango.Layout, x: number, y: number, color: Cogl.Color): void;
-
 	/**
 	 * Draws a solidly coloured #line on the given #framebuffer at (#x,
 	 * #y) within the #framebuffer<!-- -->'s current model-view coordinate
@@ -109,5 +100,4 @@ declare namespace imports.gi.CoglPango {
 	 * @param color color to use when rendering the line
 	 */
 	function show_layout_line(framebuffer: Cogl.Framebuffer, line: Pango.LayoutLine, x: number, y: number, color: Cogl.Color): void;
-
 }

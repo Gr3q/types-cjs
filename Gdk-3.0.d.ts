@@ -36,7 +36,7 @@ declare namespace imports.gi.Gdk {
 		 * See also {@link Gdk.AppLaunchContext.set_icon_name}.
 		 * @param icon a #GIcon, or %NULL
 		 */
-		set_icon(icon: Gio.Icon | null): void;
+		set_icon(icon?: Gio.Icon | null): void;
 		/**
 		 * Sets the icon for applications that are launched with this context.
 		 * The #icon_name will be interpreted in the same way as the Icon field
@@ -48,7 +48,7 @@ declare namespace imports.gi.Gdk {
 		 * for the launched application itself.
 		 * @param icon_name an icon name, or %NULL
 		 */
-		set_icon_name(icon_name: string | null): void;
+		set_icon_name(icon_name?: string | null): void;
 		/**
 		 * Sets the screen on which applications will be launched when
 		 * using this context. See also {@link Gdk.AppLaunchContext.set_display}.
@@ -463,11 +463,8 @@ declare namespace imports.gi.Gdk {
 		 * 
 		 *   location to store a newly-allocated array of {@link TimeCoord}, or
 		 *   %NULL
-		 * 
-		 * location to store the length of
-		 *   #events, or %NULL
 		 */
-		get_history(window: Window, start: number, stop: number): [ boolean, TimeCoord[] | null, number | null ];
+		get_history(window: Window, start: number, stop: number): [ boolean, TimeCoord[] | null ];
 		/**
 		 * If #index_ has a valid keyval, this function will return %TRUE
 		 * and fill in #keyval and #modifiers with the keyval settings.
@@ -562,7 +559,7 @@ declare namespace imports.gi.Gdk {
 		 * the axes of #device in, or %NULL.
 		 * @returns location to store the modifiers, or %NULL.
 		 */
-		get_state(window: Window, axes: number[] | null): ModifierType | null;
+		get_state(window: Window, axes?: number[] | null): ModifierType | null;
 		/**
 		 * Returns the vendor ID of this device, or %NULL if this information couldn't
 		 * be obtained. This ID is retrieved from the device, and is thus constant for
@@ -822,9 +819,8 @@ declare namespace imports.gi.Gdk {
 		/**
 		 * Frees an array of {@link TimeCoord} that was returned by {@link Gdk.Device.get_history}.
 		 * @param events an array of {@link TimeCoord}.
-		 * @param n_events the length of the array.
 		 */
-		public static free_history(events: TimeCoord[], n_events: number): void;
+		public static free_history(events: TimeCoord[]): void;
 		/**
 		 * @deprecated
 		 * The symbol was never meant to be used outside
@@ -1429,9 +1425,8 @@ declare namespace imports.gi.Gdk {
 		 * @param targets an array of targets
 		 *                    that should be saved, or %NULL
 		 *                    if all available targets should be saved.
-		 * @param n_targets length of the #targets array
 		 */
-		store_clipboard(clipboard_window: Window, time_: number, targets: Atom[] | null, n_targets: number): void;
+		store_clipboard(clipboard_window: Window, time_: number, targets?: Atom[] | null): void;
 		/**
 		 * Returns whether the speicifed display supports clipboard
 		 * persistance; i.e. if it’s possible to store the clipboard data after an
@@ -2514,10 +2509,8 @@ declare namespace imports.gi.Gdk {
 		 * 
 		 * return
 		 *     location for array of keyvals, or %NULL
-		 * 
-		 * length of #keys and #keyvals
 		 */
-		get_entries_for_keycode(hardware_keycode: number): [ boolean, KeymapKey[] | null, number[] | null, number ];
+		get_entries_for_keycode(hardware_keycode: number): [ boolean, KeymapKey[] | null, number[] | null ];
 		/**
 		 * Obtains a list of keycode/group/level combinations that will
 		 * generate #keyval. Groups and levels are two kinds of keyboard mode;
@@ -2535,10 +2528,8 @@ declare namespace imports.gi.Gdk {
 		 * 
 		 * return location
 		 *     for an array of {@link KeymapKey}
-		 * 
-		 * return location for number of elements in returned array
 		 */
-		get_entries_for_keyval(keyval: number): [ boolean, KeymapKey[], number ];
+		get_entries_for_keyval(keyval: number): [ boolean, KeymapKey[] ];
 		/**
 		 * Returns the modifier mask the #keymap’s windowing system backend
 		 * uses for a particular purpose.
@@ -3210,7 +3201,7 @@ declare namespace imports.gi.Gdk {
 		 * @param options a #cairo_font_options_t, or %NULL to unset any
 		 *   previously set default font options.
 		 */
-		set_font_options(options: cairo.FontOptions | null): void;
+		set_font_options(options?: cairo.FontOptions | null): void;
 		/**
 		 * Sets the resolution for font handling on the screen. This is a
 		 * scale factor between points specified in a #PangoFontDescription
@@ -3418,10 +3409,9 @@ declare namespace imports.gi.Gdk {
 		 * @param prepare_func function to
 		 *                prepare the window to be grabbed, it can be %NULL if #window is
 		 *                visible before this call.
-		 * @param prepare_func_data user data to pass to #prepare_func
 		 * @returns %GDK_GRAB_SUCCESS if the grab was successful.
 		 */
-		grab(window: Window, capabilities: SeatCapabilities, owner_events: boolean, cursor: Cursor | null, event: Event | null, prepare_func: SeatGrabPrepareFunc | null, prepare_func_data: any | null): GrabStatus;
+		grab(window: Window, capabilities: SeatCapabilities, owner_events: boolean, cursor?: Cursor | null, event?: Event | null, prepare_func?: SeatGrabPrepareFunc | null): GrabStatus;
 		/**
 		 * Releases a grab added through {@link Gdk.Seat.grab}.
 		 */
@@ -3711,9 +3701,8 @@ declare namespace imports.gi.Gdk {
 		 * XGetEventData() has been already called on the event, and
 		 * XFreeEventData() must not be called within #function.
 		 * @param _function filter callback
-		 * @param data data to pass to filter callback
 		 */
-		add_filter(_function: FilterFunc, data: any | null): void;
+		add_filter(_function: FilterFunc): void;
 		/**
 		 * Emits a short beep associated to #window in the appropriate
 		 * display, if supported. Otherwise, emits a short beep on
@@ -4153,10 +4142,11 @@ declare namespace imports.gi.Gdk {
 		 * 
 		 * The list is returned in (relative) stacking order, i.e. the
 		 * lowest window is first.
+		 * @param user_data user data to look for
 		 * @returns 
 		 *     list of child windows inside #window
 		 */
-		get_children_with_user_data(): Window[];
+		get_children_with_user_data(user_data?: any | null): Window[];
 		/**
 		 * Computes the region of a window that potentially can be written
 		 * to by drawing primitives. This region may not take into account
@@ -4626,7 +4616,7 @@ declare namespace imports.gi.Gdk {
 		 * @param child_func function to use to decide if to
 		 *     recurse to a child, %NULL means never recurse.
 		 */
-		invalidate_maybe_recurse(region: cairo.Region, child_func: WindowChildFunc | null): void;
+		invalidate_maybe_recurse(region: cairo.Region, child_func?: WindowChildFunc | null): void;
 		/**
 		 * A convenience wrapper around {@link Gdk.Window.invalidate_region} which
 		 * invalidates a rectangular region. See
@@ -4844,9 +4834,8 @@ declare namespace imports.gi.Gdk {
 		/**
 		 * Remove a filter previously added with {@link Gdk.Window.add_filter}.
 		 * @param _function previously-added filter function
-		 * @param data user data for previously-added filter function
 		 */
-		remove_filter(_function: FilterFunc, data: any | null): void;
+		remove_filter(_function: FilterFunc): void;
 		/**
 		 * Reparents #window into the given #new_parent. The window being
 		 * reparented will be unmapped as a side effect.
@@ -4935,7 +4924,7 @@ declare namespace imports.gi.Gdk {
 		 * when the window is obscured then exposed.
 		 * @param pattern a pattern to use, or %NULL
 		 */
-		set_background_pattern(pattern: cairo.Pattern | null): void;
+		set_background_pattern(pattern?: cairo.Pattern | null): void;
 		/**
 		 * @deprecated
 		 * Don't use this function
@@ -5002,7 +4991,7 @@ declare namespace imports.gi.Gdk {
 		 * should use this default.
 		 * @param cursor a cursor
 		 */
-		set_cursor(cursor: Cursor | null): void;
+		set_cursor(cursor?: Cursor | null): void;
 		/**
 		 * “Decorations” are the features the window manager adds to a toplevel {@link Window}.
 		 * This function sets the traditional Motif window manager hints that tell the
@@ -5156,7 +5145,7 @@ declare namespace imports.gi.Gdk {
 		 * if your application pretends to be multiple applications.
 		 * @param leader group leader window, or %NULL to restore the default group leader window
 		 */
-		set_group(leader: Window | null): void;
+		set_group(leader?: Window | null): void;
 		/**
 		 * Sets a list of icons for the window. One of these will be used
 		 * to represent the window when it has been iconified. The icon is
@@ -5186,7 +5175,7 @@ declare namespace imports.gi.Gdk {
 		 * Note that some platforms don't support window icons.
 		 * @param name name of window while iconified (minimized)
 		 */
-		set_icon_name(name: string | null): void;
+		set_icon_name(name?: string | null): void;
 		/**
 		 * Registers an invalidate handler for a specific window. This
 		 * will get called whenever a region in the window or its children
@@ -5276,7 +5265,7 @@ declare namespace imports.gi.Gdk {
 		 * property in your #GtkWidget::style-updated handler.
 		 * @param region a region, or %NULL
 		 */
-		set_opaque_region(region: cairo.Region | null): void;
+		set_opaque_region(region?: cairo.Region | null): void;
 		/**
 		 * An override redirect window is not under the control of the window manager.
 		 * This means it won’t have a titlebar, won’t be minimizable, etc. - it will
@@ -5445,8 +5434,9 @@ declare namespace imports.gi.Gdk {
 		 * this function for that. If GTK+ receives an event for a #GdkWindow,
 		 * and the user data for the window is non-%NULL, GTK+ will assume the
 		 * user data is a #GtkWidget, and forward the event to that widget.
+		 * @param user_data user data
 		 */
-		set_user_data(): void;
+		set_user_data(user_data?: GObject.Object | null): void;
 		/**
 		 * Makes pixels in #window outside #shape_region be transparent,
 		 * so that the window may be nonrectangular.
@@ -9914,10 +9904,8 @@ declare namespace imports.gi.Gdk {
 		 * Specifies the type of function passed to {@link Gdk.event.handler_set} to
 		 * handle all GDK events.
 		 * @param event the {@link Event} to process.
-		 * @param data user data set when the event handler was installed with
-		 *   {@link Gdk.event.handler_set}.
 		 */
-		(event: Event, data: any | null): void;
+		(event: Event): void;
 	}
 
 	/**
@@ -9942,10 +9930,9 @@ declare namespace imports.gi.Gdk {
 		 * continue, it should return %GDK_FILTER_TRANSLATE.
 		 * @param xevent the native event to filter.
 		 * @param event the GDK event to which the X event will be translated.
-		 * @param data user data set when the filter was installed.
 		 * @returns a {@link FilterReturn} value.
 		 */
-		(xevent: XEvent, event: Event, data: any | null): FilterReturn;
+		(xevent: XEvent, event: Event): FilterReturn;
 	}
 
 	/**
@@ -10391,7 +10378,7 @@ declare namespace imports.gi.Gdk {
 		 * Sets the device tool for this event, should be rarely used.
 		 * @param tool tool to set on the event, or %NULL
 		 */
-		set_device_tool(tool: DeviceTool | null): void;
+		set_device_tool(tool?: DeviceTool | null): void;
 		/**
 		 * Sets the screen for #event to #screen. The event must
 		 * have been allocated by GTK+, for instance, by
@@ -10542,11 +10529,8 @@ declare namespace imports.gi.Gdk {
 		 * can call this function then call {@link Gtk.main.do_event} to pass
 		 * events to GTK+.)
 		 * @param func the function to call to handle events from GDK.
-		 * @param data user data to pass to the function.
-		 * @param notify the function to call when the handler function is removed, i.e. when
-		 *          {@link Gdk.event.handler_set} is called with another event handler.
 		 */
-		public static handler_set(func: EventFunc, data: any | null, notify: GLib.DestroyNotify): void;
+		public static handler_set(func: EventFunc): void;
 		/**
 		 * If there is an event waiting in the event queue of some open
 		 * display, returns a copy of it. See {@link Gdk.Display.peek_event}.
@@ -10591,7 +10575,6 @@ declare namespace imports.gi.Gdk {
 	 * @param group An option group.
 	 */
 	function add_option_entries_libgtk_only(group: GLib.OptionGroup): void;
-
 	/**
 	 * Finds or creates an atom corresponding to a given string.
 	 * @param atom_name a string.
@@ -10602,7 +10585,6 @@ declare namespace imports.gi.Gdk {
 	 * @returns the atom corresponding to #atom_name.
 	 */
 	function atom_intern(atom_name: string, only_if_exists: boolean): Atom;
-
 	/**
 	 * Finds or creates an atom corresponding to a given string.
 	 * 
@@ -10618,12 +10600,10 @@ declare namespace imports.gi.Gdk {
 	 * @returns the atom corresponding to #atom_name
 	 */
 	function atom_intern_static_string(atom_name: string): Atom;
-
 	/**
 	 * Emits a short beep on the default display.
 	 */
 	function beep(): void;
-
 	/**
 	 * Creates a Cairo context for drawing to #window.
 	 * 
@@ -10642,7 +10622,6 @@ declare namespace imports.gi.Gdk {
 	 *  {@link Cairo.destroy} when you are done drawing.
 	 */
 	function cairo_create(window: Window): cairo.Context;
-
 	/**
 	 * This is the main way to draw GL content in GTK+. It takes a render buffer ID
 	 * (#source_type == #GL_RENDERBUFFER) or a texture id (#source_type == #GL_TEXTURE)
@@ -10671,7 +10650,6 @@ declare namespace imports.gi.Gdk {
 	 * @param height The height of the region to draw
 	 */
 	function cairo_draw_from_gl(cr: cairo.Context, window: Window, source: number, source_type: number, buffer_scale: number, x: number, y: number, width: number, height: number): void;
-
 	/**
 	 * This is a convenience function around {@link Cairo.clip_extents}.
 	 * It rounds the clip extents to integer coordinates and returns
@@ -10683,7 +10661,6 @@ declare namespace imports.gi.Gdk {
 	 * return location for the clip, or %NULL
 	 */
 	function cairo_get_clip_rectangle(cr: cairo.Context): [ boolean, Rectangle | null ];
-
 	/**
 	 * Retrieves the {@link DrawingContext} that created the Cairo
 	 * context #cr.
@@ -10691,21 +10668,18 @@ declare namespace imports.gi.Gdk {
 	 * @returns a {@link DrawingContext}, if any is set
 	 */
 	function cairo_get_drawing_context(cr: cairo.Context): DrawingContext | null;
-
 	/**
 	 * Adds the given rectangle to the current path of #cr.
 	 * @param cr a cairo context
 	 * @param rectangle a {@link Rectangle}
 	 */
 	function cairo_rectangle(cr: cairo.Context, rectangle: Rectangle): void;
-
 	/**
 	 * Adds the given region to the current path of #cr.
 	 * @param cr a cairo context
 	 * @param region a #cairo_region_t
 	 */
 	function cairo_region(cr: cairo.Context, region: cairo.Region): void;
-
 	/**
 	 * Creates region that describes covers the area where the given
 	 * #surface is more than 50% opaque.
@@ -10716,14 +10690,12 @@ declare namespace imports.gi.Gdk {
 	 * @returns A #cairo_region_t; must be freed with {@link Cairo.Region.destroy}
 	 */
 	function cairo_region_create_from_surface(surface: cairo.Surface): cairo.Region;
-
 	/**
 	 * Sets the specified {@link Color} as the source color of #cr.
 	 * @param cr a cairo context
 	 * @param color a {@link Color}
 	 */
 	function cairo_set_source_color(cr: cairo.Context, color: Color): void;
-
 	/**
 	 * Sets the given pixbuf as the source pattern for #cr.
 	 * 
@@ -10735,14 +10707,12 @@ declare namespace imports.gi.Gdk {
 	 * @param pixbuf_y Y coordinate of location to place upper left corner of #pixbuf
 	 */
 	function cairo_set_source_pixbuf(cr: cairo.Context, pixbuf: GdkPixbuf.Pixbuf, pixbuf_x: number, pixbuf_y: number): void;
-
 	/**
 	 * Sets the specified {@link RGBA} as the source color of #cr.
 	 * @param cr a cairo context
 	 * @param rgba a {@link RGBA}
 	 */
 	function cairo_set_source_rgba(cr: cairo.Context, rgba: RGBA): void;
-
 	/**
 	 * Sets the given window as the source pattern for #cr.
 	 * 
@@ -10758,7 +10728,6 @@ declare namespace imports.gi.Gdk {
 	 * @param y Y coordinate of location to place upper left corner of #window
 	 */
 	function cairo_set_source_window(cr: cairo.Context, window: Window, x: number, y: number): void;
-
 	/**
 	 * Creates an image surface with the same contents as
 	 * the pixbuf.
@@ -10768,7 +10737,6 @@ declare namespace imports.gi.Gdk {
 	 * @returns a new cairo surface, must be freed with {@link Cairo.Surface.destroy}
 	 */
 	function cairo_surface_create_from_pixbuf(pixbuf: GdkPixbuf.Pixbuf, scale: number, for_window: Window | null): cairo.Surface;
-
 	/**
 	 * Parses a textual specification of a color and fill in the
 	 * #red, #green, and #blue fields of a {@link Color}.
@@ -10786,7 +10754,6 @@ declare namespace imports.gi.Gdk {
 	 * the {@link Color} to fill in
 	 */
 	function color_parse(spec: string): [ boolean, Color ];
-
 	/**
 	 * Disables multidevice support in GDK. This call must happen prior
 	 * to {@link Gdk.Display.open}, gtk_init(), gtk_init_with_args() or
@@ -10798,7 +10765,6 @@ declare namespace imports.gi.Gdk {
 	 * any way and doesn’t observe the presence of XInput 2.
 	 */
 	function disable_multidevice(): void;
-
 	/**
 	 * Aborts a drag without dropping.
 	 * 
@@ -10810,7 +10776,6 @@ declare namespace imports.gi.Gdk {
 	 * @param time_ the timestamp for this operation
 	 */
 	function drag_abort(context: DragContext, time_: number): void;
-
 	/**
 	 * Starts a drag and creates a new drag context for it.
 	 * This function assumes that the drag is controlled by the
@@ -10824,7 +10789,6 @@ declare namespace imports.gi.Gdk {
 	 * @returns a newly created {@link DragContext}
 	 */
 	function drag_begin(window: Window, targets: Atom[]): DragContext;
-
 	/**
 	 * Starts a drag and creates a new drag context for it.
 	 * 
@@ -10836,7 +10800,6 @@ declare namespace imports.gi.Gdk {
 	 * @returns a newly created {@link DragContext}
 	 */
 	function drag_begin_for_device(window: Window, device: Device, targets: Atom[]): DragContext;
-
 	/**
 	 * Starts a drag and creates a new drag context for it.
 	 * 
@@ -10850,7 +10813,6 @@ declare namespace imports.gi.Gdk {
 	 * @returns a newly created {@link DragContext}
 	 */
 	function drag_begin_from_point(window: Window, device: Device, targets: Atom[], x_root: number, y_root: number): DragContext;
-
 	/**
 	 * Drops on the current destination.
 	 * 
@@ -10862,7 +10824,6 @@ declare namespace imports.gi.Gdk {
 	 * @param time_ the timestamp for this operation
 	 */
 	function drag_drop(context: DragContext, time_: number): void;
-
 	/**
 	 * Inform GDK if the drop ended successfully. Passing %FALSE
 	 * for #success may trigger a drag cancellation animation.
@@ -10878,7 +10839,6 @@ declare namespace imports.gi.Gdk {
 	 * @param success whether the drag was ultimatively successful
 	 */
 	function drag_drop_done(context: DragContext, success: boolean): void;
-
 	/**
 	 * Returns whether the dropped data has been successfully
 	 * transferred. This function is intended to be used while
@@ -10888,7 +10848,6 @@ declare namespace imports.gi.Gdk {
 	 * @returns %TRUE if the drop was successful.
 	 */
 	function drag_drop_succeeded(context: DragContext): boolean;
-
 	/**
 	 * Finds the destination window and DND protocol to use at the
 	 * given pointer position.
@@ -10906,14 +10865,12 @@ declare namespace imports.gi.Gdk {
 	 * location to store the DND protocol in
 	 */
 	function drag_find_window_for_screen(context: DragContext, drag_window: Window, screen: Screen, x_root: number, y_root: number): [ dest_window: Window, protocol: DragProtocol ];
-
 	/**
 	 * Returns the selection atom for the current source window.
 	 * @param context a {@link DragContext}.
 	 * @returns the selection atom, or %GDK_NONE
 	 */
 	function drag_get_selection(context: DragContext): Atom;
-
 	/**
 	 * Updates the drag context when the pointer moves or the
 	 * set of actions changes.
@@ -10934,7 +10891,6 @@ declare namespace imports.gi.Gdk {
 	 * @returns 
 	 */
 	function drag_motion(context: DragContext, dest_window: Window, protocol: DragProtocol, x_root: number, y_root: number, suggested_action: DragAction, possible_actions: DragAction, time_: number): boolean;
-
 	/**
 	 * Selects one of the actions offered by the drag source.
 	 * 
@@ -10946,7 +10902,6 @@ declare namespace imports.gi.Gdk {
 	 * @param time_ the timestamp for this operation
 	 */
 	function drag_status(context: DragContext, action: DragAction, time_: number): void;
-
 	/**
 	 * Ends the drag operation after a drop.
 	 * 
@@ -10956,7 +10911,6 @@ declare namespace imports.gi.Gdk {
 	 * @param time_ the timestamp for this operation
 	 */
 	function drop_finish(context: DragContext, success: boolean, time_: number): void;
-
 	/**
 	 * Accepts or rejects a drop.
 	 * 
@@ -10967,7 +10921,6 @@ declare namespace imports.gi.Gdk {
 	 * @param time_ the timestamp for this operation
 	 */
 	function drop_reply(context: DragContext, accepted: boolean, time_: number): void;
-
 	/**
 	 * Removes an error trap pushed with {@link Gdk.error.trap_push}.
 	 * May block until an error has been definitively received
@@ -10983,7 +10936,6 @@ declare namespace imports.gi.Gdk {
 	 * @returns X error code or 0 on success
 	 */
 	function error_trap_pop(): number;
-
 	/**
 	 * Removes an error trap pushed with {@link Gdk.error.trap_push}, but
 	 * without bothering to wait and see whether an error occurred.  If an
@@ -10991,7 +10943,6 @@ declare namespace imports.gi.Gdk {
 	 * trap was pushed, that error will be ignored.
 	 */
 	function error_trap_pop_ignored(): void;
-
 	/**
 	 * This function allows X errors to be trapped instead of the normal
 	 * behavior of exiting the application. It should only be used if it
@@ -11022,7 +10973,6 @@ declare namespace imports.gi.Gdk {
 	 * ]|
 	 */
 	function error_trap_push(): void;
-
 	/**
 	 * Checks all open displays for a {@link Event} to process,to be processed
 	 * on, fetching events from the windowing system if necessary.
@@ -11032,7 +10982,6 @@ declare namespace imports.gi.Gdk {
 	 * with {@link Gdk.Event.free}.
 	 */
 	function event_get(): Event | null;
-
 	/**
 	 * Sets the function to call to handle all events from GDK.
 	 * 
@@ -11041,12 +10990,8 @@ declare namespace imports.gi.Gdk {
 	 * can call this function then call {@link Gtk.main.do_event} to pass
 	 * events to GTK+.)
 	 * @param func the function to call to handle events from GDK.
-	 * @param data user data to pass to the function.
-	 * @param notify the function to call when the handler function is removed, i.e. when
-	 *          {@link Gdk.event.handler_set} is called with another event handler.
 	 */
-	function event_handler_set(func: EventFunc, data: any | null, notify: GLib.DestroyNotify): void;
-
+	function event_handler_set(func: EventFunc): void;
 	/**
 	 * If there is an event waiting in the event queue of some open
 	 * display, returns a copy of it. See {@link Gdk.Display.peek_event}.
@@ -11055,7 +11000,6 @@ declare namespace imports.gi.Gdk {
 	 * #GdkEvent should be freed with {@link Gdk.Event.free}.
 	 */
 	function event_peek(): Event | null;
-
 	/**
 	 * Request more motion notifies if #event is a motion notify hint event.
 	 * 
@@ -11077,7 +11021,6 @@ declare namespace imports.gi.Gdk {
 	 * @param event a valid {@link Event}
 	 */
 	function event_request_motions(event: EventMotion): void;
-
 	/**
 	 * If both events contain X/Y information, this function will return %TRUE
 	 * and return in #angle the relative angle from #event1 to #event2. The rotation
@@ -11090,7 +11033,6 @@ declare namespace imports.gi.Gdk {
 	 * return location for the relative angle between both events
 	 */
 	function events_get_angle(event1: Event, event2: Event): [ boolean, number ];
-
 	/**
 	 * If both events contain X/Y information, the center of both coordinates
 	 * will be returned in #x and #y.
@@ -11103,7 +11045,6 @@ declare namespace imports.gi.Gdk {
 	 * return location for the Y coordinate of the center
 	 */
 	function events_get_center(event1: Event, event2: Event): [ boolean, number, number ];
-
 	/**
 	 * If both events have X/Y information, the distance between both coordinates
 	 * (as in a straight line going from #event1 to #event2) will be returned.
@@ -11114,27 +11055,23 @@ declare namespace imports.gi.Gdk {
 	 * return location for the distance
 	 */
 	function events_get_distance(event1: Event, event2: Event): [ boolean, number ];
-
 	/**
 	 * Checks if any events are ready to be processed for any display.
 	 * @returns %TRUE if any events are pending.
 	 */
 	function events_pending(): boolean;
-
 	/**
 	 * Flushes the output buffers of all display connections and waits
 	 * until all requests have been processed.
 	 * This is rarely needed by applications.
 	 */
 	function flush(): void;
-
 	/**
 	 * Obtains the root window (parent all other windows are inside)
 	 * for the default display and screen.
 	 * @returns the default root window
 	 */
 	function get_default_root_window(): Window;
-
 	/**
 	 * Gets the name of the display, which usually comes from the
 	 * `DISPLAY` environment variable or the
@@ -11142,7 +11079,6 @@ declare namespace imports.gi.Gdk {
 	 * @returns the name of the display.
 	 */
 	function get_display(): string;
-
 	/**
 	 * Gets the display name specified in the command line arguments passed
 	 * to gdk_init() or gdk_parse_args(), if any.
@@ -11151,7 +11087,6 @@ declare namespace imports.gi.Gdk {
 	 *   modified or freed.
 	 */
 	function get_display_arg_name(): string | null;
-
 	/**
 	 * Gets the program class. Unless the program class has explicitly
 	 * been set with {@link Gdk.set.program_class} or with the `--class`
@@ -11160,15 +11095,12 @@ declare namespace imports.gi.Gdk {
 	 * @returns the program class.
 	 */
 	function get_program_class(): string;
-
 	/**
 	 * Gets whether event debugging output is enabled.
 	 * @returns %TRUE if event debugging output is enabled.
 	 */
 	function get_show_events(): boolean;
-
 	function gl_error_quark(): GLib.Quark;
-
 	/**
 	 * Initializes the GDK library and connects to the windowing system.
 	 * If initialization fails, a warning message is output and the application
@@ -11181,7 +11113,6 @@ declare namespace imports.gi.Gdk {
 	 * needed by GTK+ applications.
 	 */
 	function init(): void;
-
 	/**
 	 * Initializes the GDK library and connects to the windowing system,
 	 * returning %TRUE on success.
@@ -11194,7 +11125,6 @@ declare namespace imports.gi.Gdk {
 	 * @returns %TRUE if initialization succeeded.
 	 */
 	function init_check(): boolean;
-
 	/**
 	 * Grabs the keyboard so that all events are passed to this
 	 * application until the keyboard is ungrabbed with {@link Gdk.keyboard.ungrab}.
@@ -11215,7 +11145,6 @@ declare namespace imports.gi.Gdk {
 	 * @returns %GDK_GRAB_SUCCESS if the grab was successful.
 	 */
 	function keyboard_grab(window: Window, owner_events: boolean, time_: number): GrabStatus;
-
 	/**
 	 * Ungrabs the keyboard on the default display, if it is grabbed by this
 	 * application.
@@ -11223,7 +11152,6 @@ declare namespace imports.gi.Gdk {
 	 *        timestamp is available.
 	 */
 	function keyboard_ungrab(time_: number): void;
-
 	/**
 	 * Obtains the upper- and lower-case versions of the keyval #symbol.
 	 * Examples of keyvals are #GDK_KEY_a, #GDK_KEY_Enter, #GDK_KEY_F1, etc.
@@ -11233,7 +11161,6 @@ declare namespace imports.gi.Gdk {
 	 * return location for uppercase version of #symbol
 	 */
 	function keyval_convert_case(symbol: number): [ lower: number, upper: number ];
-
 	/**
 	 * Converts a key name to a key value.
 	 * 
@@ -11245,7 +11172,6 @@ declare namespace imports.gi.Gdk {
 	 *     if the key name is not a valid key
 	 */
 	function keyval_from_name(keyval_name: string): number;
-
 	/**
 	 * Returns %TRUE if the given key value is in lower case.
 	 * @param keyval a key value.
@@ -11253,7 +11179,6 @@ declare namespace imports.gi.Gdk {
 	 *   subject to case conversion.
 	 */
 	function keyval_is_lower(keyval: number): boolean;
-
 	/**
 	 * Returns %TRUE if the given key value is in upper case.
 	 * @param keyval a key value.
@@ -11261,7 +11186,6 @@ declare namespace imports.gi.Gdk {
 	 *  case conversion.
 	 */
 	function keyval_is_upper(keyval: number): boolean;
-
 	/**
 	 * Converts a key value into a symbolic name.
 	 * 
@@ -11274,7 +11198,6 @@ declare namespace imports.gi.Gdk {
 	 *     should not be modified.
 	 */
 	function keyval_name(keyval: number): string | null;
-
 	/**
 	 * Converts a key value to lower case, if applicable.
 	 * @param keyval a key value.
@@ -11282,7 +11205,6 @@ declare namespace imports.gi.Gdk {
 	 *  in lower case or it is not subject to case conversion.
 	 */
 	function keyval_to_lower(keyval: number): number;
-
 	/**
 	 * Convert from a GDK key symbol to the corresponding ISO10646 (Unicode)
 	 * character.
@@ -11291,7 +11213,6 @@ declare namespace imports.gi.Gdk {
 	 *               is no corresponding character.
 	 */
 	function keyval_to_unicode(keyval: number): number;
-
 	/**
 	 * Converts a key value to upper case, if applicable.
 	 * @param keyval a key value.
@@ -11299,7 +11220,6 @@ declare namespace imports.gi.Gdk {
 	 *   in upper case or it is not subject to case conversion.
 	 */
 	function keyval_to_upper(keyval: number): number;
-
 	/**
 	 * Lists the available visuals for the default screen.
 	 * (See {@link Gdk.Screen.list_visuals})
@@ -11312,7 +11232,6 @@ declare namespace imports.gi.Gdk {
 	 *     a list of visuals; the list must be freed, but not its contents
 	 */
 	function list_visuals(): Visual[];
-
 	/**
 	 * Indicates to the GUI environment that the application has finished
 	 * loading. If the applications opens windows, this function is
@@ -11324,7 +11243,6 @@ declare namespace imports.gi.Gdk {
 	 * to disable that feature.
 	 */
 	function notify_startup_complete(): void;
-
 	/**
 	 * Indicates to the GUI environment that the application has
 	 * finished loading, using a given identifier.
@@ -11337,7 +11255,6 @@ declare namespace imports.gi.Gdk {
 	 *     notification process should be completed
 	 */
 	function notify_startup_complete_with_id(startup_id: string): void;
-
 	/**
 	 * Gets the window that #window is embedded in.
 	 * @param window a {@link Window}
@@ -11345,7 +11262,6 @@ declare namespace imports.gi.Gdk {
 	 *     %NULL if #window is not an mbedded offscreen window
 	 */
 	function offscreen_window_get_embedder(window: Window): Window | null;
-
 	/**
 	 * Gets the offscreen surface that an offscreen window renders into.
 	 * If you need to keep this around over window resizes, you need to
@@ -11355,7 +11271,6 @@ declare namespace imports.gi.Gdk {
 	 *   %NULL if not offscreen
 	 */
 	function offscreen_window_get_surface(window: Window): cairo.Surface | null;
-
 	/**
 	 * Sets #window to be embedded in #embedder.
 	 * 
@@ -11367,7 +11282,6 @@ declare namespace imports.gi.Gdk {
 	 * @param embedder the {@link Window} that #window gets embedded in
 	 */
 	function offscreen_window_set_embedder(window: Window, embedder: Window): void;
-
 	/**
 	 * Creates a #PangoContext for the default GDK screen.
 	 * 
@@ -11385,7 +11299,6 @@ declare namespace imports.gi.Gdk {
 	 * @returns a new #PangoContext for the default display
 	 */
 	function pango_context_get(): Pango.Context;
-
 	/**
 	 * Creates a #PangoContext for #display.
 	 * 
@@ -11404,7 +11317,6 @@ declare namespace imports.gi.Gdk {
 	 * @returns a new #PangoContext for #display
 	 */
 	function pango_context_get_for_display(display: Display): Pango.Context;
-
 	/**
 	 * Creates a #PangoContext for #screen.
 	 * 
@@ -11423,7 +11335,6 @@ declare namespace imports.gi.Gdk {
 	 * @returns a new #PangoContext for #screen
 	 */
 	function pango_context_get_for_screen(screen: Screen): Pango.Context;
-
 	/**
 	 * Obtains a clip region which contains the areas where the given ranges
 	 * of text would be drawn. #x_origin and #y_origin are the top left point
@@ -11442,7 +11353,6 @@ declare namespace imports.gi.Gdk {
 	 * @returns a clip region containing the given ranges
 	 */
 	function pango_layout_get_clip_region(layout: Pango.Layout, x_origin: number, y_origin: number, index_ranges: number, n_ranges: number): cairo.Region;
-
 	/**
 	 * Obtains a clip region which contains the areas where the given
 	 * ranges of text would be drawn. #x_origin and #y_origin are the top left
@@ -11468,7 +11378,6 @@ declare namespace imports.gi.Gdk {
 	 * @returns a clip region containing the given ranges
 	 */
 	function pango_layout_line_get_clip_region(line: Pango.LayoutLine, x_origin: number, y_origin: number, index_ranges: number[], n_ranges: number): cairo.Region;
-
 	/**
 	 * Parse command line arguments, and store for future
 	 * use by calls to {@link Gdk.Display.open}.
@@ -11480,7 +11389,6 @@ declare namespace imports.gi.Gdk {
 	 * gtk_init(), gtk_init_check(), gdk_init(), or gdk_init_check().
 	 */
 	function parse_args(): void;
-
 	/**
 	 * Transfers image data from a #cairo_surface_t and converts it to an RGB(A)
 	 * representation inside a {@link Pixbuf}. This allows you to efficiently read
@@ -11498,7 +11406,6 @@ declare namespace imports.gi.Gdk {
 	 *     reference count of 1, or %NULL on error
 	 */
 	function pixbuf_get_from_surface(surface: cairo.Surface, src_x: number, src_y: number, width: number, height: number): GdkPixbuf.Pixbuf | null;
-
 	/**
 	 * Transfers image data from a {@link Window} and converts it to an RGB(A)
 	 * representation inside a #GdkPixbuf. In other words, copies
@@ -11535,7 +11442,6 @@ declare namespace imports.gi.Gdk {
 	 *     reference count of 1, or %NULL on error
 	 */
 	function pixbuf_get_from_window(window: Window, src_x: number, src_y: number, width: number, height: number): GdkPixbuf.Pixbuf | null;
-
 	/**
 	 * Grabs the pointer (usually a mouse) so that all events are passed to this
 	 * application until the pointer is ungrabbed with {@link Gdk.pointer.ungrab}, or
@@ -11580,7 +11486,6 @@ declare namespace imports.gi.Gdk {
 	 * @returns %GDK_GRAB_SUCCESS if the grab was successful.
 	 */
 	function pointer_grab(window: Window, owner_events: boolean, event_mask: EventMask, confine_to: Window | null, cursor: Cursor | null, time_: number): GrabStatus;
-
 	/**
 	 * Returns %TRUE if the pointer on the default display is currently
 	 * grabbed by this application.
@@ -11590,7 +11495,6 @@ declare namespace imports.gi.Gdk {
 	 * @returns %TRUE if the pointer is currently grabbed by this application.
 	 */
 	function pointer_is_grabbed(): boolean;
-
 	/**
 	 * Ungrabs the pointer on the default display, if it is grabbed by this
 	 * application.
@@ -11598,13 +11502,11 @@ declare namespace imports.gi.Gdk {
 	 *  timestamp is available.
 	 */
 	function pointer_ungrab(time_: number): void;
-
 	/**
 	 * Prepare for parsing command line arguments for GDK. This is not
 	 * public API and should not be used in application code.
 	 */
 	function pre_parse_libgtk_only(): void;
-
 	/**
 	 * Changes the contents of a property on a window.
 	 * @param window a {@link Window}
@@ -11624,14 +11526,12 @@ declare namespace imports.gi.Gdk {
 	 *   contained in #data.
 	 */
 	function property_change(window: Window, property: Atom, type: Atom, format: number, mode: PropMode, data: number, nelements: number): void;
-
 	/**
 	 * Deletes a property from a window.
 	 * @param window a {@link Window}
 	 * @param property the property to delete
 	 */
 	function property_delete(window: Window, property: Atom): void;
-
 	/**
 	 * Retrieves a portion of the contents of a property. If the
 	 * property does not exist, then the function returns %FALSE,
@@ -11670,19 +11570,11 @@ declare namespace imports.gi.Gdk {
 	 * location to store the actual return format of the
 	 *   data; either 8, 16 or 32 bits.
 	 * 
-	 * location to store the length of the retrieved data, in
-	 *   bytes.  Data returned in the 32 bit format is stored
-	 *   in a long variable, so the actual number of 32 bit
-	 *   elements should be be calculated via
-	 *   #actual_length / sizeof(glong) to ensure portability to
-	 *   64 bit systems.
-	 * 
 	 * location
 	 *   to store a pointer to the data. The retrieved data should be
 	 *   freed with {@link G.free} when you are finished using it.
 	 */
-	function property_get(window: Window, property: Atom, type: Atom, offset: number, length: number, pdelete: number): [ boolean, Atom, number, number, number[] ];
-
+	function property_get(window: Window, property: Atom, type: Atom, offset: number, length: number, pdelete: number): [ boolean, Atom, number, number[] ];
 	/**
 	 * This function returns the available bit depths for the default
 	 * screen. It’s equivalent to listing the visuals
@@ -11692,11 +11584,8 @@ declare namespace imports.gi.Gdk {
 	 * The array returned by this function should not be freed.
 	 * @returns return
 	 *     location for available depths
-	 * 
-	 * return location for number of available depths
 	 */
-	function query_depths(): [ number[], number ];
-
+	function query_depths(): number[];
 	/**
 	 * This function returns the available visual types for the default
 	 * screen. It’s equivalent to listing the visuals
@@ -11706,11 +11595,8 @@ declare namespace imports.gi.Gdk {
 	 * The array returned by this function should not be freed.
 	 * @returns return
 	 *     location for the available visual types
-	 * 
-	 * return location for the number of available visual types
 	 */
-	function query_visual_types(): [ VisualType[], number ];
-
+	function query_visual_types(): VisualType[];
 	/**
 	 * Retrieves the contents of a selection in a given
 	 * form.
@@ -11724,7 +11610,6 @@ declare namespace imports.gi.Gdk {
 	 *   the time indicated by the timestamp.
 	 */
 	function selection_convert(requestor: Window, selection: Atom, target: Atom, time_: number): void;
-
 	/**
 	 * Determines the owner of the given selection.
 	 * @param selection an atom indentifying a selection.
@@ -11736,7 +11621,6 @@ declare namespace imports.gi.Gdk {
 	 *   foreign window will never be created by this call.
 	 */
 	function selection_owner_get(selection: Atom): Window | null;
-
 	/**
 	 * Determine the owner of the given selection.
 	 * 
@@ -11751,7 +11635,6 @@ declare namespace imports.gi.Gdk {
 	 *    %NULL.
 	 */
 	function selection_owner_get_for_display(display: Display, selection: Atom): Window | null;
-
 	/**
 	 * Sets the owner of the given selection.
 	 * @param owner a {@link Window} or %NULL to indicate that the
@@ -11768,7 +11651,6 @@ declare namespace imports.gi.Gdk {
 	 *   changed to #owner, otherwise %FALSE.
 	 */
 	function selection_owner_set(owner: Window | null, selection: Atom, time_: number, send_event: boolean): boolean;
-
 	/**
 	 * Sets the {@link Window} #owner as the current owner of the selection #selection.
 	 * @param display the {@link Display}
@@ -11784,7 +11666,6 @@ declare namespace imports.gi.Gdk {
 	 *    otherwise %FALSE.
 	 */
 	function selection_owner_set_for_display(display: Display, owner: Window | null, selection: Atom, time_: number, send_event: boolean): boolean;
-
 	/**
 	 * Retrieves selection data that was stored by the selection
 	 * data in response to a call to {@link Gdk.selection.convert}. This function
@@ -11803,7 +11684,6 @@ declare namespace imports.gi.Gdk {
 	 * @returns the length of the retrieved data.
 	 */
 	function selection_property_get(requestor: Window, data: number, prop_type: Atom, prop_format: number): number;
-
 	/**
 	 * Sends a response to SelectionRequest event.
 	 * @param requestor window to which to deliver response.
@@ -11815,7 +11695,6 @@ declare namespace imports.gi.Gdk {
 	 * @param time_ timestamp.
 	 */
 	function selection_send_notify(requestor: Window, selection: Atom, target: Atom, property: Atom, time_: number): void;
-
 	/**
 	 * Send a response to SelectionRequest event.
 	 * @param display the {@link Display} where #requestor is realized
@@ -11827,7 +11706,6 @@ declare namespace imports.gi.Gdk {
 	 * @param time_ timestamp
 	 */
 	function selection_send_notify_for_display(display: Display, requestor: Window, selection: Atom, target: Atom, property: Atom, time_: number): void;
-
 	/**
 	 * Sets a list of backends that GDK should try to use.
 	 * 
@@ -11859,7 +11737,6 @@ declare namespace imports.gi.Gdk {
 	 * @param backends a comma-separated list of backends
 	 */
 	function set_allowed_backends(backends: string): void;
-
 	/**
 	 * Set the double click time for the default display. See
 	 * {@link Gdk.Display.set_double_click_time}.
@@ -11869,7 +11746,6 @@ declare namespace imports.gi.Gdk {
 	 * @param msec double click time in milliseconds (thousandths of a second)
 	 */
 	function set_double_click_time(msec: number): void;
-
 	/**
 	 * Sets the program class. The X11 backend uses the program class to set
 	 * the class name part of the `WM_CLASS` property on
@@ -11880,7 +11756,6 @@ declare namespace imports.gi.Gdk {
 	 * @param program_class a string.
 	 */
 	function set_program_class(program_class: string): void;
-
 	/**
 	 * Sets whether a trace of received events is output.
 	 * Note that GTK+ must be compiled with debugging (that is,
@@ -11889,7 +11764,6 @@ declare namespace imports.gi.Gdk {
 	 * @param show_events %TRUE to output event debugging information.
 	 */
 	function set_show_events(show_events: boolean): void;
-
 	/**
 	 * Obtains a desktop-wide setting, such as the double-click time,
 	 * for the default screen. See {@link Gdk.Screen.get_setting}.
@@ -11899,9 +11773,7 @@ declare namespace imports.gi.Gdk {
 	 *   in #value, %FALSE otherwise.
 	 */
 	function setting_get(name: string, value: GObject.Value): boolean;
-
 	function synthesize_window_state(window: Window, unset_flags: WindowState, set_flags: WindowState): void;
-
 	/**
 	 * Retrieves a pixel from #window to force the windowing
 	 * system to carry out any pending rendering commands.
@@ -11911,7 +11783,6 @@ declare namespace imports.gi.Gdk {
 	 * @param window a mapped {@link Window}
 	 */
 	function test_render_sync(window: Window): void;
-
 	/**
 	 * This function is intended to be used in GTK+ test programs.
 	 * It will warp the mouse pointer to the given (#x,#y) coordinates
@@ -11935,7 +11806,6 @@ declare namespace imports.gi.Gdk {
 	 *     were carried out successfully
 	 */
 	function test_simulate_button(window: Window, x: number, y: number, button: number, modifiers: ModifierType, button_pressrelease: EventType): boolean;
-
 	/**
 	 * This function is intended to be used in GTK+ test programs.
 	 * If (#x,#y) are > (-1,-1), it will warp the mouse pointer to
@@ -11963,7 +11833,6 @@ declare namespace imports.gi.Gdk {
 	 *     were carried out successfully
 	 */
 	function test_simulate_key(window: Window, x: number, y: number, keyval: number, modifiers: ModifierType, key_pressrelease: EventType): boolean;
-
 	/**
 	 * Converts a text property in the given encoding to
 	 * a list of UTF-8 strings.
@@ -11971,26 +11840,13 @@ declare namespace imports.gi.Gdk {
 	 * @param encoding an atom representing the encoding of the text
 	 * @param format the format of the property
 	 * @param text the text to convert
-	 * @param length the length of #text, in bytes
 	 * @returns the number of strings in the resulting list
 	 * 
 	 * location to store the list
 	 *            of strings or %NULL. The list should be freed with
 	 *            {@link G.strfreev}.
 	 */
-	function text_property_to_utf8_list_for_display(display: Display, encoding: Atom, format: number, text: number[], length: number): [ number, string[] ];
-
-	/**
-	 * A wrapper for the common usage of {@link Gdk.threads.add_idle_full}
-	 * assigning the default priority, #G_PRIORITY_DEFAULT_IDLE.
-	 * 
-	 * See gdk_threads_add_idle_full().
-	 * @param _function function to call
-	 * @param data data to pass to #function
-	 * @returns the ID (greater than 0) of the event source.
-	 */
-	function threads_add_idle(_function: GLib.SourceFunc, data: any | null): number;
-
+	function text_property_to_utf8_list_for_display(display: Display, encoding: Atom, format: number, text: number[]): [ number, string[] ];
 	/**
 	 * Adds a function to be called whenever there are no higher priority
 	 * events pending.  If the function returns %FALSE it is automatically
@@ -12036,25 +11892,9 @@ declare namespace imports.gi.Gdk {
 	 * @param priority the priority of the idle source. Typically this will be in the
 	 *            range between #G_PRIORITY_DEFAULT_IDLE and #G_PRIORITY_HIGH_IDLE
 	 * @param _function function to call
-	 * @param data data to pass to #function
-	 * @param notify function to call when the idle is removed, or %NULL
 	 * @returns the ID (greater than 0) of the event source.
 	 */
-	function threads_add_idle_full(priority: number, _function: GLib.SourceFunc, data: any | null, notify: GLib.DestroyNotify | null): number;
-
-	/**
-	 * A wrapper for the common usage of {@link Gdk.threads.add_timeout_full}
-	 * assigning the default priority, #G_PRIORITY_DEFAULT.
-	 * 
-	 * See gdk_threads_add_timeout_full().
-	 * @param interval the time between calls to the function, in milliseconds
-	 *             (1/1000ths of a second)
-	 * @param _function function to call
-	 * @param data data to pass to #function
-	 * @returns the ID (greater than 0) of the event source.
-	 */
-	function threads_add_timeout(interval: number, _function: GLib.SourceFunc, data: any | null): number;
-
+	function threads_add_idle(priority: number, _function: GLib.SourceFunc): number;
 	/**
 	 * Sets a function to be called at regular intervals holding the GDK lock,
 	 * with the given priority.  The function is called repeatedly until it
@@ -12104,24 +11944,9 @@ declare namespace imports.gi.Gdk {
 	 * @param interval the time between calls to the function, in milliseconds
 	 *             (1/1000ths of a second)
 	 * @param _function function to call
-	 * @param data data to pass to #function
-	 * @param notify function to call when the timeout is removed, or %NULL
 	 * @returns the ID (greater than 0) of the event source.
 	 */
-	function threads_add_timeout_full(priority: number, interval: number, _function: GLib.SourceFunc, data: any | null, notify: GLib.DestroyNotify | null): number;
-
-	/**
-	 * A wrapper for the common usage of {@link Gdk.threads.add_timeout_seconds_full}
-	 * assigning the default priority, #G_PRIORITY_DEFAULT.
-	 * 
-	 * For details, see gdk_threads_add_timeout_full().
-	 * @param interval the time between calls to the function, in seconds
-	 * @param _function function to call
-	 * @param data data to pass to #function
-	 * @returns the ID (greater than 0) of the event source.
-	 */
-	function threads_add_timeout_seconds(interval: number, _function: GLib.SourceFunc, data: any | null): number;
-
+	function threads_add_timeout(priority: number, interval: number, _function: GLib.SourceFunc): number;
 	/**
 	 * A variant of {@link Gdk.threads.add_timeout_full} with second-granularity.
 	 * See g_timeout_add_seconds_full() for a discussion of why it is
@@ -12130,12 +11955,9 @@ declare namespace imports.gi.Gdk {
 	 *            range between #G_PRIORITY_DEFAULT_IDLE and #G_PRIORITY_HIGH_IDLE.
 	 * @param interval the time between calls to the function, in seconds
 	 * @param _function function to call
-	 * @param data data to pass to #function
-	 * @param notify function to call when the timeout is removed, or %NULL
 	 * @returns the ID (greater than 0) of the event source.
 	 */
-	function threads_add_timeout_seconds_full(priority: number, interval: number, _function: GLib.SourceFunc, data: any | null, notify: GLib.DestroyNotify | null): number;
-
+	function threads_add_timeout_seconds(priority: number, interval: number, _function: GLib.SourceFunc): number;
 	/**
 	 * This function marks the beginning of a critical section in which
 	 * GDK and GTK+ functions can be called safely and without causing race
@@ -12143,7 +11965,6 @@ declare namespace imports.gi.Gdk {
 	 * section.
 	 */
 	function threads_enter(): void;
-
 	/**
 	 * Initializes GDK so that it can be used from multiple threads
 	 * in conjunction with {@link Gdk.threads.enter} and gdk_threads_leave().
@@ -12152,12 +11973,10 @@ declare namespace imports.gi.Gdk {
 	 * GTK+; to be safe, call it before gtk_init().
 	 */
 	function threads_init(): void;
-
 	/**
 	 * Leaves a critical region begun with {@link Gdk.threads.enter}.
 	 */
 	function threads_leave(): void;
-
 	/**
 	 * Allows the application to replace the standard method that
 	 * GDK uses to protect its data structures. Normally, GDK
@@ -12184,7 +12003,6 @@ declare namespace imports.gi.Gdk {
 	 * @param leave_fn function called to release the guard
 	 */
 	function threads_set_lock_functions(enter_fn: GObject.Callback, leave_fn: GObject.Callback): void;
-
 	/**
 	 * Convert from a ISO10646 character to a key symbol.
 	 * @param wc a ISO10646 encoded character
@@ -12193,7 +12011,6 @@ declare namespace imports.gi.Gdk {
 	 *               wc | 0x01000000
 	 */
 	function unicode_to_keyval(wc: number): number;
-
 	/**
 	 * Converts an UTF-8 string into the best possible representation
 	 * as a STRING. The representation of characters not in STRING
@@ -12206,7 +12023,6 @@ declare namespace imports.gi.Gdk {
 	 *          file descriptors are exceeded.)
 	 */
 	function utf8_to_string_target(str: string): string | null;
-
 	/**
 	 * The middle button.
 	 * @returns The middle button.
