@@ -453,7 +453,7 @@ declare namespace imports.gi.Atk {
 		 * to create an instance of a subclass of #AtkObject
 		 * @param data a #gpointer which identifies the object for which the AtkObject was created.
 		 */
-		initialize(data: any | null): void;
+		initialize(data?: any | null): void;
 		/**
 		 * Emits a state-change signal for the specified state.
 		 * 
@@ -936,12 +936,11 @@ declare namespace imports.gi.Atk {
 		 * of targets.  See also {@link Atk.Object.add_relationship}.
 		 * @param targets an array of pointers to
 		 *  {@link Objects}
-		 * @param n_targets number of {@link Objects} pointed to by #targets
 		 * @param relationship an {@link RelationType} with which to create the new
 		 *  #AtkRelation
 		 * @returns a pointer to a new {@link Relation}
 		 */
-		public static new(targets: Object[], n_targets: number, relationship: RelationType): Relation;
+		public static new(targets: Object[], relationship: RelationType): Relation;
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -1136,9 +1135,8 @@ declare namespace imports.gi.Atk {
 		 * #atk_object_ref_state_set. It should not be used to modify the existing state
 		 * of an object. See also #atk_object_notify_state_change.
 		 * @param types an array of {@link StateType}
-		 * @param n_types The number of elements in the array
 		 */
-		add_states(types: StateType[], n_types: number): void;
+		add_states(types: StateType[]): void;
 		/**
 		 * Constructs the intersection of the two sets, returning %NULL if the
 		 * intersection is empty.
@@ -1161,10 +1159,9 @@ declare namespace imports.gi.Atk {
 		 * Checks whether the states for all the specified types are in the
 		 * specified set.
 		 * @param types an array of {@link StateType}
-		 * @param n_types The number of elements in the array
 		 * @returns %TRUE if all the states for #type are in #set.
 		 */
-		contains_states(types: StateType[], n_types: number): boolean;
+		contains_states(types: StateType[]): boolean;
 		/**
 		 * Checks whether the state set is empty, i.e. has no states set.
 		 * @returns %TRUE if #set has no states set, otherwise %FALSE
@@ -5513,7 +5510,6 @@ declare namespace imports.gi.Atk {
 	 * @returns added focus tracker id, or 0 on failure.
 	 */
 	function add_focus_tracker(focus_tracker: EventListener): number;
-
 	/**
 	 * Adds the specified function to the list of functions to be called
 	 * when an ATK event of type event_type occurs.
@@ -5553,25 +5549,20 @@ declare namespace imports.gi.Atk {
 	 * @returns added event listener id, or 0 on failure.
 	 */
 	function add_global_event_listener(listener: GObject.SignalEmissionHook, event_type: string): number;
-
 	/**
 	 * Adds the specified function to the list of functions to be called
 	 *        when a key event occurs.  The #data element will be passed to the
 	 *        {@link KeySnoopFunc} (#listener) as the #func_data param, on notification.
 	 * @param listener the listener to notify
-	 * @param data a #gpointer that points to a block of data that should be sent to the registered listeners,
-	 *        along with the event notification, when it occurs.
 	 * @returns added event listener id, or 0 on failure.
 	 */
-	function add_key_event_listener(listener: KeySnoopFunc, data: any | null): number;
-
+	function add_key_event_listener(listener: KeySnoopFunc): number;
 	/**
 	 * Frees the memory used by an {@link AttributeSet}, including all its
 	 * #AtkAttributes.
 	 * @param attrib_set The {@link AttributeSet} to free
 	 */
 	function attribute_set_free(attrib_set: AttributeSet): void;
-
 	/**
 	 * Specifies the function to be called for focus tracker initialization.
 	 * This function should be called by an implementation of the
@@ -5580,21 +5571,18 @@ declare namespace imports.gi.Atk {
 	 * @param init Function to be called for focus tracker initialization
 	 */
 	function focus_tracker_init(init: EventListenerInit): void;
-
 	/**
 	 * Cause the focus tracker functions which have been specified to be
 	 * executed for the object.
 	 * @param object an {@link Object}
 	 */
 	function focus_tracker_notify(object: Object): void;
-
 	/**
 	 * Returns the binary age as passed to libtool when building the ATK
 	 * library the process is running against.
 	 * @returns the binary age of the ATK library
 	 */
 	function get_binary_age(): number;
-
 	/**
 	 * Gets a default implementation of the {@link ObjectFactory}/type
 	 * registry.
@@ -5607,21 +5595,18 @@ declare namespace imports.gi.Atk {
 	 * {@link ObjectFactory}/type registry
 	 */
 	function get_default_registry(): Registry;
-
 	/**
 	 * Gets the currently focused object.
 	 * @returns the currently focused object for the current
 	 * application
 	 */
 	function get_focus_object(): Object;
-
 	/**
 	 * Returns the interface age as passed to libtool when building the
 	 * ATK library the process is running against.
 	 * @returns the interface age of the ATK library
 	 */
 	function get_interface_age(): number;
-
 	/**
 	 * Returns the major version number of the ATK library.  (e.g. in ATK
 	 * version 2.7.4 this is 2.)
@@ -5633,7 +5618,6 @@ declare namespace imports.gi.Atk {
 	 * @returns the major version number of the ATK library
 	 */
 	function get_major_version(): number;
-
 	/**
 	 * Returns the micro version number of the ATK library.  (e.g. in ATK
 	 * version 2.7.4 this is 4.)
@@ -5645,7 +5629,6 @@ declare namespace imports.gi.Atk {
 	 * @returns the micro version number of the ATK library
 	 */
 	function get_micro_version(): number;
-
 	/**
 	 * Returns the minor version number of the ATK library.  (e.g. in ATK
 	 * version 2.7.4 this is 7.)
@@ -5657,32 +5640,27 @@ declare namespace imports.gi.Atk {
 	 * @returns the minor version number of the ATK library
 	 */
 	function get_minor_version(): number;
-
 	/**
 	 * Gets the root accessible container for the current application.
 	 * @returns the root accessible container for the current
 	 * application
 	 */
 	function get_root(): Object;
-
 	/**
 	 * Gets name string for the GUI toolkit implementing ATK for this application.
 	 * @returns name string for the GUI toolkit implementing ATK for this application
 	 */
 	function get_toolkit_name(): string;
-
 	/**
 	 * Gets version string for the GUI toolkit implementing ATK for this application.
 	 * @returns version string for the GUI toolkit implementing ATK for this application
 	 */
 	function get_toolkit_version(): string;
-
 	/**
 	 * Gets the current version for ATK.
 	 * @returns version string for ATK
 	 */
 	function get_version(): string;
-
 	/**
 	 * Get the {@link RelationType} type corresponding to a relation name.
 	 * @param name a string which is the (non-localized) name of an ATK relation type.
@@ -5690,28 +5668,24 @@ declare namespace imports.gi.Atk {
 	 *          or #ATK_RELATION_NULL if no matching relation type is found.
 	 */
 	function relation_type_for_name(name: string): RelationType;
-
 	/**
 	 * Gets the description string describing the {@link RelationType} #type.
 	 * @param type The {@link RelationType} whose name is required
 	 * @returns the string describing the AtkRelationType
 	 */
 	function relation_type_get_name(type: RelationType): string;
-
 	/**
 	 * Associate #name with a new {@link RelationType}
 	 * @param name a name string
 	 * @returns an {@link RelationType} associated with #name
 	 */
 	function relation_type_register(name: string): RelationType;
-
 	/**
 	 * Removes the specified focus tracker from the list of functions
 	 * to be called when any object receives focus.
 	 * @param tracker_id the id of the focus tracker to remove
 	 */
 	function remove_focus_tracker(tracker_id: number): void;
-
 	/**
 	 * #listener_id is the value returned by #atk_add_global_event_listener
 	 * when you registered that event listener.
@@ -5727,7 +5701,6 @@ declare namespace imports.gi.Atk {
 	 * @param listener_id the id of the event listener to remove
 	 */
 	function remove_global_event_listener(listener_id: number): void;
-
 	/**
 	 * #listener_id is the value returned by #atk_add_key_event_listener
 	 * when you registered that event listener.
@@ -5736,7 +5709,6 @@ declare namespace imports.gi.Atk {
 	 * @param listener_id the id of the event listener to remove
 	 */
 	function remove_key_event_listener(listener_id: number): void;
-
 	/**
 	 * Get the {@link Role} type corresponding to a rolew name.
 	 * @param name a string which is the (non-localized) name of an ATK role.
@@ -5744,21 +5716,18 @@ declare namespace imports.gi.Atk {
 	 *          or #ATK_ROLE_INVALID if no matching role is found.
 	 */
 	function role_for_name(name: string): Role;
-
 	/**
 	 * Gets the localized description string describing the {@link Role} #role.
 	 * @param role The {@link Role} whose localized name is required
 	 * @returns the localized string describing the AtkRole
 	 */
 	function role_get_localized_name(role: Role): string;
-
 	/**
 	 * Gets the description string describing the {@link Role} #role.
 	 * @param role The {@link Role} whose name is required
 	 * @returns the string describing the AtkRole
 	 */
 	function role_get_name(role: Role): string;
-
 	/**
 	 * Registers the role specified by #name. #name must be a meaningful
 	 * name. So it should not be empty, or consisting on whitespaces.
@@ -5767,28 +5736,24 @@ declare namespace imports.gi.Atk {
 	 * properly. ATK_ROLE_INVALID in case of error.
 	 */
 	function role_register(name: string): Role;
-
 	/**
 	 * Gets the {@link StateType} corresponding to the description string #name.
 	 * @param name a character string state name
 	 * @returns an {@link StateType} corresponding to #name
 	 */
 	function state_type_for_name(name: string): StateType;
-
 	/**
 	 * Gets the description string describing the {@link StateType} #type.
 	 * @param type The {@link StateType} whose name is required
 	 * @returns the string describing the AtkStateType
 	 */
 	function state_type_get_name(type: StateType): string;
-
 	/**
 	 * Register a new object state.
 	 * @param name a character string describing the new state.
 	 * @returns an {@link State} value for the new state.
 	 */
 	function state_type_register(name: string): StateType;
-
 	/**
 	 * Get the {@link TextAttribute} type corresponding to a text attribute name.
 	 * @param name a string which is the (non-localized) name of an ATK text attribute.
@@ -5797,14 +5762,12 @@ declare namespace imports.gi.Atk {
 	 *          is found.
 	 */
 	function text_attribute_for_name(name: string): TextAttribute;
-
 	/**
 	 * Gets the name corresponding to the {@link TextAttribute}
 	 * @param attr The {@link TextAttribute} whose name is required
 	 * @returns a string containing the name; this string should not be freed
 	 */
 	function text_attribute_get_name(attr: TextAttribute): string;
-
 	/**
 	 * Gets the value for the index of the {@link TextAttribute}
 	 * @param attr The {@link TextAttribute} for which a value is required
@@ -5814,14 +5777,12 @@ declare namespace imports.gi.Atk {
 	 * maintained for the attr value.
 	 */
 	function text_attribute_get_value(attr: TextAttribute, index_: number): string | null;
-
 	/**
 	 * Associate #name with a new {@link TextAttribute}
 	 * @param name a name string
 	 * @returns an {@link TextAttribute} associated with #name
 	 */
 	function text_attribute_register(name: string): TextAttribute;
-
 	/**
 	 * Frees the memory associated with an array of AtkTextRange. It is assumed
 	 * that the array was returned by the function atk_text_get_bounded_ranges
@@ -5830,21 +5791,18 @@ declare namespace imports.gi.Atk {
 	 *   to be freed.
 	 */
 	function text_free_ranges(ranges: TextRange[]): void;
-
 	/**
 	 * Gets the localized description string describing the {@link ValueType} #value_type.
 	 * @param value_type The {@link ValueType} whose localized name is required
 	 * @returns the localized string describing the {@link ValueType}
 	 */
 	function value_type_get_localized_name(value_type: ValueType): string;
-
 	/**
 	 * Gets the description string describing the {@link ValueType} #value_type.
 	 * @param value_type The {@link ValueType} whose name is required
 	 * @returns the string describing the {@link ValueType}
 	 */
 	function value_type_get_name(value_type: ValueType): string;
-
 	/**
 	 * Like {@link Atk.get.binary_age}, but from the headers used at
 	 * application compile time, rather than from the library linked

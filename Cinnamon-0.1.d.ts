@@ -60,7 +60,7 @@ declare namespace imports.gi.Cinnamon {
 		 * @param for_window Optional - the backing MetaWindow to look up for.
 		 * @returns A floating #ClutterActor
 		 */
-		create_icon_texture_for_window(size: number, for_window: Meta.Window | null): Clutter.Actor;
+		create_icon_texture_for_window(size: number, for_window?: Meta.Window | null): Clutter.Actor;
 		get_app_info(): CMenu.DesktopAppInfo;
 		get_description(): string;
 		get_flatpak_app_id(): string;
@@ -158,7 +158,7 @@ declare namespace imports.gi.Cinnamon {
 		 * @param wmclass A WM_CLASS value
 		 * @returns A {@link App} for #wmclass
 		 */
-		lookup_desktop_wmclass(wmclass: string | null): App;
+		lookup_desktop_wmclass(wmclass?: string | null): App;
 		/**
 		 * Find a {@link App} corresponding to a flatpak app id.
 		 * @param app_id
@@ -171,7 +171,7 @@ declare namespace imports.gi.Cinnamon {
 		 * @param wmclass A WM_CLASS value
 		 * @returns A {@link App} for #wmclass
 		 */
-		lookup_startup_wmclass(wmclass: string | null): App;
+		lookup_startup_wmclass(wmclass?: string | null): App;
 		connect(signal: "app-state-changed", callback: (owner: this, object: App) => void): number;
 		connect(signal: "installed-changed", callback: (owner: this) => void): number;
 
@@ -482,9 +482,8 @@ declare namespace imports.gi.Cinnamon {
 		 * interfere with the ability to use it for performance measurement so
 		 * should be avoided.
 		 * @param func function to call at leisure
-		 * @param notify function to call to free #user_data
 		 */
-		run_at_leisure(func: LeisureFunction, notify: GLib.DestroyNotify): void;
+		run_at_leisure(func: LeisureFunction): void;
 		/**
 		 * Crashes Cinnamon by causing a segfault
 		 */
@@ -634,9 +633,8 @@ declare namespace imports.gi.Cinnamon {
 		 * and call a function such as {@link Cinnamon.PerfLog.update_statistic_i}
 		 * to update the value that will be recorded.
 		 * @param callback function to call before recording statistics
-		 * @param notify function to call when #user_data is no longer needed
 		 */
-		add_statistics_callback(callback: PerfStatisticsCallback, notify: GLib.DestroyNotify): void;
+		add_statistics_callback(callback: PerfStatisticsCallback): void;
 		/**
 		 * Calls all the update functions added with
 		 * {@link Cinnamon.PerfLog.add_statistics_callback} and then records events
@@ -854,7 +852,7 @@ declare namespace imports.gi.Cinnamon {
 		 * @param pipeline the GStreamer pipeline used to encode recordings
 		 *            or %NULL for the default value.
 		 */
-		set_pipeline(pipeline: string | null): void;
+		set_pipeline(pipeline?: string | null): void;
 		connect(signal: "notify::filename", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::framerate", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::pipeline", callback: (owner: this, ...args: any) => void): number;
@@ -1280,7 +1278,7 @@ declare namespace imports.gi.Cinnamon {
 	}
 
 	interface LeisureFunction {
-		(data: any | null): void;
+		(data?: any | null): void;
 	}
 
 	interface PerfReplayFunction {
@@ -1288,7 +1286,7 @@ declare namespace imports.gi.Cinnamon {
 	}
 
 	interface PerfStatisticsCallback {
-		(perf_log: PerfLog, data: any | null): void;
+		(perf_log: PerfLog, data?: any | null): void;
 	}
 
 	interface ScreenshotCallback {
@@ -1300,7 +1298,6 @@ declare namespace imports.gi.Cinnamon {
 	 * in conjunction with a debugger such as gdb.
 	 */
 	function breakpoint(): void;
-
 	/**
 	 * Gets the current state of the event (the set of modifier keys that
 	 * are pressed down). Thhis is a wrapper around
@@ -1311,7 +1308,6 @@ declare namespace imports.gi.Cinnamon {
 	 * @returns the state from the event
 	 */
 	function get_event_state(event: Clutter.Event): Clutter.ModifierType;
-
 	/**
 	 * Asynchronously load the contents of a file as a NUL terminated
 	 * string, validating it as UTF-8.  Embedded NUL characters count as
@@ -1320,7 +1316,6 @@ declare namespace imports.gi.Cinnamon {
 	 * @param callback The callback to call when finished
 	 */
 	function get_file_contents_utf8(path: string, callback: FileContentsCallback): void;
-
 	/**
 	 * Synchronously load the contents of a file as a NUL terminated
 	 * string, validating it as UTF-8.  Embedded NUL characters count as
@@ -1329,9 +1324,7 @@ declare namespace imports.gi.Cinnamon {
 	 * @returns File contents
 	 */
 	function get_file_contents_utf8_sync(path: string): string;
-
 	function parse_search_provider(data: string): [ boolean, string, string, string[], string ];
-
 	/**
 	 * Set a double uniform on a ClutterShaderEffect.
 	 * 
@@ -1345,7 +1338,6 @@ declare namespace imports.gi.Cinnamon {
 	 * @param value The value to set it to.
 	 */
 	function shader_effect_set_double_uniform(effect: Clutter.ShaderEffect, name: string, value: number): void;
-
 	/**
 	 * Formats a date for the current locale. This should be
 	 * used instead of the Spidermonkey Date.toLocaleFormat()
@@ -1362,7 +1354,6 @@ declare namespace imports.gi.Cinnamon {
 	 *  return an empty string.
 	 */
 	function util_format_date(format: string, time_ms: number): string;
-
 	/**
 	 * Look up the icon that should be associated with a given URI.  Handles
 	 * various special GNOME-internal cases like x-nautilus-search, etc.
@@ -1370,9 +1361,7 @@ declare namespace imports.gi.Cinnamon {
 	 * @returns A new #GIcon
 	 */
 	function util_get_icon_for_uri(text_uri: string): Gio.Icon;
-
 	function util_get_label_for_uri(text_uri: string): string;
-
 	/**
 	 * This function is similar to a combination of {@link Clutter.Actor.get_transformed_position},
 	 * and clutter_actor_get_transformed_size(), but unlike
@@ -1388,7 +1377,6 @@ declare namespace imports.gi.Cinnamon {
 	 * @returns location to store returned box in stage coordinates
 	 */
 	function util_get_transformed_allocation(actor: Clutter.Actor): Clutter.ActorBox;
-
 	/**
 	 * Gets the first week day for the current locale, expressed as a
 	 * number in the range 0..6, representing week days from Sunday to
@@ -1397,7 +1385,6 @@ declare namespace imports.gi.Cinnamon {
 	 *          locale
 	 */
 	function util_get_week_start(): number;
-
 	/**
 	 * If #hidden is %TRUE, hide #actor from pick even with a mode of
 	 * %CLUTTER_PICK_ALL; if #hidden is %FALSE, unhide #actor.
@@ -1405,7 +1392,6 @@ declare namespace imports.gi.Cinnamon {
 	 * @param hidden Whether #actor should be hidden from pick
 	 */
 	function util_set_hidden_from_pick(actor: Clutter.Actor, hidden: boolean): void;
-
 	/**
 	 * Write a string to a GOutputStream as binary data. This is a
 	 * workaround for the lack of proper binary strings in GJS.
@@ -1413,7 +1399,6 @@ declare namespace imports.gi.Cinnamon {
 	 * @param message a #SoupMessage
 	 */
 	function write_soup_message_to_stream(stream: Gio.OutputStream, message: Soup.Message): void;
-
 	/**
 	 * Write a string to a GOutputStream as UTF-8. This is a workaround
 	 * for not having binary buffers in GJS.
@@ -1422,5 +1407,4 @@ declare namespace imports.gi.Cinnamon {
 	 * @returns %TRUE if write succeeded
 	 */
 	function write_string_to_stream(stream: Gio.OutputStream, str: string): boolean;
-
 }

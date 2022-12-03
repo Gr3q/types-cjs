@@ -199,7 +199,7 @@ declare namespace imports.gi.Cogl {
 		 * @returns For convenience it returns the
 		 *                                given #offscreen
 		 */
-		public static ref(offscreen: any | null): any | null;
+		public static ref(offscreen?: any | null): any | null;
 		/**
 		 * @deprecated
 		 * {@link Cogl.object_unref} should be used in new code.
@@ -208,7 +208,7 @@ declare namespace imports.gi.Cogl {
 		 * the count reaches 0.
 		 * @param offscreen A pointer to a {@link Offscreen} framebuffer
 		 */
-		public static unref(offscreen: any | null): void;
+		public static unref(offscreen?: any | null): void;
 	}
 
 	export interface ColorInitOptions {}
@@ -235,7 +235,7 @@ declare namespace imports.gi.Cogl {
 		 * @param v2 a {@link Color}
 		 * @returns %TRUE if the two colors are the same.
 		 */
-		public static equal(v1: any | null, v2: any | null): Bool;
+		public static equal(v1?: any | null, v2?: any | null): Bool;
 		/**
 		 * Converts a color expressed in HLS (hue, luminance and saturation)
 		 * values into a {@link Color}.
@@ -1252,7 +1252,7 @@ declare namespace imports.gi.Cogl {
 		 * @param v2 A 4x4 transformation matrix
 		 * @returns 
 		 */
-		public static equal(v1: any | null, v2: any | null): Bool;
+		public static equal(v1?: any | null, v2?: any | null): Bool;
 		public xx: number;
 		public yx: number;
 		public zx: number;
@@ -1721,7 +1721,7 @@ declare namespace imports.gi.Cogl {
 		 * @param texture a {@link Texture}.
 		 * @returns the #texture pointer.
 		 */
-		public static ref(texture: any | null): any | null;
+		public static ref(texture?: any | null): any | null;
 		/**
 		 * @deprecated
 		 * Use {@link Cogl.object_unref} instead
@@ -1729,7 +1729,7 @@ declare namespace imports.gi.Cogl {
 		 * Decrement the reference count for a cogl texture.
 		 * @param texture a {@link Texture}.
 		 */
-		public static unref(texture: any | null): void;
+		public static unref(texture?: any | null): void;
 	}
 
 
@@ -2658,7 +2658,7 @@ declare namespace imports.gi.Cogl {
 	}
 
 	interface XlibFilterFunc {
-		(event: any, data: any | null): FilterReturn;
+		(event: any, data?: any | null): FilterReturn;
 	}
 
 	/**
@@ -2686,21 +2686,18 @@ declare namespace imports.gi.Cogl {
 	 * @returns the cosine of the passed angle
 	 */
 	function angle_cos(angle: Angle): Fixed;
-
 	/**
 	 * Computes the sine of #angle
 	 * @param angle an angle expressed using {@link Angle}
 	 * @returns the sine of the passed angle
 	 */
 	function angle_sin(angle: Angle): Fixed;
-
 	/**
 	 * Computes the tangent of #angle
 	 * @param angle an angle expressed using {@link Angle}
 	 * @returns the tangent of the passed angle
 	 */
 	function angle_tan(angle: Angle): Fixed;
-
 	/**
 	 * We do not advise nor reliably support the interleaving of raw GL drawing and
 	 * Cogl drawing functions, but if you insist, {@link Cogl.begin.gl} and cogl_end_gl()
@@ -2771,11 +2768,8 @@ declare namespace imports.gi.Cogl {
 	 * OpenGL.
 	 */
 	function begin_gl(): void;
-
 	function bitmap_error_quark(): number;
-
 	function blend_string_error_quark(): number;
-
 	/**
 	 * Check whether #name occurs in list of extensions in #ext.
 	 * @param name extension to check for
@@ -2783,7 +2777,6 @@ declare namespace imports.gi.Cogl {
 	 * @returns %TRUE if the extension occurs in the list, %FALSE otherwise.
 	 */
 	function check_extension(name: string, ext: string): Bool;
-
 	/**
 	 * Clears all the auxiliary buffers identified in the #buffers mask, and if
 	 * that includes the color buffer then the specified #color is used.
@@ -2792,7 +2785,6 @@ declare namespace imports.gi.Cogl {
 	 *   buffers to clear
 	 */
 	function clear(color: Color, buffers: number): void;
-
 	/**
 	 * Ensures that the current clipping region has been set in GL. This
 	 * will automatically be called before any Cogl primitives but it
@@ -2800,13 +2792,11 @@ declare namespace imports.gi.Cogl {
 	 * clipping.
 	 */
 	function clip_ensure(): void;
-
 	/**
 	 * Reverts the clipping region to the state before the last call to
 	 * {@link Cogl.clip.push}.
 	 */
 	function clip_pop(): void;
-
 	/**
 	 * Specifies a rectangular clipping area for all subsequent drawing
 	 * operations. Any drawing commands that extend outside the rectangle
@@ -2822,7 +2812,6 @@ declare namespace imports.gi.Cogl {
 	 * @param height height of the clip rectangle
 	 */
 	function clip_push(x_offset: number, y_offset: number, width: number, height: number): void;
-
 	/**
 	 * Sets a new clipping area using a 2D shaped described with a
 	 * {@link Primitive}. The shape must not contain self overlapping
@@ -2847,7 +2836,6 @@ declare namespace imports.gi.Cogl {
 	 *             primitives bounds.
 	 */
 	function clip_push_primitive(primitive: any, bounds_x1: number, bounds_y1: number, bounds_x2: number, bounds_y2: number): void;
-
 	/**
 	 * Specifies a rectangular clipping area for all subsequent drawing
 	 * operations. Any drawing commands that extend outside the rectangle
@@ -2863,7 +2851,6 @@ declare namespace imports.gi.Cogl {
 	 * @param y1 y coordinate for bottom right corner of the clip rectangle
 	 */
 	function clip_push_rectangle(x0: number, y0: number, x1: number, y1: number): void;
-
 	/**
 	 * Specifies a rectangular clipping area for all subsequent drawing
 	 * operations. Any drawing commands that extend outside the rectangle
@@ -2879,7 +2866,6 @@ declare namespace imports.gi.Cogl {
 	 * @param height height of the clip rectangle
 	 */
 	function clip_push_window_rect(x_offset: number, y_offset: number, width: number, height: number): void;
-
 	/**
 	 * Specifies a rectangular clipping area for all subsequent drawing
 	 * operations. Any drawing commands that extend outside the rectangle
@@ -2895,13 +2881,11 @@ declare namespace imports.gi.Cogl {
 	 * @param height height of the clip rectangle
 	 */
 	function clip_push_window_rectangle(x_offset: number, y_offset: number, width: number, height: number): void;
-
 	/**
 	 * Restore the state of the clipping stack that was previously saved
 	 * by {@link Cogl.clip.stack_save}.
 	 */
 	function clip_stack_restore(): void;
-
 	/**
 	 * Save the entire state of the clipping stack and then clear all
 	 * clipping. The previous state can be returned to with
@@ -2910,13 +2894,9 @@ declare namespace imports.gi.Cogl {
 	 * cogl_clip_stack_restore().
 	 */
 	function clip_stack_save(): void;
-
 	function clutter_check_extension_CLUTTER(name: string, ext: string): Bool;
-
 	function clutter_winsys_has_feature_CLUTTER(feature: WinsysFeature): Bool;
-
 	function clutter_winsys_xlib_get_visual_info_CLUTTER(): any;
-
 	/**
 	 * Compares two {@link Color}<!-- -->s and checks if they are the same.
 	 * 
@@ -2927,7 +2907,6 @@ declare namespace imports.gi.Cogl {
 	 * @returns %TRUE if the two colors are the same.
 	 */
 	function color_equal(v1: any | null, v2: any | null): Bool;
-
 	/**
 	 * Converts a color expressed in HLS (hue, luminance and saturation)
 	 * values into a {@link Color}.
@@ -2937,14 +2916,12 @@ declare namespace imports.gi.Cogl {
 	 * @returns return location for a {@link Color}
 	 */
 	function color_init_from_hsl(hue: number, saturation: number, luminance: number): Color;
-
 	/**
 	 * Create a new cogl program object that can be used to replace parts of the GL
 	 * rendering pipeline with custom code.
 	 * @returns a new cogl program.
 	 */
 	function create_program(): Handle;
-
 	/**
 	 * Create a new shader handle, use {@link Cogl.shader.source} to set the
 	 * source code to be used on it.
@@ -2952,31 +2929,24 @@ declare namespace imports.gi.Cogl {
 	 * @returns a new shader handle.
 	 */
 	function create_shader(shader_type: ShaderType): Handle;
-
 	/**
 	 * Prints the contents of a {@link Matrix} to stdout.
 	 * @param matrix A {@link Matrix}
 	 */
 	function debug_matrix_print(matrix: Matrix): void;
-
 	/**
 	 * This function disables fogging, so primitives drawn afterwards will not be
 	 * blended with any previously set fog color.
 	 */
 	function disable_fog(): void;
-
 	function double_to_fixed(value: number): Fixed;
-
 	function double_to_int(value: number): number;
-
 	function double_to_uint(value: number): number;
-
 	/**
 	 * This is the counterpart to {@link Cogl.begin.gl} used to delimit blocks of drawing
 	 * code using raw OpenGL. Please refer to cogl_begin_gl() for full details.
 	 */
 	function end_gl(): void;
-
 	/**
 	 * Checks whether the given COGL features are available. Multiple
 	 * features can be checked for by or-ing them together with the '|'
@@ -2986,7 +2956,6 @@ declare namespace imports.gi.Cogl {
 	 * @returns %TRUE if the features are available, %FALSE otherwise.
 	 */
 	function features_available(features: FeatureFlags): Bool;
-
 	/**
 	 * This function should only need to be called in exceptional circumstances.
 	 * 
@@ -3010,7 +2979,6 @@ declare namespace imports.gi.Cogl {
 	 * starts to use ARBfb programs itself for the material API.
 	 */
 	function flush(): void;
-
 	/**
 	 * Queries the common {@link PixelFormat} of all color buffers attached
 	 * to this framebuffer. For an offscreen framebuffer created with
@@ -3026,7 +2994,6 @@ declare namespace imports.gi.Cogl {
 	 * @returns 
 	 */
 	function framebuffer_get_color_format(framebuffer: any): PixelFormat;
-
 	/**
 	 * Replaces the current projection matrix with a perspective matrix
 	 * for a given viewing frustum defined by 4 side clip planes that
@@ -3043,14 +3010,12 @@ declare namespace imports.gi.Cogl {
 	 * @param z_far The distance to the far clipping plane (Must be positive)
 	 */
 	function frustum(left: number, right: number, bottom: number, top: number, z_near: number, z_far: number): void;
-
 	/**
 	 * Queries if backface culling has been enabled via
 	 * {@link Cogl.set.backface_culling_enabled}
 	 * @returns %TRUE if backface culling is enabled, and %FALSE otherwise
 	 */
 	function get_backface_culling_enabled(): Bool;
-
 	/**
 	 * Gets the number of bitplanes used for each of the color components
 	 * in the color buffer. Pass %NULL for any of the arguments if the
@@ -3064,25 +3029,21 @@ declare namespace imports.gi.Cogl {
 	 * Return location for the number of alpha bits or %NULL
 	 */
 	function get_bitmasks(): [ red: number, green: number, blue: number, alpha: number ];
-
 	/**
 	 * Queries if depth testing has been enabled via {@link Cogl.set_depth_test_enable}
 	 * @returns %TRUE if depth testing is enabled, and %FALSE otherwise
 	 */
 	function get_depth_test_enabled(): Bool;
-
 	/**
 	 * Returns all of the features supported by COGL.
 	 * @returns A logical OR of all the supported COGL features.
 	 */
 	function get_features(): FeatureFlags;
-
 	/**
 	 * Stores the current model-view matrix in #matrix.
 	 * @returns return location for the model-view matrix
 	 */
 	function get_modelview_matrix(): Matrix;
-
 	/**
 	 * Retrieves the #GOptionGroup used by Cogl to parse the command
 	 * line options. Clutter uses this to handle the Cogl command line
@@ -3090,7 +3051,6 @@ declare namespace imports.gi.Cogl {
 	 * @returns a #GOptionGroup
 	 */
 	function get_option_group(): GLib.OptionGroup;
-
 	/**
 	 * Gets a pointer to a given GL or GL ES extension function. This acts
 	 * as a wrapper around glXGetProcAddress() or whatever is the
@@ -3104,13 +3064,11 @@ declare namespace imports.gi.Cogl {
 	 *   function is not available.
 	 */
 	function get_proc_address(name: string): FuncPtr;
-
 	/**
 	 * Stores the current projection matrix in #matrix.
 	 * @returns return location for the projection matrix
 	 */
 	function get_projection_matrix(): Matrix;
-
 	/**
 	 * Returns the current source material as previously set using
 	 * {@link Cogl.set.source}.
@@ -3123,7 +3081,6 @@ declare namespace imports.gi.Cogl {
 	 * @returns The current source material.
 	 */
 	function get_source(): any | null;
-
 	/**
 	 * Stores the current viewport in #v. #v[0] and #v[1] get the x and y
 	 * position of the viewport and #v[2] and #v[3] get the width and
@@ -3132,25 +3089,20 @@ declare namespace imports.gi.Cogl {
 	 *   of #float<!-- -->s to receive the viewport dimensions.
 	 */
 	function get_viewport(): number[];
-
 	function gtype_matrix_get_type(): GObject.Type;
-
 	function handle_get_type(): GObject.Type;
-
 	/**
 	 * Increases the reference count of #handle by 1
 	 * @param handle a {@link Handle}
 	 * @returns the handle, with its reference count increased
 	 */
 	function handle_ref(handle: Handle): Handle;
-
 	/**
 	 * Drecreases the reference count of #handle by 1; if the reference
 	 * count reaches 0, the resources allocated by #handle will be freed
 	 * @param handle a {@link Handle}
 	 */
 	function handle_unref(handle: Handle): void;
-
 	/**
 	 * Checks whether #object is a {@link Bitmap}
 	 * @param object a {@link Object} pointer
@@ -3158,7 +3110,6 @@ declare namespace imports.gi.Cogl {
 	 *   and %FALSE otherwise
 	 */
 	function is_bitmap(object: any | null): Bool;
-
 	/**
 	 * Gets whether the given handle references an existing material object.
 	 * @param handle A CoglHandle
@@ -3166,7 +3117,6 @@ declare namespace imports.gi.Cogl {
 	 *   %FALSE otherwise
 	 */
 	function is_material(handle: Handle): Bool;
-
 	/**
 	 * Determines whether the given {@link Object} references an offscreen
 	 * framebuffer object.
@@ -3175,7 +3125,6 @@ declare namespace imports.gi.Cogl {
 	 *          %FALSE otherwise
 	 */
 	function is_offscreen(object: any | null): Bool;
-
 	/**
 	 * Gets whether the given handle references an existing program object.
 	 * @param handle A CoglHandle
@@ -3183,7 +3132,6 @@ declare namespace imports.gi.Cogl {
 	 *   %FALSE otherwise
 	 */
 	function is_program(handle: Handle): Bool;
-
 	/**
 	 * Gets whether the given handle references an existing shader object.
 	 * @param handle A CoglHandle
@@ -3191,7 +3139,6 @@ declare namespace imports.gi.Cogl {
 	 *   %FALSE otherwise
 	 */
 	function is_shader(handle: Handle): Bool;
-
 	/**
 	 * Gets whether the given object references a texture object.
 	 * @param object A {@link Object} pointer
@@ -3199,7 +3146,6 @@ declare namespace imports.gi.Cogl {
 	 *   %FALSE otherwise
 	 */
 	function is_texture(object: any | null): Bool;
-
 	/**
 	 * Checks whether #handle is a Vertex Buffer Object
 	 * @param handle a {@link Handle} for a vertex buffer object
@@ -3207,7 +3153,6 @@ declare namespace imports.gi.Cogl {
 	 *   otherwise
 	 */
 	function is_vertex_buffer(handle: Handle): Bool;
-
 	/**
 	 * Checks whether #handle is a handle to the indices for a vertex
 	 * buffer object
@@ -3216,20 +3161,17 @@ declare namespace imports.gi.Cogl {
 	 *   otherwise
 	 */
 	function is_vertex_buffer_indices(handle: Handle): Bool;
-
 	/**
 	 * Increment the reference count for a {@link Material}.
 	 * @param material a {@link Material} object.
 	 * @returns the #material.
 	 */
 	function material_ref(material: Handle): Handle;
-
 	/**
 	 * Decrement the reference count for a {@link Material}.
 	 * @param material a {@link Material} object.
 	 */
 	function material_unref(material: Handle): void;
-
 	/**
 	 * Compares two matrices to see if they represent the same
 	 * transformation. Although internally the matrices may have different
@@ -3240,9 +3182,7 @@ declare namespace imports.gi.Cogl {
 	 * @returns 
 	 */
 	function matrix_equal(v1: any | null, v2: any | null): Bool;
-
 	function onscreen_clutter_backend_set_size_CLUTTER(width: number, height: number): void;
-
 	/**
 	 * Replaces the current projection matrix with an orthographic projection
 	 * matrix. See <xref linkend="cogl-ortho-matrix"/> to see how the matrix is
@@ -3269,7 +3209,6 @@ declare namespace imports.gi.Cogl {
 	 *   plane (negative if the plane is behind the viewer)
 	 */
 	function ortho(left: number, right: number, bottom: number, top: number, near: number, far: number): void;
-
 	/**
 	 * Replaces the current projection matrix with a perspective matrix
 	 * based on the provided values.
@@ -3284,7 +3223,6 @@ declare namespace imports.gi.Cogl {
 	 * @param z_far The distance to the far clipping plane (Must be positive)
 	 */
 	function perspective(fovy: number, aspect: number, z_near: number, z_far: number): void;
-
 	/**
 	 * Draws a convex polygon using the current source material to fill / texture
 	 * with according to the texture coordinates passed.
@@ -3306,30 +3244,25 @@ declare namespace imports.gi.Cogl {
 	 * @param use_color %TRUE if the color member of {@link TextureVertex} should be used
 	 */
 	function polygon(vertices: TextureVertex, n_vertices: number, use_color: Bool): void;
-
 	/**
 	 * Restore {@link Cogl.set.draw_buffer} state.
 	 */
 	function pop_draw_buffer(): void;
-
 	/**
 	 * Restores the framebuffer that was previously at the top of the stack.
 	 * All subsequent drawing will be redirected to this framebuffer.
 	 */
 	function pop_framebuffer(): void;
-
 	/**
 	 * Restores the current model-view matrix from the matrix stack.
 	 */
 	function pop_matrix(): void;
-
 	/**
 	 * Removes the material at the top of the source stack. The material
 	 * at the top of this stack defines the GPU state used to process
 	 * later primitives as defined by {@link Cogl.set.source}.
 	 */
 	function pop_source(): void;
-
 	/**
 	 * Attaches a shader to a program object. A program can have multiple
 	 * vertex or fragment shaders but only one of them may provide a
@@ -3339,7 +3272,6 @@ declare namespace imports.gi.Cogl {
 	 * @param shader_handle a {@link Handle} for a vertex of fragment shader.
 	 */
 	function program_attach_shader(program_handle: Handle, shader_handle: Handle): void;
-
 	/**
 	 * Retrieve the location (offset) of a uniform variable in a shader program,
 	 * a uniform is a variable that is constant for all vertices/fragments for a
@@ -3351,7 +3283,6 @@ declare namespace imports.gi.Cogl {
 	 *   program is in use.
 	 */
 	function program_get_uniform_location(handle: Handle, uniform_name: string): number;
-
 	/**
 	 * Links a program making it ready for use. Note that calling this
 	 * function is optional. If it is not called the program will
@@ -3359,14 +3290,12 @@ declare namespace imports.gi.Cogl {
 	 * @param handle a {@link Handle} for a shader program.
 	 */
 	function program_link(handle: Handle): void;
-
 	/**
 	 * Add an extra reference to a program.
 	 * @param handle A {@link Handle} to a program.
 	 * @returns #handle
 	 */
 	function program_ref(handle: Handle): Handle;
-
 	/**
 	 * Changes the value of a floating point uniform for the given linked
 	 * #program.
@@ -3376,7 +3305,6 @@ declare namespace imports.gi.Cogl {
 	 * @param value the new value of the uniform.
 	 */
 	function program_set_uniform_1f(program: Handle, uniform_location: number, value: number): void;
-
 	/**
 	 * Changes the value of an integer uniform for the given linked
 	 * #program.
@@ -3386,7 +3314,6 @@ declare namespace imports.gi.Cogl {
 	 * @param value the new value of the uniform.
 	 */
 	function program_set_uniform_1i(program: Handle, uniform_location: number, value: number): void;
-
 	/**
 	 * Changes the value of a float vector uniform, or uniform array for
 	 * the given linked #program.
@@ -3395,12 +3322,9 @@ declare namespace imports.gi.Cogl {
 	 *    {@link Cogl.program.get_uniform_location}.
 	 * @param n_components The number of components for the uniform. For
 	 * example with glsl you'd use 3 for a vec3 or 4 for a vec4.
-	 * @param count For uniform arrays this is the array length otherwise just
-	 * pass 1
 	 * @param value the new value of the uniform[s].
 	 */
-	function program_set_uniform_float(program: Handle, uniform_location: number, n_components: number, count: number, value: number[]): void;
-
+	function program_set_uniform_float(program: Handle, uniform_location: number, n_components: number, value: number[]): void;
 	/**
 	 * Changes the value of a int vector uniform, or uniform array for
 	 * the given linked #program.
@@ -3409,12 +3333,9 @@ declare namespace imports.gi.Cogl {
 	 *    {@link Cogl.program.get_uniform_location}.
 	 * @param n_components The number of components for the uniform. For
 	 * example with glsl you'd use 3 for a vec3 or 4 for a vec4.
-	 * @param count For uniform arrays this is the array length otherwise just
-	 * pass 1
 	 * @param value the new value of the uniform[s].
 	 */
-	function program_set_uniform_int(program: Handle, uniform_location: number, n_components: number, count: number, value: number[]): void;
-
+	function program_set_uniform_int(program: Handle, uniform_location: number, n_components: number, value: number[]): void;
 	/**
 	 * Changes the value of a matrix uniform, or uniform array in the
 	 * given linked #program.
@@ -3423,13 +3344,10 @@ declare namespace imports.gi.Cogl {
 	 *    {@link Cogl.program.get_uniform_location}.
 	 * @param dimensions The dimensions of the matrix. So for for example pass
 	 *    2 for a 2x2 matrix or 3 for 3x3.
-	 * @param count For uniform arrays this is the array length otherwise just
-	 * pass 1
 	 * @param transpose Whether to transpose the matrix when setting the uniform.
 	 * @param value the new value of the uniform.
 	 */
-	function program_set_uniform_matrix(program: Handle, uniform_location: number, dimensions: number, count: number, transpose: Bool, value: number[]): void;
-
+	function program_set_uniform_matrix(program: Handle, uniform_location: number, dimensions: number, transpose: Bool, value: number[]): void;
 	/**
 	 * Changes the value of a floating point uniform in the currently
 	 * used (see {@link Cogl.program.use}) shader program.
@@ -3437,7 +3355,6 @@ declare namespace imports.gi.Cogl {
 	 * @param value the new value of the uniform.
 	 */
 	function program_uniform_1f(uniform_no: number, value: number): void;
-
 	/**
 	 * Changes the value of an integer uniform in the currently
 	 * used (see {@link Cogl.program.use}) shader program.
@@ -3445,46 +3362,38 @@ declare namespace imports.gi.Cogl {
 	 * @param value the new value of the uniform.
 	 */
 	function program_uniform_1i(uniform_no: number, value: number): void;
-
 	/**
 	 * Changes the value of a float vector uniform, or uniform array in the
 	 * currently used (see {@link Cogl.program.use}) shader program.
 	 * @param uniform_no the uniform to set.
 	 * @param size Size of float vector.
-	 * @param count Size of array of uniforms.
 	 * @param value the new value of the uniform.
 	 */
-	function program_uniform_float(uniform_no: number, size: number, count: number, value: number[]): void;
-
+	function program_uniform_float(uniform_no: number, size: number, value: number[]): void;
 	/**
 	 * Changes the value of a int vector uniform, or uniform array in the
 	 * currently used (see {@link Cogl.program.use}) shader program.
 	 * @param uniform_no the uniform to set.
 	 * @param size Size of int vector.
-	 * @param count Size of array of uniforms.
 	 * @param value the new value of the uniform.
 	 */
-	function program_uniform_int(uniform_no: number, size: number, count: number, value: number[]): void;
-
+	function program_uniform_int(uniform_no: number, size: number, value: number[]): void;
 	/**
 	 * Changes the value of a matrix uniform, or uniform array in the
 	 * currently used (see {@link Cogl.program.use}) shader program. The #size
 	 * parameter is used to determine the square size of the matrix.
 	 * @param uniform_no the uniform to set.
 	 * @param size Size of matrix.
-	 * @param count Size of array of uniforms.
 	 * @param transpose Whether to transpose the matrix when setting the uniform.
 	 * @param value the new value of the uniform.
 	 */
-	function program_uniform_matrix(uniform_no: number, size: number, count: number, transpose: Bool, value: number[]): void;
-
+	function program_uniform_matrix(uniform_no: number, size: number, transpose: Bool, value: number[]): void;
 	/**
 	 * Removes a reference to a program. If it was the last reference the
 	 * program object will be destroyed.
 	 * @param handle A {@link Handle} to a program.
 	 */
 	function program_unref(handle: Handle): void;
-
 	/**
 	 * Activate a specific shader program replacing that part of the GL
 	 * rendering pipeline, if passed in %COGL_INVALID_HANDLE the default
@@ -3497,12 +3406,10 @@ declare namespace imports.gi.Cogl {
 	 * @param handle a {@link Handle} for a shader program or %COGL_INVALID_HANDLE.
 	 */
 	function program_use(handle: Handle): void;
-
 	/**
 	 * Save {@link Cogl.set.draw_buffer} state.
 	 */
 	function push_draw_buffer(): void;
-
 	/**
 	 * Redirects all subsequent drawing to the specified framebuffer. This can
 	 * either be an offscreen buffer created with cogl_offscreen_new_to_texture ()
@@ -3578,13 +3485,11 @@ declare namespace imports.gi.Cogl {
 	 * @param buffer A {@link Framebuffer} object, either onscreen or offscreen.
 	 */
 	function push_framebuffer(buffer: any): void;
-
 	/**
 	 * Stores the current model-view matrix on the matrix stack. The matrix
 	 * can later be restored with {@link Cogl.pop.matrix}.
 	 */
 	function push_matrix(): void;
-
 	/**
 	 * Pushes the given #material to the top of the source stack. The
 	 * material at the top of this stack defines the GPU state used to
@@ -3592,7 +3497,6 @@ declare namespace imports.gi.Cogl {
 	 * @param material A {@link Material}
 	 */
 	function push_source(material: any | null): void;
-
 	/**
 	 * This reads a rectangle of pixels from the current framebuffer where
 	 * position (0, 0) is the top left. The pixel at (x, y) is the first
@@ -3614,7 +3518,6 @@ declare namespace imports.gi.Cogl {
 	 * @param pixels The location to write the pixel data.
 	 */
 	function read_pixels(x: number, y: number, width: number, height: number, source: ReadPixelsFlags, format: PixelFormat, pixels: number): void;
-
 	/**
 	 * Fills a rectangle at the given coordinates with the current source material
 	 * @param x_1 X coordinate of the top-left corner
@@ -3623,7 +3526,6 @@ declare namespace imports.gi.Cogl {
 	 * @param y_2 Y coordinate of the bottom-right corner
 	 */
 	function rectangle(x_1: number, y_1: number, x_2: number, y_2: number): void;
-
 	/**
 	 * This function draws a rectangle using the current source material to
 	 * texture or fill with. As a material may contain multiple texture layers
@@ -3648,7 +3550,6 @@ declare namespace imports.gi.Cogl {
 	 *   and one group of texture coordinates, this would be 4)
 	 */
 	function rectangle_with_multitexture_coords(x1: number, y1: number, x2: number, y2: number, tex_coords: number[], tex_coords_len: number): void;
-
 	/**
 	 * Draw a rectangle using the current material and supply texture coordinates
 	 * to be used for the first texture layer of the material. To draw the entire
@@ -3663,7 +3564,6 @@ declare namespace imports.gi.Cogl {
 	 * @param ty2 y part of texture coordinate to use for left pixel
 	 */
 	function rectangle_with_texture_coords(x1: number, y1: number, x2: number, y2: number, tx1: number, ty1: number, tx2: number, ty2: number): void;
-
 	/**
 	 * Draws a series of rectangles in the same way that
 	 * cogl_rectangle() does. In some situations it can give a
@@ -3678,7 +3578,6 @@ declare namespace imports.gi.Cogl {
 	 * @param n_rects number of rectangles to draw
 	 */
 	function rectangles(verts: number[], n_rects: number): void;
-
 	/**
 	 * Draws a series of rectangles in the same way that
 	 * {@link Cogl.rectangle.with_texture_coords} does. In some situations it can give a
@@ -3693,7 +3592,6 @@ declare namespace imports.gi.Cogl {
 	 * @param n_rects number of rectangles to draw
 	 */
 	function rectangles_with_texture_coords(verts: number[], n_rects: number): void;
-
 	/**
 	 * Multiplies the current model-view matrix by one that rotates the
 	 * model around the vertex specified by #x, #y and #z. The rotation
@@ -3706,7 +3604,6 @@ declare namespace imports.gi.Cogl {
 	 * @param z Z-component of vertex to rotate around.
 	 */
 	function rotate(angle: number, x: number, y: number, z: number): void;
-
 	/**
 	 * Multiplies the current model-view matrix by one that scales the x,
 	 * y and z axes by the given values.
@@ -3715,7 +3612,6 @@ declare namespace imports.gi.Cogl {
 	 * @param z Amount to scale along the z-axis
 	 */
 	function scale(x: number, y: number, z: number): void;
-
 	/**
 	 * Sets whether textures positioned so that their backface is showing
 	 * should be hidden. This can be used to efficiently draw two-sided
@@ -3725,7 +3621,6 @@ declare namespace imports.gi.Cogl {
 	 * @param setting %TRUE to enable backface culling or %FALSE to disable.
 	 */
 	function set_backface_culling_enabled(setting: Bool): void;
-
 	/**
 	 * Sets whether depth testing is enabled. If it is disabled then the
 	 * order that actors are layered on the screen depends solely on the
@@ -3735,7 +3630,6 @@ declare namespace imports.gi.Cogl {
 	 * @param setting %TRUE to enable depth testing or %FALSE to disable.
 	 */
 	function set_depth_test_enabled(setting: Bool): void;
-
 	/**
 	 * Redirects all subsequent drawing to the specified framebuffer. This
 	 * can either be an offscreen buffer created with
@@ -3747,7 +3641,6 @@ declare namespace imports.gi.Cogl {
 	 *             then this is a CoglHandle for the offscreen buffer.
 	 */
 	function set_draw_buffer(target: BufferTarget, offscreen: Handle): void;
-
 	/**
 	 * Enables fogging. Fogging causes vertices that are further away from the eye
 	 * to be rendered with a different color. The color is determined according to
@@ -3772,7 +3665,6 @@ declare namespace imports.gi.Cogl {
 	 * @param z_far Position along Z axis where full fogging should be applied
 	 */
 	function set_fog(fog_color: Color, mode: FogMode, density: number, z_near: number, z_far: number): void;
-
 	/**
 	 * This redirects all subsequent drawing to the specified framebuffer. This can
 	 * either be an offscreen buffer created with cogl_offscreen_new_to_texture ()
@@ -3780,19 +3672,16 @@ declare namespace imports.gi.Cogl {
 	 * @param buffer A {@link Framebuffer} object, either onscreen or offscreen.
 	 */
 	function set_framebuffer(buffer: any): void;
-
 	/**
 	 * Loads #matrix as the new model-view matrix.
 	 * @param matrix the new model-view matrix
 	 */
 	function set_modelview_matrix(matrix: Matrix): void;
-
 	/**
 	 * Loads matrix as the new projection matrix.
 	 * @param matrix the new projection matrix
 	 */
 	function set_projection_matrix(matrix: Matrix): void;
-
 	/**
 	 * This function changes the material at the top of the source stack.
 	 * The material at the top of this stack defines the GPU state used to
@@ -3801,7 +3690,6 @@ declare namespace imports.gi.Cogl {
 	 * @param material A {@link Material}
 	 */
 	function set_source(material: any | null): void;
-
 	/**
 	 * This is a convenience function for creating a solid fill source material
 	 * from the given color. This color will be used for any subsequent drawing
@@ -3816,7 +3704,6 @@ declare namespace imports.gi.Cogl {
 	 * @param color a {@link Color}
 	 */
 	function set_source_color(color: Color): void;
-
 	/**
 	 * This is a convenience function for creating a solid fill source material
 	 * from the given color using normalized values for each component. This color
@@ -3831,7 +3718,6 @@ declare namespace imports.gi.Cogl {
 	 * @param alpha value of the alpha channel, between 0 and %1.0
 	 */
 	function set_source_color4f(red: number, green: number, blue: number, alpha: number): void;
-
 	/**
 	 * This is a convenience function for creating a solid fill source material
 	 * from the given color using unsigned bytes for each component. This
@@ -3845,7 +3731,6 @@ declare namespace imports.gi.Cogl {
 	 * @param alpha value of the alpha channel, between 0 and 255
 	 */
 	function set_source_color4ub(red: number, green: number, blue: number, alpha: number): void;
-
 	/**
 	 * This is a convenience function for creating a material with the first
 	 * layer set to #texture and setting that material as the source with
@@ -3863,7 +3748,6 @@ declare namespace imports.gi.Cogl {
 	 * @param texture The {@link Texture} you want as your source
 	 */
 	function set_source_texture(texture: Texture): void;
-
 	/**
 	 * Replaces the current viewport with the given values.
 	 * @param x X offset of the viewport
@@ -3872,7 +3756,6 @@ declare namespace imports.gi.Cogl {
 	 * @param height Height of the viewport
 	 */
 	function set_viewport(x: number, y: number, width: number, height: number): void;
-
 	/**
 	 * Compiles the shader, no return value, but the shader is now ready
 	 * for linking into a program. Note that calling this function is
@@ -3881,7 +3764,6 @@ declare namespace imports.gi.Cogl {
 	 * @param handle {@link Handle} for a shader.
 	 */
 	function shader_compile(handle: Handle): void;
-
 	/**
 	 * Retrieves the information log for a coglobject, can be used in conjunction
 	 * with {@link Cogl.shader_get_parameteriv} to retrieve the compiler warnings/error
@@ -3892,7 +3774,6 @@ declare namespace imports.gi.Cogl {
 	 *   {@link G.free} to free it
 	 */
 	function shader_get_info_log(handle: Handle): string;
-
 	/**
 	 * Retrieves the type of a shader {@link Handle}
 	 * @param handle {@link Handle} for a shader.
@@ -3900,21 +3781,18 @@ declare namespace imports.gi.Cogl {
 	 *          or %COGL_SHADER_TYPE_FRAGMENT if the shader is a frament processor
 	 */
 	function shader_get_type(handle: Handle): ShaderType;
-
 	/**
 	 * Retrieves whether a shader {@link Handle} has been compiled
 	 * @param handle {@link Handle} for a shader.
 	 * @returns %TRUE if the shader object has sucessfully be compiled
 	 */
 	function shader_is_compiled(handle: Handle): Bool;
-
 	/**
 	 * Add an extra reference to a shader.
 	 * @param handle A {@link Handle} to a shader.
 	 * @returns #handle
 	 */
 	function shader_ref(handle: Handle): Handle;
-
 	/**
 	 * Replaces the current source associated with a shader with a new
 	 * one.
@@ -3926,14 +3804,12 @@ declare namespace imports.gi.Cogl {
 	 * @param source Shader source.
 	 */
 	function shader_source(shader: Handle, source: string): void;
-
 	/**
 	 * Removes a reference to a shader. If it was the last reference the
 	 * shader object will be destroyed.
 	 * @param handle A {@link Handle} to a shader.
 	 */
 	function shader_unref(handle: Handle): void;
-
 	/**
 	 * Very fast fixed point implementation of square root for integers.
 	 * 
@@ -3946,28 +3822,23 @@ declare namespace imports.gi.Cogl {
 	 * @returns integer square root.
 	 */
 	function sqrti(x: number): number;
-
 	function texture_error_quark(): number;
-
 	/**
 	 * Increment the reference count for a cogl texture.
 	 * @param texture a {@link Texture}.
 	 * @returns the #texture pointer.
 	 */
 	function texture_ref(texture: any | null): any | null;
-
 	/**
 	 * Decrement the reference count for a cogl texture.
 	 * @param texture a {@link Texture}.
 	 */
 	function texture_unref(texture: any | null): void;
-
 	/**
 	 * Multiplies the current model-view matrix by the given matrix.
 	 * @param matrix the matrix to multiply with the current model-view
 	 */
 	function transform(matrix: Matrix): void;
-
 	/**
 	 * Multiplies the current model-view matrix by one that translates the
 	 * model along all three axes according to the given values.
@@ -3976,7 +3847,6 @@ declare namespace imports.gi.Cogl {
 	 * @param z Distance to translate along the z-axis
 	 */
 	function translate(x: number, y: number, z: number): void;
-
 	/**
 	 * Adds an attribute to a buffer, or replaces a previously added
 	 * attribute with the same name.
@@ -4039,7 +3909,6 @@ declare namespace imports.gi.Cogl {
 	 *   issue a draw call.
 	 */
 	function vertex_buffer_add(handle: Handle, attribute_name: string, n_components: number, type: AttributeType, normalized: Bool, stride: number, pointer: any | null): void;
-
 	/**
 	 * Deletes an attribute from a buffer. You will need to call
 	 * {@link Cogl.vertex.buffer_submit} or issue a draw call to commit this
@@ -4048,7 +3917,6 @@ declare namespace imports.gi.Cogl {
 	 * @param attribute_name The name of a previously added attribute
 	 */
 	function vertex_buffer_delete(handle: Handle, attribute_name: string): void;
-
 	/**
 	 * Disables a previosuly added attribute.
 	 * 
@@ -4062,7 +3930,6 @@ declare namespace imports.gi.Cogl {
 	 * @param attribute_name The name of the attribute you want to disable
 	 */
 	function vertex_buffer_disable(handle: Handle, attribute_name: string): void;
-
 	/**
 	 * Allows you to draw geometry using all or a subset of the
 	 * vertices in a vertex buffer.
@@ -4076,7 +3943,6 @@ declare namespace imports.gi.Cogl {
 	 * @param count Specifies the number of vertices you want to draw.
 	 */
 	function vertex_buffer_draw(handle: Handle, mode: VerticesMode, first: number, count: number): void;
-
 	/**
 	 * This function lets you use an array of indices to specify the vertices
 	 * within your vertex buffer that you want to draw. The indices themselves
@@ -4096,7 +3962,6 @@ declare namespace imports.gi.Cogl {
 	 * @param count Specifies the number of vertices you want to draw.
 	 */
 	function vertex_buffer_draw_elements(handle: Handle, mode: VerticesMode, indices: Handle, min_index: number, max_index: number, indices_offset: number, count: number): void;
-
 	/**
 	 * Enables a previosuly disabled attribute.
 	 * 
@@ -4109,14 +3974,12 @@ declare namespace imports.gi.Cogl {
 	 * @param attribute_name The name of the attribute you want to enable
 	 */
 	function vertex_buffer_enable(handle: Handle, attribute_name: string): void;
-
 	/**
 	 * Retrieves the number of vertices that #handle represents
 	 * @param handle A vertex buffer handle
 	 * @returns the number of vertices
 	 */
 	function vertex_buffer_get_n_vertices(handle: Handle): number;
-
 	/**
 	 * Creates a vertex buffer containing the indices needed to draw pairs
 	 * of triangles from a list of vertices grouped as quads. There will
@@ -4146,14 +4009,12 @@ declare namespace imports.gi.Cogl {
 	 * owned by Cogl and should not be modified or unref'd.
 	 */
 	function vertex_buffer_indices_get_for_quads(n_indices: number): Handle;
-
 	/**
 	 * Queries back the data type used for the given indices
 	 * @param indices An indices handle
 	 * @returns The CoglIndicesType used
 	 */
 	function vertex_buffer_indices_get_type(indices: Handle): IndicesType;
-
 	/**
 	 * Depending on how much geometry you are submitting it can be worthwhile
 	 * optimizing the number of redundant vertices you submit. Using an index
@@ -4163,26 +4024,22 @@ declare namespace imports.gi.Cogl {
 	 *    the indices.
 	 * @param indices_array Specifies the address of
 	 *   your array of indices
-	 * @param indices_len The number of indices in indices_array
 	 * @returns A CoglHandle for the indices which you can pass to
 	 *   {@link Cogl.vertex.buffer_draw_elements}.
 	 */
-	function vertex_buffer_indices_new(indices_type: IndicesType, indices_array: any[], indices_len: number): Handle;
-
+	function vertex_buffer_indices_new(indices_type: IndicesType, indices_array: any[]): Handle;
 	/**
 	 * Creates a new vertex buffer that you can use to add attributes.
 	 * @param n_vertices The number of vertices that your attributes will correspond to.
 	 * @returns a new {@link Handle}
 	 */
 	function vertex_buffer_new(n_vertices: number): Handle;
-
 	/**
 	 * Increment the reference count for a vertex buffer
 	 * @param handle a {@link Handle}.
 	 * @returns the #handle.
 	 */
 	function vertex_buffer_ref(handle: Handle): Handle;
-
 	/**
 	 * Submits all the user added attributes to the GPU; once submitted, the
 	 * attributes can be used for drawing.
@@ -4194,32 +4051,23 @@ declare namespace imports.gi.Cogl {
 	 * @param handle A vertex buffer handle
 	 */
 	function vertex_buffer_submit(handle: Handle): void;
-
 	/**
 	 * Decrement the reference count for a vertex buffer
 	 * @param handle a {@link Handle}.
 	 */
 	function vertex_buffer_unref(handle: Handle): void;
-
 	/**
 	 * Replace the current viewport with the given values.
 	 * @param width Width of the viewport
 	 * @param height Height of the viewport
 	 */
 	function viewport(width: number, height: number): void;
-
-	function xlib_renderer_add_filter(renderer: any, func: XlibFilterFunc, data: any | null): void;
-
+	function xlib_renderer_add_filter(renderer: any, func: XlibFilterFunc): void;
 	function xlib_renderer_get_display(renderer: any): any;
-
 	function xlib_renderer_get_foreign_display(renderer: any): any;
-
 	function xlib_renderer_get_visual_info(renderer: any): any;
-
 	function xlib_renderer_handle_event(renderer: any, event: any): FilterReturn;
-
-	function xlib_renderer_remove_filter(renderer: any, func: XlibFilterFunc, data: any | null): void;
-
+	function xlib_renderer_remove_filter(renderer: any, func: XlibFilterFunc): void;
 	/**
 	 * Sets whether Cogl should automatically retrieve events from the X
 	 * display. This defaults to %TRUE unless
@@ -4233,9 +4081,7 @@ declare namespace imports.gi.Cogl {
 	 * @param enable The new value
 	 */
 	function xlib_renderer_set_event_retrieval_enabled(renderer: any, enable: Bool): void;
-
 	function xlib_renderer_set_foreign_display(renderer: any, display: any): void;
-
 	const AFIRST_BIT: number;
 
 	const A_BIT: number;

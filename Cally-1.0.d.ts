@@ -9,20 +9,10 @@ declare namespace imports.gi.Cally {
 		 * @param action_name the action name
 		 * @param action_description the action description
 		 * @param action_keybinding the action keybinding
-		 * @param action_func the callback of the action, to be executed with do_action
-		 * @returns added action id, or -1 if failure
-		 */
-		add_action(action_name: string, action_description: string, action_keybinding: string, action_func: ActionFunc): number;
-		/**
-		 * Adds a new action to be accessed with the #AtkAction interface.
-		 * @param action_name the action name
-		 * @param action_description the action description
-		 * @param action_keybinding the action keybinding
 		 * @param callback the callback of the action
-		 * @param notify function to be called when removing the action
 		 * @returns added action id, or -1 if failure
 		 */
-		add_action_full(action_name: string, action_description: string, action_keybinding: string, callback: ActionCallback, notify: GLib.DestroyNotify): number;
+		add_action(action_name: string, action_description: string, action_keybinding: string, callback: ActionCallback): number;
 		/**
 		 * Removes a action, using the #action_id returned by {@link Cally.Actor.add_action}
 		 * @param action_id the action id
@@ -342,12 +332,10 @@ declare namespace imports.gi.Cally {
 	 * initialized.
 	 */
 	function accessibility_init(): boolean;
-
 	/**
 	 * Returns if the accessibility support using cally is enabled.
 	 * @returns %TRUE if accessibility support has been correctly
 	 * initialized.
 	 */
 	function get_cally_initialized(): boolean;
-
 }

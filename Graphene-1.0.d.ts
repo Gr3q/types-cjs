@@ -165,7 +165,7 @@ declare namespace imports.gi.Graphene {
 		 * @param max the coordinates of the maximum vertex
 		 * @returns the initialized #graphene_box_t
 		 */
-		public init(min: Point3D | null, max: Point3D | null): Box;
+		public init(min?: Point3D | null, max?: Point3D | null): Box;
 		/**
 		 * Initializes the given #graphene_box_t with the vertices of
 		 * another #graphene_box_t.
@@ -179,11 +179,10 @@ declare namespace imports.gi.Graphene {
 		 * 
 		 * If #n_points is 0, the returned box is initialized with
 		 * {@link Graphene.box.empty}.
-		 * @param n_points the number #graphene_point3d_t in the #points array
 		 * @param points an array of #graphene_point3d_t
 		 * @returns the initialized #graphene_box_t
 		 */
-		public init_from_points(n_points: number, points: Point3D[]): Box;
+		public init_from_points(points: Point3D[]): Box;
 		/**
 		 * Initializes the given #graphene_box_t with two vertices
 		 * stored inside #graphene_vec3_t.
@@ -191,18 +190,17 @@ declare namespace imports.gi.Graphene {
 		 * @param max the coordinates of the maximum vertex
 		 * @returns the initialized #graphene_box_t
 		 */
-		public init_from_vec3(min: Vec3 | null, max: Vec3 | null): Box;
+		public init_from_vec3(min?: Vec3 | null, max?: Vec3 | null): Box;
 		/**
 		 * Initializes the given #graphene_box_t with the given array
 		 * of vertices.
 		 * 
 		 * If #n_vectors is 0, the returned box is initialized with
 		 * {@link Graphene.box.empty}.
-		 * @param n_vectors the number #graphene_point3d_t in the #vectors array
 		 * @param vectors an array of #graphene_vec3_t
 		 * @returns the initialized #graphene_box_t
 		 */
-		public init_from_vectors(n_vectors: number, vectors: Vec3[]): Box;
+		public init_from_vectors(vectors: Vec3[]): Box;
 		/**
 		 * Intersects the two given #graphene_box_t.
 		 * 
@@ -320,7 +318,7 @@ declare namespace imports.gi.Graphene {
 		 * @param src a #graphene_euler_t
 		 * @returns the initialized #graphene_euler_t
 		 */
-		public init_from_euler(src: Euler | null): Euler;
+		public init_from_euler(src?: Euler | null): Euler;
 		/**
 		 * Initializes a #graphene_euler_t using the given rotation matrix.
 		 * 
@@ -1246,7 +1244,7 @@ declare namespace imports.gi.Graphene {
 		 * @param normal_matrix a #graphene_matrix_t
 		 * @returns the transformed plane
 		 */
-		public transform(matrix: Matrix, normal_matrix: Matrix | null): Plane;
+		public transform(matrix: Matrix, normal_matrix?: Matrix | null): Plane;
 	}
 
 	export interface PointInitOptions {}
@@ -1857,7 +1855,7 @@ declare namespace imports.gi.Graphene {
 		 * @param direction the direction vector
 		 * @returns the initialized ray
 		 */
-		public init(origin: Point3D | null, direction: Vec3 | null): Ray;
+		public init(origin?: Point3D | null, direction?: Vec3 | null): Ray;
 		/**
 		 * Initializes the given #graphene_ray_t using the origin and direction
 		 * values of another #graphene_ray_t.
@@ -1871,7 +1869,7 @@ declare namespace imports.gi.Graphene {
 		 * @param direction a #graphene_vec3_t
 		 * @returns the initialized ray
 		 */
-		public init_from_vec3(origin: Vec3 | null, direction: Vec3 | null): Ray;
+		public init_from_vec3(origin?: Vec3 | null, direction?: Vec3 | null): Ray;
 		/**
 		 * Intersects the given #graphene_ray_t #r with the given
 		 * #graphene_box_t #b.
@@ -2412,24 +2410,22 @@ declare namespace imports.gi.Graphene {
 		 * 
 		 * The center of the sphere can either be specified, or will be center
 		 * of the 3D volume that encompasses all #points.
-		 * @param n_points the number of #graphene_point3d_t in the #points array
 		 * @param points an array of #graphene_point3d_t
 		 * @param center the center of the sphere
 		 * @returns the initialized #graphene_sphere_t
 		 */
-		public init_from_points(n_points: number, points: Point3D[], center: Point3D | null): Sphere;
+		public init_from_points(points: Point3D[], center?: Point3D | null): Sphere;
 		/**
 		 * Initializes the given #graphene_sphere_t using the given array
 		 * of 3D coordinates so that the sphere includes them.
 		 * 
 		 * The center of the sphere can either be specified, or will be center
 		 * of the 3D volume that encompasses all #vectors.
-		 * @param n_vectors the number of #graphene_vec3_t in the #vectors array
 		 * @param vectors an array of #graphene_vec3_t
 		 * @param center the center of the sphere
 		 * @returns the initialized #graphene_sphere_t
 		 */
-		public init_from_vectors(n_vectors: number, vectors: Vec3[], center: Point3D | null): Sphere;
+		public init_from_vectors(vectors: Vec3[], center?: Point3D | null): Sphere;
 		/**
 		 * Checks whether the sphere has a zero radius.
 		 * @returns `true` if the sphere is empty
@@ -2507,7 +2503,7 @@ declare namespace imports.gi.Graphene {
 		 * return location for the vector
 		 *   with the barycentric coordinates
 		 */
-		public get_barycoords(p: Point3D | null): [ boolean, Vec2 ];
+		public get_barycoords(p?: Point3D | null): [ boolean, Vec2 ];
 		/**
 		 * Computes the bounding box of the given #graphene_triangle_t.
 		 * @returns return location for the box
@@ -2594,7 +2590,7 @@ declare namespace imports.gi.Graphene {
 		 * @param c a #graphene_point3d_t
 		 * @returns the initialized #graphene_triangle_t
 		 */
-		public init_from_point3d(a: Point3D | null, b: Point3D | null, c: Point3D | null): Triangle;
+		public init_from_point3d(a?: Point3D | null, b?: Point3D | null, c?: Point3D | null): Triangle;
 		/**
 		 * Initializes a #graphene_triangle_t using the three given vectors.
 		 * @param a a #graphene_vec3_t
@@ -2602,7 +2598,7 @@ declare namespace imports.gi.Graphene {
 		 * @param c a #graphene_vec3_t
 		 * @returns the initialized #graphene_triangle_t
 		 */
-		public init_from_vec3(a: Vec3 | null, b: Vec3 | null, c: Vec3 | null): Triangle;
+		public init_from_vec3(a?: Vec3 | null, b?: Vec3 | null, c?: Vec3 | null): Triangle;
 	}
 
 	export interface Vec2InitOptions {}
@@ -3417,7 +3413,6 @@ declare namespace imports.gi.Graphene {
 	 * @returns a #graphene_box_t
 	 */
 	function box_empty(): Box;
-
 	/**
 	 * A degenerate #graphene_box_t that cannot be expanded.
 	 * 
@@ -3425,7 +3420,6 @@ declare namespace imports.gi.Graphene {
 	 * @returns a #graphene_box_t
 	 */
 	function box_infinite(): Box;
-
 	/**
 	 * A #graphene_box_t with the minimum vertex set at (-1, -1, -1) and the
 	 * maximum vertex set at (0, 0, 0).
@@ -3434,7 +3428,6 @@ declare namespace imports.gi.Graphene {
 	 * @returns a #graphene_box_t
 	 */
 	function box_minus_one(): Box;
-
 	/**
 	 * A #graphene_box_t with the minimum vertex set at (0, 0, 0) and the
 	 * maximum vertex set at (1, 1, 1).
@@ -3443,7 +3436,6 @@ declare namespace imports.gi.Graphene {
 	 * @returns a #graphene_box_t
 	 */
 	function box_one(): Box;
-
 	/**
 	 * A #graphene_box_t with the minimum vertex set at (-1, -1, -1) and the
 	 * maximum vertex set at (1, 1, 1).
@@ -3452,7 +3444,6 @@ declare namespace imports.gi.Graphene {
 	 * @returns a #graphene_box_t
 	 */
 	function box_one_minus_one(): Box;
-
 	/**
 	 * A #graphene_box_t with both the minimum and maximum vertices set at (0, 0, 0).
 	 * 
@@ -3460,19 +3451,16 @@ declare namespace imports.gi.Graphene {
 	 * @returns a #graphene_box_t
 	 */
 	function box_zero(): Box;
-
 	/**
 	 * Retrieves a constant point with all three coordinates set to 0.
 	 * @returns a zero point
 	 */
 	function point3d_zero(): Point3D;
-
 	/**
 	 * Returns a point fixed at (0, 0).
 	 * @returns a fixed point
 	 */
 	function point_zero(): Point;
-
 	/**
 	 * Allocates a new #graphene_rect_t.
 	 * 
@@ -3480,122 +3468,104 @@ declare namespace imports.gi.Graphene {
 	 * @returns the newly allocated rectangle
 	 */
 	function rect_alloc(): Rect;
-
 	/**
 	 * Returns a degenerate rectangle with origin fixed at (0, 0) and
 	 * a size of 0, 0.
 	 * @returns a fixed rectangle
 	 */
 	function rect_zero(): Rect;
-
 	/**
 	 * A constant pointer to a zero #graphene_size_t, useful for
 	 * equality checks and interpolations.
 	 * @returns a constant size
 	 */
 	function size_zero(): Size;
-
 	/**
 	 * Retrieves a constant vector with (1, 1) components.
 	 * @returns the one vector
 	 */
 	function vec2_one(): Vec2;
-
 	/**
 	 * Retrieves a constant vector with (1, 0) components.
 	 * @returns the X axis vector
 	 */
 	function vec2_x_axis(): Vec2;
-
 	/**
 	 * Retrieves a constant vector with (0, 1) components.
 	 * @returns the Y axis vector
 	 */
 	function vec2_y_axis(): Vec2;
-
 	/**
 	 * Retrieves a constant vector with (0, 0) components.
 	 * @returns the zero vector
 	 */
 	function vec2_zero(): Vec2;
-
 	/**
 	 * Provides a constant pointer to a vector with three components,
 	 * all sets to 1.
 	 * @returns a constant vector
 	 */
 	function vec3_one(): Vec3;
-
 	/**
 	 * Provides a constant pointer to a vector with three components
 	 * with values set to (1, 0, 0).
 	 * @returns a constant vector
 	 */
 	function vec3_x_axis(): Vec3;
-
 	/**
 	 * Provides a constant pointer to a vector with three components
 	 * with values set to (0, 1, 0).
 	 * @returns a constant vector
 	 */
 	function vec3_y_axis(): Vec3;
-
 	/**
 	 * Provides a constant pointer to a vector with three components
 	 * with values set to (0, 0, 1).
 	 * @returns a constant vector
 	 */
 	function vec3_z_axis(): Vec3;
-
 	/**
 	 * Provides a constant pointer to a vector with three components,
 	 * all sets to 0.
 	 * @returns a constant vector
 	 */
 	function vec3_zero(): Vec3;
-
 	/**
 	 * Retrieves a pointer to a #graphene_vec4_t with all its
 	 * components set to 1.
 	 * @returns a constant vector
 	 */
 	function vec4_one(): Vec4;
-
 	/**
 	 * Retrieves a pointer to a #graphene_vec4_t with its
 	 * components set to (0, 0, 0, 1).
 	 * @returns a constant vector
 	 */
 	function vec4_w_axis(): Vec4;
-
 	/**
 	 * Retrieves a pointer to a #graphene_vec4_t with its
 	 * components set to (1, 0, 0, 0).
 	 * @returns a constant vector
 	 */
 	function vec4_x_axis(): Vec4;
-
 	/**
 	 * Retrieves a pointer to a #graphene_vec4_t with its
 	 * components set to (0, 1, 0, 0).
 	 * @returns a constant vector
 	 */
 	function vec4_y_axis(): Vec4;
-
 	/**
 	 * Retrieves a pointer to a #graphene_vec4_t with its
 	 * components set to (0, 0, 1, 0).
 	 * @returns a constant vector
 	 */
 	function vec4_z_axis(): Vec4;
-
 	/**
 	 * Retrieves a pointer to a #graphene_vec4_t with all its
 	 * components set to 0.
 	 * @returns a constant vector
 	 */
 	function vec4_zero(): Vec4;
-
 	const PI: number;
 
 	const PI_2: number;

@@ -184,19 +184,16 @@ declare namespace imports.gi.ClutterX11 {
 		 * Filter function for X11 native events.
 		 * @param xev Native X11 event structure
 		 * @param cev Clutter event structure
-		 * @param data user data passed to the filter function
 		 * @returns the result of the filtering
 		 */
-		(xev: xlib.XEvent, cev: Clutter.Event, data: any | null): FilterReturn;
+		(xev: xlib.XEvent, cev: Clutter.Event): FilterReturn;
 	}
 
 	/**
 	 * Adds an event filter function.
 	 * @param func a filter function
-	 * @param data user data to be passed to the filter function, or %NULL
 	 */
-	function add_filter(func: FilterFunc, data: any | null): void;
-
+	function add_filter(func: FilterFunc): void;
 	/**
 	 * Disables the internal polling of X11 events in the main loop.
 	 * 
@@ -218,7 +215,6 @@ declare namespace imports.gi.ClutterX11 {
 	 * This function should not be normally used by applications.
 	 */
 	function disable_event_retrieval(): void;
-
 	/**
 	 * Enables the use of the XInput extension if present on connected
 	 * XServer and support built into Clutter. XInput allows for multiple
@@ -230,21 +226,18 @@ declare namespace imports.gi.ClutterX11 {
 	 * want to use clutter_x11_has_xinput() to see if support was enabled.
 	 */
 	function enable_xinput(): void;
-
 	/**
 	 * Retrieves the group for the modifiers set in #event
 	 * @param event a #ClutterEvent of type %CLUTTER_KEY_PRESS or %CLUTTER_KEY_RELEASE
 	 * @returns the group id
 	 */
 	function event_get_key_group(event: Clutter.Event): number;
-
 	/**
 	 * Retrieves the touch detail froma #ClutterEventSequence.
 	 * @param sequence a #ClutterEventSequence
 	 * @returns the touch detail
 	 */
 	function event_sequence_get_touch_detail(sequence: Clutter.EventSequence): number;
-
 	/**
 	 * Retrieves the timestamp of the last X11 event processed by
 	 * Clutter. This might be different from the timestamp returned
@@ -253,19 +246,16 @@ declare namespace imports.gi.ClutterX11 {
 	 * @returns a timestamp, in milliseconds
 	 */
 	function get_current_event_time(): xlib.Time;
-
 	/**
 	 * Retrieves the pointer to the default display.
 	 * @returns the default display
 	 */
 	function get_default_display(): xlib.Display;
-
 	/**
 	 * Gets the number of the default X Screen object.
 	 * @returns the number of the default screen
 	 */
 	function get_default_screen(): number;
-
 	/**
 	 * Retrieves a pointer to the list of input devices
 	 * @returns a
@@ -273,13 +263,11 @@ declare namespace imports.gi.ClutterX11 {
 	 *   owned by Clutter and should not be modified or freed
 	 */
 	function get_input_devices(): Clutter.InputDevice[];
-
 	/**
 	 * Retrieves the root window.
 	 * @returns the id of the root window
 	 */
 	function get_root_window(): xlib.Window;
-
 	/**
 	 * Gets the stage for a particular X window.
 	 * @param win an X Window ID
@@ -287,7 +275,6 @@ declare namespace imports.gi.ClutterX11 {
 	 *   does not exist for the window
 	 */
 	function get_stage_from_window(win: xlib.Window): Clutter.Stage;
-
 	/**
 	 * Returns an XVisualInfo suitable for creating a foreign window for the given
 	 * stage. NOTE: It doesn't do as the name may suggest, which is return the
@@ -301,34 +288,29 @@ declare namespace imports.gi.ClutterX11 {
 	 *   foreign stage. Use XFree() to free the returned value instead
 	 */
 	function get_stage_visual(stage: Clutter.Stage): xlib.XVisualInfo;
-
 	/**
 	 * Gets the stages X Window.
 	 * @param stage a #ClutterStage
 	 * @returns An XID for the stage window.
 	 */
 	function get_stage_window(stage: Clutter.Stage): xlib.Window;
-
 	/**
 	 * Retrieves whether the Clutter X11 backend is using ARGB visuals by default
 	 * @returns %TRUE if ARGB visuals are queried by default
 	 */
 	function get_use_argb_visual(): boolean;
-
 	/**
 	 * Retrieves whether the Clutter X11 backend will create stereo
 	 * stages if possible.
 	 * @returns %TRUE if stereo stages are used if possible
 	 */
 	function get_use_stereo_stage(): boolean;
-
 	/**
 	 * Retrieves the `XVisualInfo` used by the Clutter X11 backend.
 	 * @returns a `XVisualInfo`, or `None`.
 	 *   The returned value should be freed using `XFree()` when done
 	 */
 	function get_visual_info(): xlib.XVisualInfo;
-
 	/**
 	 * This function processes a single X event; it can be used to hook
 	 * into external X11 event processing (for example, a GDK filter
@@ -346,34 +328,28 @@ declare namespace imports.gi.ClutterX11 {
 	 *  occur.
 	 */
 	function handle_event(xevent: xlib.XEvent): FilterReturn;
-
 	/**
 	 * Retrieves whether Clutter is running on an X11 server with the
 	 * XComposite extension
 	 * @returns %TRUE if the XComposite extension is available
 	 */
 	function has_composite_extension(): boolean;
-
 	/**
 	 * Queries the X11 backend to check if event collection has been disabled.
 	 * @returns TRUE if event retrival has been disabled. FALSE otherwise.
 	 */
 	function has_event_retrieval(): boolean;
-
 	/**
 	 * Gets whether Clutter has XInput support.
 	 * @returns %TRUE if Clutter was compiled with XInput support
 	 *   and XInput support is available at run time.
 	 */
 	function has_xinput(): boolean;
-
 	/**
 	 * Removes the given filter function.
 	 * @param func a filter function
-	 * @param data user data to be passed to the filter function, or %NULL
 	 */
-	function remove_filter(func: FilterFunc, data: any | null): void;
-
+	function remove_filter(func: FilterFunc): void;
 	/**
 	 * Sets the display connection Clutter should use; must be called
 	 * before clutter_init(), clutter_init_with_args() or other functions
@@ -386,7 +362,6 @@ declare namespace imports.gi.ClutterX11 {
 	 * @param xdpy pointer to a X display connection.
 	 */
 	function set_display(xdpy: xlib.Display): void;
-
 	/**
 	 * Target the #ClutterStage to use an existing external X Window
 	 * @param stage a #ClutterStage
@@ -394,7 +369,6 @@ declare namespace imports.gi.ClutterX11 {
 	 * @returns %TRUE if foreign window is valid
 	 */
 	function set_stage_foreign(stage: Clutter.Stage, xwindow: xlib.Window): boolean;
-
 	/**
 	 * Sets whether the Clutter X11 backend should request ARGB visuals by default
 	 * or not.
@@ -411,7 +385,6 @@ declare namespace imports.gi.ClutterX11 {
 	 * @param use_argb %TRUE if ARGB visuals should be requested by default
 	 */
 	function set_use_argb_visual(use_argb: boolean): void;
-
 	/**
 	 * Sets whether the backend object for Clutter stages, will,
 	 * if possible, be created with the ability to support stereo drawing
@@ -431,16 +404,13 @@ declare namespace imports.gi.ClutterX11 {
 	 * @param use_stereo %TRUE if the stereo stages should be used if possible.
 	 */
 	function set_use_stereo_stage(use_stereo: boolean): void;
-
 	/**
 	 * Traps every X error until {@link ClutterX11.untrap.x_errors} is called.
 	 */
 	function trap_x_errors(): void;
-
 	/**
 	 * Removes the X error trap and returns the current status.
 	 * @returns the trapped error code, or 0 for success
 	 */
 	function untrap_x_errors(): number;
-
 }

@@ -218,7 +218,7 @@ declare namespace imports.gi.St {
 		 * If #bin already has a child, the previous child is removed.
 		 * @param child a #ClutterActor, or %NULL
 		 */
-		set_child(child: Clutter.Actor | null): void;
+		set_child(child?: Clutter.Actor | null): void;
 		/**
 		 * Sets whether the child of #bin should fill out the horizontal
 		 * and/or vertical allocation of the parent
@@ -647,32 +647,32 @@ declare namespace imports.gi.St {
 		 * A value of NULL unsets the hint.
 		 * @param text text to set as the entry hint
 		 */
-		set_hint_text(text: string | null): void;
+		set_hint_text(text?: string | null): void;
 		/**
 		 * Set the primary icon of the entry to #icon
 		 * @param icon a #ClutterActor
 		 */
-		set_primary_icon(icon: Clutter.Actor | null): void;
+		set_primary_icon(icon?: Clutter.Actor | null): void;
 		/**
 		 * Set the primary icon of the entry to the given filename
 		 * @param filename filename of an icon
 		 */
-		set_primary_icon_from_file(filename: string | null): void;
+		set_primary_icon_from_file(filename?: string | null): void;
 		/**
 		 * Set the secondary icon of the entry to #icon
 		 * @param icon an #ClutterActor
 		 */
-		set_secondary_icon(icon: Clutter.Actor | null): void;
+		set_secondary_icon(icon?: Clutter.Actor | null): void;
 		/**
 		 * Set the primary icon of the entry to the given filename
 		 * @param filename filename of an icon
 		 */
-		set_secondary_icon_from_file(filename: string | null): void;
+		set_secondary_icon_from_file(filename?: string | null): void;
 		/**
 		 * Sets the text displayed on the entry
 		 * @param text text to set the entry to
 		 */
-		set_text(text: string | null): void;
+		set_text(text?: string | null): void;
 		/**
 		 * Emitted when the primary icon is clicked
 		 * @param signal 
@@ -856,7 +856,7 @@ declare namespace imports.gi.St {
 		 * @returns the icon type.
 		 */
 		get_icon_type(): IconType;
-		set_gicon(gicon: Gio.Icon | null): void;
+		set_gicon(gicon?: Gio.Icon | null): void;
 		set_icon_name(icon_name: string): void;
 		/**
 		 * Sets an explicit size for the icon.
@@ -1433,10 +1433,9 @@ declare namespace imports.gi.St {
 		 * @param key Arbitrary string used to refer to item
 		 * @param policy Caching policy
 		 * @param load Function to create the texture, if not already cached
-		 * @param data User data passed to #load
 		 * @returns A newly-referenced handle to the texture
 		 */
-		load(key: string, policy: TextureCachePolicy, load: TextureCacheLoader, data: any | null): Cogl.Texture;
+		load(key: string, policy: TextureCachePolicy, load: TextureCacheLoader): Cogl.Texture;
 		/**
 		 * Synchronously load an image into a texture.  The texture will be cached
 		 * indefinitely.  On error, this function returns an empty texture and prints a warning.
@@ -1463,7 +1462,6 @@ declare namespace imports.gi.St {
 		/**
 		 * Creates (or retrieves from cache) an icon based on raw pixel data.
 		 * @param data raw pixel data
-		 * @param len the length of #data
 		 * @param has_alpha whether #data includes an alpha channel
 		 * @param width width in pixels of #data
 		 * @param height width in pixels of #data
@@ -1472,7 +1470,7 @@ declare namespace imports.gi.St {
 		 * @returns a new #ClutterActor displaying a
 		 * pixbuf created from #data and the other parameters.
 		 */
-		load_from_raw(data: number[], len: number, has_alpha: boolean, width: number, height: number, rowstride: number, size: number): Clutter.Actor;
+		load_from_raw(data: number[], has_alpha: boolean, width: number, height: number, rowstride: number, size: number): Clutter.Actor;
 		/**
 		 * This method returns a new #ClutterActor for a given #GIcon. If the
 		 * icon isn't loaded already, the texture will be filled
@@ -1518,7 +1516,7 @@ declare namespace imports.gi.St {
 		 * @param load_callback Function called when the image is loaded, or %NULL
 		 * @returns A new #ClutterActor
 		 */
-		load_sliced_image(path: string, grid_width: number, grid_height: number, load_callback: GLib.Func | null): Clutter.Actor;
+		load_sliced_image(path: string, grid_width: number, grid_height: number, load_callback?: GLib.Func | null): Clutter.Actor;
 		/**
 		 * Asynchronously load an image.   Initially, the returned texture will have a natural
 		 * size of zero.  At some later point, either the image will be loaded successfully
@@ -2427,7 +2425,7 @@ declare namespace imports.gi.St {
 		 * object.
 		 * @param name a character string to be set as the accessible name
 		 */
-		set_accessible_name(name: string | null): void;
+		set_accessible_name(name?: string | null): void;
 		/**
 		 * This method sets #role as the accessible role for #widget. This
 		 * role describes what kind of user interface element #widget is and
@@ -2489,7 +2487,7 @@ declare namespace imports.gi.St {
 		 * determined from the stylesheets of the current theme.
 		 * @param style a inline style string, or %NULL
 		 */
-		set_style(style: string | null): void;
+		set_style(style?: string | null): void;
 		/**
 		 * Set the style class name list. #style_class_list can either be
 		 * %NULL, for no classes, or a space-separated list of style class
@@ -2497,7 +2495,7 @@ declare namespace imports.gi.St {
 		 * st_widget_remove_style_class_name().
 		 * @param style_class_list a new style class list string
 		 */
-		set_style_class_name(style_class_list: string | null): void;
+		set_style_class_name(style_class_list?: string | null): void;
 		/**
 		 * Set the style pseudo class list. #pseudo_class_list can either be
 		 * %NULL, for no classes, or a space-separated list of pseudo class
@@ -2505,7 +2503,7 @@ declare namespace imports.gi.St {
 		 * st_widget_remove_style_pseudo_class().
 		 * @param pseudo_class_list a new pseudo class list string
 		 */
-		set_style_pseudo_class(pseudo_class_list: string | null): void;
+		set_style_pseudo_class(pseudo_class_list?: string | null): void;
 		/**
 		 * Overrides the theme that would be inherited from the actor's parent
 		 * or the stage with an entirely new theme (set of stylesheets).
@@ -2965,7 +2963,7 @@ declare namespace imports.gi.St {
 		 * @param data Callback user data
 		 * @returns 
 		 */
-		(cache: TextureCache, key: string, data: any | null): Cogl.Texture;
+		(cache: TextureCache, key: string, data?: any | null): Cogl.Texture;
 	}
 
 	/**
@@ -2982,7 +2980,6 @@ declare namespace imports.gi.St {
 	 * @returns 
 	 */
 	function cogl_texture_new_from_data_wrapper(width: number, height: number, flags: Cogl.TextureFlags, format: Cogl.PixelFormat, internal_format: Cogl.PixelFormat, rowstride: number, data: number): Cogl.Texture;
-
 	/**
 	 * Decides whether to use the newer (apparently safer)
 	 * cogl_texture_2d_new_from_file or the older cogl_texture_new_from_file
@@ -2993,7 +2990,6 @@ declare namespace imports.gi.St {
 	 * @returns 
 	 */
 	function cogl_texture_new_from_file_wrapper(filename: string, flags: Cogl.TextureFlags, internal_format: Cogl.PixelFormat): Cogl.Texture;
-
 	/**
 	 * Decides whether to use the newer (apparently safer)
 	 * cogl_texture_2d_new_with_size or the older cogl_texture_new_with_size
@@ -3005,7 +3001,6 @@ declare namespace imports.gi.St {
 	 * @returns 
 	 */
 	function cogl_texture_new_with_size_wrapper(width: number, height: number, flags: Cogl.TextureFlags, internal_format: Cogl.PixelFormat): Cogl.Texture;
-
 	/**
 	 * Creates a string describing #actor, for use in debugging. This
 	 * includes the class name and actor name (if any), plus if #actor
@@ -3014,17 +3009,13 @@ declare namespace imports.gi.St {
 	 * @returns the debug name.
 	 */
 	function describe_actor(actor: Clutter.Actor): string;
-
 	function get_cogl_context(): any;
-
 	function get_slow_down_factor(): number;
-
 	/**
 	 * Set a global factor applied to all animation durations
 	 * @param factor new slow-down factor
 	 */
 	function set_slow_down_factor(factor: number): void;
-
 	const PARAM_READABLE: number;
 
 	const PARAM_READWRITE: number;

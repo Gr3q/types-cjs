@@ -52,11 +52,10 @@ declare namespace imports.gi.Meta {
 		 * @param name the binding's unique name
 		 * @param bindings array of parseable keystrokes
 		 * @param callback function to run when the keybinding is invoked
-		 * @param free_data function to free #user_data
 		 * @returns %TRUE if the keybinding was added successfully,
 		 *          otherwise %FALSE
 		 */
-		add_custom_keybinding(name: string, bindings: string[] | null, callback: KeyHandlerFunc, free_data: GLib.DestroyNotify): boolean;
+		add_custom_keybinding(name: string, bindings: string[] | null, callback: KeyHandlerFunc): boolean;
 		/**
 		 * Save the specified serial and ignore crossing events with that
 		 * serial for the purpose of focus-follows-mouse. This can be used
@@ -84,11 +83,10 @@ declare namespace imports.gi.Meta {
 		 * @param schema the #GSettings schema where #name is stored
 		 * @param flags flags to specify binding details
 		 * @param handler function to run when the keybinding is invoked
-		 * @param free_data function to free #user_data
 		 * @returns %TRUE if the keybinding was added successfully,
 		 *          otherwise %FALSE
 		 */
-		add_keybinding(name: string, schema: string, flags: KeyBindingFlags, handler: KeyHandlerFunc, free_data: GLib.DestroyNotify): boolean;
+		add_keybinding(name: string, schema: string, flags: KeyBindingFlags, handler: KeyHandlerFunc): boolean;
 		begin_grab_op(screen: Screen, window: Window, op: GrabOp, pointer_already_grabbed: boolean, frame_action: boolean, button: number, modmask: number, timestamp: number, root_x: number, root_y: number): boolean;
 		end_grab_op(timestamp: number): void;
 		focus_the_no_focus_window(screen: Screen, timestamp: number): void;
@@ -414,7 +412,7 @@ declare namespace imports.gi.Meta {
 		 * @returns the {@link Window} pointed by the mouse
 		 *  %NULL when window not found
 		 */
-		get_mouse_window(not_this_one: Window | null): Window;
+		get_mouse_window(not_this_one?: Window | null): Window;
 		/**
 		 * Gets the number of monitors that are joined together to form #screen.
 		 * @returns the number of monitors
@@ -1043,7 +1041,7 @@ declare namespace imports.gi.Meta {
 		 * interface element displaying the icon, and is relative to the root window.
 		 * @param rect rectangle with the desired geometry or %NULL.
 		 */
-		set_icon_geometry(rect: Rectangle | null): void;
+		set_icon_geometry(rect?: Rectangle | null): void;
 		showing_on_its_workspace(): boolean;
 		shutdown_group(): void;
 		stick(): void;
@@ -2047,15 +2045,15 @@ declare namespace imports.gi.Meta {
 	}
 
 	interface PrefsChangedFunc {
-		(pref: Preference, data: any | null): void;
+		(pref: Preference, data?: any | null): void;
 	}
 
 	interface WindowForeachFunc {
-		(window: Window, data: any | null): boolean;
+		(window: Window, data?: any | null): boolean;
 	}
 
 	interface WindowMenuFunc {
-		(menu: WindowMenu, xdisplay: xlib.Display, client_xwindow: xlib.Window, timestamp: number, op: MenuOp, workspace: number, data: any | null): void;
+		(menu: WindowMenu, xdisplay: xlib.Display, client_xwindow: xlib.Window, timestamp: number, op: MenuOp, workspace: number, data?: any | null): void;
 	}
 
 	/**
@@ -2064,44 +2062,29 @@ declare namespace imports.gi.Meta {
 	 * @param topic Topic for which logging will be started
 	 */
 	function add_verbose_topic(topic: DebugTopic): void;
-
 	function bug(format: string): void;
-
 	function compositor_new(display: Display): Compositor;
-
 	function compositor_on_shadow_factory_changed(): void;
-
 	function compositor_toggle_send_frame_timings(screen: Screen): void;
-
 	function debug_spew_real(format: string): void;
-
 	/**
 	 * Disables unredirection, can be usefull in situations where having
 	 * unredirected windows is undesireable like when recording a video.
 	 * @param screen a {@link Screen}
 	 */
 	function disable_unredirect_for_screen(screen: Screen): void;
-
 	function empty_stage_input_region(screen: Screen): void;
-
 	/**
 	 * Enables unredirection which reduces the overhead for apps like games.
 	 * @param screen a {@link Screen}
 	 */
 	function enable_unredirect_for_screen(screen: Screen): void;
-
 	function error_trap_pop(display: Display): void;
-
 	function error_trap_pop_with_return(display: Display): number;
-
 	function error_trap_push(display: Display): void;
-
 	function error_trap_push_with_return(display: Display): void;
-
 	function exit(code: ExitCode): void;
-
 	function fatal(format: string): void;
-
 	/**
 	 * Converts a frame type enum value to the name string that would
 	 * appear in the theme definition file.
@@ -2109,11 +2092,8 @@ declare namespace imports.gi.Meta {
 	 * @returns the string value
 	 */
 	function frame_type_to_string(type: FrameType): string;
-
 	function free_gslist_and_elements(list_to_deep_free: any[]): void;
-
 	function g_utf8_strndup(src: string, n: number): string;
-
 	/**
 	 * Gets the actor that draws the root window background under the windows.
 	 * The root window background automatically tracks the image or color set
@@ -2122,32 +2102,21 @@ declare namespace imports.gi.Meta {
 	 * @returns The background actor corresponding to #screen
 	 */
 	function get_background_actor_for_screen(screen: Screen): Clutter.Actor;
-
 	function get_bottom_window_group_for_screen(screen: Screen): Clutter.Actor;
-
 	/**
 	 * Returns a #GOptionContext initialized with muffin-related options.
 	 * Parse the command-line args with this before calling meta_init().
 	 * @returns the #GOptionContext
 	 */
 	function get_option_context(): GLib.OptionContext;
-
 	function get_overlay_group_for_screen(screen: Screen): Clutter.Actor;
-
 	function get_overlay_window(screen: Screen): xlib.Window;
-
 	function get_replace_current_wm(): boolean;
-
 	function get_stage_for_screen(screen: Screen): Clutter.Actor;
-
 	function get_top_window_group_for_screen(screen: Screen): Clutter.Actor;
-
 	function get_window_actors(screen: Screen): Clutter.Actor[];
-
 	function get_window_group_for_screen(screen: Screen): Clutter.Actor;
-
 	function gradient_add_alpha(pixbuf: GdkPixbuf.Pixbuf, alphas: number, n_alphas: number, type: GradientType): void;
-
 	/**
 	 * Interwoven essentially means we have two vertical gradients,
 	 * cut into horizontal strips of the given thickness, and then the strips
@@ -2162,27 +2131,18 @@ declare namespace imports.gi.Meta {
 	 * @returns 
 	 */
 	function gradient_create_interwoven(width: number, height: number, colors1: Gdk.RGBA, thickness1: number, colors2: Gdk.RGBA, thickness2: number): GdkPixbuf.Pixbuf;
-
-	function gradient_create_multi(width: number, height: number, colors: Gdk.RGBA[], n_colors: number, style: GradientType): GdkPixbuf.Pixbuf;
-
+	function gradient_create_multi(width: number, height: number, colors: Gdk.RGBA[], style: GradientType): GdkPixbuf.Pixbuf;
 	function gradient_create_simple(width: number, height: number, from: Gdk.RGBA, to: Gdk.RGBA, style: GradientType): GdkPixbuf.Pixbuf;
-
 	function gravity_to_string(gravity: number): string;
-
 	/**
 	 * Initialize muffin. Call this after {@link Meta.get.option_context} and
 	 * meta_plugin_manager_set_plugin_type(), and before meta_run().
 	 */
 	function init(): void;
-
 	function is_debugging(): boolean;
-
 	function is_syncing(): boolean;
-
 	function is_verbose(): boolean;
-
-	function keybindings_set_custom_handler(name: string, handler: KeyHandlerFunc, free_data: GLib.DestroyNotify): boolean;
-
+	function keybindings_set_custom_handler(name: string, handler: KeyHandlerFunc): boolean;
 	/**
 	 * Sets up a callback  to be called at some later time. #when determines the
 	 * particular later occasion at which it is called. This is much like {@link G.idle_add},
@@ -2192,153 +2152,84 @@ declare namespace imports.gi.Meta {
 	 * of the stage, not the next one.
 	 * @param when enumeration value determining the phase at which to run the callback
 	 * @param func callback to run later
-	 * @param data data to pass to the callback
-	 * @param notify function to call to destroy #data when it is no longer in use, or %NULL
 	 * @returns an integer ID (guaranteed to be non-zero) that can be used
 	 *  to cancel the callback and prevent it from being run.
 	 */
-	function later_add(when: LaterType, func: GLib.SourceFunc, data: any | null, notify: GLib.DestroyNotify): number;
-
+	function later_add(when: LaterType, func: GLib.SourceFunc): number;
 	/**
 	 * Removes a callback added with {@link Meta.later.add}
 	 * @param later_id the integer ID returned from {@link Meta.later.add}
 	 */
 	function later_remove(later_id: number): void;
-
 	function pop_no_msg_prefix(): void;
-
 	function pre_exec_close_fds(): void;
-
 	function preference_to_string(pref: Preference): string;
-
-	function prefs_add_listener(func: PrefsChangedFunc, data: any | null): void;
-
+	function prefs_add_listener(func: PrefsChangedFunc): void;
 	function prefs_bell_is_audible(): boolean;
-
 	function prefs_change_workspace_name(i: number, name: string): void;
-
 	function prefs_get_action_double_click_titlebar(): CDesktopEnums.TitlebarAction;
-
 	function prefs_get_action_middle_click_titlebar(): CDesktopEnums.TitlebarAction;
-
 	function prefs_get_action_right_click_titlebar(): CDesktopEnums.TitlebarAction;
-
 	function prefs_get_action_scroll_wheel_titlebar(): CDesktopEnums.TitlebarScrollAction;
-
 	function prefs_get_application_based(): boolean;
-
 	function prefs_get_attach_modal_dialogs(): boolean;
-
 	function prefs_get_auto_raise(): boolean;
-
 	function prefs_get_auto_raise_delay(): number;
-
 	function prefs_get_background_transition(): BackgroundTransition;
-
 	function prefs_get_bring_windows_to_current_workspace(): boolean;
-
 	/**
 	 * Returns the titlebar button definitions.
 	 * @returns the {@link ButtonLayout}
 	 */
 	function prefs_get_button_layout(): ButtonLayout;
-
 	function prefs_get_compositing_manager(): boolean;
-
 	function prefs_get_cursor_size(): number;
-
 	function prefs_get_cursor_theme(): string;
-
 	function prefs_get_disable_workarounds(): boolean;
-
 	function prefs_get_draggable_border_width(): number;
-
 	function prefs_get_dynamic_workspaces(): boolean;
-
 	function prefs_get_edge_resistance_window(): boolean;
-
 	function prefs_get_edge_tiling(): boolean;
-
 	function prefs_get_focus_mode(): CDesktopEnums.FocusMode;
-
 	function prefs_get_focus_new_windows(): CDesktopEnums.FocusNewWindows;
-
 	function prefs_get_force_fullscreen(): boolean;
-
 	function prefs_get_gnome_accessibility(): boolean;
-
 	function prefs_get_gnome_animations(): boolean;
-
 	function prefs_get_ignore_hide_titlebar_when_maximized(): boolean;
-
 	function prefs_get_invert_flip_direction(): boolean;
-
 	function prefs_get_keybinding_action(name: string): KeyBindingAction;
-
 	function prefs_get_keybindings(): KeyPref[];
-
 	function prefs_get_legacy_snap(): boolean;
-
 	function prefs_get_min_win_opacity(): number;
-
 	function prefs_get_mouse_button_menu(): number;
-
 	function prefs_get_mouse_button_mods(): VirtualModifier;
-
 	function prefs_get_mouse_button_resize(): number;
-
 	function prefs_get_mouse_button_zoom_mods(): VirtualModifier;
-
 	function prefs_get_mouse_zoom_enabled(): boolean;
-
 	function prefs_get_num_workspaces(): number;
-
 	function prefs_get_placement_mode(): PlacementMode;
-
 	function prefs_get_raise_on_click(): boolean;
-
 	function prefs_get_resize_threshold(): number;
-
 	function prefs_get_screenshot_command(): string;
-
 	function prefs_get_send_frame_timings(): boolean;
-
 	function prefs_get_snap_modifier(): number;
-
 	function prefs_get_sync_method(): SyncMethod;
-
 	function prefs_get_terminal_command(): string;
-
 	function prefs_get_theme(): string;
-
 	function prefs_get_threaded_swap(): boolean;
-
 	function prefs_get_tile_hud_threshold(): number;
-
 	function prefs_get_tile_maximize(): boolean;
-
 	function prefs_get_titlebar_font(): Pango.FontDescription;
-
 	function prefs_get_ui_scale(): number;
-
 	function prefs_get_unredirect_fullscreen_windows(): boolean;
-
 	function prefs_get_visual_bell(): boolean;
-
 	function prefs_get_visual_bell_type(): CDesktopEnums.VisualBellType;
-
 	function prefs_get_window_binding(name: string, keysym: number, modifiers: VirtualModifier): void;
-
 	function prefs_get_window_screenshot_command(): string;
-
 	function prefs_get_workspace_cycle(): boolean;
-
 	function prefs_get_workspace_name(i: number): string;
-
 	function prefs_get_workspaces_only_on_primary(): boolean;
-
 	function prefs_init(): void;
-
 	/**
 	 * Specify a schema whose keys are used to override the standard Metacity
 	 * keys. This might be used if a plugin expected a different value for
@@ -2350,25 +2241,15 @@ declare namespace imports.gi.Meta {
 	 * @param schema new schema for preference %key
 	 */
 	function prefs_override_preference_schema(key: string, schema: string): void;
-
-	function prefs_remove_listener(func: PrefsChangedFunc, data: any | null): void;
-
+	function prefs_remove_listener(func: PrefsChangedFunc): void;
 	function prefs_set_compositing_manager(whether: boolean): void;
-
 	function prefs_set_force_fullscreen(whether: boolean): void;
-
 	function prefs_set_num_workspaces(n_workspaces: number): void;
-
 	function prefs_set_ui_scale(ui_scale: number): void;
-
 	function print_backtrace(): void;
-
 	function push_no_msg_prefix(): void;
-
 	function quit(code: ExitCode): void;
-
 	function rect(x: number, y: number, width: number, height: number): Rectangle;
-
 	/**
 	 * Stop printing log messages for the given topic #topic.  Note
 	 * that this method does not stack with {@link Meta.add.verbose_topic};
@@ -2378,44 +2259,28 @@ declare namespace imports.gi.Meta {
 	 * @param topic Topic for which logging will be stopped
 	 */
 	function remove_verbose_topic(topic: DebugTopic): void;
-
 	/**
 	 * Starts the process of restarting the compositor.
 	 */
 	function restart(): void;
-
 	/**
 	 * Runs muffin. Call this after completing your own initialization.
 	 * @returns muffin's exit status
 	 */
 	function run(): number;
-
 	function set_gnome_wm_keybindings(wm_keybindings: string): void;
-
 	function set_stage_input_region(screen: Screen, region: xfixes.XserverRegion): void;
-
 	function set_wm_name(wm_name: string): void;
-
 	function show_dialog(type: string, message: string, timeout: string, display: string, ok_text: string, cancel_text: string, transient_for: number, columns: any[], entries: any[]): GLib.Pid;
-
 	function theme_get_current(): Theme;
-
 	function theme_load(theme_name: string): Theme;
-
 	function theme_new(): Theme;
-
 	function theme_set_current(name: string, force_reload: boolean): void;
-
 	function topic_real(topic: DebugTopic, format: string): void;
-
 	function unsigned_long_equal(v1: any | null, v2: any | null): number;
-
 	function unsigned_long_hash(v: any | null): number;
-
 	function verbose_real(format: string): void;
-
 	function warning(format: string): void;
-
 	const DEFAULT_ICON_NAME: string;
 
 	const PRIORITY_BEFORE_REDRAW: number;

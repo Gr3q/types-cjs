@@ -651,7 +651,7 @@ declare namespace imports.gi.CinnamonDesktop {
 		 * @param format_string
 		 * @returns Whether or not the format string was valid and accepted.
 		 */
-		set_format_string(format_string: string | null): boolean;
+		set_format_string(format_string?: string | null): boolean;
 		connect(signal: "notify::clock", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::format-string", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::parent_object", callback: (owner: this, ...args: any) => void): number;
@@ -685,7 +685,7 @@ declare namespace imports.gi.CinnamonDesktop {
 		 * @param format_string
 		 * @returns The translated format string.
 		 */
-		public static lctime_format(gettext_domain: string | null, format_string: string | null): string;
+		public static lctime_format(gettext_domain?: string | null, format_string?: string | null): string;
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -912,7 +912,6 @@ declare namespace imports.gi.CinnamonDesktop {
 	 * provided media key type or %NULL
 	 */
 	function desktop_get_media_key_string(type: number): string;
-
 	/**
 	 * Makes a best effort to retrieve the currently logged-in user's passwd
 	 * struct (containing uid, gid, home, etc...) based on the process uid
@@ -921,7 +920,6 @@ declare namespace imports.gi.CinnamonDesktop {
 	 * session user (or, as a last resort, the user returned by getuid())
 	 */
 	function desktop_get_session_user_pwent(): any | null;
-
 	/**
 	 * Prepends a terminal (either the one configured as default in
 	 * the user's GNOME setup, or one of the common xterm emulators) to the passed
@@ -935,11 +933,8 @@ declare namespace imports.gi.CinnamonDesktop {
 	 * @param argv a pointer to the vector
 	 */
 	function desktop_prepend_terminal_to_vector(argc: number, argv: string): void;
-
 	function desktop_thumbnail_cache_check_permissions(factory: DesktopThumbnailFactory, quick: boolean): boolean;
-
 	function desktop_thumbnail_cache_fix_permissions(): void;
-
 	/**
 	 * Returns whether the thumbnail has the correct uri embedded in the
 	 * Thumb::URI option in the png.
@@ -948,7 +943,6 @@ declare namespace imports.gi.CinnamonDesktop {
 	 * @returns TRUE if the thumbnail is for #uri
 	 */
 	function desktop_thumbnail_has_uri(pixbuf: GdkPixbuf.Pixbuf, uri: string): boolean;
-
 	/**
 	 * Returns whether the thumbnail has the correct uri and mtime embedded in the
 	 * png options.
@@ -958,7 +952,6 @@ declare namespace imports.gi.CinnamonDesktop {
 	 * @returns TRUE if the thumbnail has the right #uri and #mtime
 	 */
 	function desktop_thumbnail_is_valid(pixbuf: GdkPixbuf.Pixbuf, uri: string, mtime: number): boolean;
-
 	/**
 	 * Calculates the MD5 checksum of the uri. This can be useful
 	 * if you want to manually handle thumbnail files.
@@ -966,7 +959,6 @@ declare namespace imports.gi.CinnamonDesktop {
 	 * @returns A string with the MD5 digest of the uri string.
 	 */
 	function desktop_thumbnail_md5(uri: string): string;
-
 	/**
 	 * Returns the filename that a thumbnail of size #size for #uri would have.
 	 * @param uri an uri
@@ -974,7 +966,6 @@ declare namespace imports.gi.CinnamonDesktop {
 	 * @returns an absolute filename
 	 */
 	function desktop_thumbnail_path_for_uri(uri: string, size: DesktopThumbnailSize): string;
-
 	/**
 	 * Scales the pixbuf to the desired size. This function
 	 * is a lot faster than gdk-pixbuf when scaling down by
@@ -985,28 +976,24 @@ declare namespace imports.gi.CinnamonDesktop {
 	 * @returns a scaled pixbuf
 	 */
 	function desktop_thumbnail_scale_down_pixbuf(pixbuf: GdkPixbuf.Pixbuf, dest_width: number, dest_height: number): GdkPixbuf.Pixbuf;
-
 	/**
 	 * Uses packagekit to check if provided package names are installed.
 	 * @param packages a null-terminated array of package names
 	 * @param callback the callback to run for the result
 	 */
 	function installer_check_for_packages(packages: string[], callback: InstallerClientCallback): void;
-
 	/**
 	 * Uses packagekit to install the provided list of packages.
 	 * @param packages a null-terminated array of package names
 	 * @param callback the callback to run for the result
 	 */
 	function installer_install_packages(packages: string[], callback: InstallerClientCallback): void;
-
 	/**
 	 * Returns the #GQuark that will be used for #GError values returned by the
 	 * GnomeRR API.
 	 * @returns a #GQuark used to identify errors coming from the GnomeRR API.
 	 */
 	function rr_error_quark(): GLib.Quark;
-
 	const RR_CONNECTOR_TYPE_PANEL: string;
 
 }

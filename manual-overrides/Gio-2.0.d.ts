@@ -1,12 +1,12 @@
 declare namespace imports.gi.Gio {
-	interface IDBusProxy {
-		disconnectSignal(id: number): void;
-	}
+    interface IDBusProxy {
+        disconnectSignal(id: number): void; 
+    }
 
-	type ChangedVariable = `changed::${string}`;
-	interface ISettings {
-		/**
-		 * The "changed" signal is emitted when a key has  	potentially changed.
+    type ChangedVariable = `changed::${string}`;
+    interface ISettings {
+        /**
+		 * The "changed" signal is emitted when a key has potentially changed.
 		 * You should call one of the g_settings_get() calls to check the new
 		 * value.
 		 * 
