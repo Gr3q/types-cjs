@@ -108,7 +108,7 @@ declare namespace imports.ui.messageTray {
 
 	class Notification {
 		public actor: gi.St.Button;
-		public source: SystemNotificationSource;
+		public source: imports.ui.notificationDaemon.Source;
 		public title: string;
 		public urgency: Urgency;
 		public resident: boolean;
@@ -131,7 +131,7 @@ declare namespace imports.ui.messageTray {
 		protected _bodyUrlHighlighter: URLHighlighter;
 		protected _destroyedReason: NotificationDestroyedReason;
 
-		public constructor(source: SystemNotificationSource, title: string, body: string, params?: Partial<NotificationParams>);
+		public constructor(source: Source, title: string, body: string, params?: Partial<NotificationParams>);
 
 		/** for backwards compatibility with old class constant */
 		public get IMAGE_SIZE(): number;
@@ -161,7 +161,7 @@ declare namespace imports.ui.messageTray {
 
 		protected _updateLayout(): void;
 
-		public setImage(image: gi.St.Image): void;
+		public setImage(image: gi.Clutter.Image): void;
 
 		public unsetImage(): void;
 
