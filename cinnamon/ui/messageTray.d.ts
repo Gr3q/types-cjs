@@ -365,7 +365,8 @@ declare namespace imports.ui.messageTray {
 
 		protected _hideNotificationCompleted(): void;
 
-		public connect(event: 'notify-applet-update', cb: (actor: this, notification: Notification) => void): number
+		public connect(event: 'notify-applet-update', cb: (actor: this, notification: Notification) => void): number;
+		public disconnect(id: number): void;
 	}
 
 
