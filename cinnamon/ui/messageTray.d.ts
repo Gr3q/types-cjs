@@ -205,6 +205,7 @@ declare namespace imports.ui.messageTray {
 		public connect(event: 'action-invoked', cb: (actor: this, actionId: string) => void): void
 		public connect(event: 'done-displaying' | 'clicked', cb: (actor: this) => void): void
 		public connect(event: 'destroy', cb: (actor: this, destroyedReason: NotificationDestroyedReason) => void): void
+		public disconnect(id: number): void;
 
 	}
 
