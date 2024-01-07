@@ -10,24 +10,6 @@ declare namespace imports.gi.JavaScriptCore {
 		name: string;
 		/**
 		 * Add a constructor to #jsc_class. If #name is %NULL, the class name will be used. When <function>new</function>
-		 * is used with the constructor or {@link Jsc.value_constructor_call} is called, #callback is invoked receiving the
-		 * parameters and #user_data as the last parameter. When the constructor object is cleared in the #JSCClass context,
-		 * #destroy_notify is called with #user_data as parameter.
-		 * 
-		 * This function creates the constructor, which needs to be added to an object as a property to be able to use it. Use
-		 * jsc_context_set_value() to make the constructor available in the global object.
-		 * 
-		 * Note that the value returned by #callback is adopted by #jsc_class, and the #GDestroyNotify passed to
-		 * jsc_context_register_class() is responsible for disposing of it.
-		 * @param name the constructor name or %NULL
-		 * @param callback a #GCallback to be called to create an instance of #jsc_class
-		 * @param return_type the #GType of the constructor return value
-		 * @param parameter_types a list of #GType<!-- -->s, one for each parameter, or %NULL
-		 * @returns a #JSCValue representing the class constructor.
-		 */
-		add_constructor(name: string | null, callback: GObject.Callback, return_type: GObject.Type, parameter_types?: GObject.Type[] | null): Value;
-		/**
-		 * Add a constructor to #jsc_class. If #name is %NULL, the class name will be used. When <function>new</function>
 		 * is used with the constructor or {@link Jsc.value_constructor_call} is called, #callback is invoked receiving
 		 * a #GPtrArray of #JSCValue<!-- -->s as arguments and #user_data as the last parameter. When the constructor object
 		 * is cleared in the #JSCClass context, #destroy_notify is called with #user_data as parameter.
@@ -43,22 +25,6 @@ declare namespace imports.gi.JavaScriptCore {
 		 * @returns a #JSCValue representing the class constructor.
 		 */
 		add_constructor_variadic(name: string | null, callback: GObject.Callback, return_type: GObject.Type): Value;
-		/**
-		 * Add method with #name to #jsc_class. When the method is called by JavaScript or {@link Jsc.value_object_invoke_method},
-		 * #callback is called receiving the class instance as first parameter, followed by the method parameters and then
-		 * #user_data as last parameter. When the method is cleared in the #JSCClass context, #destroy_notify is called with
-		 * #user_data as parameter.
-		 * 
-		 * Note that the value returned by #callback must be transfer full. In case of non-refcounted boxed types, you should use
-		 * %G_TYPE_POINTER instead of the actual boxed #GType to ensure that the instance owned by #JSCClass is used.
-		 * If you really want to return a new copy of the boxed type, use #JSC_TYPE_VALUE and return a #JSCValue created
-		 * with jsc_value_new_object() that receives the copy as the instance parameter.
-		 * @param name the method name
-		 * @param callback a #GCallback to be called to invoke method #name of #jsc_class
-		 * @param return_type the #GType of the method return value, or %G_TYPE_NONE if the method is void.
-		 * @param parameter_types a list of #GType<!-- -->s, one for each parameter, or %NULL
-		 */
-		add_method(name: string, callback: GObject.Callback, return_type: GObject.Type, parameter_types?: GObject.Type[] | null): void;
 		/**
 		 * Add method with #name to #jsc_class. When the method is called by JavaScript or {@link Jsc.value_object_invoke_method},
 		 * #callback is called receiving the class instance as first parameter, followed by a #GPtrArray of #JSCValue<!-- -->s
@@ -261,25 +227,12 @@ declare namespace imports.gi.JavaScriptCore {
 		 */
 		throw_exception(exception: Exception): void;
 		/**
-		 * Throw an exception to #context using the given formatted string as error message.
-		 * The created #JSCException can be retrieved with {@link Jsc.context_get_exception}.
-		 * @param format the string format
-		 */
-		throw_printf(format: string): void;
-		/**
 		 * Throw an exception to #context using the given error name and message. The created #JSCException
 		 * can be retrieved with {@link Jsc.context_get_exception}.
 		 * @param error_name the error name
 		 * @param error_message an error message
 		 */
 		throw_with_name(error_name: string, error_message: string): void;
-		/**
-		 * Throw an exception to #context using the given error name and the formatted string as error message.
-		 * The created #JSCException can be retrieved with {@link Jsc.context_get_exception}.
-		 * @param error_name the error name
-		 * @param format the string format
-		 */
-		throw_with_name_printf(error_name: string, format: string): void;
 		connect(signal: "notify::virtual-machine", callback: (owner: this, ...args: any) => void): number;
 
 	}
@@ -483,23 +436,6 @@ declare namespace imports.gi.JavaScriptCore {
 		 */
 		array_buffer_get_size(): number;
 		/**
-		 * Invoke <function>new</function> with constructor referenced by #value. If #n_parameters
-		 * is 0 no parameters will be passed to the constructor.
-		 * @param parameters the #JSCValue<!-- -->s to pass as parameters to the constructor, or %NULL
-		 * @returns a #JSCValue referencing the newly created object instance.
-		 */
-		constructor_call(parameters?: Value[] | null): Value;
-		/**
-		 * Call function referenced by #value, passing the given #parameters. If #n_parameters
-		 * is 0 no parameters will be passed to the function.
-		 * 
-		 * This function always returns a #JSCValue, in case of void functions a #JSCValue referencing
-		 * <function>undefined</function> is returned
-		 * @param parameters the #JSCValue<!-- -->s to pass as parameters to the function, or %NULL
-		 * @returns a #JSCValue with the return value of the function.
-		 */
-		function_call(parameters?: Value[] | null): Value;
-		/**
 		 * Get the #JSCContext in which #value was created.
 		 * @returns the #JSCValue context.
 		 */
@@ -641,20 +577,6 @@ declare namespace imports.gi.JavaScriptCore {
 		 * @returns %TRUE if #value has a property with #name, or %FALSE otherwise
 		 */
 		object_has_property(name: string): boolean;
-		/**
-		 * Invoke method with #name on object referenced by #value, passing the given #parameters. If
-		 * #n_parameters is 0 no parameters will be passed to the method.
-		 * The object instance will be handled automatically even when the method is a custom one
-		 * registered with {@link Jsc.class_add_method}, so it should never be passed explicitly as parameter
-		 * of this function.
-		 * 
-		 * This function always returns a #JSCValue, in case of void methods a #JSCValue referencing
-		 * <function>undefined</function> is returned.
-		 * @param name the method name
-		 * @param parameters the #JSCValue<!-- -->s to pass as parameters to the method, or %NULL
-		 * @returns a #JSCValue with the return value of the method.
-		 */
-		object_invoke_method(name: string, parameters?: Value[] | null): Value;
 		/**
 		 * Get whether the value referenced by #value is an instance of class #name.
 		 * @param name a class name

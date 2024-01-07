@@ -354,52 +354,6 @@ declare namespace imports.gi.GObject {
 	 */
 	interface IObject {
 		/**
-		 * Increases the reference count of the object by one and sets a
-		 * callback to be called when all other references to the object are
-		 * dropped, or when this is already the last reference to the object
-		 * and another reference is established.
-		 * 
-		 * This functionality is intended for binding #object to a proxy
-		 * object managed by another memory manager. This is done with two
-		 * paired references: the strong reference added by
-		 * {@link GObject.add_toggle_ref} and a reverse reference to the proxy
-		 * object which is either a strong reference or weak reference.
-		 * 
-		 * The setup is that when there are no other references to #object,
-		 * only a weak reference is held in the reverse direction from #object
-		 * to the proxy object, but when there are other references held to
-		 * #object, a strong reference is held. The #notify callback is called
-		 * when the reference from #object to the proxy object should be
-		 * "toggled" from strong to weak (#is_last_ref true) or weak to strong
-		 * (#is_last_ref false).
-		 * 
-		 * Since a (normal) reference must be held to the object before
-		 * calling g_object_add_toggle_ref(), the initial state of the reverse
-		 * link is always strong.
-		 * 
-		 * Multiple toggle references may be added to the same gobject,
-		 * however if there are multiple toggle references to an object, none
-		 * of them will ever be notified until all but one are removed.  For
-		 * this reason, you should only ever use a toggle reference if there
-		 * is important state in the proxy object.
-		 * @param notify a function to call when this reference is the
-		 *  last reference to the object, or is no longer
-		 *  the last reference.
-		 */
-		add_toggle_ref(notify: ToggleNotify): void;
-		/**
-		 * Adds a weak reference from weak_pointer to #object to indicate that
-		 * the pointer located at #weak_pointer_location is only valid during
-		 * the lifetime of #object. When the #object is finalized,
-		 * #weak_pointer will be set to %NULL.
-		 * 
-		 * Note that as with g_object_weak_ref(), the weak references created by
-		 * this method are not thread-safe: they cannot safely be used in one
-		 * thread if the object's last g_object_unref() might happen in another
-		 * thread. Use #GWeakRef if thread-safety is required.
-		 */
-		add_weak_pointer(): void;
-		/**
 		 * Creates a binding between #source_property on #source and #target_property
 		 * on #target.
 		 * 
@@ -462,90 +416,6 @@ declare namespace imports.gi.GObject {
 		 */
 		bind_property_full(source_property: string, target: Object, target_property: string, flags: BindingFlags, transform_to: Closure, transform_from: Closure): Binding;
 		/**
-		 * A convenience function to connect multiple signals at once.
-		 * 
-		 * The signal specs expected by this function have the form
-		 * "modifier::signal_name", where modifier can be one of the following:
-		 * - signal: equivalent to g_signal_connect_data (..., NULL, G_CONNECT_DEFAULT)
-		 * - object-signal, object_signal: equivalent to g_signal_connect_object (..., G_CONNECT_DEFAULT)
-		 * - swapped-signal, swapped_signal: equivalent to g_signal_connect_data (..., NULL, G_CONNECT_SWAPPED)
-		 * - swapped_object_signal, swapped-object-signal: equivalent to g_signal_connect_object (..., G_CONNECT_SWAPPED)
-		 * - signal_after, signal-after: equivalent to g_signal_connect_data (..., NULL, G_CONNECT_AFTER)
-		 * - object_signal_after, object-signal-after: equivalent to g_signal_connect_object (..., G_CONNECT_AFTER)
-		 * - swapped_signal_after, swapped-signal-after: equivalent to g_signal_connect_data (..., NULL, G_CONNECT_SWAPPED | G_CONNECT_AFTER)
-		 * - swapped_object_signal_after, swapped-object-signal-after: equivalent to g_signal_connect_object (..., G_CONNECT_SWAPPED | G_CONNECT_AFTER)
-		 * 
-		 * |[<!-- language="C" -->
-		 *   menu->toplevel = g_object_connect (g_object_new (GTK_TYPE_WINDOW,
-		 * 						   "type", GTK_WINDOW_POPUP,
-		 * 						   "child", menu,
-		 * 						   NULL),
-		 * 				     "signal::event", gtk_menu_window_event, menu,
-		 * 				     "signal::size_request", gtk_menu_window_size_request, menu,
-		 * 				     "signal::destroy", gtk_widget_destroyed, &menu->toplevel,
-		 * 				     NULL);
-		 * ]|
-		 * @param signal_spec the spec for the first signal
-		 * @returns #object
-		 */
-		connect(signal_spec: string): Object;
-		/**
-		 * A convenience function to disconnect multiple signals at once.
-		 * 
-		 * The signal specs expected by this function have the form
-		 * "any_signal", which means to disconnect any signal with matching
-		 * callback and data, or "any_signal::signal_name", which only
-		 * disconnects the signal named "signal_name".
-		 * @param id returned ID of the connect function
-		 */
-		disconnect(id: number): void;
-		/**
-		 * This is a variant of {@link GObject.get_data} which returns
-		 * a 'duplicate' of the value. #dup_func defines the
-		 * meaning of 'duplicate' in this context, it could e.g.
-		 * take a reference on a ref-counted object.
-		 * 
-		 * If the #key is not set on the object then #dup_func
-		 * will be called with a %NULL argument.
-		 * 
-		 * Note that #dup_func is called while user data of #object
-		 * is locked.
-		 * 
-		 * This function can be useful to avoid races when multiple
-		 * threads are using object data on the same key on the same
-		 * object.
-		 * @param key a string, naming the user data pointer
-		 * @param dup_func function to dup the value
-		 * @returns the result of calling #dup_func on the value
-		 *     associated with #key on #object, or %NULL if not set.
-		 *     If #dup_func is %NULL, the value is returned
-		 *     unmodified.
-		 */
-		dup_data(key: string, dup_func?: GLib.DuplicateFunc | null): any | null;
-		/**
-		 * This is a variant of {@link GObject.get_qdata} which returns
-		 * a 'duplicate' of the value. #dup_func defines the
-		 * meaning of 'duplicate' in this context, it could e.g.
-		 * take a reference on a ref-counted object.
-		 * 
-		 * If the #quark is not set on the object then #dup_func
-		 * will be called with a %NULL argument.
-		 * 
-		 * Note that #dup_func is called while user data of #object
-		 * is locked.
-		 * 
-		 * This function can be useful to avoid races when multiple
-		 * threads are using object data on the same key on the same
-		 * object.
-		 * @param quark a #GQuark, naming the user data pointer
-		 * @param dup_func function to dup the value
-		 * @returns the result of calling #dup_func on the value
-		 *     associated with #quark on #object, or %NULL if not set.
-		 *     If #dup_func is %NULL, the value is returned
-		 *     unmodified.
-		 */
-		dup_qdata(quark: GLib.Quark, dup_func?: GLib.DuplicateFunc | null): any | null;
-		/**
 		 * This function is intended for #GObject implementations to re-enforce
 		 * a [floating][floating-ref] object reference. Doing this is seldom
 		 * required: all #GInitiallyUnowneds are created with a floating reference
@@ -564,36 +434,6 @@ declare namespace imports.gi.GObject {
 		 * premature notification while the object is still being modified.
 		 */
 		freeze_notify(): void;
-		/**
-		 * Gets properties of an object.
-		 * 
-		 * In general, a copy is made of the property contents and the caller
-		 * is responsible for freeing the memory in the appropriate manner for
-		 * the type, for instance by calling {@link G.free} or g_object_unref().
-		 * 
-		 * Here is an example of using g_object_get() to get the contents
-		 * of three properties: an integer, a string and an object:
-		 * |[<!-- language="C" -->
-		 *  gint intval;
-		 *  guint64 uint64val;
-		 *  gchar *strval;
-		 *  GObject *objval;
-		 * 
-		 *  g_object_get (my_object,
-		 *                "int-property", &intval,
-		 *                "uint64-property", &uint64val,
-		 *                "str-property", &strval,
-		 *                "obj-property", &objval,
-		 *                NULL);
-		 * 
-		 *  // Do something with intval, uint64val, strval, objval
-		 * 
-		 *  g_free (strval);
-		 *  g_object_unref (objval);
-		 * ]|
-		 * @param first_property_name name of the first property to get
-		 */
-		// get(first_property_name: string): void;
 		/**
 		 * Gets a named field from the objects table of associations (see {@link GObject.set_data}).
 		 * @param key name of the key for that association
@@ -629,19 +469,6 @@ declare namespace imports.gi.GObject {
 		 * @returns The user data pointer set, or %NULL
 		 */
 		get_qdata(quark: GLib.Quark): any | null;
-		/**
-		 * Gets properties of an object.
-		 * 
-		 * In general, a copy is made of the property contents and the caller
-		 * is responsible for freeing the memory in the appropriate manner for
-		 * the type, for instance by calling {@link G.free} or g_object_unref().
-		 * 
-		 * See g_object_get().
-		 * @param first_property_name name of the first property to get
-		 * @param var_args return location for the first property, followed optionally by more
-		 *  name/return location pairs, followed by %NULL
-		 */
-		// get_valist(first_property_name: string, var_args: any[]): void;
 		/**
 		 * Gets #n_properties properties for an #object.
 		 * Obtained properties will be set to #values. All properties must be valid.
@@ -737,85 +564,12 @@ declare namespace imports.gi.GObject {
 		 */
 		ref_sink(): Object;
 		/**
-		 * Removes a reference added with {@link GObject.add_toggle_ref}. The
-		 * reference count of the object is decreased by one.
-		 * @param notify a function to call when this reference is the
-		 *  last reference to the object, or is no longer
-		 *  the last reference.
-		 */
-		remove_toggle_ref(notify: ToggleNotify): void;
-		/**
-		 * Removes a weak reference from #object that was previously added
-		 * using {@link GObject.add_weak_pointer}. The #weak_pointer_location has
-		 * to match the one used with g_object_add_weak_pointer().
-		 */
-		remove_weak_pointer(): void;
-		/**
-		 * Compares the user data for the key #key on #object with
-		 * #oldval, and if they are the same, replaces #oldval with
-		 * #newval.
-		 * 
-		 * This is like a typical atomic compare-and-exchange
-		 * operation, for user data on an object.
-		 * 
-		 * If the previous value was replaced then ownership of the
-		 * old value (#oldval) is passed to the caller, including
-		 * the registered destroy notify for it (passed out in #old_destroy).
-		 * It’s up to the caller to free this as needed, which may
-		 * or may not include using #old_destroy as sometimes replacement
-		 * should not destroy the object in the normal way.
-		 * 
-		 * See {@link GObject.set_data} for guidance on using a small, bounded set of values
-		 * for #key.
-		 * @param key a string, naming the user data pointer
-		 * @param oldval the old value to compare against
-		 * @param newval the new value
-		 * @returns %TRUE if the existing value for #key was replaced
-		 *  by #newval, %FALSE otherwise.
-		 */
-		replace_data(key: string, oldval?: any | null, newval?: any | null): boolean;
-		/**
-		 * Compares the user data for the key #quark on #object with
-		 * #oldval, and if they are the same, replaces #oldval with
-		 * #newval.
-		 * 
-		 * This is like a typical atomic compare-and-exchange
-		 * operation, for user data on an object.
-		 * 
-		 * If the previous value was replaced then ownership of the
-		 * old value (#oldval) is passed to the caller, including
-		 * the registered destroy notify for it (passed out in #old_destroy).
-		 * It’s up to the caller to free this as needed, which may
-		 * or may not include using #old_destroy as sometimes replacement
-		 * should not destroy the object in the normal way.
-		 * @param quark a #GQuark, naming the user data pointer
-		 * @param oldval the old value to compare against
-		 * @param newval the new value
-		 * @returns %TRUE if the existing value for #quark was replaced
-		 *  by #newval, %FALSE otherwise.
-		 */
-		replace_qdata(quark: GLib.Quark, oldval?: any | null, newval?: any | null): boolean;
-		/**
 		 * Releases all references to other objects. This can be used to break
 		 * reference cycles.
 		 * 
 		 * This function should only be called from object system implementations.
 		 */
 		run_dispose(): void;
-		/**
-		 * Sets properties on an object.
-		 * 
-		 * The same caveats about passing integer literals as varargs apply as with
-		 * {@link GObject.new}. In particular, any integer literals set as the values for
-		 * properties of type #gint64 or #guint64 must be 64 bits wide, using the
-		 * %G_GINT64_CONSTANT or %G_GUINT64_CONSTANT macros.
-		 * 
-		 * Note that the "notify" signals are queued and only emitted (in
-		 * reverse order) after all properties have been set. See
-		 * g_object_freeze_notify().
-		 * @param first_property_name name of the first property to set
-		 */
-		// set(first_property_name: string): void;
 		/**
 		 * Each object carries around a table of associations from
 		 * strings to pointers.  This function lets you set an association.
@@ -832,60 +586,11 @@ declare namespace imports.gi.GObject {
 		 */
 		set_data(key: string, data?: any | null): void;
 		/**
-		 * Like {@link GObject.set_data} except it adds notification
-		 * for when the association is destroyed, either by setting it
-		 * to a different value or when the object is destroyed.
-		 * 
-		 * Note that the #destroy callback is not called if #data is %NULL.
-		 * @param key name of the key
-		 * @param data data to associate with that key
-		 */
-		set_data_full(key: string, data?: any | null): void;
-		/**
 		 * Sets a property on an object.
 		 * @param property_name the name of the property to set
 		 * @param value the value
 		 */
 		// set_property(property_name: string, value: Value): void;
-		/**
-		 * This sets an opaque, named pointer on an object.
-		 * The name is specified through a #GQuark (retrieved e.g. via
-		 * {@link G.quark_from_static_string}), and the pointer
-		 * can be gotten back from the #object with g_object_get_qdata()
-		 * until the #object is finalized.
-		 * Setting a previously set user data pointer, overrides (frees)
-		 * the old pointer set, using #NULL as pointer essentially
-		 * removes the data stored.
-		 * @param quark A #GQuark, naming the user data pointer
-		 * @param data An opaque user data pointer
-		 */
-		set_qdata(quark: GLib.Quark, data?: any | null): void;
-		/**
-		 * This function works like {@link GObject.set_qdata}, but in addition,
-		 * a void (*destroy) (gpointer) function may be specified which is
-		 * called with #data as argument when the #object is finalized, or
-		 * the data is being overwritten by a call to g_object_set_qdata()
-		 * with the same #quark.
-		 * @param quark A #GQuark, naming the user data pointer
-		 * @param data An opaque user data pointer
-		 */
-		set_qdata_full(quark: GLib.Quark, data?: any | null): void;
-		/**
-		 * Sets properties on an object.
-		 * @param first_property_name name of the first property to set
-		 * @param var_args value for the first property, followed optionally by more
-		 *  name/value pairs, followed by %NULL
-		 */
-		// set_valist(first_property_name: string, var_args: any[]): void;
-		/**
-		 * Sets #n_properties properties for an #object.
-		 * Properties to be set will be taken from #values. All properties must be
-		 * valid. Warnings will be emitted and undefined behaviour may result if invalid
-		 * properties are passed in.
-		 * @param names the names of each property to be set
-		 * @param values the values of each property to be set
-		 */
-		setv(names: string[], values: Value[]): void;
 		/**
 		 * Remove a specified datum from the object's data associations,
 		 * without invoking the association's destroy handler.
@@ -935,45 +640,6 @@ declare namespace imports.gi.GObject {
 		 */
 		steal_qdata(quark: GLib.Quark): any | null;
 		/**
-		 * If #object is floating, sink it.  Otherwise, do nothing.
-		 * 
-		 * In other words, this function will convert a floating reference (if
-		 * present) into a full reference.
-		 * 
-		 * Typically you want to use {@link GObject.ref_sink} in order to
-		 * automatically do the correct thing with respect to floating or
-		 * non-floating references, but there is one specific scenario where
-		 * this function is helpful.
-		 * 
-		 * The situation where this function is helpful is when creating an API
-		 * that allows the user to provide a callback function that returns a
-		 * GObject. We certainly want to allow the user the flexibility to
-		 * return a non-floating reference from this callback (for the case
-		 * where the object that is being returned already exists).
-		 * 
-		 * At the same time, the API style of some popular GObject-based
-		 * libraries (such as Gtk) make it likely that for newly-created GObject
-		 * instances, the user can be saved some typing if they are allowed to
-		 * return a floating reference.
-		 * 
-		 * Using this function on the return value of the user's callback allows
-		 * the user to do whichever is more convenient for them. The caller will
-		 * alway receives exactly one full reference to the value: either the
-		 * one that was returned in the first place, or a floating reference
-		 * that has been converted to a full reference.
-		 * 
-		 * This function has an odd interaction when combined with
-		 * g_object_ref_sink() running at the same time in another thread on
-		 * the same #GObject instance. If g_object_ref_sink() runs first then
-		 * the result will be that the floating reference is converted to a hard
-		 * reference. If g_object_take_ref() runs first then the result will be
-		 * that the floating reference is converted to a hard reference and an
-		 * additional reference on top of that one is added. It is best to avoid
-		 * this situation.
-		 * @returns #object
-		 */
-		take_ref(): Object;
-		/**
 		 * Reverts the effect of a previous call to
 		 * {@link GObject.freeze_notify}. The freeze count is decreased on #object
 		 * and when it reaches zero, queued "notify" signals are emitted.
@@ -1008,25 +674,6 @@ declare namespace imports.gi.GObject {
 		 * @param closure #GClosure to watch
 		 */
 		watch_closure(closure: Closure): void;
-		/**
-		 * Adds a weak reference callback to an object. Weak references are
-		 * used for notification when an object is disposed. They are called
-		 * "weak references" because they allow you to safely hold a pointer
-		 * to an object without calling {@link GObject.ref} (g_object_ref() adds a
-		 * strong reference, that is, forces the object to stay alive).
-		 * 
-		 * Note that the weak references created by this method are not
-		 * thread-safe: they cannot safely be used in one thread if the
-		 * object's last g_object_unref() might happen in another thread.
-		 * Use #GWeakRef if thread-safety is required.
-		 * @param notify callback to invoke before the object is freed
-		 */
-		weak_ref(notify: WeakNotify): void;
-		/**
-		 * Removes a weak reference callback to an object.
-		 * @param notify callback to search for
-		 */
-		weak_unref(notify: WeakNotify): void;
 		/**
 		 * The notify signal is emitted on an object when one of its properties has
 		 * its value set through {@link GObject.set_property}, g_object_set(), et al.
@@ -1289,16 +936,6 @@ declare namespace imports.gi.GObject {
 		 */
 		get_redirect_target(): ParamSpec | null;
 		/**
-		 * Increments the reference count of #pspec.
-		 * @returns the #GParamSpec that was passed into this function
-		 */
-		ref(): ParamSpec;
-		/**
-		 * Convenience function to ref and sink a #GParamSpec.
-		 * @returns the #GParamSpec that was passed into this function
-		 */
-		ref_sink(): ParamSpec;
-		/**
 		 * Sets an opaque, named pointer on a #GParamSpec. The name is
 		 * specified through a #GQuark (retrieved e.g. via
 		 * {@link G.quark_from_static_string}), and the pointer can be gotten back
@@ -1309,16 +946,6 @@ declare namespace imports.gi.GObject {
 		 * @param data an opaque user data pointer
 		 */
 		set_qdata(quark: GLib.Quark, data?: any | null): void;
-		/**
-		 * This function works like {@link G.param_spec_set_qdata}, but in addition,
-		 * a `void (*destroy) (gpointer)` function may be
-		 * specified which is called with #data as argument when the #pspec is
-		 * finalized, or the data is being overwritten by a call to
-		 * g_param_spec_set_qdata() with the same #quark.
-		 * @param quark a #GQuark, naming the user data pointer
-		 * @param data an opaque user data pointer
-		 */
-		set_qdata_full(quark: GLib.Quark, data?: any | null): void;
 		/**
 		 * The initial reference count of a newly created #GParamSpec is 1,
 		 * even though no one has explicitly called {@link G.param_spec_ref} on it
@@ -1338,10 +965,6 @@ declare namespace imports.gi.GObject {
 		 * @returns the user data pointer set, or %NULL
 		 */
 		steal_qdata(quark: GLib.Quark): any | null;
-		/**
-		 * Decrements the reference count of a #pspec.
-		 */
-		unref(): void;
 		connect(signal: "notify::name", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::flags", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::value_type", callback: (owner: this, ...args: any) => void): number;
@@ -2269,26 +1892,6 @@ declare namespace imports.gi.GObject {
 		 */
 		block(): void;
 		/**
-		 * Connects #c_handler to the signal #detailed_signal
-		 * on the target instance of #self.
-		 * 
-		 * You cannot connect a signal handler after #GSignalGroup:target has been set.
-		 * @param detailed_signal a string of the form "signal-name::detail"
-		 * @param c_handler the #GCallback to connect
-		 */
-		connect(detailed_signal: string, c_handler: Callback): void;
-		/**
-		 * Connects #c_handler to the signal #detailed_signal
-		 * on the target instance of #self.
-		 * 
-		 * The #c_handler will be called after the default handler of the signal.
-		 * 
-		 * You cannot connect a signal handler after #GSignalGroup:target has been set.
-		 * @param detailed_signal a string of the form "signal-name::detail"
-		 * @param c_handler the #GCallback to connect
-		 */
-		connect_after(detailed_signal: string, c_handler: Callback): void;
-		/**
 		 * Connects #closure to the signal #detailed_signal on #GSignalGroup:target.
 		 * 
 		 * You cannot connect a signal handler after #GSignalGroup:target has been set.
@@ -2309,20 +1912,6 @@ declare namespace imports.gi.GObject {
 		 * @param flags the flags used to create the signal connection
 		 */
 		connect_data(detailed_signal: string, c_handler: Callback, notify: ClosureNotify, flags: ConnectFlags): void;
-		/**
-		 * Connects #c_handler to the signal #detailed_signal on #GSignalGroup:target.
-		 * 
-		 * Ensures that the #object stays alive during the call to #c_handler
-		 * by temporarily adding a reference count. When the #object is destroyed
-		 * the signal handler will automatically be removed.
-		 * 
-		 * You cannot connect a signal handler after #GSignalGroup:target has been set.
-		 * @param detailed_signal a string of the form `signal-name` with optional `::signal-detail`
-		 * @param c_handler the #GCallback to connect
-		 * @param object the #GObject to pass as data to #c_handler calls
-		 * @param flags #GConnectFlags for the signal connection
-		 */
-		connect_object(detailed_signal: string, c_handler: Callback, object: any, flags: ConnectFlags): void;
 		/**
 		 * Connects #c_handler to the signal #detailed_signal
 		 * on the target instance of #self.

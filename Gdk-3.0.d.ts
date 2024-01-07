@@ -403,32 +403,11 @@ declare namespace imports.gi.Gdk {
 		 */
 		get_axes(): AxisFlags;
 		/**
-		 * Interprets an array of double as axis values for a given device,
-		 * and locates the value in the array for a given axis use.
-		 * @param axes pointer to an array of axes
-		 * @param use the use to look for
-		 * @returns %TRUE if the given axis use was found, otherwise %FALSE
-		 * 
-		 * location to store the found value.
-		 */
-		get_axis(axes: number[], use: AxisUse): [ boolean, number ];
-		/**
 		 * Returns the axis use for #index_.
 		 * @param index_ the index of the axis.
 		 * @returns a {@link AxisUse} specifying how the axis is used.
 		 */
 		get_axis_use(index_: number): AxisUse;
-		/**
-		 * Interprets an array of double as axis values for a given device,
-		 * and locates the value in the array for a given axis label, as returned
-		 * by {@link Gdk.Device.list_axes}
-		 * @param axes pointer to an array of axes
-		 * @param axis_label {@link Atom} with the axis label.
-		 * @returns %TRUE if the given axis use was found, otherwise %FALSE.
-		 * 
-		 * location to store the found value.
-		 */
-		get_axis_value(axes: number[], axis_label: Atom): [ boolean, number ];
 		/**
 		 * Returns the device type for #device.
 		 * @returns the {@link DeviceType} for #device.
@@ -446,28 +425,6 @@ declare namespace imports.gi.Gdk {
 		 * @returns %TRUE if the pointer follows device motion
 		 */
 		get_has_cursor(): boolean;
-		/**
-		 * Obtains the motion history for a pointer device; given a starting and
-		 * ending timestamp, return all events in the motion history for
-		 * the device in the given range of time. Some windowing systems
-		 * do not support motion history, in which case, %FALSE will
-		 * be returned. (This is not distinguishable from the case where
-		 * motion history is supported and no events were found.)
-		 * 
-		 * Note that there is also {@link Gdk.Window.set_event_compression} to get
-		 * more motion events delivered directly, independent of the windowing
-		 * system.
-		 * @param window the window with respect to which which the event coordinates will be reported
-		 * @param start starting timestamp for range of events to return
-		 * @param stop ending timestamp for the range of events to return
-		 * @returns %TRUE if the windowing system supports motion history and
-		 *  at least one event was found.
-		 * 
-		 * 
-		 *   location to store a newly-allocated array of {@link TimeCoord}, or
-		 *   %NULL
-		 */
-		get_history(window: Window, start: number, stop: number): [ boolean, TimeCoord[] | null ];
 		/**
 		 * If #index_ has a valid keyval, this function will return %TRUE
 		 * and fill in #keyval and #modifiers with the keyval settings.
@@ -552,17 +509,6 @@ declare namespace imports.gi.Gdk {
 		 * @returns a {@link InputSource}
 		 */
 		get_source(): InputSource;
-		/**
-		 * Gets the current state of a pointer device relative to #window. As a slave
-		 * device’s coordinates are those of its master pointer, this
-		 * function may not be called on devices of type %GDK_DEVICE_TYPE_SLAVE,
-		 * unless there is an ongoing grab on them. See {@link Gdk.Device.grab}.
-		 * @param window a {@link Window}.
-		 * @param axes an array of doubles to store the values of
-		 * the axes of #device in, or %NULL.
-		 * @returns location to store the modifiers, or %NULL.
-		 */
-		get_state(window: Window, axes?: number[] | null): ModifierType | null;
 		/**
 		 * Returns the vendor ID of this device, or %NULL if this information couldn't
 		 * be obtained. This ID is retrieved from the device, and is thus constant for
@@ -3694,19 +3640,6 @@ declare namespace imports.gi.Gdk {
 		 */
 		cursor: Cursor;
 		/**
-		 * Adds an event filter to #window, allowing you to intercept events
-		 * before they reach GDK. This is a low-level operation and makes it
-		 * easy to break GDK and/or GTK+, so you have to know what you're
-		 * doing. Pass %NULL for #window to get all events for all windows,
-		 * instead of events for a specific window.
-		 * 
-		 * If you are interested in X GenericEvents, bear in mind that
-		 * XGetEventData() has been already called on the event, and
-		 * XFreeEventData() must not be called within #function.
-		 * @param _function filter callback
-		 */
-		add_filter(_function: FilterFunc): void;
-		/**
 		 * Emits a short beep associated to #window in the appropriate
 		 * display, if supported. Otherwise, emits a short beep on
 		 * the display just as {@link Gdk.Display.beep}.
@@ -4835,11 +4768,6 @@ declare namespace imports.gi.Gdk {
 		 */
 		register_dnd(): void;
 		/**
-		 * Remove a filter previously added with {@link Gdk.Window.add_filter}.
-		 * @param _function previously-added filter function
-		 */
-		remove_filter(_function: FilterFunc): void;
-		/**
 		 * Reparents #window into the given #new_parent. The window being
 		 * reparented will be unmapped as a side effect.
 		 * @param new_parent new parent to move #window into
@@ -5179,19 +5107,6 @@ declare namespace imports.gi.Gdk {
 		 * @param name name of window while iconified (minimized)
 		 */
 		set_icon_name(name?: string | null): void;
-		/**
-		 * Registers an invalidate handler for a specific window. This
-		 * will get called whenever a region in the window or its children
-		 * is invalidated.
-		 * 
-		 * This can be used to record the invalidated region, which is
-		 * useful if you are keeping an offscreen copy of some region
-		 * and want to keep it up to date. You can also modify the
-		 * invalidated region in case you’re doing some effect where
-		 * e.g. a child widget appears in multiple places.
-		 * @param handler a {@link WindowInvalidateHandlerFunc} callback function
-		 */
-		set_invalidate_handler(handler: WindowInvalidateHandlerFunc): void;
 		/**
 		 * Set if #window must be kept above other windows. If the
 		 * window was already above, then this function does nothing.

@@ -329,14 +329,6 @@ declare namespace imports.gi.GdkPixbuf {
 		 */
 		read_pixels(): number;
 		/**
-		 * @deprecated
-		 * Use {@link GObject.ref}.
-		 * 
-		 * Adds a reference to a pixbuf.
-		 * @returns The same as the #pixbuf argument.
-		 */
-		ref(): Pixbuf;
-		/**
 		 * Removes the key/value pair option attached to a `GdkPixbuf`.
 		 * @param key a nul-terminated string representing the key to remove.
 		 * @returns `TRUE` if an option was removed, `FALSE` if not.
@@ -372,107 +364,6 @@ declare namespace imports.gi.GdkPixbuf {
 		 */
 		saturate_and_pixelate(dest: Pixbuf, saturation: number, pixelate: boolean): void;
 		/**
-		 * Saves pixbuf to a file in format #type. By default, "jpeg", "png", "ico"
-		 * and "bmp" are possible file formats to save in, but more formats may be
-		 * installed. The list of all writable formats can be determined in the
-		 * following way:
-		 * 
-		 * ```c
-		 * void add_if_writable (GdkPixbufFormat *data, GSList **list)
-		 * {
-		 *   if (gdk_pixbuf_format_is_writable (data))
-		 *     *list = g_slist_prepend (*list, data);
-		 * }
-		 * 
-		 * GSList *formats = gdk_pixbuf_get_formats ();
-		 * GSList *writable_formats = NULL;
-		 * g_slist_foreach (formats, add_if_writable, &writable_formats);
-		 * g_slist_free (formats);
-		 * ```
-		 * 
-		 * If `error` is set, `FALSE` will be returned. Possible errors include
-		 * those in the `GDK_PIXBUF_ERROR` domain and those in the `G_FILE_ERROR`
-		 * domain.
-		 * 
-		 * The variable argument list should be `NULL`-terminated; if not empty,
-		 * it should contain pairs of strings that modify the save
-		 * parameters. For example:
-		 * 
-		 * ```c
-		 * gdk_pixbuf_save (pixbuf, handle, "jpeg", &error, "quality", "100", NULL);
-		 * ```
-		 * 
-		 * Currently only few parameters exist.
-		 * 
-		 * JPEG images can be saved with a "quality" parameter; its value should be
-		 * in the range `[0, 100]`. JPEG and PNG density can be set by setting the
-		 * "x-dpi" and "y-dpi" parameters to the appropriate values in dots per inch.
-		 * 
-		 * Text chunks can be attached to PNG images by specifying parameters of
-		 * the form "tEXt::key", where key is an ASCII string of length 1-79.
-		 * The values are UTF-8 encoded strings. The PNG compression level can
-		 * be specified using the "compression" parameter; it's value is in an
-		 * integer in the range of `[0, 9]`.
-		 * 
-		 * ICC color profiles can also be embedded into PNG, JPEG and TIFF images.
-		 * The "icc-profile" value should be the complete ICC profile encoded
-		 * into base64.
-		 * 
-		 * ```c
-		 * char *contents;
-		 * gsize length;
-		 * 
-		 * // icm_path is set elsewhere
-		 * g_file_get_contents (icm_path, &contents, &length, NULL);
-		 * 
-		 * char *contents_encode = g_base64_encode ((const guchar *) contents, length);
-		 * 
-		 * gdk_pixbuf_save (pixbuf, handle, "png", &error, "icc-profile", contents_encode, NULL);
-		 * ```
-		 * 
-		 * TIFF images recognize:
-		 * 
-		 *  1. a "bits-per-sample" option (integer) which can be either 1 for saving
-		 *     bi-level CCITTFAX4 images, or 8 for saving 8-bits per sample
-		 *  2. a "compression" option (integer) which can be 1 for no compression,
-		 *     2 for Huffman, 5 for LZW, 7 for JPEG and 8 for DEFLATE (see the libtiff
-		 *     documentation and tiff.h for all supported codec values)
-		 *  3. an "icc-profile" option (zero-terminated string) containing a base64
-		 *     encoded ICC color profile.
-		 * 
-		 * ICO images can be saved in depth 16, 24, or 32, by using the "depth"
-		 * parameter. When the ICO saver is given "x_hot" and "y_hot" parameters,
-		 * it produces a CUR instead of an ICO.
-		 * @param filename name of file to save.
-		 * @param type name of file format.
-		 * @param error return location for error
-		 * @returns `TRUE` on success, and `FALSE` otherwise
-		 */
-		save(filename: string, type: string, error?: GLib.Error | null): boolean;
-		/**
-		 * Saves pixbuf to a new buffer in format `type`, which is currently "jpeg",
-		 * "png", "tiff", "ico" or "bmp".
-		 * 
-		 * This is a convenience function that uses {@link `gdk.pixbuf_save_to_callback}`
-		 * to do the real work.
-		 * 
-		 * Note that the buffer is not `NUL`-terminated and may contain embedded `NUL`
-		 * characters.
-		 * 
-		 * If #error is set, `FALSE` will be returned and #buffer will be set to
-		 * `NULL`. Possible errors include those in the `GDK_PIXBUF_ERROR`
-		 * domain.
-		 * 
-		 * See `gdk_pixbuf_save()` for more details.
-		 * @param type name of file format.
-		 * @param error return location for error, or `NULL`
-		 * @returns whether an error was set
-		 * 
-		 * location to receive a pointer
-		 *   to the new buffer.
-		 */
-		save_to_buffer(type: string, error?: GLib.Error | null): [ boolean, number[] ];
-		/**
 		 * Vector version of {@link `gdk.pixbuf_save_to_buffer}`.
 		 * 
 		 * Saves pixbuf to a new buffer in format #type, which is currently "jpeg",
@@ -488,25 +379,6 @@ declare namespace imports.gi.GdkPixbuf {
 		 *   location to receive a pointer to the new buffer.
 		 */
 		save_to_bufferv(type: string, option_keys?: string[] | null, option_values?: string[] | null): [ boolean, number[] ];
-		/**
-		 * Saves pixbuf in format `type` by feeding the produced data to a
-		 * callback.
-		 * 
-		 * This function can be used when you want to store the image to something
-		 * other than a file, such as an in-memory buffer or a socket.
-		 * 
-		 * If #error is set, `FALSE` will be returned. Possible errors
-		 * include those in the `GDK_PIXBUF_ERROR` domain and whatever the save
-		 * function generates.
-		 * 
-		 * See [method#GdkPixbuf.Pixbuf.save] for more details.
-		 * @param save_func a function that is called to save each block of data that
-		 *   the save routine generates.
-		 * @param type name of file format.
-		 * @param error return location for error, or `NULL`
-		 * @returns whether an error was set
-		 */
-		save_to_callback(save_func: PixbufSaveFunc, type: string, error?: GLib.Error | null): boolean;
 		/**
 		 * Vector version of {@link `gdk.pixbuf_save_to_callback}`.
 		 * 
@@ -524,42 +396,6 @@ declare namespace imports.gi.GdkPixbuf {
 		 * @returns whether an error was set
 		 */
 		save_to_callbackv(save_func: PixbufSaveFunc, type: string, option_keys?: string[] | null, option_values?: string[] | null): boolean;
-		/**
-		 * Saves `pixbuf` to an output stream.
-		 * 
-		 * Supported file formats are currently "jpeg", "tiff", "png", "ico" or
-		 * "bmp". See {@link `gdk.pixbuf_save_to_buffer}` for more details.
-		 * 
-		 * The `cancellable` can be used to abort the operation from another
-		 * thread. If the operation was cancelled, the error `G_IO_ERROR_CANCELLED`
-		 * will be returned. Other possible errors are in the `GDK_PIXBUF_ERROR`
-		 * and `G_IO_ERROR` domains.
-		 * 
-		 * The stream is not closed at the end of this call.
-		 * @param stream a `GOutputStream` to save the pixbuf to
-		 * @param type name of file format
-		 * @param cancellable optional `GCancellable` object, `NULL` to ignore
-		 * @param error return location for error, or `NULL`
-		 * @returns `TRUE` if the pixbuf was saved successfully, `FALSE` if an
-		 *   error was set.
-		 */
-		save_to_stream(stream: Gio.OutputStream, type: string, cancellable?: Gio.Cancellable | null, error?: GLib.Error | null): boolean;
-		/**
-		 * Saves `pixbuf` to an output stream asynchronously.
-		 * 
-		 * For more details see {@link GdkPixbuf.save_to_stream}, which is the synchronous
-		 * version of this function.
-		 * 
-		 * When the operation is finished, `callback` will be called in the main thread.
-		 * 
-		 * You can then call gdk_pixbuf_save_to_stream_finish() to get the result of
-		 * the operation.
-		 * @param stream a `GOutputStream` to which to save the pixbuf
-		 * @param type name of file format
-		 * @param cancellable optional `GCancellable` object, `NULL` to ignore
-		 * @param callback a `GAsyncReadyCallback` to call when the pixbuf is saved
-		 */
-		save_to_stream_async(stream: Gio.OutputStream, type: string, cancellable?: Gio.Cancellable | null, callback?: Gio.AsyncReadyCallback | null): void;
 		/**
 		 * Saves `pixbuf` to an output stream.
 		 * 
@@ -670,13 +506,6 @@ declare namespace imports.gi.GdkPixbuf {
 		 * @returns `TRUE` on success
 		 */
 		set_option(key: string, value: string): boolean;
-		/**
-		 * @deprecated
-		 * Use {@link GObject.unref}.
-		 * 
-		 * Removes a reference from a pixbuf.
-		 */
-		unref(): void;
 		connect(signal: "notify::bits-per-sample", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::colorspace", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::has-alpha", callback: (owner: this, ...args: any) => void): number;
@@ -1312,21 +1141,6 @@ declare namespace imports.gi.GdkPixbuf {
 		 * @returns `TRUE` if the "animation" was really just an image
 		 */
 		is_static_image(): boolean;
-		/**
-		 * @deprecated
-		 * Use {@link GObject.ref}.
-		 * 
-		 * Adds a reference to an animation.
-		 * @returns The same as the #animation argument.
-		 */
-		ref(): PixbufAnimation;
-		/**
-		 * @deprecated
-		 * Use {@link GObject.unref}.
-		 * 
-		 * Removes a reference from an animation.
-		 */
-		unref(): void;
 	}
 
 	type PixbufAnimationInitOptionsMixin = GObject.ObjectInitOptions

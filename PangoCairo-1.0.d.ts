@@ -42,14 +42,6 @@ declare namespace imports.gi.PangoCairo {
 	 */
 	interface IFontMap {
 		/**
-		 * @deprecated
-		 * Use {@link Pango.FontMap.create_context} instead.
-		 * 
-		 * Create a `PangoContext` for the given fontmap.
-		 * @returns the newly created context; free with {@link GObject.unref}.
-		 */
-		create_context(): Pango.Context;
-		/**
 		 * Gets the type of Cairo font backend that #fontmap uses.
 		 * @returns the `cairo_font_type_t` cairo font backend type
 		 */

@@ -4,7 +4,6 @@ declare namespace imports.gi.Cogl {
 	 * use {@link Bitmap} instead.
 	 */
 	interface IBitmap {
-		get_buffer(): any;
 		get_format(): PixelFormat;
 		get_height(): number;
 		get_rowstride(): number;
@@ -103,27 +102,7 @@ declare namespace imports.gi.Cogl {
 	 * use {@link Context} instead.
 	 */
 	interface IContext {
-		/**
-		 * Retrieves the {@link Display} that is internally associated with the
-		 * given #context. This will return the same #CoglDisplay that was
-		 * passed to {@link Cogl.Context.new} or if %NULL was passed to
-		 * cogl_context_new() then this function returns a pointer to the
-		 * display that was automatically setup internally.
-		 * @returns The {@link Display} associated with the
-		 *               given #context.
-		 */
-		get_display(): any;
-		/**
-		 * Retrieves the {@link Renderer} that is internally associated with the
-		 * given #context. This will return the same #CoglRenderer that was
-		 * passed to {@link Cogl.display_new} or if %NULL was passed to
-		 * cogl_display_new() or cogl_context_new() then this function returns
-		 * a pointer to the renderer that was automatically connected
-		 * internally.
-		 * @returns The {@link Renderer} associated with the
-		 *               given #context.
-		 */
-		get_renderer(): any;
+
 	}
 
 	type ContextInitOptionsMixin = ObjectInitOptions
@@ -151,30 +130,7 @@ declare namespace imports.gi.Cogl {
 	 * use {@link Object} instead.
 	 */
 	interface IObject {
-		/**
-		 * Finds the user data previously associated with #object using
-		 * the given #key. If no user data has been associated with #object
-		 * for the given #key this function returns NULL.
-		 * @param key The address of a {@link UserDataKey} which provides a unique value
-		 *       with which to index the private data.
-		 * @returns The user data previously associated
-		 *   with #object using the given #key; or %NULL if no associated
-		 *   data is found.
-		 */
-		get_user_data(key: UserDataKey): any | null;
-		/**
-		 * Associates some private #user_data with a given {@link Object}. To
-		 * later remove the association call {@link Cogl.Object.set_user_data} with
-		 * the same #key but NULL for the #user_data.
-		 * @param key The address of a {@link UserDataKey} which provides a unique value
-		 *   with which to index the private data.
-		 * @param user_data The data to associate with the given object,
-		 *   or %NULL to remove a previous association.
-		 * @param destroy A {@link UserDataDestroyCallback} to call if the object is
-		 *   destroyed or if the association is removed by later setting
-		 *   %NULL data for the same key.
-		 */
-		set_user_data(key: UserDataKey, user_data: any | null, destroy: UserDataDestroyCallback): void;
+
 	}
 
 	type ObjectInitOptionsMixin  = {};
@@ -207,7 +163,7 @@ declare namespace imports.gi.Cogl {
 	 * use {@link Offscreen} instead.
 	 */
 	interface IOffscreen {
-		get_texture(): Texture;
+
 	}
 
 	type OffscreenInitOptionsMixin = ObjectInitOptions & FramebufferInitOptions
@@ -302,37 +258,6 @@ declare namespace imports.gi.Cogl {
 		 *               remove the callback and associated #user_data later.
 		 */
 		add_dirty_callback(callback: OnscreenDirtyCallback, destroy?: UserDataDestroyCallback | null): OnscreenDirtyClosure;
-		/**
-		 * Installs a #callback function that will be called for significant
-		 * events relating to the given #onscreen framebuffer.
-		 * 
-		 * The #callback will be used to notify when the system compositor is
-		 * ready for this application to render a new frame. In this case
-		 * %COGL_FRAME_EVENT_SYNC will be passed as the event argument to the
-		 * given #callback in addition to the {@link FrameInfo} corresponding to
-		 * the frame beeing acknowledged by the compositor.
-		 * 
-		 * The #callback will also be called to notify when the frame has
-		 * ended. In this case %COGL_FRAME_EVENT_COMPLETE will be passed as
-		 * the event argument to the given #callback in addition to the
-		 * #CoglFrameInfo corresponding to the newly presented frame.  The
-		 * meaning of "ended" here simply means that no more timing
-		 * information will be collected within the corresponding
-		 * #CoglFrameInfo and so this is a good opportunity to analyse the
-		 * given info. It does not necessarily mean that the GPU has finished
-		 * rendering the corresponding frame.
-		 * 
-		 * We highly recommend throttling your application according to
-		 * %COGL_FRAME_EVENT_SYNC events so that your application can avoid
-		 * wasting resources, drawing more frames than your system compositor
-		 * can display.
-		 * @param callback A callback function to call for frame events
-		 * @param destroy An optional callback to destroy #user_data
-		 *           when the #callback is removed or #onscreen is freed.
-		 * @returns a {@link FrameClosure} pointer that can be used to
-		 *               remove the callback and associated #user_data later.
-		 */
-		add_frame_callback(callback: FrameCallback, destroy?: UserDataDestroyCallback | null): FrameClosure;
 		/**
 		 * Registers a #callback with #onscreen that will be called whenever
 		 * the #onscreen framebuffer changes size.
@@ -629,24 +554,6 @@ declare namespace imports.gi.Cogl {
 	 */
 	interface IPipeline {
 		/**
-		 * Adds a shader snippet that will hook on to the given layer of the
-		 * pipeline. The exact part of the pipeline that the snippet wraps
-		 * around depends on the hook that is given to
-		 * {@link Cogl.snippet_new}. Note that some hooks can't be used with a layer
-		 * and need to be added with cogl_pipeline_add_snippet() instead.
-		 * @param layer The layer to hook the snippet to
-		 * @param snippet A {@link Snippet}
-		 */
-		add_layer_snippet(layer: number, snippet: any): void;
-		/**
-		 * Adds a shader snippet to #pipeline. The snippet will wrap around or
-		 * replace some part of the pipeline as defined by the hook point in
-		 * #snippet. Note that some hook points are specific to a layer and
-		 * must be added with {@link Cogl.Pipeline.add_layer_snippet} instead.
-		 * @param snippet The {@link Snippet} to add to the vertex processing hook
-		 */
-		add_snippet(snippet: any): void;
-		/**
 		 * Creates a new pipeline with the configuration copied from the
 		 * source pipeline.
 		 * 
@@ -672,12 +579,6 @@ declare namespace imports.gi.Cogl {
 		 */
 		get_color(): Color;
 		get_cull_face_mode(): PipelineCullFaceMode;
-		/**
-		 * Retrieves the current depth state configuration for the given
-		 * #pipeline as previously set using {@link Cogl.Pipeline.set_depth_state}.
-		 * @returns A destination {@link DepthState} struct
-		 */
-		get_depth_state(): any;
 		/**
 		 * The order of the vertices within a primitive specifies whether it
 		 * is considered to be front or back facing. This function specifies
@@ -916,19 +817,6 @@ declare namespace imports.gi.Cogl {
 		 * @param cull_face_mode The new mode to set
 		 */
 		set_cull_face_mode(cull_face_mode: PipelineCullFaceMode): void;
-		/**
-		 * This commits all the depth state configured in #state struct to the
-		 * given #pipeline. The configuration values are copied into the
-		 * pipeline so there is no requirement to keep the {@link DepthState}
-		 * struct around if you don't need it any more.
-		 * 
-		 * Note: Since some platforms do not support the depth range feature
-		 * it is possible for this function to fail and report an #error.
-		 * @param state A {@link DepthState} struct
-		 * @returns TRUE if the GPU supports all the given #state else %FALSE
-		 *          and returns an #error.
-		 */
-		set_depth_state(state: any): boolean;
 		/**
 		 * The order of the vertices within a primitive specifies whether it
 		 * is considered to be front or back facing. This function specifies
@@ -2868,27 +2756,6 @@ declare namespace imports.gi.Cogl {
 		 */
 		draw_multitextured_rectangle(pipeline: Pipeline, x_1: number, y_1: number, x_2: number, y_2: number, tex_coords: number[], tex_coords_len: number): void;
 		/**
-		 * @deprecated
-		 * Use {@link Primitive}<!-- -->s and
-		 *                   {@link Cogl.primitive_draw} instead
-		 * 
-		 * Draws the given #primitive geometry to the specified destination
-		 * #framebuffer using the graphics processing state described by #pipeline.
-		 * 
-		 * This drawing api doesn't support high-level meta texture types such
-		 * as {@link Texture2DSliced} so it is the user's responsibility to
-		 * ensure that only low-level textures that can be directly sampled by
-		 * a GPU such as #CoglTexture2D are associated with layers of the given
-		 * #pipeline.
-		 * 
-		 * <note>This api doesn't support any of the legacy global state options such
-		 * as {@link Cogl.set.depth_test_enabled} or
-		 * cogl_set_backface_culling_enabled().</note>
-		 * @param pipeline A {@link Pipeline} state object
-		 * @param primitive A {@link Primitive} geometry object
-		 */
-		draw_primitive(pipeline: Pipeline, primitive: any): void;
-		/**
 		 * Draws a rectangle to #framebuffer with the given #pipeline state
 		 * and with the top left corner positioned at (#x_1, #y_1) and the
 		 * bottom right corner positioned at (#x_2, #y_2).
@@ -3229,30 +3096,6 @@ declare namespace imports.gi.Cogl {
 		 * can later be restored with {@link Cogl.Framebuffer.pop_matrix}.
 		 */
 		push_matrix(): void;
-		/**
-		 * Sets a new clipping area using a 2D shaped described with a
-		 * {@link Primitive}. The shape must not contain self overlapping
-		 * geometry and must lie on a single 2D plane. A bounding box of the
-		 * 2D shape in local coordinates (the same coordinates used to
-		 * describe the shape) must be given. It is acceptable for the bounds
-		 * to be larger than the true bounds but behaviour is undefined if the
-		 * bounds are smaller than the true bounds.
-		 * 
-		 * The primitive is transformed by the current model-view matrix and
-		 * the silhouette is intersected with the previous clipping area.  To
-		 * restore the previous clipping area, call
-		 * {@link Cogl.Framebuffer.pop_clip}.
-		 * @param primitive A {@link Primitive} describing a flat 2D shape
-		 * @param bounds_x1 x coordinate for the top-left corner of the primitives
-		 *             bounds
-		 * @param bounds_y1 y coordinate for the top-left corner of the primitives
-		 *             bounds
-		 * @param bounds_x2 x coordinate for the bottom-right corner of the
-		 *             primitives bounds.
-		 * @param bounds_y2 y coordinate for the bottom-right corner of the
-		 *             primitives bounds.
-		 */
-		push_primitive_clip(primitive: any, bounds_x1: number, bounds_y1: number, bounds_x2: number, bounds_y2: number): void;
 		/**
 		 * Specifies a modelview transformed rectangular clipping area for all
 		 * subsequent drawing operations. Any drawing commands that extend
@@ -3644,7 +3487,6 @@ declare namespace imports.gi.Cogl {
 		 * @returns the width of the GPU side texture in pixels
 		 */
 		get_width(): number;
-		is_get_data_supported(): boolean;
 		/**
 		 * Queries if a texture is sliced (stored as multiple GPU side tecture
 		 * objects).

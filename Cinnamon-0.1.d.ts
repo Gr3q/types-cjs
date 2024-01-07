@@ -1105,7 +1105,6 @@ declare namespace imports.gi.Cinnamon {
 		 *   if the index is out of range.
 		 */
 		get_workspace_by_index(index: number): Meta.Workspace;
-		get_workspaces(): Meta.Workspace[];
 		get_xwindow_for_window(window: Meta.Window): number;
 		/**
 		 * Explicitly set the layout of workspaces. Once this has been called, the contents of the
@@ -1637,48 +1636,6 @@ declare namespace imports.gi.Cinnamon {
 		 * @param arg_ids Argument to pass with the signal.
 		 */
 		emit_events_removed(arg_ids: string): void;
-		/**
-		 * Gets the value of the <link linkend="gdbus-property-org-cinnamon-CalendarServer.Since">"Since"</link> D-Bus property.
-		 * 
-		 * Since this D-Bus property is readable, it is meaningful to use this function on both the client- and service-side.
-		 * @returns The property value.
-		 */
-		get_since(): number;
-		/**
-		 * Gets the value of the <link linkend="gdbus-property-org-cinnamon-CalendarServer.Status">"Status"</link> D-Bus property.
-		 * 
-		 * Since this D-Bus property is readable, it is meaningful to use this function on both the client- and service-side.
-		 * @returns The property value.
-		 */
-		get_status(): number;
-		/**
-		 * Gets the value of the <link linkend="gdbus-property-org-cinnamon-CalendarServer.Until">"Until"</link> D-Bus property.
-		 * 
-		 * Since this D-Bus property is readable, it is meaningful to use this function on both the client- and service-side.
-		 * @returns The property value.
-		 */
-		get_until(): number;
-		/**
-		 * Sets the <link linkend="gdbus-property-org-cinnamon-CalendarServer.Since">"Since"</link> D-Bus property to #value.
-		 * 
-		 * Since this D-Bus property is not writable, it is only meaningful to use this function on the service-side.
-		 * @param value The value to set.
-		 */
-		set_since(value: number): void;
-		/**
-		 * Sets the <link linkend="gdbus-property-org-cinnamon-CalendarServer.Status">"Status"</link> D-Bus property to #value.
-		 * 
-		 * Since this D-Bus property is not writable, it is only meaningful to use this function on the service-side.
-		 * @param value The value to set.
-		 */
-		set_status(value: number): void;
-		/**
-		 * Sets the <link linkend="gdbus-property-org-cinnamon-CalendarServer.Until">"Until"</link> D-Bus property to #value.
-		 * 
-		 * Since this D-Bus property is not writable, it is only meaningful to use this function on the service-side.
-		 * @param value The value to set.
-		 */
-		set_until(value: number): void;
 		/**
 		 * On the client-side, this signal is emitted whenever the D-Bus signal <link linkend="gdbus-signal-org-cinnamon-CalendarServer.ClientDisappeared">"ClientDisappeared"</link> is received.
 		 * 

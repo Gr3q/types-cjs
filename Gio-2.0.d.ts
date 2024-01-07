@@ -1343,26 +1343,6 @@ declare namespace imports.gi.Gio {
 		 */
 		getenv(name: string): string | null;
 		/**
-		 * Formats a message and prints it using the stdout print handler in the
-		 * invoking process.
-		 * 
-		 * If #cmdline is a local invocation then this is exactly equivalent to
-		 * {@link G.print}.  If #cmdline is remote then this is equivalent to calling
-		 * g_print() in the invoking process.
-		 * @param format a printf-style format string
-		 */
-		print(format: string): void;
-		/**
-		 * Formats a message and prints it using the stderr print handler in the
-		 * invoking process.
-		 * 
-		 * If #cmdline is a local invocation then this is exactly equivalent to
-		 * {@link G.printerr}.  If #cmdline is remote then this is equivalent to
-		 * calling g_printerr() in the invoking process.
-		 * @param format a printf-style format string
-		 */
-		printerr(format: string): void;
-		/**
 		 * Sets the exit status that will be used when the invoking process
 		 * exits.
 		 * 
@@ -2283,20 +2263,6 @@ declare namespace imports.gi.Gio {
 	 * use {@link Credentials} instead.
 	 */
 	interface ICredentials {
-		/**
-		 * Gets a pointer to native credentials of type #native_type from
-		 * #credentials.
-		 * 
-		 * It is a programming error (which will cause a warning to be
-		 * logged) to use this method if there is no #GCredentials support for
-		 * the OS or if #native_type isn't supported by the OS.
-		 * @param native_type The type of native credentials to get.
-		 * @returns The pointer to native credentials or
-		 *     %NULL if there is no #GCredentials support for the OS or if #native_type
-		 *     isn't supported by the OS. Do not free the returned data, it is owned
-		 *     by #credentials.
-		 */
-		get_native(native_type: CredentialsType): any | null;
 		/**
 		 * Tries to get the UNIX process identifier from #credentials. This
 		 * method is only available on UNIX platforms.
@@ -4046,25 +4012,10 @@ declare namespace imports.gi.Gio {
 		/**
 		 * Creates a new #GDBusMessage that is an error reply to #method_call_message.
 		 * @param error_name A valid D-Bus error name.
-		 * @param error_message_format The D-Bus error message in a printf() format.
-		 * @returns A #GDBusMessage. Free with {@link GObject.unref}.
-		 */
-		new_method_error(error_name: string, error_message_format: string): DBusMessage;
-		/**
-		 * Creates a new #GDBusMessage that is an error reply to #method_call_message.
-		 * @param error_name A valid D-Bus error name.
 		 * @param error_message The D-Bus error message.
 		 * @returns A #GDBusMessage. Free with {@link GObject.unref}.
 		 */
 		new_method_error_literal(error_name: string, error_message: string): DBusMessage;
-		/**
-		 * Like {@link G.dbus_message_new_method_error} but intended for language bindings.
-		 * @param error_name A valid D-Bus error name.
-		 * @param error_message_format The D-Bus error message in a printf() format.
-		 * @param var_args Arguments for #error_message_format.
-		 * @returns A #GDBusMessage. Free with {@link GObject.unref}.
-		 */
-		new_method_error_valist(error_name: string, error_message_format: string, var_args: any[]): DBusMessage;
 		/**
 		 * Creates a new #GDBusMessage that is a reply to #method_call_message.
 		 * @returns #GDBusMessage. Free with {@link GObject.unref}.
@@ -4371,11 +4322,6 @@ declare namespace imports.gi.Gio {
 		 */
 		get_sender(): string;
 		/**
-		 * Gets the #user_data #gpointer passed to {@link G.dbus_connection_register_object}.
-		 * @returns A #gpointer.
-		 */
-		get_user_data(): any | null;
-		/**
 		 * Finishes handling a D-Bus method call by returning an error.
 		 * 
 		 * This method will take ownership of #invocation. See
@@ -4385,32 +4331,6 @@ declare namespace imports.gi.Gio {
 		 * @param error_message A valid D-Bus error message.
 		 */
 		return_dbus_error(error_name: string, error_message: string): void;
-		/**
-		 * Finishes handling a D-Bus method call by returning an error.
-		 * 
-		 * See {@link G.dbus_error_encode_gerror} for details about what error name
-		 * will be returned on the wire. In a nutshell, if the given error is
-		 * registered using g_dbus_error_register_error() the name given
-		 * during registration is used. Otherwise, a name of the form
-		 * `org.gtk.GDBus.UnmappedGError.Quark...` is used. This provides
-		 * transparent mapping of #GError between applications using GDBus.
-		 * 
-		 * If you are writing an application intended to be portable,
-		 * always register errors with g_dbus_error_register_error()
-		 * or use g_dbus_method_invocation_return_dbus_error().
-		 * 
-		 * This method will take ownership of #invocation. See
-		 * #GDBusInterfaceVTable for more information about the ownership of
-		 * #invocation.
-		 * 
-		 * Since 2.48, if the method call requested for a reply not to be sent
-		 * then this call will free #invocation but otherwise do nothing (as per
-		 * the recommendations of the D-Bus specification).
-		 * @param domain A #GQuark for the #GError error domain.
-		 * @param code The error code.
-		 * @param format printf()-style format.
-		 */
-		return_error(domain: GLib.Quark, code: number, format: string): void;
 		/**
 		 * Like {@link G.dbus_method_invocation_return_error} but without printf()-style formatting.
 		 * 
@@ -4422,19 +4342,6 @@ declare namespace imports.gi.Gio {
 		 * @param message The error message.
 		 */
 		return_error_literal(domain: GLib.Quark, code: number, message: string): void;
-		/**
-		 * Like {@link G.dbus_method_invocation_return_error} but intended for
-		 * language bindings.
-		 * 
-		 * This method will take ownership of #invocation. See
-		 * #GDBusInterfaceVTable for more information about the ownership of
-		 * #invocation.
-		 * @param domain A #GQuark for the #GError error domain.
-		 * @param code The error code.
-		 * @param format printf()-style format.
-		 * @param var_args #va_list of parameters for #format.
-		 */
-		return_error_valist(domain: GLib.Quark, code: number, format: string, var_args: any[]): void;
 		/**
 		 * Like {@link G.dbus_method_invocation_return_error} but takes a #GError
 		 * instead of the error domain, error code and message.
@@ -4493,16 +4400,6 @@ declare namespace imports.gi.Gio {
 		 * @param fd_list A #GUnixFDList or %NULL.
 		 */
 		return_value_with_unix_fd_list(parameters?: GLib.Variant | null, fd_list?: UnixFDList | null): void;
-		/**
-		 * Like {@link G.dbus_method_invocation_return_gerror} but takes ownership
-		 * of #error so the caller does not need to free it.
-		 * 
-		 * This method will take ownership of #invocation. See
-		 * #GDBusInterfaceVTable for more information about the ownership of
-		 * #invocation.
-		 * @param error A #GError.
-		 */
-		take_error(error: GLib.Error): void;
 	}
 
 	type DBusMethodInvocationInitOptionsMixin = GObject.ObjectInitOptions
@@ -8447,37 +8344,7 @@ declare namespace imports.gi.Gio {
 	 * use {@link IOModule} instead.
 	 */
 	interface IIOModule {
-		/**
-		 * Required API for GIO modules to implement.
-		 * 
-		 * This function is run after the module has been loaded into GIO,
-		 * to initialize the module. Typically, this function will call
-		 * {@link G.io_extension_point_implement}.
-		 * 
-		 * Since 2.56, this function should be named `g_io_<modulename>_load`, where
-		 * `modulename` is the plugin’s filename with the `lib` or `libgio` prefix and
-		 * everything after the first dot removed, and with `-` replaced with `_`
-		 * throughout. For example, `libgiognutls-helper.so` becomes `gnutls_helper`.
-		 * Using the new symbol names avoids name clashes when building modules
-		 * statically. The old symbol names continue to be supported, but cannot be used
-		 * for static builds.
-		 */
-		load(): void;
-		/**
-		 * Required API for GIO modules to implement.
-		 * 
-		 * This function is run when the module is being unloaded from GIO,
-		 * to finalize the module.
-		 * 
-		 * Since 2.56, this function should be named `g_io_<modulename>_unload`, where
-		 * `modulename` is the plugin’s filename with the `lib` or `libgio` prefix and
-		 * everything after the first dot removed, and with `-` replaced with `_`
-		 * throughout. For example, `libgiognutls-helper.so` becomes `gnutls_helper`.
-		 * Using the new symbol names avoids name clashes when building modules
-		 * statically. The old symbol names continue to be supported, but cannot be used
-		 * for static builds.
-		 */
-		unload(): void;
+
 	}
 
 	type IOModuleInitOptionsMixin = GObject.TypeModuleInitOptions & GObject.TypePluginInitOptions
@@ -8865,13 +8732,6 @@ declare namespace imports.gi.Gio {
 		 * @returns the number of bytes used for the native version of #address.
 		 */
 		get_native_size(): number;
-		/**
-		 * Gets the raw binary address data from #address.
-		 * @returns a pointer to an internal array of the bytes in #address,
-		 * which should not be modified, stored, or freed. The size of this
-		 * array can be gotten with {@link G.inet_address_get_native_size}.
-		 */
-		to_bytes(): number;
 		/**
 		 * Converts #address to string form.
 		 * @returns a representation of #address as a string, which should be
@@ -9723,14 +9583,6 @@ declare namespace imports.gi.Gio {
 		 */
 		readonly data_size: number;
 		/**
-		 * Function called with the buffer as argument when the stream is destroyed.
-		 */
-		destroy_function: any;
-		/**
-		 * Function with realloc semantics called to enlarge the buffer.
-		 */
-		realloc_function: any;
-		/**
 		 * Current size of the data buffer.
 		 */
 		size: number;
@@ -9787,8 +9639,6 @@ declare namespace imports.gi.Gio {
 		steal_data(): any | null;
 		connect(signal: "notify::data", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::data-size", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::destroy-function", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::realloc-function", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::size", callback: (owner: this, ...args: any) => void): number;
 
 	}
@@ -9796,8 +9646,6 @@ declare namespace imports.gi.Gio {
 	type MemoryOutputStreamInitOptionsMixin = OutputStreamInitOptions & PollableOutputStreamInitOptions & SeekableInitOptions & 
 	Pick<IMemoryOutputStream,
 		"data" |
-		"destroy_function" |
-		"realloc_function" |
 		"size">;
 
 	export interface MemoryOutputStreamInitOptions extends MemoryOutputStreamInitOptionsMixin {}
@@ -10135,22 +9983,6 @@ declare namespace imports.gi.Gio {
 		/**
 		 * Queries the named #attribute on #menu_item.
 		 * 
-		 * If the attribute exists and matches the #GVariantType corresponding
-		 * to #format_string then #format_string is used to deconstruct the
-		 * value into the positional parameters and %TRUE is returned.
-		 * 
-		 * If the attribute does not exist, or it does exist but has the wrong
-		 * type, then the positional parameters are ignored and %FALSE is
-		 * returned.
-		 * @param attribute the attribute name to query
-		 * @param format_string a #GVariant format string
-		 * @returns %TRUE if the named attribute was found with the expected
-		 *     type
-		 */
-		get_attribute(attribute: string, format_string: string): boolean;
-		/**
-		 * Queries the named #attribute on #menu_item.
-		 * 
 		 * If #expected_type is specified and the attribute does not have this
 		 * type, %NULL is returned.  %NULL is also returned if the attribute
 		 * simply does not exist.
@@ -10165,30 +9997,6 @@ declare namespace imports.gi.Gio {
 		 * @returns the link, or %NULL
 		 */
 		get_link(link: string): MenuModel | null;
-		/**
-		 * Sets or unsets the "action" and "target" attributes of #menu_item.
-		 * 
-		 * If #action is %NULL then both the "action" and "target" attributes
-		 * are unset (and #format_string is ignored along with the positional
-		 * parameters).
-		 * 
-		 * If #action is non-%NULL then the "action" attribute is set.
-		 * #format_string is then inspected.  If it is non-%NULL then the proper
-		 * position parameters are collected to create a #GVariant instance to
-		 * use as the target value.  If it is %NULL then the positional
-		 * parameters are ignored and the "target" attribute is unset.
-		 * 
-		 * See also {@link G.menu_item_set_action_and_target_value} for an equivalent
-		 * call that directly accepts a #GVariant.  See
-		 * g_menu_item_set_detailed_action() for a more convenient version that
-		 * works with string-typed targets.
-		 * 
-		 * See also g_menu_item_set_action_and_target_value() for a
-		 * description of the semantics of the action and target attributes.
-		 * @param action the name of the action for this item
-		 * @param format_string a GVariant format string
-		 */
-		set_action_and_target(action?: string | null, format_string?: string | null): void;
 		/**
 		 * Sets or unsets the "action" and "target" attributes of #menu_item.
 		 * 
@@ -10230,28 +10038,6 @@ declare namespace imports.gi.Gio {
 		 * @param target_value a #GVariant to use as the action target
 		 */
 		set_action_and_target_value(action?: string | null, target_value?: GLib.Variant | null): void;
-		/**
-		 * Sets or unsets an attribute on #menu_item.
-		 * 
-		 * The attribute to set or unset is specified by #attribute. This
-		 * can be one of the standard attribute names %G_MENU_ATTRIBUTE_LABEL,
-		 * %G_MENU_ATTRIBUTE_ACTION, %G_MENU_ATTRIBUTE_TARGET, or a custom
-		 * attribute name.
-		 * Attribute names are restricted to lowercase characters, numbers
-		 * and '-'. Furthermore, the names must begin with a lowercase character,
-		 * must not end with a '-', and must not contain consecutive dashes.
-		 * 
-		 * If #format_string is non-%NULL then the proper position parameters
-		 * are collected to create a #GVariant instance to use as the attribute
-		 * value.  If it is %NULL then the positional parameterrs are ignored
-		 * and the named attribute is unset.
-		 * 
-		 * See also {@link G.menu_item_set_attribute_value} for an equivalent call
-		 * that directly accepts a #GVariant.
-		 * @param attribute the attribute to set
-		 * @param format_string a #GVariant format string, or %NULL
-		 */
-		set_attribute(attribute: string, format_string?: string | null): void;
 		/**
 		 * Sets or unsets an attribute on #menu_item.
 		 * 
@@ -10549,30 +10335,6 @@ declare namespace imports.gi.Gio {
 	 * use {@link MenuModel} instead.
 	 */
 	interface IMenuModel {
-		/**
-		 * Queries item at position #item_index in #model for the attribute
-		 * specified by #attribute.
-		 * 
-		 * If the attribute exists and matches the #GVariantType corresponding
-		 * to #format_string then #format_string is used to deconstruct the
-		 * value into the positional parameters and %TRUE is returned.
-		 * 
-		 * If the attribute does not exist, or it does exist but has the wrong
-		 * type, then the positional parameters are ignored and %FALSE is
-		 * returned.
-		 * 
-		 * This function is a mix of {@link G.menu_model_get_item_attribute_value} and
-		 * g_variant_get(), followed by a g_variant_unref().  As such,
-		 * #format_string must make a complete copy of the data (since the
-		 * #GVariant may go away after the call to g_variant_unref()).  In
-		 * particular, no '&' characters are allowed in #format_string.
-		 * @param item_index the index of the item
-		 * @param attribute the attribute to query
-		 * @param format_string a #GVariant format string
-		 * @returns %TRUE if the named attribute was found with the expected
-		 *     type
-		 */
-		get_item_attribute(item_index: number, attribute: string, format_string: string): boolean;
 		/**
 		 * Queries the item at position #item_index in #model for the attribute
 		 * specified by #attribute.
@@ -11429,17 +11191,6 @@ declare namespace imports.gi.Gio {
 		 */
 		add_button(label: string, detailed_action: string): void;
 		/**
-		 * Adds a button to #notification that activates #action when clicked.
-		 * #action must be an application-wide action (it must start with "app.").
-		 * 
-		 * If #target is non-%NULL, #action will be activated with #target as
-		 * its parameter.
-		 * @param label label of the button
-		 * @param action an action name
-		 * @param target a #GVariant to use as #action's parameter, or %NULL
-		 */
-		add_button_with_target(label: string, action: string, target?: GLib.Variant | null): void;
-		/**
 		 * Sets the body of #notification to #body.
 		 * @param body the new body for #notification, or %NULL
 		 */
@@ -11469,20 +11220,6 @@ declare namespace imports.gi.Gio {
 		 * @param detailed_action a detailed action name
 		 */
 		set_default_action(detailed_action: string): void;
-		/**
-		 * Sets the default action of #notification to #action. This action is
-		 * activated when the notification is clicked on. It must be an
-		 * application-wide action (start with "app.").
-		 * 
-		 * If #target is non-%NULL, #action will be activated with #target as
-		 * its parameter. If #target is floating, it will be consumed.
-		 * 
-		 * When no default action is set, the application that the notification
-		 * was sent on is activated.
-		 * @param action an action name
-		 * @param target a #GVariant to use as #action's parameter, or %NULL
-		 */
-		set_default_action_and_target(action: string, target?: GLib.Variant | null): void;
 		/**
 		 * Sets the icon of #notification to #icon.
 		 * @param icon the icon to be shown in #notification, as a #GIcon
@@ -11699,28 +11436,6 @@ declare namespace imports.gi.Gio {
 		 */
 		is_closing(): boolean;
 		/**
-		 * This is a utility function around {@link G.output_stream_write_all}. It
-		 * uses g_strdup_vprintf() to turn #format and #... into a string that
-		 * is then written to #stream.
-		 * 
-		 * See the documentation of g_output_stream_write_all() about the
-		 * behavior of the actual write operation.
-		 * 
-		 * Note that partial writes cannot be properly checked with this
-		 * function due to the variable length of the written string, if you
-		 * need precise control over partial write failures, you need to
-		 * create you own printf()-like wrapper around g_output_stream_write()
-		 * or g_output_stream_write_all().
-		 * @param cancellable optional #GCancellable object, %NULL to ignore.
-		 * @param error location to store the error occurring, or %NULL to ignore
-		 * @param format the format string. See the printf() documentation
-		 * @returns %TRUE on success, %FALSE if there was an error
-		 * 
-		 * location to store the number of bytes that was
-		 *     written to the stream
-		 */
-		printf(cancellable: Cancellable | null, error: GLib.Error, format: string): [ boolean, number | null ];
-		/**
 		 * Sets #stream to have actions pending. If the pending flag is
 		 * already set or #stream is closed, it will return %FALSE and set
 		 * #error.
@@ -11764,29 +11479,6 @@ declare namespace imports.gi.Gio {
 		 *     number of bytes spliced.
 		 */
 		splice_finish(result: AsyncResult): number;
-		/**
-		 * This is a utility function around {@link G.output_stream_write_all}. It
-		 * uses g_strdup_vprintf() to turn #format and #args into a string that
-		 * is then written to #stream.
-		 * 
-		 * See the documentation of g_output_stream_write_all() about the
-		 * behavior of the actual write operation.
-		 * 
-		 * Note that partial writes cannot be properly checked with this
-		 * function due to the variable length of the written string, if you
-		 * need precise control over partial write failures, you need to
-		 * create you own printf()-like wrapper around g_output_stream_write()
-		 * or g_output_stream_write_all().
-		 * @param cancellable optional #GCancellable object, %NULL to ignore.
-		 * @param error location to store the error occurring, or %NULL to ignore
-		 * @param format the format string. See the printf() documentation
-		 * @param args the parameters to insert into the format string
-		 * @returns %TRUE on success, %FALSE if there was an error
-		 * 
-		 * location to store the number of bytes that was
-		 *     written to the stream
-		 */
-		vprintf(cancellable: Cancellable | null, error: GLib.Error, format: string, args: any[]): [ boolean, number | null ];
 		/**
 		 * Tries to write #count bytes from #buffer into the stream. Will block
 		 * during the operation.
@@ -13049,27 +12741,6 @@ declare namespace imports.gi.Gio {
 		 */
 		bind(key: string, object: GObject.Object, property: string, flags: SettingsBindFlags): void;
 		/**
-		 * Create a binding between the #key in the #settings object
-		 * and the property #property of #object.
-		 * 
-		 * The binding uses the provided mapping functions to map between
-		 * settings and property values.
-		 * 
-		 * Note that the lifecycle of the binding is tied to #object,
-		 * and that you can have only one binding per object property.
-		 * If you bind the same property twice on the same object, the second
-		 * binding overrides the first one.
-		 * @param key the key to bind
-		 * @param object a #GObject
-		 * @param property the name of the property to bind
-		 * @param flags flags for the binding
-		 * @param get_mapping a function that gets called to convert values
-		 *     from #settings to #object, or %NULL to use the default GIO mapping
-		 * @param set_mapping a function that gets called to convert values
-		 *     from #object to #settings, or %NULL to use the default GIO mapping
-		 */
-		bind_with_mapping(key: string, object: GObject.Object, property: string, flags: SettingsBindFlags, get_mapping: SettingsBindGetMapping, set_mapping: SettingsBindSetMapping): void;
-		/**
 		 * Create a binding between the writability of #key in the
 		 * #settings object and the property #property of #object.
 		 * The property must be boolean; "sensitive" or "visible"
@@ -13118,19 +12789,6 @@ declare namespace imports.gi.Gio {
 		 * backend, but kept locally until {@link G.settings_apply} is called.
 		 */
 		delay(): void;
-		/**
-		 * Gets the value that is stored at #key in #settings.
-		 * 
-		 * A convenience function that combines {@link G.settings_get_value} with
-		 * g_variant_get().
-		 * 
-		 * It is a programmer error to give a #key that isn't contained in the
-		 * schema for #settings or for the #GVariantType of #format to mismatch
-		 * the type given in the schema.
-		 * @param key the key to get the value for
-		 * @param format a #GVariant format string
-		 */
-		get(key: string, format: string): void;
 		/**
 		 * Gets the value that is stored at #key in #settings.
 		 * 
@@ -13443,21 +13101,6 @@ declare namespace imports.gi.Gio {
 		 * Change notifications will be emitted for affected keys.
 		 */
 		revert(): void;
-		/**
-		 * Sets #key in #settings to #value.
-		 * 
-		 * A convenience function that combines {@link G.settings_set_value} with
-		 * g_variant_new().
-		 * 
-		 * It is a programmer error to give a #key that isn't contained in the
-		 * schema for #settings or for the #GVariantType of #format to mismatch
-		 * the type given in the schema.
-		 * @param key the name of the key to set
-		 * @param format a #GVariant format string
-		 * @returns %TRUE if setting the key succeeded,
-		 *     %FALSE if the key was not writable
-		 */
-		set(key: string, format: string): boolean;
 		/**
 		 * Sets #key in #settings to #value.
 		 * 
@@ -14647,28 +14290,12 @@ declare namespace imports.gi.Gio {
 		get_op_res_gboolean(): boolean;
 		/**
 		 * @deprecated
-		 * Use #GTask and {@link G.task_propagate_pointer} instead.
-		 * 
-		 * Gets a pointer result as returned by the asynchronous function.
-		 * @returns a pointer from the result.
-		 */
-		get_op_res_gpointer(): any | null;
-		/**
-		 * @deprecated
 		 * Use #GTask and {@link G.task_propagate_int} instead.
 		 * 
 		 * Gets a gssize from the asynchronous result.
 		 * @returns a gssize returned from the asynchronous function.
 		 */
 		get_op_res_gssize(): number;
-		/**
-		 * @deprecated
-		 * Use #GTask and {@link G.task_get_source_tag} instead.
-		 * 
-		 * Gets the source tag for the #GSimpleAsyncResult.
-		 * @returns a #gpointer to the source object for the #GSimpleAsyncResult.
-		 */
-		get_source_tag(): any | null;
 		/**
 		 * @deprecated
 		 * Use #GTask instead.
@@ -14682,21 +14309,6 @@ declare namespace imports.gi.Gio {
 		 * @returns %TRUE if the error was propagated to #dest. %FALSE otherwise.
 		 */
 		propagate_error(): boolean;
-		/**
-		 * @deprecated
-		 * Use #GTask and {@link G.task_run_in_thread} instead.
-		 * 
-		 * Runs the asynchronous job in a separate thread and then calls
-		 * {@link G.simple_async_result_complete_in_idle} on #simple to return
-		 * the result to the appropriate main loop.
-		 * 
-		 * Calling this function takes a reference to #simple for as long as
-		 * is needed to run the job and report its completion.
-		 * @param func a #GSimpleAsyncThreadFunc.
-		 * @param io_priority the io priority of the request.
-		 * @param cancellable optional #GCancellable object, %NULL to ignore.
-		 */
-		run_in_thread(func: SimpleAsyncThreadFunc, io_priority: number, cancellable?: Cancellable | null): void;
 		/**
 		 * @deprecated
 		 * Use #GTask instead.
@@ -14719,28 +14331,6 @@ declare namespace imports.gi.Gio {
 		 * @param check_cancellable a #GCancellable to check, or %NULL to unset
 		 */
 		set_check_cancellable(check_cancellable?: Cancellable | null): void;
-		/**
-		 * @deprecated
-		 * Use #GTask and {@link G.task_return_new_error} instead.
-		 * 
-		 * Sets an error within the asynchronous result without a #GError.
-		 * @param domain a #GQuark (usually %G_IO_ERROR).
-		 * @param code an error code.
-		 * @param format a formatted error reporting string.
-		 */
-		set_error(domain: GLib.Quark, code: number, format: string): void;
-		/**
-		 * @deprecated
-		 * Use #GTask and {@link G.task_return_error} instead.
-		 * 
-		 * Sets an error within the asynchronous result without a #GError.
-		 * Unless writing a binding, see {@link G.simple_async_result_set_error}.
-		 * @param domain a #GQuark (usually %G_IO_ERROR).
-		 * @param code an error code.
-		 * @param format a formatted error reporting string.
-		 * @param args va_list of arguments.
-		 */
-		set_error_va(domain: GLib.Quark, code: number, format: string, args: any[]): void;
 		/**
 		 * @deprecated
 		 * Use #GTask and {@link G.task_return_error} instead.
@@ -14768,14 +14358,6 @@ declare namespace imports.gi.Gio {
 		set_op_res_gboolean(op_res: boolean): void;
 		/**
 		 * @deprecated
-		 * Use #GTask and {@link G.task_return_pointer} instead.
-		 * 
-		 * Sets the operation result within the asynchronous result to a pointer.
-		 * @param op_res a pointer result from an asynchronous function.
-		 */
-		set_op_res_gpointer(op_res?: any | null): void;
-		/**
-		 * @deprecated
 		 * Use #GTask and {@link G.task_return_int} instead.
 		 * 
 		 * Sets the operation result within the asynchronous result to
@@ -14783,15 +14365,6 @@ declare namespace imports.gi.Gio {
 		 * @param op_res a #gssize.
 		 */
 		set_op_res_gssize(op_res: number): void;
-		/**
-		 * @deprecated
-		 * Use #GTask and {@link G.task_return_error} instead.
-		 * 
-		 * Sets the result from #error, and takes over the caller's ownership
-		 * of #error, so the caller does not need to free it any more.
-		 * @param error a #GError
-		 */
-		take_error(error: GLib.Error): void;
 	}
 
 	type SimpleAsyncResultInitOptionsMixin = GObject.ObjectInitOptions & AsyncResultInitOptions
@@ -15472,32 +15045,6 @@ declare namespace imports.gi.Gio {
 		 * @returns a #GSocketConnection
 		 */
 		connection_factory_create_connection(): SocketConnection;
-		/**
-		 * Creates a #GSource that can be attached to a %GMainContext to monitor
-		 * for the availability of the specified #condition on the socket. The #GSource
-		 * keeps a reference to the #socket.
-		 * 
-		 * The callback on the source is of the #GSocketSourceFunc type.
-		 * 
-		 * It is meaningless to specify %G_IO_ERR or %G_IO_HUP in #condition;
-		 * these conditions will always be reported output if they are true.
-		 * 
-		 * #cancellable if not %NULL can be used to cancel the source, which will
-		 * cause the source to trigger, reporting the current condition (which
-		 * is likely 0 unless cancellation happened at the same time as a
-		 * condition change). You can check for this in the callback using
-		 * {@link G.cancellable_is_cancelled}.
-		 * 
-		 * If #socket has a timeout set, and it is reached before #condition
-		 * occurs, the source will then trigger anyway, reporting %G_IO_IN or
-		 * %G_IO_OUT depending on #condition. However, #socket will have been
-		 * marked as having had a timeout, and so the next #GSocket I/O method
-		 * you call will then fail with a %G_IO_ERROR_TIMED_OUT.
-		 * @param condition a #GIOCondition mask to monitor
-		 * @param cancellable a %GCancellable or %NULL
-		 * @returns a newly allocated %GSource, free with {@link G.source_unref}.
-		 */
-		create_source(condition: GLib.IOCondition, cancellable?: Cancellable | null): GLib.Source;
 		/**
 		 * Get the amount of data pending in the OS input buffer, without blocking.
 		 * 
@@ -18057,23 +17604,6 @@ declare namespace imports.gi.Gio {
 		 */
 		getenv(variable: string): string | null;
 		/**
-		 * Sets up a child setup function.
-		 * 
-		 * The child setup function will be called after fork() but before
-		 * exec() on the child's side.
-		 * 
-		 * #destroy_notify will not be automatically called on the child's side
-		 * of the fork().  It will only be called when the last reference on the
-		 * #GSubprocessLauncher is dropped or when a new child setup function is
-		 * given.
-		 * 
-		 * %NULL can be given as #child_setup to disable the functionality.
-		 * 
-		 * Child setup functions are only available on UNIX.
-		 * @param child_setup a #GSpawnChildSetupFunc to use as the child setup function
-		 */
-		set_child_setup(child_setup: GLib.SpawnChildSetupFunc): void;
-		/**
 		 * Sets the current working directory that processes will be launched
 		 * with.
 		 * 
@@ -18182,13 +17712,6 @@ declare namespace imports.gi.Gio {
 		 * @param overwrite whether to change the variable if it already exists
 		 */
 		setenv(variable: string, value: string, overwrite: boolean): void;
-		/**
-		 * Creates a #GSubprocess given a provided varargs list of arguments.
-		 * @param error Error
-		 * @param argv0 Command line arguments
-		 * @returns A new #GSubprocess, or %NULL on error (and #error will be set)
-		 */
-		spawn(error: GLib.Error, argv0: string): Subprocess;
 		/**
 		 * Creates a #GSubprocess given a provided array of arguments.
 		 * @param argv Command line arguments
@@ -18337,21 +17860,6 @@ declare namespace imports.gi.Gio {
 		 * context as the task’s callback, immediately after that callback is invoked.
 		 */
 		readonly completed: boolean;
-		/**
-		 * A utility function for dealing with async operations where you need
-		 * to wait for a #GSource to trigger. Attaches #source to #task's
-		 * #GMainContext with #task's [priority][io-priority], and sets #source's
-		 * callback to #callback, with #task as the callback's `user_data`.
-		 * 
-		 * It will set the #source’s name to the task’s name (as set with
-		 * {@link G.task_set_name}), if one has been set on the task and the source doesn’t
-		 * yet have a name.
-		 * 
-		 * This takes a reference on #task until #source is destroyed.
-		 * @param source the source to attach
-		 * @param callback the callback to invoke when #source triggers
-		 */
-		attach_source(source: GLib.Source, callback: GLib.SourceFunc): void;
 		/**
 		 * Gets #task's #GCancellable
 		 * @returns #task's #GCancellable
@@ -18505,18 +18013,6 @@ declare namespace imports.gi.Gio {
 		 * @param result the integer (#gssize) result of a task function.
 		 */
 		return_int(result: number): void;
-		/**
-		 * Sets #task's result to a new #GError created from #domain, #code,
-		 * #format, and the remaining arguments, and completes the task (see
-		 * {@link G.task_return_pointer} for more discussion of exactly what this
-		 * means).
-		 * 
-		 * See also g_task_return_error().
-		 * @param domain a #GQuark.
-		 * @param code an error code.
-		 * @param format a string with format characters.
-		 */
-		return_new_error(domain: GLib.Quark, code: number, format: string): void;
 		/**
 		 * Sets #task's result to #result and completes the task. If #result
 		 * is not %NULL, then #result_destroy will be used to free #result if
@@ -26980,12 +26476,6 @@ declare namespace imports.gi.Gio {
 		 */
 		get_info(): DBusInterfaceInfo;
 		/**
-		 * Gets the #GDBusObject that #interface_ belongs to, if any.
-		 * @returns A #GDBusObject or %NULL. The returned
-		 * reference should be freed with {@link GObject.unref}.
-		 */
-		get_object(): DBusObject | null;
-		/**
 		 * Sets the #GDBusObject for #interface_ to #object.
 		 * 
 		 * Note that #interface_ will hold a weak reference to #object.
@@ -29416,26 +28906,6 @@ declare namespace imports.gi.Gio {
 		 */
 		load_contents_finish(res: AsyncResult): [ boolean, number[], string | null ];
 		/**
-		 * Reads the partial contents of a file. A #GFileReadMoreCallback should
-		 * be used to stop reading from the file when appropriate, else this
-		 * function will behave exactly as {@link G.file_load_contents_async}. This
-		 * operation can be finished by g_file_load_partial_contents_finish().
-		 * 
-		 * Users of this function should be aware that #user_data is passed to
-		 * both the #read_more_callback and the #callback.
-		 * 
-		 * If #cancellable is not %NULL, then the operation can be cancelled by
-		 * triggering the cancellable object from another thread. If the operation
-		 * was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
-		 * @param cancellable optional #GCancellable object, %NULL to ignore
-		 * @param read_more_callback a
-		 *   #GFileReadMoreCallback to receive partial data
-		 *   and to specify whether further data should be read
-		 * @param callback a #GAsyncReadyCallback to call
-		 *   when the request is satisfied
-		 */
-		load_partial_contents_async(cancellable: Cancellable | null, read_more_callback: FileReadMoreCallback, callback?: AsyncReadyCallback | null): void;
-		/**
 		 * Finishes an asynchronous partial load operation that was started
 		 * with {@link G.file_load_partial_contents_async}. The data is always
 		 * zero-terminated, but this is not included in the resultant #length.
@@ -29540,50 +29010,6 @@ declare namespace imports.gi.Gio {
 		 * @returns %TRUE on successful directory creation, %FALSE otherwise.
 		 */
 		make_symbolic_link_finish(result: AsyncResult): boolean;
-		/**
-		 * Recursively measures the disk usage of #file.
-		 * 
-		 * This is essentially an analog of the 'du' command, but it also
-		 * reports the number of directories and non-directory files encountered
-		 * (including things like symbolic links).
-		 * 
-		 * By default, errors are only reported against the toplevel file
-		 * itself.  Errors found while recursing are silently ignored, unless
-		 * %G_FILE_MEASURE_REPORT_ANY_ERROR is given in #flags.
-		 * 
-		 * The returned size, #disk_usage, is in bytes and should be formatted
-		 * with {@link G.format_size} in order to get something reasonable for showing
-		 * in a user interface.
-		 * 
-		 * #progress_callback and #progress_data can be given to request
-		 * periodic progress updates while scanning.  See the documentation for
-		 * #GFileMeasureProgressCallback for information about when and how the
-		 * callback will be invoked.
-		 * @param flags #GFileMeasureFlags
-		 * @param cancellable optional #GCancellable
-		 * @param progress_callback a #GFileMeasureProgressCallback
-		 * @returns %TRUE if successful, with the out parameters set.
-		 *   %FALSE otherwise, with #error set.
-		 * 
-		 * the number of bytes of disk space used
-		 * 
-		 * the number of directories encountered
-		 * 
-		 * the number of non-directories encountered
-		 */
-		measure_disk_usage(flags: FileMeasureFlags, cancellable?: Cancellable | null, progress_callback?: FileMeasureProgressCallback | null): [ boolean, number | null, number | null, number | null ];
-		/**
-		 * Recursively measures the disk usage of #file.
-		 * 
-		 * This is the asynchronous version of {@link G.file_measure_disk_usage}.  See
-		 * there for more information.
-		 * @param flags #GFileMeasureFlags
-		 * @param io_priority the [I/O priority][io-priority] of the request
-		 * @param cancellable optional #GCancellable
-		 * @param progress_callback a #GFileMeasureProgressCallback
-		 * @param callback a #GAsyncReadyCallback to call when complete
-		 */
-		measure_disk_usage_async(flags: FileMeasureFlags, io_priority: number, cancellable?: Cancellable | null, progress_callback?: FileMeasureProgressCallback | null, callback?: AsyncReadyCallback | null): void;
 		/**
 		 * Collects the results from an earlier call to
 		 * {@link G.file_measure_disk_usage_async}.  See g_file_measure_disk_usage() for
@@ -31284,23 +30710,6 @@ declare namespace imports.gi.Gio {
 	 * use {@link ListModel} instead.
 	 */
 	interface IListModel {
-		/**
-		 * Get the item at #position.
-		 * 
-		 * If #position is greater than the number of items in #list, %NULL is
-		 * returned.
-		 * 
-		 * %NULL is never returned for an index that is smaller than the length
-		 * of the list.
-		 * 
-		 * This function is meant to be used by language bindings in place
-		 * of {@link G.list_model_get_item}.
-		 * 
-		 * See also: g_list_model_get_n_items()
-		 * @param position the position of the item to fetch
-		 * @returns the object at #position.
-		 */
-		get_item(position: number): GObject.Object | null;
 		/**
 		 * Gets the type of the items in #list.
 		 * 

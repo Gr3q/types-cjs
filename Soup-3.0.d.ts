@@ -52,11 +52,6 @@ declare namespace imports.gi.Soup {
 		 */
 		cancel(): void;
 		/**
-		 * Frees #space.
-		 * @param space the return value from [method#Auth.get_protection_space]
-		 */
-		free_protection_space(space: any[]): void;
-		/**
 		 * Returns the authority (host:port) that #auth is associated with.
 		 * @returns the authority
 		 */
@@ -1659,32 +1654,6 @@ declare namespace imports.gi.Soup {
 		 * @param flags a set of {@link MessageFlags} values
 		 */
 		add_flags(flags: MessageFlags): void;
-		/**
-		 * Adds a signal handler to #msg for #signal.
-		 * 
-		 * Similar to [func#GObject.signal_connect], but the #callback will only be run
-		 * if #msg's incoming messages headers (that is, the `request_headers`) contain
-		 * a header named #header.
-		 * @param signal signal to connect the handler to.
-		 * @param header HTTP response header to match against
-		 * @param callback the header handler
-		 * @returns the handler ID from [func#GObject.signal_connect]
-		 */
-		add_header_handler(signal: string, header: string, callback: GObject.Callback): number;
-		/**
-		 * Adds a signal handler to #msg for #signal.
-		 * 
-		 * Similar to [func#GObject.signal_connect], but the #callback will only be run
-		 * if #msg has the status #status_code.
-		 * 
-		 * #signal must be a signal that will be emitted after #msg's status
-		 * is set (this means it can't be a "wrote" signal).
-		 * @param signal signal to connect the handler to.
-		 * @param status_code status code to match against
-		 * @param callback the header handler
-		 * @returns the handler ID from [func#GObject.signal_connect]
-		 */
-		add_status_code_handler(signal: string, status_code: number, callback: GObject.Callback): number;
 		/**
 		 * Disables the actions of [iface#SessionFeature]s with the
 		 * given #feature_type (or a subclass of that type) on #msg.

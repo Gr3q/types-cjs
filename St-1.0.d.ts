@@ -1531,17 +1531,6 @@ declare namespace imports.gi.St {
 		bind_cairo_surface_property(object: GObject.Object, property_name: string, size: number): Widget;
 		get_icon_theme(): Gtk.IconTheme;
 		/**
-		 * Load an arbitrary texture, caching it.  The string chosen for #key
-		 * should be of the form "type-prefix:type-uuid".  For example,
-		 * "url:file:///usr/share/icons/hicolor/48x48/apps/firefox.png", or
-		 * "stock-icon:gtk-ok".
-		 * @param key Arbitrary string used to refer to item
-		 * @param policy Caching policy
-		 * @param load Function to create the texture, if not already cached
-		 * @returns A newly-referenced handle to the texture
-		 */
-		load(key: string, policy: TextureCachePolicy, load: TextureCacheLoader): Cogl.Texture;
-		/**
 		 * Asynchronously load an image.   Initially, the returned texture will have a natural
 		 * size of zero.  At some later point, either the image will be loaded successfully
 		 * and at that point size will be negotiated, or upon an error, no image will be set.
@@ -1569,14 +1558,6 @@ declare namespace imports.gi.St {
 		 */
 		load_file_to_cairo_surface(file_path: string): cairo.Surface;
 		/**
-		 * This function synchronously loads the given file path
-		 * into a COGL texture.  On error, a warning is emitted
-		 * and %NULL is returned.
-		 * @param file_path Path to a file in supported image format
-		 * @returns a new #CoglTexture
-		 */
-		load_file_to_cogl_texture(file_path: string): Cogl.Texture;
-		/**
 		 * Creates (or retrieves from cache) an icon based on raw pixel data.
 		 * @param data raw pixel data
 		 * @param has_alpha whether #data includes an alpha channel
@@ -1598,16 +1579,6 @@ declare namespace imports.gi.St {
 		 * @returns a new #cairo_surface_t
 		 */
 		load_gfile_to_cairo_surface(file: Gio.File, paint_scale: number, resource_scale: number): cairo.Surface;
-		/**
-		 * This function synchronously loads the given file path
-		 * into a COGL texture.  On error, a warning is emitted
-		 * and %NULL is returned.
-		 * @param file A #GFile in supported image format
-		 * @param paint_scale Scale factor of the display
-		 * @param resource_scale Resource scale factor
-		 * @returns a new #CoglTexture
-		 */
-		load_gfile_to_cogl_texture(file: Gio.File, paint_scale: number, resource_scale: number): Cogl.Texture;
 		/**
 		 * This method returns a new #ClutterActor for a given #GIcon. If the
 		 * icon isn't loaded already, the texture will be filled
@@ -2238,7 +2209,6 @@ declare namespace imports.gi.St {
 		 * location to store the shadow
 		 */
 		lookup_shadow(property_name: string, inherit: boolean): [ boolean, Shadow ];
-		paint(framebuffer: Cogl.Framebuffer, box: Clutter.ActorBox, paint_opacity: number, background_blur_effect: BackgroundBlurEffect, background_bumpmap_effect: BackgroundBumpmapEffect): void;
 		/**
 		 * Check if {@link St.ThemeNode.paint} will paint identically for #node as it does
 		 * for #other. Note that in some cases this function may return %TRUE even

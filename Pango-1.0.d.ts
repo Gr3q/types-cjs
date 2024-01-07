@@ -444,16 +444,6 @@ declare namespace imports.gi.Pango {
 		 */
 		get_glyph_extents(glyph: Glyph): [ ink_rect: Rectangle | null, logical_rect: Rectangle | null ];
 		/**
-		 * Get a `hb_font_t` object backing this font.
-		 * 
-		 * Note that the objects returned by this function are cached
-		 * and immutable. If you need to make changes to the `hb_font_t`,
-		 * use {@link [hb.font_create_sub_font}](https://harfbuzz.github.io/harfbuzz-hb-font.html#hb-font-create-sub-font).
-		 * @returns the `hb_font_t` object
-		 *   backing the font
-		 */
-		get_hb_font(): HarfBuzz.font_t | null;
-		/**
 		 * Returns the languages that are supported by #font.
 		 * 
 		 * If the font backend does not provide this information,

@@ -59,7 +59,6 @@ declare namespace imports.gi.Cvc {
 		get_index(): number;
 		get_name(): string;
 		get_ports(): MixerCardPort[];
-		get_profile(): MixerCardProfile;
 		get_profiles(): MixerCardProfile[];
 		set_icon_name(name: string): boolean;
 		set_name(name: string): boolean;

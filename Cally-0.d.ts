@@ -5,15 +5,6 @@ declare namespace imports.gi.Cally {
 	 */
 	interface IActor {
 		/**
-		 * Adds a new action to be accessed with the #AtkAction interface.
-		 * @param action_name the action name
-		 * @param action_description the action description
-		 * @param action_keybinding the action keybinding
-		 * @param callback the callback of the action
-		 * @returns added action id, or -1 if failure
-		 */
-		add_action(action_name: string, action_description: string, action_keybinding: string, callback: ActionCallback): number;
-		/**
 		 * Removes a action, using the #action_id returned by {@link Cally.Actor.add_action}
 		 * @param action_id the action id
 		 * @returns %TRUE if the operation was succesful, %FALSE otherwise

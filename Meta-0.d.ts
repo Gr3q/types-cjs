@@ -10,7 +10,6 @@ declare namespace imports.gi.Meta {
 		 */
 		get_dnd(): Dnd;
 		get_remote_access_controller(): RemoteAccessController;
-		get_settings(): Settings;
 		/**
 		 * Gets the global #ClutterStage that's managed by this backend.
 		 * @returns the #ClutterStage
@@ -477,7 +476,6 @@ declare namespace imports.gi.Meta {
 		end_grab_op(timestamp: number): void;
 		focus_default_window(timestamp: number): void;
 		freeze_keyboard(timestamp: number): void;
-		get_compositor(): Compositor;
 		/**
 		 * Gets the index of the monitor that currently has the mouse pointer.
 		 * @returns a monitor index
@@ -565,7 +563,6 @@ declare namespace imports.gi.Meta {
 		 */
 		get_size(): [ width: number, height: number ];
 		get_sound_player(): SoundPlayer;
-		get_startup_notification(): StartupNotification;
 		/**
 		 * Determine the active window that should be displayed for Alt-TAB.
 		 * @param type type of tab list
@@ -595,7 +592,6 @@ declare namespace imports.gi.Meta {
 		 */
 		get_tab_next(type: TabList, workspace: Workspace, window: Window | null, backward: boolean): Window;
 		get_workspace_manager(): WorkspaceManager;
-		get_x11_display(): X11Display;
 		grab_accelerator(accelerator: string, flags: KeyBindingFlags): number;
 		/**
 		 * Tells whether the event sequence is the used for pointer emulation
@@ -1364,7 +1360,6 @@ declare namespace imports.gi.Meta {
 		 * @returns a launch context.
 		 */
 		create_launcher(): LaunchContext;
-		get_sequences(): any[];
 		connect(signal: "changed", callback: (owner: this, object: any | null) => void): number;
 
 		connect(signal: "notify::display", callback: (owner: this, ...args: any) => void): number;
@@ -1570,7 +1565,6 @@ declare namespace imports.gi.Meta {
 		get_compositor_private(): WindowActor;
 		get_description(): string;
 		get_display(): Display;
-		get_frame(): Frame;
 		/**
 		 * Gets a region representing the outer bounds of the window's frame.
 		 * @returns a #cairo_region_t
@@ -1591,7 +1585,6 @@ declare namespace imports.gi.Meta {
 		 * @returns the frame type
 		 */
 		get_frame_type(): FrameType;
-		get_group(): Group;
 		get_gtk_app_menu_object_path(): string;
 		get_gtk_application_id(): string;
 		get_gtk_application_object_path(): string;
@@ -2181,7 +2174,6 @@ declare namespace imports.gi.Meta {
 		 *   index, or %NULL if the index is out of range.
 		 */
 		get_workspace_by_index(index: number): Workspace | null;
-		get_workspaces(): Workspace[];
 		/**
 		 * Explicitly set the layout of workspaces. Once this has been called, the contents of the
 		 * _NET_DESKTOP_LAYOUT property on the root window are completely ignored.
@@ -2285,11 +2277,7 @@ declare namespace imports.gi.Meta {
 		get_damage_event_base(): number;
 		get_screen_number(): number;
 		get_shape_event_base(): number;
-		get_xdisplay(): xlib.Display;
-		get_xinput_opcode(): number;
-		get_xroot(): xlib.Window;
 		has_shape(): boolean;
-		lookup_group(group_leader: xlib.Window): Group;
 		set_cm_selection(): void;
 		set_stage_input_region(region: xfixes.XserverRegion): void;
 		xwindow_is_a_no_focus_window(xwindow: xlib.Window): boolean;

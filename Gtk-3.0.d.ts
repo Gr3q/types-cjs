@@ -1891,62 +1891,6 @@ declare namespace imports.gi.Gtk {
 		 */
 		add_action_with_accel(action: Action, accelerator?: string | null): void;
 		/**
-		 * This is a convenience function to create a number of actions and add them
-		 * to the action group.
-		 * 
-		 * The “activate” signals of the actions are connected to the callbacks
-		 * and their accel paths are set to `<Actions>/group-name/action-name`.
-		 * @param entries an array of action descriptions
-		 * @param user_data data to pass to the action callbacks
-		 */
-		add_actions(entries: ActionEntry[], user_data?: any | null): void;
-		/**
-		 * This variant of {@link Gtk.ActionGroup.add_actions} adds a #GDestroyNotify
-		 * callback for #user_data.
-		 * @param entries an array of action descriptions
-		 * @param user_data data to pass to the action callbacks
-		 */
-		add_actions_full(entries: ActionEntry[], user_data?: any | null): void;
-		/**
-		 * This is a convenience routine to create a group of radio actions and
-		 * add them to the action group.
-		 * 
-		 * The “changed” signal of the first radio action is connected to the
-		 * #on_change callback and the accel paths of the actions are set to
-		 * `<Actions>/group-name/action-name`.
-		 * @param entries an array of radio action descriptions
-		 * @param value the value of the action to activate initially, or -1 if
-		 *   no action should be activated
-		 * @param on_change the callback to connect to the changed signal
-		 */
-		add_radio_actions(entries: RadioActionEntry[], value: number, on_change: GObject.Callback): void;
-		/**
-		 * This variant of {@link Gtk.ActionGroup.add_radio_actions} adds a
-		 * #GDestroyNotify callback for #user_data.
-		 * @param entries an array of radio action descriptions
-		 * @param value the value of the action to activate initially, or -1 if
-		 *   no action should be activated
-		 * @param on_change the callback to connect to the changed signal
-		 */
-		add_radio_actions_full(entries: RadioActionEntry[], value: number, on_change: GObject.Callback): void;
-		/**
-		 * This is a convenience function to create a number of toggle actions and add them
-		 * to the action group.
-		 * 
-		 * The “activate” signals of the actions are connected to the callbacks
-		 * and their accel paths are set to `<Actions>/group-name/action-name`.
-		 * @param entries an array of toggle action descriptions
-		 * @param user_data data to pass to the action callbacks
-		 */
-		add_toggle_actions(entries: ToggleActionEntry[], user_data?: any | null): void;
-		/**
-		 * This variant of {@link Gtk.ActionGroup.add_toggle_actions} adds a
-		 * #GDestroyNotify callback for #user_data.
-		 * @param entries an array of toggle action descriptions
-		 * @param user_data data to pass to the action callbacks
-		 */
-		add_toggle_actions_full(entries: ToggleActionEntry[], user_data?: any | null): void;
-		/**
 		 * Gets the accelerator group.
 		 * @returns the accelerator group associated with this action
 		 * group or %NULL if there is none.
@@ -4588,13 +4532,6 @@ declare namespace imports.gi.Gtk {
 		 */
 		add_callback_symbol(callback_name: string, callback_symbol: GObject.Callback): void;
 		/**
-		 * A convenience function to add many callbacks instead of calling
-		 * {@link Gtk.Builder.add_callback_symbol} for each symbol.
-		 * @param first_callback_name The name of the callback, as expected in the XML
-		 * @param first_callback_symbol The callback pointer
-		 */
-		add_callback_symbols(first_callback_name: string, first_callback_symbol: GObject.Callback): void;
-		/**
 		 * Parses a file containing a [GtkBuilder UI definition][BUILDER-UI]
 		 * and merges it with the current contents of #builder.
 		 * 
@@ -4797,17 +4734,6 @@ declare namespace imports.gi.Gtk {
 		 *   if no type was found
 		 */
 		get_type_from_name(type_name: string): GObject.Type;
-		/**
-		 * Fetches a symbol previously added to #builder
-		 * with {@link Gtk.Builder.add_callback_symbols}
-		 * 
-		 * This function is intended for possible use in language bindings
-		 * or for any case that one might be cusomizing signal connections
-		 * using gtk_builder_connect_signals_full()
-		 * @param callback_name The name of the callback
-		 * @returns The callback symbol in #builder for #callback_name, or %NULL
-		 */
-		lookup_callback_symbol(callback_name: string): GObject.Callback | null;
 		/**
 		 * Sets the application associated with #builder.
 		 * 
@@ -5981,13 +5907,6 @@ declare namespace imports.gi.Gtk {
 		 */
 		add_focus_sibling(renderer: CellRenderer, sibling: CellRenderer): void;
 		/**
-		 * Adds #renderer to #area, setting cell properties at the same time.
-		 * See {@link Gtk.CellArea.add} and gtk_cell_area_cell_set() for more details.
-		 * @param renderer a {@link CellRenderer} to be placed inside #area
-		 * @param first_prop_name the name of the first cell property to set
-		 */
-		add_with_properties(renderer: CellRenderer, first_prop_name: string): void;
-		/**
 		 * Applies any connected attributes to the renderers in
 		 * #area by pulling the values from #tree_model.
 		 * @param tree_model the {@link TreeModel} to pull values from
@@ -6022,12 +5941,6 @@ declare namespace imports.gi.Gtk {
 		 */
 		attribute_get_column(renderer: CellRenderer, attribute: string): number;
 		/**
-		 * Gets the values of one or more cell properties for #renderer in #area.
-		 * @param renderer a {@link CellRenderer} which is inside #area
-		 * @param first_prop_name the name of the first cell property to get
-		 */
-		cell_get(renderer: CellRenderer, first_prop_name: string): void;
-		/**
 		 * Gets the value of a cell property for #renderer in #area.
 		 * @param renderer a {@link CellRenderer} inside #area
 		 * @param property_name the name of the property to get
@@ -6035,34 +5948,12 @@ declare namespace imports.gi.Gtk {
 		 */
 		cell_get_property(renderer: CellRenderer, property_name: string, value: GObject.Value): void;
 		/**
-		 * Gets the values of one or more cell properties for #renderer in #area.
-		 * @param renderer a {@link CellRenderer} inside #area
-		 * @param first_property_name the name of the first property to get
-		 * @param var_args return location for the first property, followed
-		 *     optionally by more name/return location pairs, followed by %NULL
-		 */
-		cell_get_valist(renderer: CellRenderer, first_property_name: string, var_args: any[]): void;
-		/**
-		 * Sets one or more cell properties for #cell in #area.
-		 * @param renderer a {@link CellRenderer} which is a cell inside #area
-		 * @param first_prop_name the name of the first cell property to set
-		 */
-		cell_set(renderer: CellRenderer, first_prop_name: string): void;
-		/**
 		 * Sets a cell property for #renderer in #area.
 		 * @param renderer a {@link CellRenderer} inside #area
 		 * @param property_name the name of the cell property to set
 		 * @param value the value to set the cell property to
 		 */
 		cell_set_property(renderer: CellRenderer, property_name: string, value: GObject.Value): void;
-		/**
-		 * Sets one or more cell properties for #renderer in #area.
-		 * @param renderer a {@link CellRenderer} which inside #area
-		 * @param first_property_name the name of the first cell property to set
-		 * @param var_args a %NULL-terminated list of property names and values, starting
-		 *           with #first_prop_name
-		 */
-		cell_set_valist(renderer: CellRenderer, first_property_name: string, var_args: any[]): void;
 		/**
 		 * This is sometimes needed for cases where rows need to share
 		 * alignments in one orientation but may be separately grouped
@@ -8931,42 +8822,6 @@ declare namespace imports.gi.Gtk {
 		 */
 		set_text(text: string, len: number): void;
 		/**
-		 * Virtually sets the contents of the specified clipboard by providing
-		 * a list of supported formats for the clipboard data and a function
-		 * to call to get the actual data when it is requested.
-		 * @param targets array containing information
-		 *     about the available forms for the clipboard data
-		 * @param get_func function to call to get the actual clipboard data
-		 * @param clear_func when the clipboard contents are set again,
-		 *     this function will be called, and #get_func will not be subsequently
-		 *     called.
-		 * @returns %TRUE if setting the clipboard data succeeded.
-		 *    If setting the clipboard data failed the provided callback
-		 *    functions will be ignored.
-		 */
-		set_with_data(targets: TargetEntry[], get_func: ClipboardGetFunc, clear_func: ClipboardClearFunc): boolean;
-		/**
-		 * Virtually sets the contents of the specified clipboard by providing
-		 * a list of supported formats for the clipboard data and a function
-		 * to call to get the actual data when it is requested.
-		 * 
-		 * The difference between this function and {@link Gtk.Clipboard.set_with_data}
-		 * is that instead of an generic #user_data pointer, a #GObject is passed
-		 * in.
-		 * @param targets array containing information
-		 *     about the available forms for the clipboard data
-		 * @param get_func function to call to get the actual clipboard data
-		 * @param clear_func when the clipboard contents are set again,
-		 *     this function will be called, and #get_func will not be subsequently
-		 *     called
-		 * @param owner an object that “owns” the data. This object will be passed
-		 *     to the callbacks when called
-		 * @returns %TRUE if setting the clipboard data succeeded.
-		 *     If setting the clipboard data failed the provided callback
-		 *     functions will be ignored.
-		 */
-		set_with_owner(targets: TargetEntry[], get_func: ClipboardGetFunc, clear_func: ClipboardClearFunc, owner: GObject.Object): boolean;
-		/**
 		 * Stores the current clipboard data somewhere so that it will stay
 		 * around after the application has quit.
 		 */
@@ -9313,14 +9168,6 @@ declare namespace imports.gi.Gtk {
 		 */
 		get_color(): Gdk.Color;
 		/**
-		 * @deprecated
-		 * Use {@link Gtk.ColorChooser.get_rgba} instead.
-		 * 
-		 * Sets #rgba to be the current color in the {@link ColorButton} widget.
-		 * @returns a #GdkRGBA to fill in with the current color
-		 */
-		get_rgba(): Gdk.RGBA;
-		/**
 		 * Gets the title of the color selection dialog.
 		 * @returns An internal string, do not free the return value
 		 */
@@ -9349,14 +9196,6 @@ declare namespace imports.gi.Gtk {
 		 * @param color A #GdkColor to set the current color with
 		 */
 		set_color(color: Gdk.Color): void;
-		/**
-		 * @deprecated
-		 * Use {@link Gtk.ColorChooser.set_rgba} instead.
-		 * 
-		 * Sets the current color to be #rgba.
-		 * @param rgba a #GdkRGBA to set the current color with
-		 */
-		set_rgba(rgba: Gdk.RGBA): void;
 		/**
 		 * Sets the title for the color selection dialog.
 		 * @param title String containing new window title
@@ -9999,11 +9838,6 @@ declare namespace imports.gi.Gtk {
 		 */
 		get_popup_fixed_width(): boolean;
 		/**
-		 * Returns the current row separator function.
-		 * @returns the current row separator function.
-		 */
-		get_row_separator_func(): TreeViewRowSeparatorFunc;
-		/**
 		 * Returns the column with row span information for #combo_box.
 		 * @returns the row span column.
 		 */
@@ -10608,20 +10442,7 @@ declare namespace imports.gi.Gtk {
 		 * @param widget a widget to be placed inside #container
 		 */
 		add(widget: Widget): void;
-		/**
-		 * Adds #widget to #container, setting child properties at the same time.
-		 * See {@link Gtk.Container.add} and gtk_container_child_set() for more details.
-		 * @param widget a widget to be placed inside #container
-		 * @param first_prop_name the name of the first child property to set
-		 */
-		add_with_properties(widget: Widget, first_prop_name: string): void;
 		check_resize(): void;
-		/**
-		 * Gets the values of one or more child properties for #child and #container.
-		 * @param child a widget which is a child of #container
-		 * @param first_prop_name the name of the first property to get
-		 */
-		child_get(child: Widget, first_prop_name: string): void;
 		/**
 		 * Gets the value of a child property for #child and #container.
 		 * @param child a widget which is a child of #container
@@ -10629,14 +10450,6 @@ declare namespace imports.gi.Gtk {
 		 * @param value a location to return the value
 		 */
 		child_get_property(child: Widget, property_name: string, value: GObject.Value): void;
-		/**
-		 * Gets the values of one or more child properties for #child and #container.
-		 * @param child a widget which is a child of #container
-		 * @param first_property_name the name of the first property to get
-		 * @param var_args return location for the first property, followed
-		 *     optionally by more name/return location pairs, followed by %NULL
-		 */
-		child_get_valist(child: Widget, first_property_name: string, var_args: any[]): void;
 		/**
 		 * Emits a {@link Widget.child_notify} signal for the
 		 * [child property][child-properties]
@@ -10662,26 +10475,12 @@ declare namespace imports.gi.Gtk {
 		 */
 		child_notify_by_pspec(child: Widget, pspec: GObject.ParamSpec): void;
 		/**
-		 * Sets one or more child properties for #child and #container.
-		 * @param child a widget which is a child of #container
-		 * @param first_prop_name the name of the first property to set
-		 */
-		child_set(child: Widget, first_prop_name: string): void;
-		/**
 		 * Sets a child property for #child and #container.
 		 * @param child a widget which is a child of #container
 		 * @param property_name the name of the property to set
 		 * @param value the value to set the property to
 		 */
 		child_set_property(child: Widget, property_name: string, value: GObject.Value): void;
-		/**
-		 * Sets one or more child properties for #child and #container.
-		 * @param child a widget which is a child of #container
-		 * @param first_property_name the name of the first property to set
-		 * @param var_args a %NULL-terminated list of property names and values, starting
-		 *           with #first_prop_name
-		 */
-		child_set_valist(child: Widget, first_property_name: string, var_args: any[]): void;
 		/**
 		 * Returns the type of the children supported by the container.
 		 * 
@@ -11389,14 +11188,6 @@ declare namespace imports.gi.Gtk {
 		 */
 		add_button(button_text: string, response_id: number): Widget;
 		/**
-		 * Adds more buttons, same as calling {@link Gtk.Dialog.add_button}
-		 * repeatedly.  The variable argument list should be %NULL-terminated
-		 * as with gtk_dialog_new_with_buttons(). Each button must have both
-		 * text and response ID.
-		 * @param first_button_text button text
-		 */
-		add_buttons(first_button_text: string): void;
-		/**
 		 * @deprecated
 		 * Direct access to the action area
 		 *   is discouraged; use {@link Gtk.Dialog.add_button}, etc.
@@ -11490,49 +11281,6 @@ declare namespace imports.gi.Gtk {
 		 * @returns response ID
 		 */
 		run(): number;
-		/**
-		 * @deprecated
-		 * Deprecated
-		 * 
-		 * Sets an alternative button order. If the
-		 * {@link Settings.gtk_alternative_button_order} setting is set to %TRUE,
-		 * the dialog buttons are reordered according to the order of the
-		 * response ids passed to this function.
-		 * 
-		 * By default, GTK+ dialogs use the button order advocated by the
-		 * [GNOME Human Interface Guidelines](http://library.gnome.org/devel/hig-book/stable/)
-		 * with the affirmative button at the far
-		 * right, and the cancel button left of it. But the builtin GTK+ dialogs
-		 * and #GtkMessageDialogs do provide an alternative button order,
-		 * which is more suitable on some platforms, e.g. Windows.
-		 * 
-		 * Use this function after adding all the buttons to your dialog, as the
-		 * following example shows:
-		 * 
-		 * |[<!-- language="C" -->
-		 * cancel_button = gtk_dialog_add_button (GTK_DIALOG (dialog),
-		 *                                        _("_Cancel"),
-		 *                                        GTK_RESPONSE_CANCEL);
-		 * 
-		 * ok_button = gtk_dialog_add_button (GTK_DIALOG (dialog),
-		 *                                    _("_OK"),
-		 *                                    GTK_RESPONSE_OK);
-		 * 
-		 * gtk_widget_grab_default (ok_button);
-		 * 
-		 * help_button = gtk_dialog_add_button (GTK_DIALOG (dialog),
-		 *                                      _("_Help"),
-		 *                                      GTK_RESPONSE_HELP);
-		 * 
-		 * gtk_dialog_set_alternative_button_order (GTK_DIALOG (dialog),
-		 *                                          GTK_RESPONSE_OK,
-		 *                                          GTK_RESPONSE_CANCEL,
-		 *                                          GTK_RESPONSE_HELP,
-		 *                                          -1);
-		 * ]|
-		 * @param first_response_id a response id used by one #dialog’s buttons
-		 */
-		set_alternative_button_order(first_response_id: number): void;
 		/**
 		 * @deprecated
 		 * Deprecated
@@ -19722,21 +19470,6 @@ declare namespace imports.gi.Gtk {
 		 * @param compose_file The path of compose file
 		 */
 		add_compose_file(compose_file: string): void;
-		/**
-		 * Adds an additional table to search to the input context.
-		 * Each row of the table consists of #max_seq_len key symbols
-		 * followed by two #guint16 interpreted as the high and low
-		 * words of a #gunicode value. Tables are searched starting
-		 * from the last added.
-		 * 
-		 * The table must be sorted in dictionary order on the
-		 * numeric value of the key symbol fields. (Values beyond
-		 * the length of the sequence should be zero.)
-		 * @param data the table
-		 * @param max_seq_len Maximum length of a sequence in the table
-		 * @param n_seqs number of sequences in the table
-		 */
-		add_table(data: number[], max_seq_len: number, n_seqs: number): void;
 		connect(signal: "notify::object", callback: (owner: this, ...args: any) => void): number;
 
 	}
@@ -20013,21 +19746,6 @@ declare namespace imports.gi.Gtk {
 	 * use {@link IconInfo} instead.
 	 */
 	interface IIconInfo {
-		/**
-		 * @deprecated
-		 * Use {@link GObject.ref}
-		 * 
-		 * Make a copy of a {@link IconInfo}.
-		 * @returns the new GtkIconInfo
-		 */
-		copy(): IconInfo;
-		/**
-		 * @deprecated
-		 * Use {@link GObject.unref}
-		 * 
-		 * Free a {@link IconInfo} and associated information
-		 */
-		free(): void;
 		/**
 		 * @deprecated
 		 * Attachment points are deprecated
@@ -22420,14 +22138,6 @@ declare namespace imports.gi.Gtk {
 		 */
 		add_button(button_text: string, response_id: number): Button;
 		/**
-		 * Adds more buttons, same as calling {@link Gtk.InfoBar.add_button}
-		 * repeatedly. The variable argument list should be %NULL-terminated
-		 * as with gtk_info_bar_new_with_buttons(). Each button must have both
-		 * text and response ID.
-		 * @param first_button_text button text or stock ID
-		 */
-		add_buttons(first_button_text: string): void;
-		/**
 		 * Returns the action area of #info_bar.
 		 * @returns the action area
 		 */
@@ -24709,39 +24419,6 @@ declare namespace imports.gi.Gtk {
 		 */
 		insert_before(sibling?: TreeIter | null): TreeIter;
 		/**
-		 * Creates a new row at #position. #iter will be changed to point to this new
-		 * row. If #position is -1, or larger than the number of rows in the list, then
-		 * the new row will be appended to the list. The row will be filled with the
-		 * values given to this function.
-		 * 
-		 * Calling
-		 * `gtk_list_store_insert_with_values (list_store, iter, position...)`
-		 * has the same effect as calling
-		 * |[<!-- language="C" -->
-		 * static void
-		 * insert_value (GtkListStore *list_store,
-		 *               GtkTreeIter  *iter,
-		 *               int           position)
-		 * {
-		 *   gtk_list_store_insert (list_store, iter, position);
-		 *   gtk_list_store_set (list_store,
-		 *                       iter
-		 *                       // ...
-		 *                       );
-		 * }
-		 * ]|
-		 * with the difference that the former will only emit a row_inserted signal,
-		 * while the latter will emit row_inserted, row_changed and, if the list store
-		 * is sorted, rows_reordered. Since emitting the rows_reordered signal
-		 * repeatedly can affect the performance of the program,
-		 * {@link Gtk.ListStore.insert_with_values} should generally be preferred when
-		 * inserting rows in a sorted list store.
-		 * @param position position to insert the new row, or -1 to append after existing
-		 *     rows
-		 * @returns An unset {@link TreeIter} to set to the new row, or %NULL
-		 */
-		insert_with_values(position: number): TreeIter | null;
-		/**
 		 * A variant of {@link Gtk.ListStore.insert_with_values} which
 		 * takes the columns and values as two arrays, instead of
 		 * varargs. This function is mainly intended for
@@ -24802,17 +24479,6 @@ declare namespace imports.gi.Gtk {
 		 */
 		reorder(new_order: number[]): void;
 		/**
-		 * A variant of {@link Gtk.ListStore.set_valist} which
-		 * takes the columns and values as two arrays, instead of
-		 * varargs. This function is mainly intended for
-		 * language-bindings and in case the number of columns to
-		 * change is not known until run-time.
-		 * @param iter A valid {@link TreeIter} for the row being modified
-		 * @param columns an array of column numbers
-		 * @param values an array of GValues
-		 */
-		set(iter: TreeIter, columns: number[], values: GObject.Value[]): void;
-		/**
 		 * This function is meant primarily for #GObjects that inherit from {@link ListStore},
 		 * and should only be used when constructing a new #GtkListStore.  It will not
 		 * function after a row has been added, or a method on the #GtkTreeModel
@@ -24820,13 +24486,6 @@ declare namespace imports.gi.Gtk {
 		 * @param types An array length n of #GTypes
 		 */
 		set_column_types(types: GObject.Type[]): void;
-		/**
-		 * See {@link Gtk.ListStore.set}; this version takes a va_list for use by language
-		 * bindings.
-		 * @param iter A valid {@link TreeIter} for the row being modified
-		 * @param var_args va_list of column/value pairs
-		 */
-		set_valist(iter: TreeIter, var_args: any[]): void;
 		/**
 		 * Sets the data in the cell specified by #iter and #column.
 		 * The type of #value must be convertible to the type of the
@@ -26897,34 +26556,6 @@ declare namespace imports.gi.Gtk {
 		 * See {@link Pango.parse.markup}.
 		 */
 		use_markup: boolean;
-		/**
-		 * Sets the secondary text of the message dialog to be #message_format (with
-		 * printf()-style), which is marked up with the
-		 * [Pango text markup language][PangoMarkupFormat].
-		 * 
-		 * Due to an oversight, this function does not escape special XML characters
-		 * like gtk_message_dialog_new_with_markup() does. Thus, if the arguments
-		 * may contain special XML characters, you should use g_markup_printf_escaped()
-		 * to escape it.
-		 * 
-		 * |[<!-- language="C" -->
-		 * gchar *msg;
-		 * 
-		 * msg = g_markup_printf_escaped (message_format, ...);
-		 * gtk_message_dialog_format_secondary_markup (message_dialog,
-		 *                                             "%s", msg);
-		 * g_free (msg);
-		 * ]|
-		 * @param message_format printf()-style markup string (see
-		 *      [Pango markup format][PangoMarkupFormat]), or %NULL
-		 */
-		format_secondary_markup(message_format: string): void;
-		/**
-		 * Sets the secondary text of the message dialog to be #message_format
-		 * (with printf()-style).
-		 * @param message_format printf()-style format string, or %NULL
-		 */
-		format_secondary_text(message_format?: string | null): void;
 		/**
 		 * @deprecated
 		 * Use {@link Dialog} for dialogs with images
@@ -38957,26 +38588,6 @@ declare namespace imports.gi.Gtk {
 		apply_default_background(cr: cairo.Context, window: Gdk.Window, state_type: StateType, x: number, y: number, width: number, height: number): void;
 		/**
 		 * @deprecated
-		 * Use {@link Gtk.Widget.style_attach} instead
-		 * 
-		 * Attaches a style to a window; this process allocates the
-		 * colors and creates the GC’s for the style - it specializes
-		 * it to a particular visual. The process may involve the creation
-		 * of a new style if the style has already been attached to a
-		 * window with a different style and visual.
-		 * 
-		 * Since this function may return a new object, you have to use it
-		 * in the following way:
-		 * `style = gtk_style_attach (style, window)`
-		 * @param window a #GdkWindow.
-		 * @returns Either #style, or a newly-created {@link Style}.
-		 *   If the style is newly created, the style parameter
-		 *   will be unref'ed, and the new style will have
-		 *   a reference count belonging to the caller.
-		 */
-		attach(window: Gdk.Window): Style;
-		/**
-		 * @deprecated
 		 * Use {@link StyleContext} instead
 		 * 
 		 * Creates a copy of the passed in {@link Style} object.
@@ -38992,13 +38603,6 @@ declare namespace imports.gi.Gtk {
 		 */
 		detach(): void;
 		/**
-		 * Gets the values of a multiple style properties for #widget_type
-		 * from #style.
-		 * @param widget_type the #GType of a descendant of {@link Widget}
-		 * @param first_property_name the name of the first style property to get
-		 */
-		get(widget_type: GObject.Type, first_property_name: string): void;
-		/**
 		 * Queries the value of a style property corresponding to a
 		 * widget class is in the given style.
 		 * @param widget_type the #GType of a descendant of {@link Widget}
@@ -39007,16 +38611,6 @@ declare namespace imports.gi.Gtk {
 		 *     queried will be stored
 		 */
 		get_style_property(widget_type: GObject.Type, property_name: string): GObject.Value;
-		/**
-		 * Non-vararg variant of {@link Gtk.Style.get}.
-		 * Used primarily by language bindings.
-		 * @param widget_type the #GType of a descendant of {@link Widget}
-		 * @param first_property_name the name of the first style property to get
-		 * @param var_args a va_list of pairs of property names and
-		 *     locations to return the property values, starting with the
-		 *     location for #first_property_name.
-		 */
-		get_valist(widget_type: GObject.Type, first_property_name: string, var_args: any[]): void;
 		/**
 		 * Returns whether #style has an associated {@link StyleContext}.
 		 * @returns %TRUE if #style has a {@link StyleContext}
@@ -39254,37 +38848,6 @@ declare namespace imports.gi.Gtk {
 		 */
 		cancel_animations(region_id?: any | null): void;
 		/**
-		 * Retrieves several style property values from #context for a
-		 * given state.
-		 * 
-		 * See {@link Gtk.StyleContext.get_property} for details.
-		 * 
-		 * For the property name / return value pairs, it works similarly as
-		 * g_object_get(). Example:
-		 * 
-		 * |[<!-- language="C" -->
-		 * GdkRGBA *background_color = NULL;
-		 * PangoFontDescription *font_desc = NULL;
-		 * gint border_radius = 0;
-		 * 
-		 * gtk_style_context_get (style_context,
-		 *                        gtk_style_context_get_state (style_context),
-		 *                        GTK_STYLE_PROPERTY_BACKGROUND_COLOR, &background_color,
-		 *                        GTK_STYLE_PROPERTY_FONT, &font_desc,
-		 *                        GTK_STYLE_PROPERTY_BORDER_RADIUS, &border_radius,
-		 *                        NULL);
-		 * 
-		 * // Do something with the property values.
-		 * 
-		 * if (background_color != NULL)
-		 *   gdk_rgba_free (background_color);
-		 * if (font_desc != NULL)
-		 *   pango_font_description_free (font_desc);
-		 * ]|
-		 * @param state state to retrieve the property values for
-		 */
-		get(state: StateFlags): void;
-		/**
 		 * @deprecated
 		 * Use {@link Gtk.render.background} instead.
 		 * 
@@ -39449,11 +39012,6 @@ declare namespace imports.gi.Gtk {
 		 */
 		get_state(): StateFlags;
 		/**
-		 * Retrieves several widget style properties from #context according to the
-		 * current style.
-		 */
-		get_style(): void;
-		/**
 		 * Gets the value for a widget style property.
 		 * 
 		 * When #value is no longer needed, {@link G.value_unset} must be called
@@ -39462,20 +39020,6 @@ declare namespace imports.gi.Gtk {
 		 * @param value Return location for the property value
 		 */
 		get_style_property(property_name: string, value: GObject.Value): void;
-		/**
-		 * Retrieves several widget style properties from #context according to the
-		 * current style.
-		 * @param args va_list of property name/return location pairs, followed by %NULL
-		 */
-		get_style_valist(args: any[]): void;
-		/**
-		 * Retrieves several style property values from #context for a given state.
-		 * 
-		 * See {@link Gtk.StyleContext.get_property} for details.
-		 * @param state state to retrieve the property values for
-		 * @param args va_list of property name/return location pairs, followed by %NULL
-		 */
-		get_valist(state: StateFlags, args: any[]): void;
 		/**
 		 * Returns %TRUE if #context currently has defined the
 		 * given class name.
@@ -39943,15 +39487,6 @@ declare namespace imports.gi.Gtk {
 		 * @deprecated
 		 * {@link StyleProperties} are deprecated.
 		 * 
-		 * Retrieves several style property values from #props for a
-		 * given state.
-		 * @param state state to retrieve the property values for
-		 */
-		get(state: StateFlags): void;
-		/**
-		 * @deprecated
-		 * {@link StyleProperties} are deprecated.
-		 * 
 		 * Gets a style property from #props for the given state. When done with #value,
 		 * {@link G.value_unset} needs to be called to free any allocated memory.
 		 * @param property style property name
@@ -39961,15 +39496,6 @@ declare namespace imports.gi.Gtk {
 		 * return location for the style property value.
 		 */
 		get_property(property: string, state: StateFlags): [ boolean, GObject.Value ];
-		/**
-		 * @deprecated
-		 * {@link StyleProperties} are deprecated.
-		 * 
-		 * Retrieves several style property values from #props for a given state.
-		 * @param state state to retrieve the property values for
-		 * @param args va_list of property name/return location pairs, followed by %NULL
-		 */
-		get_valist(state: StateFlags, args: any[]): void;
 		/**
 		 * @deprecated
 		 * {@link SymbolicColor} is deprecated.
@@ -40006,29 +39532,12 @@ declare namespace imports.gi.Gtk {
 		 * @deprecated
 		 * {@link StyleProperties} are deprecated.
 		 * 
-		 * Sets several style properties on #props.
-		 * @param state state to set the values for
-		 */
-		set(state: StateFlags): void;
-		/**
-		 * @deprecated
-		 * {@link StyleProperties} are deprecated.
-		 * 
 		 * Sets a styling property in #props.
 		 * @param property styling property to set
 		 * @param state state to set the value for
 		 * @param value new value for the property
 		 */
 		set_property(property: string, state: StateFlags, value: GObject.Value): void;
-		/**
-		 * @deprecated
-		 * {@link StyleProperties} are deprecated.
-		 * 
-		 * Sets several style properties on #props.
-		 * @param state state to set the values for
-		 * @param args va_list of property name/value pairs, followed by %NULL
-		 */
-		set_valist(state: StateFlags, args: any[]): void;
 		/**
 		 * @deprecated
 		 * {@link StyleProperties} are deprecated.
@@ -40696,24 +40205,6 @@ declare namespace imports.gi.Gtk {
 		 */
 		create_mark(mark_name: string | null, where: TextIter, left_gravity: boolean): TextMark;
 		/**
-		 * Creates a tag and adds it to the tag table for #buffer.
-		 * Equivalent to calling {@link Gtk.TextTag.new} and then adding the
-		 * tag to the buffer’s tag table. The returned tag is owned by
-		 * the buffer’s tag table, so the ref count will be equal to one.
-		 * 
-		 * If #tag_name is %NULL, the tag is anonymous.
-		 * 
-		 * If #tag_name is non-%NULL, a tag called #tag_name must not already
-		 * exist in the tag table for this buffer.
-		 * 
-		 * The #first_property_name argument and subsequent arguments are a list
-		 * of properties to set on the tag, as with g_object_set().
-		 * @param tag_name name of the new tag, or %NULL
-		 * @param first_property_name name of first property to set, or %NULL
-		 * @returns a new tag
-		 */
-		create_tag(tag_name?: string | null, first_property_name?: string | null): TextTag;
-		/**
 		 * Copies the currently-selected text to a clipboard, then deletes
 		 * said text if it’s editable.
 		 * @param clipboard the {@link Clipboard} object to cut to
@@ -41164,27 +40655,6 @@ declare namespace imports.gi.Gtk {
 		 * @returns whether an insertion was possible at #iter
 		 */
 		insert_range_interactive(iter: TextIter, start: TextIter, end: TextIter, default_editable: boolean): boolean;
-		/**
-		 * Inserts #text into #buffer at #iter, applying the list of tags to
-		 * the newly-inserted text. The last tag specified must be %NULL to
-		 * terminate the list. Equivalent to calling {@link Gtk.TextBuffer.insert},
-		 * then gtk_text_buffer_apply_tag() on the inserted text;
-		 * gtk_text_buffer_insert_with_tags() is just a convenience function.
-		 * @param iter an iterator in #buffer
-		 * @param text UTF-8 text
-		 * @param len length of #text, or -1
-		 * @param first_tag first tag to apply to #text
-		 */
-		insert_with_tags(iter: TextIter, text: string, len: number, first_tag: TextTag): void;
-		/**
-		 * Same as {@link Gtk.TextBuffer.insert_with_tags}, but allows you
-		 * to pass in tag names instead of tag objects.
-		 * @param iter position in #buffer
-		 * @param text UTF-8 text
-		 * @param len length of #text, or -1
-		 * @param first_tag_name name of a tag to apply to #text
-		 */
-		insert_with_tags_by_name(iter: TextIter, text: string, len: number, first_tag_name: string): void;
 		/**
 		 * Moves #mark to the new location #where. Emits the {@link TextBuffer.mark_set}
 		 * signal as notification of the move.
@@ -43476,12 +42946,6 @@ declare namespace imports.gi.Gtk {
 		name: string;
 		readonly parent_object: GObject.Object;
 		/**
-		 * Retrieves several style property values that apply to the currently
-		 * rendered element.
-		 * @param state state to retrieve values for
-		 */
-		get(state: StateFlags): void;
-		/**
 		 * Gets the background color for a given state.
 		 * @param state state to retrieve the color for
 		 * @returns return value for the background color
@@ -43569,30 +43033,12 @@ declare namespace imports.gi.Gtk {
 		 */
 		get_state(): StateFlags;
 		/**
-		 * Retrieves several widget style properties from #engine according
-		 * to the currently rendered content’s style.
-		 */
-		get_style(): void;
-		/**
 		 * Gets the value for a widget style property.
 		 * @param property_name the name of the widget style property
 		 * @returns Return location for the property value, free with
 		 *         {@link G.value_unset} after use.
 		 */
 		get_style_property(property_name: string): GObject.Value;
-		/**
-		 * Retrieves several widget style properties from #engine according to the
-		 * currently rendered content’s style.
-		 * @param args va_list of property name/return location pairs, followed by %NULL
-		 */
-		get_style_valist(args: any[]): void;
-		/**
-		 * Retrieves several style property values that apply to the currently
-		 * rendered element.
-		 * @param state state to retrieve values for
-		 * @param args va_list of property name/return location pairs, followed by %NULL
-		 */
-		get_valist(state: StateFlags, args: any[]): void;
 		/**
 		 * Returns %TRUE if the currently rendered contents have
 		 * defined the given class name.
@@ -45852,11 +45298,6 @@ declare namespace imports.gi.Gtk {
 		 */
 		get_mode(): SelectionMode;
 		/**
-		 * Returns the current selection function.
-		 * @returns The function.
-		 */
-		get_select_function(): TreeSelectionFunc;
-		/**
 		 * Sets #iter to the currently selected node, if #selection is set to
 		 * %GTK_SELECTION_SINGLE or %GTK_SELECTION_BROWSE.
 		 * 
@@ -45898,11 +45339,6 @@ declare namespace imports.gi.Gtk {
 		 * @returns A {@link TreeView}
 		 */
 		get_tree_view(): TreeView;
-		/**
-		 * Returns the user data for the selection function.
-		 * @returns The user data.
-		 */
-		get_user_data(): any | null;
 		/**
 		 * Returns %TRUE if the row at #iter is currently selected.
 		 * @param iter A valid {@link TreeIter}
@@ -46104,17 +45540,6 @@ declare namespace imports.gi.Gtk {
 		 */
 		insert_before(parent?: TreeIter | null, sibling?: TreeIter | null): TreeIter;
 		/**
-		 * A variant of {@link Gtk.TreeStore.insert_with_values} which takes
-		 * the columns and values as two arrays, instead of varargs.  This
-		 * function is mainly intended for language bindings.
-		 * @param parent A valid {@link TreeIter}, or %NULL
-		 * @param position position to insert the new row, or -1 for last
-		 * @param columns an array of column numbers
-		 * @param values an array of GValues
-		 * @returns An unset {@link TreeIter} to set the new row, or %NULL.
-		 */
-		insert_with_values(parent: TreeIter | null, position: number, columns: number[], values: GObject.Value[]): TreeIter | null;
-		/**
 		 * Returns %TRUE if #iter is an ancestor of #descendant.  That is, #iter is the
 		 * parent (or grandparent or great-grandparent) of #descendant.
 		 * @param iter A valid {@link TreeIter}
@@ -46175,26 +45600,6 @@ declare namespace imports.gi.Gtk {
 		 */
 		remove(iter: TreeIter): boolean;
 		/**
-		 * Reorders the children of #parent in #tree_store to follow the order
-		 * indicated by #new_order. Note that this function only works with
-		 * unsorted stores.
-		 * @param parent A {@link TreeIter}, or %NULL
-		 * @param new_order an array of integers mapping the new position of each child
-		 *      to its old position before the re-ordering,
-		 *      i.e. #new_order`[newpos] = oldpos`.
-		 */
-		reorder(parent: TreeIter | null, new_order: number[]): void;
-		/**
-		 * A variant of {@link Gtk.TreeStore.set_valist} which takes
-		 * the columns and values as two arrays, instead of varargs.  This
-		 * function is mainly intended for language bindings or in case
-		 * the number of columns to change is not known until run-time.
-		 * @param iter A valid {@link TreeIter} for the row being modified
-		 * @param columns an array of column numbers
-		 * @param values an array of GValues
-		 */
-		set(iter: TreeIter, columns: number[], values: GObject.Value[]): void;
-		/**
 		 * This function is meant primarily for #GObjects that inherit from
 		 * {@link TreeStore}, and should only be used when constructing a new
 		 * #GtkTreeStore.  It will not function after a row has been added,
@@ -46202,13 +45607,6 @@ declare namespace imports.gi.Gtk {
 		 * @param types An array of #GType types, one for each column
 		 */
 		set_column_types(types: GObject.Type[]): void;
-		/**
-		 * See {@link Gtk.TreeStore.set}; this version takes a va_list for
-		 * use by language bindings.
-		 * @param iter A valid {@link TreeIter} for the row being modified
-		 * @param var_args va_list of column/value pairs
-		 */
-		set_valist(iter: TreeIter, var_args: any[]): void;
 		/**
 		 * Sets the data in the cell specified by #iter and #column.
 		 * The type of #value must be convertible to the type of the
@@ -46676,11 +46074,6 @@ declare namespace imports.gi.Gtk {
 		 */
 		get_reorderable(): boolean;
 		/**
-		 * Returns the current row separator function.
-		 * @returns the current row separator function.
-		 */
-		get_row_separator_func(): TreeViewRowSeparatorFunc;
-		/**
 		 * Returns whether rubber banding is turned on for #tree_view.  If the
 		 * selection mode is #GTK_SELECTION_MULTIPLE, rubber banding will allow the
 		 * user to select multiple rows by dragging the mouse.
@@ -46704,16 +46097,6 @@ declare namespace imports.gi.Gtk {
 		 * @returns the entry currently in use as search entry.
 		 */
 		get_search_entry(): Entry;
-		/**
-		 * Returns the compare function currently in use.
-		 * @returns the currently used compare function for the search code.
-		 */
-		get_search_equal_func(): TreeViewSearchEqualFunc;
-		/**
-		 * Returns the positioning function currently in use.
-		 * @returns the currently used function for positioning the search dialog.
-		 */
-		get_search_position_func(): TreeViewSearchPositionFunc;
 		/**
 		 * Gets the {@link TreeSelection} associated with #tree_view.
 		 * @returns A {@link TreeSelection} object.
@@ -46796,18 +46179,6 @@ declare namespace imports.gi.Gtk {
 		 * @returns The number of columns in #tree_view after insertion.
 		 */
 		insert_column(column: TreeViewColumn, position: number): number;
-		/**
-		 * Creates a new {@link TreeViewColumn} and inserts it into the #tree_view at
-		 * #position.  If #position is -1, then the newly created column is inserted at
-		 * the end.  The column is initialized with the attributes given. If #tree_view
-		 * has “fixed_height” mode enabled, then the new column will have its sizing
-		 * property set to be GTK_TREE_VIEW_COLUMN_FIXED.
-		 * @param position The position to insert the new column in
-		 * @param title The title to set the header to
-		 * @param cell The {@link CellRenderer}
-		 * @returns The number of columns in #tree_view after insertion.
-		 */
-		insert_column_with_attributes(position: number, title: string, cell: CellRenderer): number;
 		/**
 		 * Convenience function that inserts a new column into the {@link TreeView}
 		 * with the given cell renderer and a #GtkTreeCellDataFunc to set cell renderer
@@ -47789,14 +47160,6 @@ declare namespace imports.gi.Gtk {
 		 * @param xalign The alignment, which is between [0.0 and 1.0] inclusive.
 		 */
 		set_alignment(xalign: number): void;
-		/**
-		 * Sets the attributes in the list as the attributes of #tree_column.
-		 * The attributes should be in attribute/column order, as in
-		 * {@link Gtk.TreeViewColumn.add_attribute}. All existing attributes
-		 * are removed, and replaced with the new attributes.
-		 * @param cell_renderer the {@link CellRenderer} we’re setting the attributes of
-		 */
-		set_attributes(cell_renderer: CellRenderer): void;
 		/**
 		 * Sets the {@link TreeCellDataFunc} to use for the column.  This
 		 * function is used instead of the standard attributes mapping for
@@ -52196,25 +51559,11 @@ declare namespace imports.gi.Gtk {
 		 */
 		style_attach(): void;
 		/**
-		 * Gets the values of a multiple style properties of #widget.
-		 * @param first_property_name the name of the first property to get
-		 */
-		style_get(first_property_name: string): void;
-		/**
 		 * Gets the value of a style property of #widget.
 		 * @param property_name the name of a style property
 		 * @param value location to return the property value
 		 */
 		style_get_property(property_name: string, value: GObject.Value): void;
-		/**
-		 * Non-vararg variant of {@link Gtk.Widget.style_get}. Used primarily by language
-		 * bindings.
-		 * @param first_property_name the name of the first property to get
-		 * @param var_args a va_list of pairs of property names and
-		 *     locations to return the property values, starting with the location
-		 *     for #first_property_name.
-		 */
-		style_get_valist(first_property_name: string, var_args: any[]): void;
 		/**
 		 * Reverts the effect of a previous call to {@link Gtk.Widget.freeze_child_notify}.
 		 * This causes all queued {@link Widget.child_notify} signals on #widget to be
@@ -60289,19 +59638,6 @@ declare namespace imports.gi.Gtk {
 		 */
 		set_action_name(action_name?: string | null): void;
 		/**
-		 * Sets the target of an actionable widget.
-		 * 
-		 * This is a convenience function that calls {@link G.variant_new} for
-		 * #format_string and uses the result to call
-		 * gtk_actionable_set_action_target_value().
-		 * 
-		 * If you are setting a string-valued target and want to set the action
-		 * name at the same time, you can use
-		 * gtk_actionable_set_detailed_action_name ().
-		 * @param format_string a GVariant format string
-		 */
-		set_action_target(format_string: string): void;
-		/**
 		 * Sets the target value of an actionable widget.
 		 * 
 		 * If #target_value is %NULL then the target value is unset.
@@ -61114,15 +60450,6 @@ declare namespace imports.gi.Gtk {
 		 * @param position new position to insert #cell at
 		 */
 		reorder(cell: CellRenderer, position: number): void;
-		/**
-		 * Sets the attributes in list as the attributes of #cell_layout.
-		 * 
-		 * The attributes should be in attribute/column order, as in
-		 * {@link Gtk.CellLayout.add_attribute}. All existing attributes are
-		 * removed, and replaced with the new attributes.
-		 * @param cell a {@link CellRenderer}
-		 */
-		set_attributes(cell: CellRenderer): void;
 		/**
 		 * Sets the {@link CellLayoutDataFunc} to use for #cell_layout.
 		 * 
@@ -63687,22 +63014,6 @@ declare namespace imports.gi.Gtk {
 		 */
 		foreach(func: TreeModelForeachFunc): void;
 		/**
-		 * Gets the value of one or more cells in the row referenced by #iter.
-		 * The variable argument list should contain integer column numbers,
-		 * each column number followed by a place to store the value being
-		 * retrieved.  The list is terminated by a -1. For example, to get a
-		 * value from column 0 with type %G_TYPE_STRING, you would
-		 * write: `gtk_tree_model_get (model, iter, 0, &place_string_here, -1)`,
-		 * where `place_string_here` is a #gchararray
-		 * to be filled with the string.
-		 * 
-		 * Returned values with type %G_TYPE_OBJECT have to be unreferenced,
-		 * values with type %G_TYPE_STRING or %G_TYPE_BOXED have to be freed.
-		 * Other values are passed by value.
-		 * @param iter a row in #tree_model
-		 */
-		get(iter: TreeIter): void;
-		/**
 		 * Returns the type of the column.
 		 * @param index_ the column index
 		 * @returns the type of the column
@@ -63768,13 +63079,6 @@ declare namespace imports.gi.Gtk {
 		 *     Must be freed with {@link G.free}.
 		 */
 		get_string_from_iter(iter: TreeIter): string;
-		/**
-		 * See {@link Gtk.TreeModel.get}, this version takes a va_list
-		 * for language bindings to use.
-		 * @param iter a row in #tree_model
-		 * @param var_args va_list of column/return location pairs
-		 */
-		get_valist(iter: TreeIter, var_args: any[]): void;
 		/**
 		 * Initializes and sets #value to that at #column.
 		 * 
@@ -63918,22 +63222,6 @@ declare namespace imports.gi.Gtk {
 		 * @param iter a valid {@link TreeIter_struct} pointing to the inserted row
 		 */
 		row_inserted(path: TreePath, iter: TreeIter): void;
-		/**
-		 * Emits the {@link TreeModel.rows_reordered} signal on #tree_model.
-		 * 
-		 * This should be called by models when their rows have been
-		 * reordered.
-		 * @param path a {@link TreePath_struct} pointing to the tree node whose children
-		 *     have been reordered
-		 * @param iter a valid {@link TreeIter_struct} pointing to the node
-		 *     whose children have been reordered, or %NULL if the depth
-		 *     of #path is 0
-		 * @param new_order an array of integers
-		 *     mapping the current position of each child to its old
-		 *     position before the re-ordering,
-		 *     i.e. #new_order`[newpos] = oldpos`
-		 */
-		rows_reordered(path: TreePath, iter: TreeIter | null, new_order: number[]): void;
 		/**
 		 * Lets the tree unref the node.
 		 * 

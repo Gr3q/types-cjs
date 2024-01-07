@@ -361,17 +361,6 @@ declare namespace imports.gi.Atk {
 		 */
 		add_relationship(relationship: RelationType, target: Object): boolean;
 		/**
-		 * @deprecated
-		 * Connect directly to {@link Object.property_change} or
-		 *   the relevant #GObject::notify signal for each desired property.
-		 * 
-		 * Calls #handler on property changes.
-		 * @param handler a function to be called when a property changes its value
-		 * @returns a #guint which is the handler id used in
-		 *   {@link Atk.Object.remove_property_change_handler}
-		 */
-		connect_property_change_handler(handler: PropertyChangeHandler): number;
-		/**
 		 * Gets the accessible id of the accessible.
 		 * @returns a character string representing the accessible id of the object, or
 		 * NULL if no such string was set.
@@ -1921,19 +1910,6 @@ declare namespace imports.gi.Atk {
 	 * use {@link Component} instead.
 	 */
 	interface IComponent {
-		/**
-		 * @deprecated
-		 * If you need to track when an object gains or
-		 * lose the focus, use the {@link Object.state_change} "focused" notification instead.
-		 * 
-		 * Add the specified handler to the set of functions to be called
-		 * when this object receives focus events (in or out). If the handler is
-		 * already added it is not added again
-		 * @param handler The {@link FocusHandler} to be attached to #component
-		 * @returns a handler id which can be used in {@link Atk.Component.remove_focus_handler}
-		 * or zero if the handler was already added.
-		 */
-		add_focus_handler(handler: FocusHandler): number;
 		/**
 		 * Checks whether the specified point is within the extent of the #component.
 		 * 

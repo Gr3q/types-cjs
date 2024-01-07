@@ -198,13 +198,6 @@ declare namespace imports.gi.Gst {
 		 */
 		add(element: Element): boolean;
 		/**
-		 * Adds a %NULL-terminated list of elements to a bin.  This function is
-		 * equivalent to calling {@link Gst.Bin.add} for each member of the list. The return
-		 * value of each gst_bin_add() is ignored.
-		 * @param element_1 the {@link Element} element to add to the bin
-		 */
-		add_many(element_1: Element): void;
-		/**
 		 * Recursively looks for elements with an unlinked pad of the given
 		 * direction within the specified bin and returns an unlinked pad
 		 * if one is found, or %NULL otherwise. If a pad is found, the caller
@@ -322,12 +315,6 @@ declare namespace imports.gi.Gst {
 		 * the bin does not want to remove the element.
 		 */
 		remove(element: Element): boolean;
-		/**
-		 * Removes a list of elements from a bin. This function is equivalent
-		 * to calling {@link Gst.Bin.remove} with each member of the list.
-		 * @param element_1 the first {@link Element} to remove from the bin
-		 */
-		remove_many(element_1: Element): void;
 		/**
 		 * Suppresses the given flags on the bin. {@link ElementFlags} of a
 		 * child element are propagated when it is added to the bin.
@@ -880,33 +867,6 @@ declare namespace imports.gi.Gst {
 		 * @param priority The priority of the watch.
 		 */
 		add_signal_watch_full(priority: number): void;
-		/**
-		 * Adds a bus watch to the default main context with the given #priority (e.g.
-		 * %G_PRIORITY_DEFAULT). It is also possible to use a non-default  main
-		 * context set up using {@link G.main_context_push_thread_default} (before
-		 * one had to create a bus watch source and attach it to the desired main
-		 * context 'manually').
-		 * 
-		 * This function is used to receive asynchronous messages in the main loop.
-		 * There can only be a single bus watch per bus, you must remove it before you
-		 * can set a new one.
-		 * 
-		 * The bus watch will only work if a #GMainLoop is being run.
-		 * 
-		 * When #func is called, the message belongs to the caller; if you want to
-		 * keep a copy of it, call gst_message_ref() before leaving #func.
-		 * 
-		 * The watch can be removed using gst_bus_remove_watch() or by returning %FALSE
-		 * from #func. If the watch was added to the default main context it is also
-		 * possible to remove the watch using g_source_remove().
-		 * 
-		 * The bus watch will take its own reference to the #bus, so it is safe to unref
-		 * #bus using gst_object_unref() after setting the bus watch.
-		 * @param priority The priority of the watch.
-		 * @param func A function to call when a message is received.
-		 * @returns The event source id or 0 if #bus already got an event source.
-		 */
-		add_watch(priority: number, func: BusFunc): number;
 		/**
 		 * A helper {@link BusFunc} that can be used to convert all asynchronous messages
 		 * into signals.
@@ -1725,23 +1685,6 @@ declare namespace imports.gi.Gst {
 		 * or %NULL if the property isn't controlled.
 		 */
 		// get_value(timestamp: ClockTime): GObject.Value | null;
-		/**
-		 * Gets a number of values for the given controlled property starting at the
-		 * requested time. The array #values needs to hold enough space for #n_values of
-		 * the same type as the objects property's type.
-		 * 
-		 * This function is useful if one wants to e.g. draw a graph of the control
-		 * curve or apply a control curve sample by sample.
-		 * 
-		 * The values are unboxed and ready to be used. The similar function
-		 * {@link Gst.ControlBinding.get_g_value_array} returns the array as #GValues and is
-		 * more suitable for bindings.
-		 * @param timestamp the time that should be processed
-		 * @param interval the time spacing between subsequent values
-		 * @param values array to put control-values in
-		 * @returns %TRUE if the given array could be filled, %FALSE otherwise
-		 */
-		// get_value_array(timestamp: ClockTime, interval: ClockTime, values: any[]): boolean;
 		/**
 		 * Checks if the control binding is disabled.
 		 * @returns %TRUE if the binding is inactive
@@ -2922,14 +2865,6 @@ declare namespace imports.gi.Gst {
 		 */
 		link_filtered(dest: Element, filter?: Caps | null): boolean;
 		/**
-		 * Chain together a series of elements. Uses {@link Gst.Element.link}.
-		 * Make sure you have added your elements to a bin or pipeline with
-		 * gst_bin_add() before trying to link them.
-		 * @param element_2 the second {@link Element} in the link chain.
-		 * @returns %TRUE on success, %FALSE otherwise.
-		 */
-		link_many(element_2: Element): boolean;
-		/**
 		 * Links the two named pads of the source and destination elements.
 		 * Side effect is that if one of the pads has no parent, it becomes a
 		 * child of the parent of the other element.  If they have different
@@ -3355,11 +3290,6 @@ declare namespace imports.gi.Gst {
 		 */
 		unlink(dest: Element): void;
 		/**
-		 * Unlinks a series of elements. Uses {@link Gst.Element.unlink}.
-		 * @param element_2 the second {@link Element} in the link chain.
-		 */
-		unlink_many(element_2: Element): void;
-		/**
 		 * Unlinks the two named pads of the source and destination elements.
 		 * 
 		 * This is a convenience function for {@link Gst.Pad.unlink}.
@@ -3585,23 +3515,6 @@ declare namespace imports.gi.Gst {
 		 *     if the element couldn't be created
 		 */
 		create(name?: string | null): Element | null;
-		/**
-		 * Create a new element of the type defined by the given elementfactory.
-		 * The supplied list of properties, will be passed at object construction.
-		 * @param first name of the first property
-		 * @returns new {@link Element} or %NULL
-		 *     if the element couldn't be created
-		 */
-		create_full(first?: string | null): Element | null;
-		/**
-		 * Create a new element of the type defined by the given elementfactory.
-		 * The supplied list of properties, will be passed at object construction.
-		 * @param first name of the first property
-		 * @param properties list of properties
-		 * @returns new {@link Element} or %NULL
-		 *     if the element couldn't be created
-		 */
-		create_valist(first?: string | null, properties?: any[] | null): Element | null;
 		/**
 		 * Create a new element of the type defined by the given elementfactory.
 		 * The supplied list of properties, will be passed at object construction.
@@ -4174,24 +4087,6 @@ declare namespace imports.gi.Gst {
 		 */
 		get_value(property_name: string, timestamp: ClockTime): GObject.Value | null;
 		/**
-		 * Gets a number of values for the given controlled property starting at the
-		 * requested time. The array #values need to hold enough space for #n_values of
-		 * the same type as the objects property's type.
-		 * 
-		 * This function is useful if one wants to e.g. draw a graph of the control
-		 * curve or apply a control curve sample by sample.
-		 * 
-		 * The values are unboxed and ready to be used. The similar function
-		 * {@link Gst.Object.get_g_value_array} returns the array as #GValues and is
-		 * better suites for bindings.
-		 * @param property_name the name of the property to get
-		 * @param timestamp the time that should be processed
-		 * @param interval the time spacing between subsequent values
-		 * @param values array to put control-values in
-		 * @returns %TRUE if the given array could be filled, %FALSE otherwise
-		 */
-		get_value_array(property_name: string, timestamp: ClockTime, interval: ClockTime, values: any[]): boolean;
-		/**
 		 * Check if the #object has active controlled properties.
 		 * @returns %TRUE if the object has active controlled properties
 		 */
@@ -4615,45 +4510,6 @@ declare namespace imports.gi.Gst {
 		 * @returns A stream-id for #pad. {@link G.free} after usage.
 		 */
 		create_stream_id(parent: Element, stream_id?: string | null): string;
-		/**
-		 * Creates a stream-id for the source {@link Pad} #pad by combining the
-		 * upstream information with the optional #stream_id of the stream
-		 * of #pad. #pad must have a parent #GstElement and which must have zero
-		 * or one sinkpad. #stream_id can only be %NULL if the parent element
-		 * of #pad has only a single source pad.
-		 * 
-		 * This function generates an unique stream-id by getting the upstream
-		 * stream-start event stream ID and appending #stream_id to it. If the
-		 * element has no sinkpad it will generate an upstream stream-id by
-		 * doing an URI query on the element and in the worst case just uses
-		 * a random number. Source elements that don't implement the URI
-		 * handler interface should ideally generate a unique, deterministic
-		 * stream-id manually instead.
-		 * @param parent Parent {@link Element} of #pad
-		 * @param stream_id The stream-id
-		 * @returns A stream-id for #pad. {@link G.free} after usage.
-		 */
-		create_stream_id_printf(parent: Element, stream_id?: string | null): string;
-		/**
-		 * Creates a stream-id for the source {@link Pad} #pad by combining the
-		 * upstream information with the optional #stream_id of the stream
-		 * of #pad. #pad must have a parent #GstElement and which must have zero
-		 * or one sinkpad. #stream_id can only be %NULL if the parent element
-		 * of #pad has only a single source pad.
-		 * 
-		 * This function generates an unique stream-id by getting the upstream
-		 * stream-start event stream ID and appending #stream_id to it. If the
-		 * element has no sinkpad it will generate an upstream stream-id by
-		 * doing an URI query on the element and in the worst case just uses
-		 * a random number. Source elements that don't implement the URI
-		 * handler interface should ideally generate a unique, deterministic
-		 * stream-id manually instead.
-		 * @param parent Parent {@link Element} of #pad
-		 * @param stream_id The stream-id
-		 * @param var_args parameters for the #stream_id format string
-		 * @returns A stream-id for #pad. {@link G.free} after usage.
-		 */
-		create_stream_id_printf_valist(parent: Element, stream_id: string | null, var_args: any[]): string;
 		/**
 		 * Invokes the default event handler for the given pad.
 		 * 
@@ -5877,16 +5733,6 @@ declare namespace imports.gi.Gst {
 		 */
 		get_bus(): Bus;
 		/**
-		 * Gets the current clock used by #pipeline. Users of object
-		 * oriented languages should use {@link Gst.Pipeline.get_pipeline_clock}
-		 * to avoid confusion with gst_element_get_clock() which has a different behavior.
-		 * 
-		 * Unlike gst_element_get_clock(), this function will always return a
-		 * clock, even if the pipeline is not in the PLAYING state.
-		 * @returns a {@link Clock}, unref after usage.
-		 */
-		get_clock(): Clock;
-		/**
 		 * Get the configured delay (see {@link Gst.Pipeline.set_delay}).
 		 * @returns The configured delay.
 		 * 
@@ -5926,16 +5772,6 @@ declare namespace imports.gi.Gst {
 		 * the pipeline goes from READY to NULL state
 		 */
 		set_auto_flush_bus(auto_flush: boolean): void;
-		/**
-		 * Set the clock for #pipeline. The clock will be distributed
-		 * to all the elements managed by the pipeline.
-		 * @param clock the clock to set
-		 * @returns %TRUE if the clock could be set on the pipeline. %FALSE if
-		 *   some element did not accept the clock.
-		 * 
-		 * MT safe.
-		 */
-		set_clock(clock?: Clock | null): boolean;
 		/**
 		 * Set the expected delay needed for all elements to perform the
 		 * PAUSED to PLAYING state change. #delay will be added to the
@@ -7485,15 +7321,7 @@ declare namespace imports.gi.Gst {
 	 * use {@link TracerRecord} instead.
 	 */
 	interface ITracerRecord {
-		/**
-		 * Serialzes the trace event into the log.
-		 * 
-		 * Right now this is using the gstreamer debug log with the level TRACE (7) and
-		 * the category "GST_TRACER".
-		 * 
-		 * > Please note that this is still under discussion and subject to change.
-		 */
-		log(): void;
+
 	}
 
 	type TracerRecordInitOptionsMixin = ObjectInitOptions
@@ -17225,11 +17053,6 @@ declare namespace imports.gi.Gst {
 		 */
 		child_removed(child: GObject.Object, name: string): void;
 		/**
-		 * Gets properties of the parent object and its children.
-		 * @param first_property_name name of the first property to get
-		 */
-		get(first_property_name: string): void;
-		/**
 		 * Fetches a child by its number.
 		 * @param index the child's position in the child list
 		 * @returns the child object or %NULL if
@@ -17274,12 +17097,6 @@ declare namespace imports.gi.Gst {
 		 */
 		get_property(name: string): GObject.Value;
 		/**
-		 * Gets properties of the parent object and its children.
-		 * @param first_property_name name of the first property to get
-		 * @param var_args return location for the first property, followed optionally by more name/return location pairs, followed by %NULL
-		 */
-		get_valist(first_property_name: string, var_args: any[]): void;
-		/**
 		 * Looks up which object and #GParamSpec would be effected by the given #name.
 		 * @param name name of the property to look up
 		 * @returns %TRUE if #target and #pspec could be found. %FALSE otherwise. In that
@@ -17294,22 +17111,11 @@ declare namespace imports.gi.Gst {
 		 */
 		lookup(name: string): [ boolean, GObject.Object | null, GObject.ParamSpec | null ];
 		/**
-		 * Sets properties of the parent object and its children.
-		 * @param first_property_name name of the first property to set
-		 */
-		set(first_property_name: string): void;
-		/**
 		 * Sets a single property using the GstChildProxy mechanism.
 		 * @param name name of the property to set
 		 * @param value new #GValue for the property
 		 */
 		set_property(name: string, value: GObject.Value): void;
-		/**
-		 * Sets properties of the parent object and its children.
-		 * @param first_property_name name of the first property to set
-		 * @param var_args value for the first property, followed optionally by more name/value pairs, followed by %NULL
-		 */
-		set_valist(first_property_name: string, var_args: any[]): void;
 		/**
 		 * Will be emitted after the #object was added to the #child_proxy.
 		 * @param signal 
@@ -17498,42 +17304,12 @@ declare namespace imports.gi.Gst {
 	 */
 	interface ITagSetter {
 		/**
-		 * Adds the given tag / value pairs on the setter using the given merge mode.
-		 * The list must be terminated with %NULL.
-		 * @param mode the mode to use
-		 * @param tag tag to set
-		 * @param var_args tag / value pairs to set
-		 */
-		add_tag_valist(mode: TagMergeMode, tag: string, var_args: any[]): void;
-		/**
-		 * Adds the given tag / GValue pairs on the setter using the given merge mode.
-		 * The list must be terminated with %NULL.
-		 * @param mode the mode to use
-		 * @param tag tag to set
-		 * @param var_args tag / GValue pairs to set
-		 */
-		add_tag_valist_values(mode: TagMergeMode, tag: string, var_args: any[]): void;
-		/**
 		 * Adds the given tag / GValue pair on the setter using the given merge mode.
 		 * @param mode the mode to use
 		 * @param tag tag to set
 		 * @param value GValue to set for the tag
 		 */
 		add_tag_value(mode: TagMergeMode, tag: string, value: GObject.Value): void;
-		/**
-		 * Adds the given tag / GValue pairs on the setter using the given merge mode.
-		 * The list must be terminated with %NULL.
-		 * @param mode the mode to use
-		 * @param tag tag to set
-		 */
-		add_tag_values(mode: TagMergeMode, tag: string): void;
-		/**
-		 * Adds the given tag / value pairs on the setter using the given merge mode.
-		 * The list must be terminated with %NULL.
-		 * @param mode the mode to use
-		 * @param tag tag to set
-		 */
-		add_tags(mode: TagMergeMode, tag: string): void;
 		/**
 		 * Returns the current list of tags the setter uses.  The list should not be
 		 * modified or freed.
