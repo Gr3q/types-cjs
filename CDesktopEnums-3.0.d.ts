@@ -16,6 +16,12 @@ declare namespace imports.gi.CDesktopEnums {
 		SPANNED = 6
 	}
 
+	enum DeviceSendEvents {
+		ENABLED = 0,
+		DISABLED = 1,
+		DISABLED_ON_EXTERNAL_MOUSE = 2
+	}
+
 	enum FocusMode {
 		CLICK = 0,
 		SLOPPY = 1,
@@ -120,6 +126,25 @@ declare namespace imports.gi.CDesktopEnums {
 		GESTURE = 1
 	}
 
+	enum NotificationScreenDisplay {
+		PRIMARY_SCREEN = 0,
+		ACTIVE_SCREEN = 1,
+		FIXED_SCREEN = 2
+	}
+
+	enum PadButtonAction {
+		NONE = 0,
+		HELP = 1,
+		SWITCH_MONITOR = 2,
+		KEYBINDING = 3
+	}
+
+	enum PointerAccelProfile {
+		DEFAULT = 0,
+		FLAT = 1,
+		ADAPTIVE = 2
+	}
+
 	enum ProxyMode {
 		NONE = 0,
 		MANUAL = 1,
@@ -130,6 +155,20 @@ declare namespace imports.gi.CDesktopEnums {
 		BLANK_ONLY = 0,
 		RANDOM = 1,
 		SINGLE = 2
+	}
+
+	enum StylusButtonAction {
+		DEFAULT = 0,
+		MIDDLE = 1,
+		RIGHT = 2,
+		BACK = 3,
+		FORWARD = 4,
+		DISABLED = 5
+	}
+
+	enum TabletMapping {
+		ABSOLUTE = 0,
+		RELATIVE = 1
 	}
 
 	enum TitlebarAction {
@@ -161,6 +200,19 @@ declare namespace imports.gi.CDesktopEnums {
 		BOTH_HORIZ = 1,
 		ICONS = 2,
 		TEXT = 3
+	}
+
+	enum TouchpadClickMethod {
+		DEFAULT = 0,
+		NONE = 1,
+		AREAS = 2,
+		FINGERS = 3
+	}
+
+	enum TouchpadHandedness {
+		RIGHT = 0,
+		LEFT = 1,
+		MOUSE = 2
 	}
 
 	enum VisualBellType {

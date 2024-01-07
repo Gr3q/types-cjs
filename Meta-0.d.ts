@@ -47,15 +47,15 @@ declare namespace imports.gi.Meta {
 	 */
 	interface IBackground {
 		meta_display: Display;
-		set_blend(file1: Gio.File, file2: Gio.File, blend_factor: number, style: GDesktopEnums.BackgroundStyle): void;
+		set_blend(file1: Gio.File, file2: Gio.File, blend_factor: number, style: CDesktopEnums.BackgroundStyle): void;
 		set_color(color: Clutter.Color): void;
 		/**
 		 * Set the background to #file
 		 * @param file a #GFile representing the background file
 		 * @param style the background style to apply
 		 */
-		set_file(file: Gio.File | null, style: GDesktopEnums.BackgroundStyle): void;
-		set_gradient(shading_direction: GDesktopEnums.BackgroundShading, color: Clutter.Color, second_color: Clutter.Color): void;
+		set_file(file: Gio.File | null, style: CDesktopEnums.BackgroundStyle): void;
+		set_gradient(shading_direction: CDesktopEnums.BackgroundShading, color: Clutter.Color, second_color: Clutter.Color): void;
 		connect(signal: "changed", callback: (owner: this) => void): number;
 
 		connect(signal: "notify::meta-display", callback: (owner: this, ...args: any) => void): number;
@@ -90,18 +90,42 @@ declare namespace imports.gi.Meta {
 	 * use {@link BackgroundActor} instead.
 	 */
 	interface IBackgroundActor {
+		background: Background;
+		brightness: number;
+		gradient: boolean;
+		gradient_height: number;
+		gradient_max_darkness: number;
 		meta_display: Display;
 		monitor: number;
-
+		vignette: boolean;
+		vignette_sharpness: number;
+		set_background(background: Background): void;
+		set_gradient(enabled: boolean, height: number, tone_start: number): void;
+		set_monitor(monitor: number): void;
+		set_vignette(enabled: boolean, brightness: number, sharpness: number): void;
+		connect(signal: "notify::background", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::brightness", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::gradient", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::gradient-height", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::gradient-max-darkness", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::meta-display", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::monitor", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::vignette", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::vignette-sharpness", callback: (owner: this, ...args: any) => void): number;
 
 	}
 
 	type BackgroundActorInitOptionsMixin = Clutter.ActorInitOptions & Atk.ImplementorIfaceInitOptions & Clutter.AnimatableInitOptions & Clutter.ContainerInitOptions & Clutter.ScriptableInitOptions & 
 	Pick<IBackgroundActor,
+		"background" |
+		"brightness" |
+		"gradient" |
+		"gradient_height" |
+		"gradient_max_darkness" |
 		"meta_display" |
-		"monitor">;
+		"monitor" |
+		"vignette" |
+		"vignette_sharpness">;
 
 	export interface BackgroundActorInitOptions extends BackgroundActorInitOptionsMixin {}
 
@@ -126,71 +150,6 @@ declare namespace imports.gi.Meta {
 		 * @returns the newly created background actor
 		 */
 		public static new(display: Display, monitor: number): Clutter.Actor;
-	}
-
-	/** This construct is only for enabling class multi-inheritance,
-	 * use {@link BackgroundContent} instead.
-	 */
-	interface IBackgroundContent {
-		background: Background;
-		brightness: number;
-		gradient: boolean;
-		gradient_height: number;
-		gradient_max_darkness: number;
-		meta_display: Display;
-		monitor: number;
-		vignette: boolean;
-		vignette_sharpness: number;
-		set_background(background: Background): void;
-		set_gradient(enabled: boolean, height: number, tone_start: number): void;
-		set_vignette(enabled: boolean, brightness: number, sharpness: number): void;
-		connect(signal: "notify::background", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::brightness", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::gradient", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::gradient-height", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::gradient-max-darkness", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::meta-display", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::monitor", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::vignette", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::vignette-sharpness", callback: (owner: this, ...args: any) => void): number;
-
-	}
-
-	type BackgroundContentInitOptionsMixin = GObject.ObjectInitOptions & Clutter.ContentInitOptions & 
-	Pick<IBackgroundContent,
-		"background" |
-		"brightness" |
-		"gradient" |
-		"gradient_height" |
-		"gradient_max_darkness" |
-		"meta_display" |
-		"monitor" |
-		"vignette" |
-		"vignette_sharpness">;
-
-	export interface BackgroundContentInitOptions extends BackgroundContentInitOptionsMixin {}
-
-	/** This construct is only for enabling class multi-inheritance,
-	 * use {@link BackgroundContent} instead.
-	 */
-	type BackgroundContentMixin = IBackgroundContent & GObject.Object & Clutter.Content;
-
-	/**
-	 * This class handles tracking and painting the root window background.
-	 * By integrating with {@link WindowGroup} we can avoid painting parts of
-	 * the background that are obscured by other windows.
-	 */
-	interface BackgroundContent extends BackgroundContentMixin {}
-
-	class BackgroundContent {
-		public constructor(options?: Partial<BackgroundContentInitOptions>);
-		/**
-		 * Creates a new actor to draw the background for the given monitor.
-		 * @param display
-		 * @param monitor Index of the monitor for which to draw the background
-		 * @returns the newly created background actor
-		 */
-		public static new(display: Display, monitor: number): Clutter.Content;
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -256,7 +215,7 @@ declare namespace imports.gi.Meta {
 		/**
 		 * Loads an image to use as a background, or returns a reference to an
 		 * image that is already in the process of loading or loaded. In either
-		 * case, what is returned is a {@link BackgroundImage} which can be dereferenced
+		 * case, what is returned is a {@link BackgroundImage} which can be derefenced
 		 * to get a #CoglTexture. If {@link Meta.BackgroundImage.is_loaded} returns %TRUE,
 		 * the background is loaded, otherwise the MetaBackgroundImage::loaded
 		 * signal will be emitted exactly once. The 'loaded' state means that the
@@ -377,7 +336,6 @@ declare namespace imports.gi.Meta {
 	 * use {@link Compositor} instead.
 	 */
 	interface ICompositor {
-		backend: Backend;
 		display: Display;
 		add_window(window: Window): void;
 		destroy(): void;
@@ -400,14 +358,12 @@ declare namespace imports.gi.Meta {
 		unmanage(): void;
 		window_opacity_changed(window: Window): void;
 		window_shape_changed(window: Window): void;
-		connect(signal: "notify::backend", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::display", callback: (owner: this, ...args: any) => void): number;
 
 	}
 
 	type CompositorInitOptionsMixin = GObject.ObjectInitOptions & 
 	Pick<ICompositor,
-		"backend" |
 		"display">;
 
 	export interface CompositorInitOptions extends CompositorInitOptionsMixin {}
@@ -427,7 +383,6 @@ declare namespace imports.gi.Meta {
 	 * use {@link CursorTracker} instead.
 	 */
 	interface ICursorTracker {
-		backend: Backend;
 		get_hot(): [ x: number, y: number ];
 		get_pointer(x: number, y: number, mods: Clutter.ModifierType): void;
 		get_pointer_visible(): boolean;
@@ -447,14 +402,9 @@ declare namespace imports.gi.Meta {
 		connect(signal: "cursor-moved", callback: (owner: this, x: number, y: number) => void): number;
 		connect(signal: "visibility-changed", callback: (owner: this) => void): number;
 
-		connect(signal: "notify::backend", callback: (owner: this, ...args: any) => void): number;
-
 	}
 
-	type CursorTrackerInitOptionsMixin = GObject.ObjectInitOptions & 
-	Pick<ICursorTracker,
-		"backend">;
-
+	type CursorTrackerInitOptionsMixin = GObject.ObjectInitOptions
 	export interface CursorTrackerInitOptions extends CursorTrackerInitOptionsMixin {}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -479,6 +429,15 @@ declare namespace imports.gi.Meta {
 	 */
 	interface IDisplay {
 		readonly focus_window: Window;
+		/**
+		 * Use {@link Meta.Display.remove_custom_keybinding} to remove the binding.
+		 * @param name the binding's unique name
+		 * @param bindings array of parseable keystrokes
+		 * @param callback function to run when the keybinding is invoked
+		 * @returns %TRUE if the keybinding was added successfully,
+		 *          otherwise %FALSE
+		 */
+		add_custom_keybinding(name: string, bindings: string[] | null, callback: KeyHandlerFunc): number;
 		/**
 		 * Save the specified serial and ignore crossing events with that
 		 * serial for the purpose of focus-follows-mouse. This can be used
@@ -526,6 +485,7 @@ declare namespace imports.gi.Meta {
 		get_current_monitor(): number;
 		get_current_time(): number;
 		get_current_time_roundtrip(): number;
+		get_desklets_above(): boolean;
 		/**
 		 * Get our best guess as to the "currently" focused window (that is,
 		 * the window that we expect will be focused at the point when the X
@@ -585,6 +545,13 @@ declare namespace imports.gi.Meta {
 		get_n_monitors(): number;
 		get_pad_action_label(pad: Clutter.InputDevice, action_type: PadActionType, action_number: number): string;
 		/**
+		 * Gets the {@link Window} pointed by the mouse
+		 * @param not_this_one window to be excluded
+		 * @returns the {@link Window} pointed by the mouse
+		 *  %NULL when window not found
+		 */
+		get_pointer_window(not_this_one?: Window | null): Window;
+		/**
 		 * Gets the index of the primary monitor on this #display.
 		 * @returns a monitor index
 		 */
@@ -609,7 +576,7 @@ declare namespace imports.gi.Meta {
 		/**
 		 * Determine the list of windows that should be displayed for Alt-TAB
 		 * functionality.  The windows are returned in most recently used order.
-		 * If #workspace is not %NULL, the list only contains windows that are on
+		 * If #workspace is not %NULL, the list only conains windows that are on
 		 * #workspace or have the demands-attention hint set; otherwise it contains
 		 * all windows.
 		 * @param type type of tab list
@@ -638,15 +605,45 @@ declare namespace imports.gi.Meta {
 		 */
 		is_pointer_emulating_sequence(sequence?: Clutter.EventSequence | null): boolean;
 		/**
+		 * Lists windows for the display, the #flags parameter for
+		 * now determines whether override-redirect windows will be
+		 * included.
+		 * @param flags options for listing
+		 * @returns the list of windows.
+		 */
+		list_windows(flags: ListWindowsFlags): Window[];
+		logical_index_to_xinerama_index(log_index: number): number;
+		/**
+		 * If the window is not yet tiled, tile the window to the portion
+		 * of the monitor indicated by #direction. If already tiled, perform
+		 * navigation around the possible tile positions, or untile the
+		 * window, according to #direction.
+		 * 
+		 * For example, if #window is left-tiled, and the #direction is
+		 * #META_MOTION_UP, the window will be upper-left corner tiled. If the
+		 * #direction is #META_MOTION_RIGHT, the window will be untiled.
+		 * 
+		 * This logic is identical to the behavior of the tiling keyboard
+		 * shortcuts.
+		 * @param window the {@link Window} to act upon
+		 * @param direction the {@link MotionDirection} to push the window in.
+		 */
+		push_tile(window: Window, direction: MotionDirection): void;
+		/**
 		 * Remove keybinding #name; the function will fail if #name is not a known
 		 * keybinding or has not been added with {@link Meta.Display.add_keybinding}.
 		 * @param name name of the keybinding to remove
-		 * @returns %TRUE if the binding has been removed successfully,
+		 * @returns %TRUE if the binding has been removed sucessfully,
 		 *          otherwise %FALSE
 		 */
 		remove_keybinding(name: string): boolean;
 		request_pad_osd(pad: Clutter.InputDevice, edition_mode: boolean): void;
 		set_cursor(cursor: Cursor): void;
+		/**
+		 * Raises the desklet container to the top of the stage temporatily.
+		 * @param above Whether to set above or not
+		 */
+		set_desklets_above(above: boolean): void;
 		set_input_focus(window: Window, focus_frame: boolean, timestamp: number): void;
 		/**
 		 * Sorts a set of windows according to their current stacking order. If windows
@@ -667,6 +664,7 @@ declare namespace imports.gi.Meta {
 		ungrab_accelerator(action_id: number): boolean;
 		ungrab_keyboard(timestamp: number): void;
 		unset_input_focus(timestamp: number): void;
+		xinerama_index_to_logical_index(x_index: number): number;
 		/**
 		 * Xserver time can wraparound, thus comparing two timestamps needs to take
 		 * this into account. If no wraparound has occurred, this is equivalent to
@@ -768,10 +766,15 @@ declare namespace imports.gi.Meta {
 		connect(signal: "window-entered-monitor", callback: (owner: this, object: number, p0: Window) => void): number;
 		connect(signal: "window-left-monitor", callback: (owner: this, object: number, p0: Window) => void): number;
 		connect(signal: "window-marked-urgent", callback: (owner: this, object: Window) => void): number;
+		connect(signal: "window-monitor-changed", callback: (owner: this, object: Window, p0: number) => void): number;
+		connect(signal: "window-skip-taskbar-changed", callback: (owner: this, object: Window) => void): number;
+		connect(signal: "window-workspace-changed", callback: (owner: this, object: Window, p0: Workspace) => void): number;
 		connect(signal: "workareas-changed", callback: (owner: this) => void): number;
 		connect(signal: "x11-display-closing", callback: (owner: this) => void): number;
 		connect(signal: "x11-display-opened", callback: (owner: this) => void): number;
 		connect(signal: "x11-display-setup", callback: (owner: this) => void): number;
+		connect(signal: "zoom-scroll-in", callback: (owner: this) => void): number;
+		connect(signal: "zoom-scroll-out", callback: (owner: this) => void): number;
 
 		connect(signal: "notify::focus-window", callback: (owner: this, ...args: any) => void): number;
 
@@ -895,15 +898,23 @@ declare namespace imports.gi.Meta {
 	 */
 	interface IMonitorManager {
 		backend: Backend;
-		readonly panel_orientation_managed: boolean;
+		apply_temporary_rotation(rotation: XrandrRotation): boolean;
+		can_apply_rotation(rotation: XrandrRotation): boolean;
 		can_switch_config(): boolean;
+		/**
+		 * Returns %TRUE if there is a laptop panel and its current rotation
+		 * can be determined, otherwise %FALSE
+		 * @returns 
+		 * 
+		 * The current {@link XrandrRotation} applied to the laptop panel.
+		 */
+		get_current_rotation(): [ boolean, XrandrRotation ];
 		/**
 		 * Returns whether the built-in display (i.e. a laptop panel) is turned on.
 		 * @returns 
 		 */
 		get_is_builtin_display_on(): boolean;
 		get_monitor_for_connector(connector: string): number;
-		get_panel_orientation_managed(): boolean;
 		get_switch_config(): MonitorSwitchConfigType;
 		switch_config(config_type: MonitorSwitchConfigType): void;
 		connect(signal: "confirm-display-change", callback: (owner: this) => void): number;
@@ -912,7 +923,6 @@ declare namespace imports.gi.Meta {
 		connect(signal: "power-save-mode-changed", callback: (owner: this) => void): number;
 
 		connect(signal: "notify::backend", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::panel-orientation-managed", callback: (owner: this, ...args: any) => void): number;
 
 	}
 
@@ -1004,17 +1014,7 @@ declare namespace imports.gi.Meta {
 	 * use {@link RemoteAccessController} instead.
 	 */
 	interface IRemoteAccessController {
-		/**
-		 * Inhibits remote access sessions from being created and running. Any active
-		 * remote access session will be terminated.
-		 */
-		inhibit_remote_access(): void;
-		/**
-		 * Uninhibits remote access sessions from being created and running. If this was
-		 * the last inhibitation that was inhibited, new remote access sessions can now
-		 * be created.
-		 */
-		uninhibit_remote_access(): void;
+
 		connect(signal: "new-handle", callback: (owner: this, object: RemoteAccessHandle) => void): number;
 
 	}
@@ -1037,7 +1037,6 @@ declare namespace imports.gi.Meta {
 	 * use {@link RemoteAccessHandle} instead.
 	 */
 	interface IRemoteAccessHandle {
-		is_recording: boolean;
 		get_disable_animations(): boolean;
 		/**
 		 * Stop the associated remote access session.
@@ -1045,14 +1044,9 @@ declare namespace imports.gi.Meta {
 		stop(): void;
 		connect(signal: "stopped", callback: (owner: this) => void): number;
 
-		connect(signal: "notify::is-recording", callback: (owner: this, ...args: any) => void): number;
-
 	}
 
-	type RemoteAccessHandleInitOptionsMixin = GObject.ObjectInitOptions & 
-	Pick<IRemoteAccessHandle,
-		"is_recording">;
-
+	type RemoteAccessHandleInitOptionsMixin = GObject.ObjectInitOptions
 	export interface RemoteAccessHandleInitOptions extends RemoteAccessHandleInitOptionsMixin {}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -1275,6 +1269,15 @@ declare namespace imports.gi.Meta {
 		get_texture(): Cogl.Texture;
 		set_create_mipmaps(create_mipmaps: boolean): void;
 		set_mask_texture(mask_texture: Cogl.Texture): void;
+		/**
+		 * As most windows have a large portion that does not require blending,
+		 * we can easily turn off blending if we know the areas that do not
+		 * require blending. This sets the region where we will not blend for
+		 * optimization purposes.
+		 * @param opaque_region the region of the texture that
+		 *   can have blending turned off.
+		 */
+		set_opaque_region(opaque_region: cairo.Region): void;
 		connect(signal: "size-changed", callback: (owner: this) => void): number;
 
 	}
@@ -1441,63 +1444,6 @@ declare namespace imports.gi.Meta {
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
-	 * use {@link WaylandClient} instead.
-	 */
-	interface IWaylandClient {
-		hide_from_window_list(window: Window): void;
-		owns_window(window: Window): boolean;
-		/**
-		 * Shows again this window in window lists, like taskbars, pagers...
-		 * @param window a MetaWindow
-		 */
-		show_in_window_list(window: Window): void;
-		/**
-		 * Creates a #GSubprocess given a provided varargs list of arguments. It also
-		 * sets up a new Wayland socket and sets the environment variable WAYLAND_SOCKET
-		 * to make the new process to use it.
-		 * @param display the current MetaDisplay
-		 * @param error Error
-		 * @param argv0 Command line arguments
-		 * @returns A new #GSubprocess, or %NULL on error (and #error
-		 * will be set)
-		 */
-		spawn(display: Display, error: GLib.Error | null, argv0: string): Gio.Subprocess;
-		/**
-		 * Creates a #GSubprocess given a provided array of arguments, launching a new
-		 * process with the binary specified in the first element of argv, and with the
-		 * rest of elements as parameters. It also sets up a new Wayland socket and sets
-		 * the environment variable WAYLAND_SOCKET to make the new process to use it.
-		 * @param display the current MetaDisplay
-		 * @param argv Command line arguments
-		 * @returns A new #GSubprocess, or %NULL on error (and #error
-		 * will be set)
-		 */
-		spawnv(display: Display, argv: string[]): Gio.Subprocess;
-	}
-
-	type WaylandClientInitOptionsMixin = GObject.ObjectInitOptions
-	export interface WaylandClientInitOptions extends WaylandClientInitOptionsMixin {}
-
-	/** This construct is only for enabling class multi-inheritance,
-	 * use {@link WaylandClient} instead.
-	 */
-	type WaylandClientMixin = IWaylandClient & GObject.Object;
-
-	interface WaylandClient extends WaylandClientMixin {}
-
-	class WaylandClient {
-		public constructor(options?: Partial<WaylandClientInitOptions>);
-		/**
-		 * Creates a new {@link WaylandClient}. The GSubprocesslauncher passed is
-		 * stored internally and will be used to launch the subprocess.
-		 * @param launcher a GSubprocessLauncher to use to launch the subprocess
-		 * @returns A {@link WaylandClient} or %NULL if %error is set. Free with
-		 * {@link GObject.unref}.
-		 */
-		public static new(launcher: Gio.SubprocessLauncher): WaylandClient;
-	}
-
-	/** This construct is only for enabling class multi-inheritance,
 	 * use {@link Window} instead.
 	 */
 	interface IWindow {
@@ -1519,8 +1465,12 @@ declare namespace imports.gi.Meta {
 		readonly minimized: boolean;
 		readonly mutter_hints: string;
 		readonly on_all_workspaces: boolean;
+		readonly opacity: number;
+		readonly progress: number;
+		readonly progress_pulse: boolean;
 		readonly resizeable: boolean;
 		readonly skip_taskbar: boolean;
+		readonly tile_mode: TileMode;
 		readonly title: string;
 		readonly urgent: boolean;
 		readonly user_time: number;
@@ -1603,6 +1553,12 @@ declare namespace imports.gi.Meta {
 		 */
 		get_client_machine(): string;
 		/**
+		 * Returns the pid of the process that created this window, if available
+		 * to the windowing system.
+		 * @returns the pid, or 0 if not known.
+		 */
+		get_client_pid(): number;
+		/**
 		 * Returns the {@link WindowClientType} of the window.
 		 * @returns The root ancestor window
 		 */
@@ -1647,11 +1603,24 @@ declare namespace imports.gi.Meta {
 		 * Gets the location of the icon corresponding to the window. The location
 		 * will be provided set by the task bar or other user interface element
 		 * displaying the icon, and is relative to the root window.
-		 * @returns %TRUE if the icon geometry was successfully retrieved.
+		 * @returns %TRUE if the icon geometry was succesfully retrieved.
 		 * 
 		 * rectangle into which to store the returned geometry.
 		 */
 		get_icon_geometry(): [ boolean, Rectangle ];
+		/**
+		 * Returns the currently set icon name or icon path for the window.
+		 * 
+		 * Note:
+		 * 
+		 * This will currently only be non-NULL for programs that use XAppGtkWindow
+		 * in place of GtkWindow and use {@link Xapp.gtk_window_set_icon_name} or
+		 * set_icon_from_file().  These methods will need to be used explicitly in
+		 * C programs, but for introspection use you should not need to treat it any
+		 * differently (except for using the correct window class.)
+		 * @returns 
+		 */
+		get_icon_name(): string;
 		/**
 		 * Returns the window id associated with window.
 		 * @returns The window id
@@ -1685,13 +1654,11 @@ declare namespace imports.gi.Meta {
 		 * are set.
 		 */
 		get_mutter_hints(): string;
+		get_opacity(): number;
 		/**
-		 * Returns the pid of the process that created this window, if available
-		 * to the windowing system.
-		 * 
-		 * Note that the value returned by this is vulnerable to spoofing attacks
-		 * by the client.
-		 * @returns the pid, or 0 if not known.
+		 * Returns pid of the process that created this window, if known (obtained from
+		 * the _NET_WM_PID property).
+		 * @returns the pid, or -1 if not known.
 		 */
 		get_pid(): number;
 		get_role(): string;
@@ -1720,10 +1687,11 @@ declare namespace imports.gi.Meta {
 		 *  - spanning the remaining monitor width;
 		 *  - there is no 3rd window stacked between both tiled windows that's
 		 *    partially visible in the common edge.
-		 * @returns the matching tiled window or
-		 * %NULL if it doesn't exist.
+		 * @param vertical
+		 * @returns An array of matching tiled windows or
+		 * %NULL if none exist.
 		 */
-		get_tile_match(): Window | null;
+		get_tile_match(vertical: boolean): Window | null;
 		get_title(): string;
 		/**
 		 * Returns the {@link Window} for the window that is pointed to by the
@@ -1783,7 +1751,7 @@ declare namespace imports.gi.Meta {
 		 * @returns the {@link Workspace} for the window
 		 */
 		get_workspace(): Workspace;
-		get_xwindow(): xlib.Window;
+		get_xwindow(): number;
 		group_leader_changed(): void;
 		has_focus(): boolean;
 		is_above(): boolean;
@@ -1857,6 +1825,8 @@ declare namespace imports.gi.Meta {
 		 */
 		move_to_monitor(monitor: number): void;
 		raise(): void;
+		requested_bypass_compositor(): boolean;
+		requested_dont_bypass_compositor(): boolean;
 		set_compositor_private(priv: GObject.Object): void;
 		set_demands_attention(): void;
 		/**
@@ -1866,6 +1836,7 @@ declare namespace imports.gi.Meta {
 		 * @param rect rectangle with the desired geometry or %NULL.
 		 */
 		set_icon_geometry(rect?: Rectangle | null): void;
+		set_opacity(opacity: number): void;
 		shade(timestamp: number): void;
 		shove_titlebar_onscreen(): void;
 		showing_on_its_workspace(): boolean;
@@ -1880,6 +1851,16 @@ declare namespace imports.gi.Meta {
 		unshade(timestamp: number): void;
 		unstick(): void;
 		connect(signal: "focus", callback: (owner: this) => void): number;
+		/**
+		 * This is emitted when the window has changed monitor
+		 * @param signal 
+		 * @param callback Callback function
+		 *  - owner: owner of the emitted event 
+		 *  - old_monitor: the old monitor index or -1 if not known 
+		 * 
+		 * @returns Callback ID
+		 */
+		connect(signal: "monitor-changed", callback: (owner: this, old_monitor: number) => void): number;
 		/**
 		 * This is emitted when the position of a window might
 		 * have changed. Specifically, this is emitted when the
@@ -1936,8 +1917,12 @@ declare namespace imports.gi.Meta {
 		connect(signal: "notify::minimized", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::mutter-hints", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::on-all-workspaces", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::opacity", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::progress", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::progress-pulse", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::resizeable", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::skip-taskbar", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::tile-mode", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::title", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::urgent", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::user-time", callback: (owner: this, ...args: any) => void): number;
@@ -1966,13 +1951,6 @@ declare namespace imports.gi.Meta {
 	interface IWindowActor {
 		meta_window: Window;
 		/**
-		 * Freezes the {@link WindowActor}, which inhibits updates and geometry
-		 * changes of the window. This property is refcounted, so make sure
-		 * to call {@link Meta.WindowActor.thaw} the exact same amount of times
-		 * as this function to allow updates again.
-		 */
-		freeze(): void;
-		/**
 		 * Flattens the layers of #self into one ARGB32 image by alpha blending
 		 * the images, and returns the flattened image.
 		 * @param clip A clipping rectangle, to help prevent extra processing.
@@ -1999,11 +1977,6 @@ declare namespace imports.gi.Meta {
 		 */
 		is_destroyed(): boolean;
 		sync_visibility(): void;
-		/**
-		 * Thaws/unfreezes the {@link WindowActor} to allow updates and geometry
-		 * changes after a window was frozen using {@link Meta.WindowActor.freeze}.
-		 */
-		thaw(): void;
 		/**
 		 * Notify that one or more of the surfaces of the window have been damaged.
 		 * @param signal 
@@ -2091,10 +2064,15 @@ declare namespace imports.gi.Meta {
 	 * use {@link Workspace} instead.
 	 */
 	interface IWorkspace {
-		readonly active: boolean;
 		readonly n_windows: number;
 		readonly workspace_index: number;
 		activate(timestamp: number): void;
+		/**
+		 * Switches to #workspace in the specified #direction (if possible)
+		 * @param direction the suggested {@link MotionDirection}
+		 * @param timestamp timestamp for #focus_this
+		 */
+		activate_with_direction_hint(direction: MotionDirection, timestamp: number): void;
 		/**
 		 * Switches to #workspace and possibly activates the window #focus_this.
 		 * 
@@ -2118,7 +2096,7 @@ declare namespace imports.gi.Meta {
 		 */
 		get_display(): Display;
 		/**
-		 * Calculate and retrieve the workspace that is next to #workspace,
+		 * Calculate and retrive the workspace that is next to #workspace,
 		 * according to #direction and the current workspace layout, as set
 		 * by {@link Meta.screen_override_workspace_layout}.
 		 * @param direction a {@link MotionDirection}, relative to #workspace
@@ -2155,7 +2133,6 @@ declare namespace imports.gi.Meta {
 		connect(signal: "window-added", callback: (owner: this, object: Window) => void): number;
 		connect(signal: "window-removed", callback: (owner: this, object: Window) => void): number;
 
-		connect(signal: "notify::active", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::n-windows", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::workspace-index", callback: (owner: this, ...args: any) => void): number;
 
@@ -2219,7 +2196,7 @@ declare namespace imports.gi.Meta {
 		remove_workspace(workspace: Workspace, timestamp: number): void;
 		/**
 		 * Reorder a workspace to a new index. If the workspace is currently active
-		 * the "active-workspace-changed" signal will be emitted.
+		 * the "active-workspace-changed" signal will be emited.
 		 * If the workspace's index is the same as #new_index or the workspace
 		 * will not be found in the list, this function will return.
 		 * 
@@ -2228,6 +2205,9 @@ declare namespace imports.gi.Meta {
 		 * @param new_index the new index of the passed workspace
 		 */
 		reorder_workspace(workspace: Workspace, new_index: number): void;
+		show_desktop(timestamp: number): void;
+		toggle_desktop(timestamp: number): void;
+		unshow_desktop(): void;
 		connect(signal: "active-workspace-changed", callback: (owner: this) => void): number;
 		connect(signal: "showing-desktop-changed", callback: (owner: this) => void): number;
 		connect(signal: "workspace-added", callback: (owner: this, object: number) => void): number;
@@ -2253,6 +2233,48 @@ declare namespace imports.gi.Meta {
 
 	class WorkspaceManager {
 		public constructor(options?: Partial<WorkspaceManagerInitOptions>);
+	}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link X11BackgroundActor} instead.
+	 */
+	interface IX11BackgroundActor {
+		/**
+		 * Factor to dim the background by, between 0.0 (black) and 1.0 (original
+		 * colors)
+		 */
+		dim_factor: number;
+
+		connect(signal: "notify::dim-factor", callback: (owner: this, ...args: any) => void): number;
+
+	}
+
+	type X11BackgroundActorInitOptionsMixin = Clutter.ActorInitOptions & Atk.ImplementorIfaceInitOptions & Clutter.AnimatableInitOptions & Clutter.ContainerInitOptions & Clutter.ScriptableInitOptions & 
+	Pick<IX11BackgroundActor,
+		"dim_factor">;
+
+	export interface X11BackgroundActorInitOptions extends X11BackgroundActorInitOptionsMixin {}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link X11BackgroundActor} instead.
+	 */
+	type X11BackgroundActorMixin = IX11BackgroundActor & Clutter.Actor & Atk.ImplementorIface & Clutter.Animatable & Clutter.Container & Clutter.Scriptable;
+
+	/**
+	 * This class handles tracking and painting the root window background.
+	 * By integrating with {@link WindowGroup} we can avoid painting parts of
+	 * the background that are obscured by other windows.
+	 */
+	interface X11BackgroundActor extends X11BackgroundActorMixin {}
+
+	class X11BackgroundActor {
+		public constructor(options?: Partial<X11BackgroundActorInitOptions>);
+		/**
+		 * Creates a new actor to draw the background for the given display.
+		 * @param display the {@link Display}
+		 * @returns the newly created background actor
+		 */
+		public static new_for_display(display: Display): Clutter.Actor;
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -2883,11 +2905,7 @@ declare namespace imports.gi.Meta {
 		 * I-beam (text input)
 		 */
 		IBEAM = 18,
-		/**
-		 * Invisible cursor
-		 */
-		BLANK = 19,
-		LAST = 20
+		LAST = 19
 	}
 
 	enum DisplayCorner {
@@ -3262,206 +3280,218 @@ declare namespace imports.gi.Meta {
 		/**
 		 * FILLME
 		 */
-		TOGGLE_TILED_LEFT = 40,
+		PUSH_TILE_LEFT = 40,
 		/**
 		 * FILLME
 		 */
-		TOGGLE_TILED_RIGHT = 41,
+		PUSH_TILE_RIGHT = 41,
 		/**
 		 * FILLME
 		 */
-		TOGGLE_ABOVE = 42,
+		PUSH_TILE_UP = 42,
 		/**
 		 * FILLME
 		 */
-		MAXIMIZE = 43,
+		PUSH_TILE_DOWN = 43,
 		/**
 		 * FILLME
 		 */
-		UNMAXIMIZE = 44,
+		TOGGLE_ABOVE = 44,
 		/**
 		 * FILLME
 		 */
-		TOGGLE_SHADED = 45,
+		MAXIMIZE = 45,
 		/**
 		 * FILLME
 		 */
-		MINIMIZE = 46,
+		UNMAXIMIZE = 46,
 		/**
 		 * FILLME
 		 */
-		CLOSE = 47,
+		TOGGLE_SHADED = 47,
 		/**
 		 * FILLME
 		 */
-		BEGIN_MOVE = 48,
+		MINIMIZE = 48,
 		/**
 		 * FILLME
 		 */
-		BEGIN_RESIZE = 49,
+		CLOSE = 49,
 		/**
 		 * FILLME
 		 */
-		TOGGLE_ON_ALL_WORKSPACES = 50,
+		BEGIN_MOVE = 50,
 		/**
 		 * FILLME
 		 */
-		MOVE_TO_WORKSPACE_1 = 51,
+		BEGIN_RESIZE = 51,
 		/**
 		 * FILLME
 		 */
-		MOVE_TO_WORKSPACE_2 = 52,
+		TOGGLE_ON_ALL_WORKSPACES = 52,
 		/**
 		 * FILLME
 		 */
-		MOVE_TO_WORKSPACE_3 = 53,
+		MOVE_TO_WORKSPACE_1 = 53,
 		/**
 		 * FILLME
 		 */
-		MOVE_TO_WORKSPACE_4 = 54,
+		MOVE_TO_WORKSPACE_2 = 54,
 		/**
 		 * FILLME
 		 */
-		MOVE_TO_WORKSPACE_5 = 55,
+		MOVE_TO_WORKSPACE_3 = 55,
 		/**
 		 * FILLME
 		 */
-		MOVE_TO_WORKSPACE_6 = 56,
+		MOVE_TO_WORKSPACE_4 = 56,
 		/**
 		 * FILLME
 		 */
-		MOVE_TO_WORKSPACE_7 = 57,
+		MOVE_TO_WORKSPACE_5 = 57,
 		/**
 		 * FILLME
 		 */
-		MOVE_TO_WORKSPACE_8 = 58,
+		MOVE_TO_WORKSPACE_6 = 58,
 		/**
 		 * FILLME
 		 */
-		MOVE_TO_WORKSPACE_9 = 59,
+		MOVE_TO_WORKSPACE_7 = 59,
 		/**
 		 * FILLME
 		 */
-		MOVE_TO_WORKSPACE_10 = 60,
+		MOVE_TO_WORKSPACE_8 = 60,
 		/**
 		 * FILLME
 		 */
-		MOVE_TO_WORKSPACE_11 = 61,
+		MOVE_TO_WORKSPACE_9 = 61,
 		/**
 		 * FILLME
 		 */
-		MOVE_TO_WORKSPACE_12 = 62,
+		MOVE_TO_WORKSPACE_10 = 62,
 		/**
 		 * FILLME
 		 */
-		MOVE_TO_WORKSPACE_LEFT = 63,
+		MOVE_TO_WORKSPACE_11 = 63,
 		/**
 		 * FILLME
 		 */
-		MOVE_TO_WORKSPACE_RIGHT = 64,
+		MOVE_TO_WORKSPACE_12 = 64,
 		/**
 		 * FILLME
 		 */
-		MOVE_TO_WORKSPACE_UP = 65,
+		MOVE_TO_WORKSPACE_LEFT = 65,
 		/**
 		 * FILLME
 		 */
-		MOVE_TO_WORKSPACE_DOWN = 66,
+		MOVE_TO_WORKSPACE_RIGHT = 66,
 		/**
 		 * FILLME
 		 */
-		MOVE_TO_WORKSPACE_LAST = 67,
+		MOVE_TO_WORKSPACE_UP = 67,
 		/**
 		 * FILLME
 		 */
-		MOVE_TO_MONITOR_LEFT = 68,
+		MOVE_TO_WORKSPACE_DOWN = 68,
 		/**
 		 * FILLME
 		 */
-		MOVE_TO_MONITOR_RIGHT = 69,
+		MOVE_TO_WORKSPACE_LAST = 69,
 		/**
 		 * FILLME
 		 */
-		MOVE_TO_MONITOR_UP = 70,
+		MOVE_TO_MONITOR_LEFT = 70,
 		/**
 		 * FILLME
 		 */
-		MOVE_TO_MONITOR_DOWN = 71,
+		MOVE_TO_MONITOR_RIGHT = 71,
 		/**
 		 * FILLME
 		 */
-		RAISE_OR_LOWER = 72,
+		MOVE_TO_MONITOR_UP = 72,
 		/**
 		 * FILLME
 		 */
-		RAISE = 73,
+		MOVE_TO_MONITOR_DOWN = 73,
 		/**
 		 * FILLME
 		 */
-		LOWER = 74,
+		RAISE_OR_LOWER = 74,
 		/**
 		 * FILLME
 		 */
-		MAXIMIZE_VERTICALLY = 75,
+		RAISE = 75,
 		/**
 		 * FILLME
 		 */
-		MAXIMIZE_HORIZONTALLY = 76,
+		LOWER = 76,
 		/**
 		 * FILLME
 		 */
-		MOVE_TO_CORNER_NW = 77,
+		MAXIMIZE_VERTICALLY = 77,
 		/**
 		 * FILLME
 		 */
-		MOVE_TO_CORNER_NE = 78,
+		MAXIMIZE_HORIZONTALLY = 78,
 		/**
 		 * FILLME
 		 */
-		MOVE_TO_CORNER_SW = 79,
+		MOVE_TO_CORNER_NW = 79,
 		/**
 		 * FILLME
 		 */
-		MOVE_TO_CORNER_SE = 80,
+		MOVE_TO_CORNER_NE = 80,
 		/**
 		 * FILLME
 		 */
-		MOVE_TO_SIDE_N = 81,
+		MOVE_TO_CORNER_SW = 81,
 		/**
 		 * FILLME
 		 */
-		MOVE_TO_SIDE_S = 82,
+		MOVE_TO_CORNER_SE = 82,
 		/**
 		 * FILLME
 		 */
-		MOVE_TO_SIDE_E = 83,
+		MOVE_TO_SIDE_N = 83,
 		/**
 		 * FILLME
 		 */
-		MOVE_TO_SIDE_W = 84,
+		MOVE_TO_SIDE_S = 84,
 		/**
 		 * FILLME
 		 */
-		MOVE_TO_CENTER = 85,
+		MOVE_TO_SIDE_E = 85,
 		/**
 		 * FILLME
 		 */
-		OVERLAY_KEY = 86,
+		MOVE_TO_SIDE_W = 86,
+		/**
+		 * FILLME
+		 * META_KEYBINDING_ACTION_INCREASE_OPACITY: FILLME,
+		 * META_KEYBINDING_ACTION_DECREASE_OPACITY: FILLME,
+		 */
+		MOVE_TO_CENTER = 87,
+		INCREASE_OPACITY = 88,
+		DECREASE_OPACITY = 89,
 		/**
 		 * FILLME
 		 */
-		LOCATE_POINTER_KEY = 87,
-		ISO_NEXT_GROUP = 88,
+		OVERLAY_KEY = 90,
 		/**
 		 * FILLME
 		 */
-		ALWAYS_ON_TOP = 89,
-		SWITCH_MONITOR = 90,
-		ROTATE_MONITOR = 91,
+		LOCATE_POINTER_KEY = 91,
+		ISO_NEXT_GROUP = 92,
 		/**
 		 * FILLME
 		 */
-		LAST = 92
+		ALWAYS_ON_TOP = 93,
+		SWITCH_MONITOR = 94,
+		ROTATE_MONITOR = 95,
+		/**
+		 * FILLME
+		 */
+		LAST = 96
 	}
 
 	enum LaterType {
@@ -3547,144 +3577,196 @@ declare namespace imports.gi.Meta {
 		STRIP = 2
 	}
 
+	/**
+	 * How new windows should be placed.
+	 */
+	enum PlacementMode {
+		/**
+		 * Automatic
+		 */
+		AUTOMATIC = 0,
+		/**
+		 * Pointer
+		 */
+		POINTER = 1,
+		/**
+		 * Manual
+		 */
+		MANUAL = 2,
+		/**
+		 * Center
+		 */
+		CENTER = 3
+	}
+
 	enum Preference {
 		/**
 		 * mouse button modifiers
 		 */
 		MOUSE_BUTTON_MODS = 0,
 		/**
+		 * mouse button zoom modifiers
+		 */
+		MOUSE_BUTTON_ZOOM_MODS = 1,
+		/**
 		 * focus mode
 		 */
-		FOCUS_MODE = 1,
+		FOCUS_MODE = 2,
 		/**
 		 * focus new windows
 		 */
-		FOCUS_NEW_WINDOWS = 2,
+		FOCUS_NEW_WINDOWS = 3,
 		/**
 		 * attach modal dialogs
 		 */
-		ATTACH_MODAL_DIALOGS = 3,
+		ATTACH_MODAL_DIALOGS = 4,
 		/**
 		 * raise on click
 		 */
-		RAISE_ON_CLICK = 4,
+		RAISE_ON_CLICK = 5,
 		/**
 		 * action double click titlebar
 		 */
-		ACTION_DOUBLE_CLICK_TITLEBAR = 5,
+		ACTION_DOUBLE_CLICK_TITLEBAR = 6,
 		/**
 		 * action middle click titlebar
 		 */
-		ACTION_MIDDLE_CLICK_TITLEBAR = 6,
+		ACTION_MIDDLE_CLICK_TITLEBAR = 7,
 		/**
 		 * action right click titlebar
 		 */
-		ACTION_RIGHT_CLICK_TITLEBAR = 7,
+		ACTION_RIGHT_CLICK_TITLEBAR = 8,
+		/**
+		 * action scroll wheel titlebar
+		 */
+		ACTION_SCROLL_WHEEL_TITLEBAR = 9,
 		/**
 		 * auto-raise
 		 */
-		AUTO_RAISE = 8,
+		AUTO_RAISE = 10,
 		/**
 		 * auto-raise delay
 		 */
-		AUTO_RAISE_DELAY = 9,
+		AUTO_RAISE_DELAY = 11,
 		/**
 		 * focus change on pointer rest
 		 */
-		FOCUS_CHANGE_ON_POINTER_REST = 10,
+		FOCUS_CHANGE_ON_POINTER_REST = 12,
 		/**
 		 * title-bar font
 		 */
-		TITLEBAR_FONT = 11,
+		TITLEBAR_FONT = 13,
 		/**
 		 * number of workspaces
 		 */
-		NUM_WORKSPACES = 12,
+		NUM_WORKSPACES = 14,
 		/**
 		 * dynamic workspaces
 		 */
-		DYNAMIC_WORKSPACES = 13,
+		DYNAMIC_WORKSPACES = 15,
 		/**
 		 * keybindings
 		 */
-		KEYBINDINGS = 14,
+		KEYBINDINGS = 16,
 		/**
 		 * disable workarounds
 		 */
-		DISABLE_WORKAROUNDS = 15,
+		DISABLE_WORKAROUNDS = 17,
 		/**
 		 * button layout
 		 */
-		BUTTON_LAYOUT = 16,
+		BUTTON_LAYOUT = 18,
 		/**
 		 * workspace names
 		 */
-		WORKSPACE_NAMES = 17,
+		WORKSPACE_NAMES = 19,
 		/**
 		 * visual bell
 		 */
-		VISUAL_BELL = 18,
+		VISUAL_BELL = 20,
 		/**
 		 * audible bell
 		 */
-		AUDIBLE_BELL = 19,
+		AUDIBLE_BELL = 21,
 		/**
 		 * visual bell type
 		 */
-		VISUAL_BELL_TYPE = 20,
+		VISUAL_BELL_TYPE = 22,
 		/**
 		 * GNOME accessibility
 		 */
-		GNOME_ACCESSIBILITY = 21,
+		GNOME_ACCESSIBILITY = 23,
 		/**
 		 * GNOME animations
 		 */
-		GNOME_ANIMATIONS = 22,
+		GNOME_ANIMATIONS = 24,
 		/**
 		 * cursor theme
 		 */
-		CURSOR_THEME = 23,
+		CURSOR_THEME = 25,
 		/**
 		 * cursor size
 		 */
-		CURSOR_SIZE = 24,
+		CURSOR_SIZE = 26,
 		/**
 		 * resize with right button
 		 */
-		RESIZE_WITH_RIGHT_BUTTON = 25,
+		RESIZE_WITH_RIGHT_BUTTON = 27,
 		/**
 		 * edge tiling
 		 */
-		EDGE_TILING = 26,
+		EDGE_TILING = 28,
 		/**
 		 * force fullscreen
 		 */
-		FORCE_FULLSCREEN = 27,
+		FORCE_FULLSCREEN = 29,
 		/**
 		 * workspaces only on primary
 		 */
-		WORKSPACES_ONLY_ON_PRIMARY = 28,
+		WORKSPACES_ONLY_ON_PRIMARY = 30,
 		/**
 		 * draggable border width
 		 */
-		DRAGGABLE_BORDER_WIDTH = 29,
+		DRAGGABLE_BORDER_WIDTH = 31,
 		/**
 		 * auto-maximize
 		 */
-		AUTO_MAXIMIZE = 30,
+		AUTO_MAXIMIZE = 32,
 		/**
-		 * center new windows
+		 * new window placement mode
 		 */
-		CENTER_NEW_WINDOWS = 31,
+		NEW_WINDOW_PLACEMENT_MODE = 33,
 		/**
 		 * drag threshold
 		 */
-		DRAG_THRESHOLD = 32,
+		DRAG_THRESHOLD = 34,
 		/**
 		 * show pointer location
 		 */
-		LOCATE_POINTER = 33,
-		CHECK_ALIVE_TIMEOUT = 34
+		LOCATE_POINTER = 35,
+		CHECK_ALIVE_TIMEOUT = 36,
+		BACKGROUND_TRANSITION = 37,
+		UNREDIRECT_FULLSCREEN_WINDOWS = 38,
+		WORKSPACE_CYCLE = 39,
+		MIN_WIN_OPACITY = 40,
+		MOUSE_ZOOM_ENABLED = 41,
+		TILE_MAXIMIZE = 42,
+		/**
+		 * gtk theme name
+		 */
+		GTK_THEME = 43,
+		/**
+		 * sound to use for audible event bell
+		 */
+		BELL_SOUND = 44,
+		/**
+		 * behavior when use activates an off-workspace window.
+		 */
+		BRING_WINDOWS_TO_CURRENT_WORKSPACE = 45,
+		/**
+		 * Flip arrow direction when changing workspaces during a window grab move.
+		 */
+		INVERT_WORKSPACE_FLIP_DIRECTION = 46
 	}
 
 	enum SelectionType {
@@ -3723,7 +3805,8 @@ declare namespace imports.gi.Meta {
 		MAXIMIZE = 0,
 		UNMAXIMIZE = 1,
 		FULLSCREEN = 2,
-		UNFULLSCREEN = 3
+		UNFULLSCREEN = 3,
+		TILE = 4
 	}
 
 	/**
@@ -3789,6 +3872,19 @@ declare namespace imports.gi.Meta {
 		 * Show instantly (Alt-Esc mode)
 		 */
 		INSTANTLY = 1
+	}
+
+	enum TileMode {
+		NONE = 0,
+		LEFT = 1,
+		RIGHT = 2,
+		ULC = 3,
+		LLC = 4,
+		URC = 5,
+		LRC = 6,
+		TOP = 7,
+		BOTTOM = 8,
+		MAXIMIZED = 9
 	}
 
 	enum WindowClientType {
@@ -3883,6 +3979,19 @@ declare namespace imports.gi.Meta {
 		OVERRIDE_OTHER = 15
 	}
 
+	enum X11BackgroundTransition {
+		NONE = 0,
+		FADEIN = 1,
+		BLEND = 2
+	}
+
+	enum XrandrRotation {
+		NORMAL = 0,
+		LEFT = 1,
+		FLIPPED = 2,
+		RIGHT = 3
+	}
+
 	enum BarrierDirection {
 		/**
 		 * Positive direction in the X axis
@@ -3900,17 +4009,6 @@ declare namespace imports.gi.Meta {
 		 * Negative direction in the Y axis
 		 */
 		NEGATIVE_Y = 8
-	}
-
-	enum DebugPaintFlag {
-		/**
-		 * default
-		 */
-		NONE = 0,
-		/**
-		 * paint opaque regions
-		 */
-		OPAQUE_REGION = 1
 	}
 
 	enum DebugTopic {
@@ -4109,7 +4207,13 @@ declare namespace imports.gi.Meta {
 		/**
 		 * frame is tiled to the right
 		 */
-		TILED_RIGHT = 32768
+		TILED_RIGHT = 32768,
+		TILED_TOP = 65536,
+		TILED_BOTTOM = 131072,
+		TILED_ULC = 262144,
+		TILED_URC = 524288,
+		TILED_LRC = 1048576,
+		TILED_LLC = 2097152
 	}
 
 	enum KeyBindingFlags {
@@ -4138,6 +4242,12 @@ declare namespace imports.gi.Meta {
 		 * not grabbed automatically
 		 */
 		NO_AUTO_GRAB = 32
+	}
+
+	enum ListWindowsFlags {
+		DEFAULT = 0,
+		INCLUDE_OVERRIDE_REDIRECT = 1,
+		SORTED = 2
 	}
 
 	enum MaximizeFlags {
@@ -4238,7 +4348,6 @@ declare namespace imports.gi.Meta {
 	 */
 	function activate_session(): boolean;
 	function add_clutter_debug_flags(debug_flags: Clutter.DebugFlag, draw_flags: Clutter.DrawDebugFlag, pick_flags: Clutter.PickDebugFlag): void;
-	function add_debug_paint_flag(flag: DebugPaintFlag): void;
 	/**
 	 * Ensure log messages for the given topic #topic
 	 * will be printed.
@@ -4249,8 +4358,8 @@ declare namespace imports.gi.Meta {
 	function clutter_init(): void;
 	function debug_spew_real(format: string): void;
 	/**
-	 * Disables unredirection, can be useful in situations where having
-	 * unredirected windows is undesirable like when recording a video.
+	 * Disables unredirection, can be usefull in situations where having
+	 * unredirected windows is undesireable like when recording a video.
 	 * @param display a {@link Display}
 	 */
 	function disable_unredirect_for_display(display: Display): void;
@@ -4276,7 +4385,13 @@ declare namespace imports.gi.Meta {
 	 * @returns The only {@link Backend} there is.
 	 */
 	function get_backend(): Backend;
-	function get_debug_paint_flags(): DebugPaintFlag;
+	function get_bottom_window_group_for_display(display: Display): Clutter.Actor;
+	/**
+	 * Returns the desklet container actor.
+	 * @param display a {@link Display}
+	 * @returns The desklet container actor.
+	 */
+	function get_desklet_container_for_display(display: Display): Clutter.Actor;
 	function get_feedback_group_for_display(display: Display): Clutter.Actor;
 	function get_locale_direction(): LocaleDirection;
 	/**
@@ -4290,6 +4405,14 @@ declare namespace imports.gi.Meta {
 	function get_top_window_group_for_display(display: Display): Clutter.Actor;
 	function get_window_actors(display: Display): Clutter.Actor[];
 	function get_window_group_for_display(display: Display): Clutter.Actor;
+	/**
+	 * Gets the actor that draws the root window background under the windows.
+	 * The root window background automatically tracks the image or color set
+	 * by the environment.
+	 * @param display a {@link Display}
+	 * @returns The background actor corresponding to #display
+	 */
+	function get_x11_background_actor_for_display(display: Display): Clutter.Actor;
 	function gravity_to_string(gravity: Gravity): string;
 	/**
 	 * Initialize mutter. Call this after {@link Meta.get.option_context} and
@@ -4350,15 +4473,18 @@ declare namespace imports.gi.Meta {
 	function prefs_add_listener(func: PrefsChangedFunc): void;
 	function prefs_bell_is_audible(): boolean;
 	function prefs_change_workspace_name(i: number, name: string): void;
-	function prefs_get_action_double_click_titlebar(): GDesktopEnums.TitlebarAction;
-	function prefs_get_action_middle_click_titlebar(): GDesktopEnums.TitlebarAction;
-	function prefs_get_action_right_click_titlebar(): GDesktopEnums.TitlebarAction;
+	function prefs_get_action_double_click_titlebar(): CDesktopEnums.TitlebarAction;
+	function prefs_get_action_middle_click_titlebar(): CDesktopEnums.TitlebarAction;
+	function prefs_get_action_right_click_titlebar(): CDesktopEnums.TitlebarAction;
+	function prefs_get_action_scroll_wheel_titlebar(): CDesktopEnums.TitlebarScrollAction;
 	function prefs_get_attach_modal_dialogs(): boolean;
 	function prefs_get_auto_maximize(): boolean;
 	function prefs_get_auto_raise(): boolean;
 	function prefs_get_auto_raise_delay(): number;
+	function prefs_get_background_transition(): X11BackgroundTransition;
+	function prefs_get_bell_sound(): string;
+	function prefs_get_bring_windows_to_current_workspace(): boolean;
 	function prefs_get_button_layout(): ButtonLayout;
-	function prefs_get_center_new_windows(): boolean;
 	function prefs_get_check_alive_timeout(): number;
 	function prefs_get_compositing_manager(): boolean;
 	function prefs_get_cursor_size(): number;
@@ -4369,21 +4495,29 @@ declare namespace imports.gi.Meta {
 	function prefs_get_dynamic_workspaces(): boolean;
 	function prefs_get_edge_tiling(): boolean;
 	function prefs_get_focus_change_on_pointer_rest(): boolean;
-	function prefs_get_focus_mode(): GDesktopEnums.FocusMode;
-	function prefs_get_focus_new_windows(): GDesktopEnums.FocusNewWindows;
+	function prefs_get_focus_mode(): CDesktopEnums.FocusMode;
+	function prefs_get_focus_new_windows(): CDesktopEnums.FocusNewWindows;
 	function prefs_get_force_fullscreen(): boolean;
 	function prefs_get_gnome_accessibility(): boolean;
 	function prefs_get_gnome_animations(): boolean;
+	function prefs_get_invert_flip_direction(): boolean;
 	function prefs_get_keybinding_action(name: string): KeyBindingAction;
+	function prefs_get_min_win_opacity(): number;
 	function prefs_get_mouse_button_menu(): number;
 	function prefs_get_mouse_button_mods(): VirtualModifier;
 	function prefs_get_mouse_button_resize(): number;
+	function prefs_get_mouse_button_zoom_mods(): VirtualModifier;
+	function prefs_get_mouse_zoom_enabled(): boolean;
+	function prefs_get_new_window_placement_mode(): PlacementMode;
 	function prefs_get_num_workspaces(): number;
 	function prefs_get_raise_on_click(): boolean;
 	function prefs_get_show_fallback_app_menu(): boolean;
+	function prefs_get_tile_maximize(): boolean;
 	function prefs_get_titlebar_font(): Pango.FontDescription;
+	function prefs_get_unredirect_fullscreen_windows(): boolean;
 	function prefs_get_visual_bell(): boolean;
-	function prefs_get_visual_bell_type(): GDesktopEnums.VisualBellType;
+	function prefs_get_visual_bell_type(): CDesktopEnums.VisualBellType;
+	function prefs_get_workspace_cycle(): boolean;
 	function prefs_get_workspace_name(i: number): string;
 	function prefs_get_workspaces_only_on_primary(): boolean;
 	function prefs_init(): void;
@@ -4411,7 +4545,6 @@ declare namespace imports.gi.Meta {
 	 */
 	function register_with_session(): void;
 	function remove_clutter_debug_flags(debug_flags: Clutter.DebugFlag, draw_flags: Clutter.DrawDebugFlag, pick_flags: Clutter.PickDebugFlag): void;
-	function remove_debug_paint_flag(flag: DebugPaintFlag): void;
 	/**
 	 * Stop printing log messages for the given topic #topic.  Note
 	 * that this method does not stack with {@link Meta.add.verbose_topic};
@@ -4444,13 +4577,14 @@ declare namespace imports.gi.Meta {
 	 * @param wm_keybindings value for _GNOME_WM_KEYBINDINGS
 	 */
 	function set_gnome_wm_keybindings(wm_keybindings: string): void;
+	function set_verbose(setting: boolean): void;
 	/**
 	 * Set the value to use for the _NET_WM_NAME property. To take effect,
 	 * it is necessary to call this function before meta_init().
 	 * @param wm_name value for _NET_WM_NAME
 	 */
 	function set_wm_name(wm_name: string): void;
-	function show_dialog(type: string, message: string, timeout: string, display: string, ok_text: string, cancel_text: string, icon_name: string, transient_for: number, columns: any[], entries: any[]): GLib.Pid;
+	function show_dialog(type: string, message: string, timeout: string, display: string, ok_text: string, cancel_text: string, transient_for: number, columns: any[], entries: any[]): GLib.Pid;
 	function test_init(): void;
 	function theme_get_default(): Theme;
 	function theme_new(): Theme;
@@ -4466,6 +4600,16 @@ declare namespace imports.gi.Meta {
 	const CURRENT_TIME: number;
 
 	const DEFAULT_ICON_NAME: string;
+
+	const FRAME_TILED_ANY: number;
+
+	const FRAME_TILED_BOTTOM_EDGES: number;
+
+	const FRAME_TILED_LEFT_EDGES: number;
+
+	const FRAME_TILED_RIGHT_EDGES: number;
+
+	const FRAME_TILED_TOP_EDGES: number;
 
 	const ICON_HEIGHT: number;
 

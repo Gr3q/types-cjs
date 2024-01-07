@@ -287,6 +287,37 @@ declare namespace imports.gi.CinnamonDesktop {
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link IdleMonitor} instead.
+	 */
+	interface IIdleMonitor {
+		add_idle_watch(interval_msec: number, callback?: IdleMonitorWatchFunc | null): number;
+		add_user_active_watch(callback?: IdleMonitorWatchFunc | null): number;
+		get_idletime(): number;
+		/**
+		 * Removes an idle time watcher, previously added by
+		 * {@link Gnome.idle_monitor_add_idle_watch} or
+		 * gnome_idle_monitor_add_user_active_watch().
+		 * @param id A watch ID
+		 */
+		remove_watch(id: number): void;
+	}
+
+	type IdleMonitorInitOptionsMixin = GObject.ObjectInitOptions & Gio.InitableInitOptions
+	export interface IdleMonitorInitOptions extends IdleMonitorInitOptionsMixin {}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link IdleMonitor} instead.
+	 */
+	type IdleMonitorMixin = IIdleMonitor & GObject.Object & Gio.Initable;
+
+	interface IdleMonitor extends IdleMonitorMixin {}
+
+	class IdleMonitor {
+		public constructor(options?: Partial<IdleMonitorInitOptions>);
+		public static new(): IdleMonitor;
+	}
+
+	/** This construct is only for enabling class multi-inheritance,
 	 * use {@link PnpIds} instead.
 	 */
 	interface IPnpIds {
@@ -900,6 +931,10 @@ declare namespace imports.gi.CinnamonDesktop {
 		REFLECT_Y = 32
 	}
 
+	interface IdleMonitorWatchFunc {
+		(monitor: IdleMonitor, id: number): void;
+	}
+
 	interface InstallerClientCallback {
 		(success: boolean): void;
 	}
@@ -994,6 +1029,43 @@ declare namespace imports.gi.CinnamonDesktop {
 	 * @returns a #GQuark used to identify errors coming from the GnomeRR API.
 	 */
 	function rr_error_quark(): GLib.Quark;
+	/**
+	 * If the current process is running inside a user systemd instance, then move
+	 * the launched PID into a transient scope. The given #name will be used to
+	 * create a unit name. It should be the application ID for desktop files or
+	 * the executable in all other cases.
+	 * 
+	 * It is advisable to use this function every time where the started application
+	 * can be considered reasonably independent of the launching application. Placing
+	 * it in a scope creates proper separation between the programs rather than being
+	 * considered a single entity by systemd.
+	 * 
+	 * It is always safe to call this function. Note that a successful return code
+	 * does not imply that a unit has been created. It solely means that no error
+	 * condition was hit sending the request.
+	 * 
+	 * If #connection is %NULL then {@link GObject.dbus_get} will be called internally.
+	 * 
+	 * Note that most callers will not need to handle errors. As such, it is normal
+	 * to pass a %NULL #callback.
+	 * @param name Name for the application
+	 * @param pid The PID of the application
+	 * @param description A description to use for the unit, or %NULL
+	 * @param connection An #GDBusConnection to the session bus, or %NULL
+	 * @param cancellable #GCancellable to use
+	 * @param callback Callback to call when the operation is done
+	 */
+	function start_systemd_scope(name: string, pid: number, description: string | null, connection: Gio.DBusConnection | null, cancellable: Gio.Cancellable | null, callback: Gio.AsyncReadyCallback | null): void;
+	/**
+	 * Finish an asynchronous operation to create a transient scope that was
+	 * started with {@link Gnome.start_systemd_scope}.
+	 * 
+	 * Note that a successful return code does not imply that a unit has been
+	 * created. It solely means that no error condition was hit sending the request.
+	 * @param res A #GAsyncResult
+	 * @returns %FALSE on error, %TRUE otherwise
+	 */
+	function start_systemd_scope_finish(res: Gio.AsyncResult): boolean;
 	const RR_CONNECTOR_TYPE_PANEL: string;
 
 }

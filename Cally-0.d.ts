@@ -16,14 +16,14 @@ declare namespace imports.gi.Cally {
 		/**
 		 * Removes a action, using the #action_id returned by {@link Cally.Actor.add_action}
 		 * @param action_id the action id
-		 * @returns %TRUE if the operation was successful, %FALSE otherwise
+		 * @returns %TRUE if the operation was succesful, %FALSE otherwise
 		 */
 		remove_action(action_id: number): boolean;
 		/**
 		 * Removes an action, using the #action_name used when the action was added
 		 * with {@link Cally.Actor.add_action}
 		 * @param action_name the name of the action to remove
-		 * @returns %TRUE if the operation was successful, %FALSE otherwise
+		 * @returns %TRUE if the operation was succesful, %FALSE otherwise
 		 */
 		remove_action_by_name(action_name: string): boolean;
 	}
@@ -85,6 +85,69 @@ declare namespace imports.gi.Cally {
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link Group} instead.
+	 */
+	interface IGroup {
+
+	}
+
+	type GroupInitOptionsMixin = ActorInitOptions & Atk.ActionInitOptions & Atk.ComponentInitOptions
+	export interface GroupInitOptions extends GroupInitOptionsMixin {}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link Group} instead.
+	 */
+	type GroupMixin = IGroup & Actor & Atk.Action & Atk.Component;
+
+	/**
+	 * The <structname>CallyGroup</structname> structure contains only
+	 * private data and should be accessed using the provided API
+	 */
+	interface Group extends GroupMixin {}
+
+	class Group {
+		public constructor(options?: Partial<GroupInitOptions>);
+		/**
+		 * Creates a {@link Group} for #actor
+		 * @param actor a #ClutterGroup
+		 * @returns the newly created {@link Group}
+		 */
+		public static new(actor: Clutter.Actor): Atk.Object;
+	}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link Rectangle} instead.
+	 */
+	interface IRectangle {
+
+	}
+
+	type RectangleInitOptionsMixin = ActorInitOptions & Atk.ActionInitOptions & Atk.ComponentInitOptions
+	export interface RectangleInitOptions extends RectangleInitOptionsMixin {}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link Rectangle} instead.
+	 */
+	type RectangleMixin = IRectangle & Actor & Atk.Action & Atk.Component;
+
+	/**
+	 * The <structname>CallyRectangle</structname> structure contains only private
+	 * data and should be accessed using the provided API
+	 */
+	interface Rectangle extends RectangleMixin {}
+
+	class Rectangle {
+		public constructor(options?: Partial<RectangleInitOptions>);
+		/**
+		 * Creates a new {@link Rectangle} for the given #actor. #actor must be
+		 * a #ClutterRectangle.
+		 * @param actor a #ClutterActor
+		 * @returns the newly created #AtkObject
+		 */
+		public static new(actor: Clutter.Actor): Atk.Object;
+	}
+
+	/** This construct is only for enabling class multi-inheritance,
 	 * use {@link Root} instead.
 	 */
 	interface IRoot {
@@ -121,13 +184,13 @@ declare namespace imports.gi.Cally {
 
 	}
 
-	type StageInitOptionsMixin = ActorInitOptions & Atk.ActionInitOptions & Atk.ComponentInitOptions & Atk.WindowInitOptions
+	type StageInitOptionsMixin = GroupInitOptions & Atk.ActionInitOptions & Atk.ComponentInitOptions & Atk.WindowInitOptions
 	export interface StageInitOptions extends StageInitOptionsMixin {}
 
 	/** This construct is only for enabling class multi-inheritance,
 	 * use {@link Stage} instead.
 	 */
-	type StageMixin = IStage & Actor & Atk.Action & Atk.Component & Atk.Window;
+	type StageMixin = IStage & Group & Atk.Action & Atk.Component & Atk.Window;
 
 	/**
 	 * The <structname>CallyStage</structname> structure contains only

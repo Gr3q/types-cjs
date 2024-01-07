@@ -521,7 +521,7 @@ declare namespace imports.gi.Graphene {
 		 * [CSS3 Transforms specification](http://dev.w3.org/csswg/css-transforms/);
 		 * specifically, the decomposition code is based on the equivalent code
 		 * published in "Graphics Gems II", edited by Jim Arvo, and
-		 * [available online](http://tog.acm.org/resources/GraphicsGems/gemsii/unmatrix.c).
+		 * [available online](http://web.archive.org/web/20150512160205/http://tog.acm.org/resources/GraphicsGems/gemsii/unmatrix.c).
 		 * @returns `true` if the matrix could be decomposed
 		 * 
 		 * the translation vector

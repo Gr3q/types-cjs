@@ -85,6 +85,106 @@ declare namespace imports.gi.St {
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link BackgroundBlurEffect} instead.
+	 */
+	interface IBackgroundBlurEffect {
+		readonly actor: Clutter.Actor;
+		readonly bg_texture: Cogl.Texture;
+		readonly corner_texture: Cogl.Texture;
+		readonly pixel_step_uniform: number;
+		readonly blur_size: number;
+		readonly border_radius: number[];
+		readonly bg_posx: number;
+		readonly bg_posy: number;
+		readonly bg_width: number;
+		readonly bg_height: number;
+		readonly pipeline1: Cogl.Pipeline;
+
+		connect(signal: "notify::actor", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::bg_texture", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::corner_texture", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::pixel_step_uniform", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::blur_size", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::border_radius", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::bg_posx", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::bg_posy", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::bg_width", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::bg_height", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::pipeline1", callback: (owner: this, ...args: any) => void): number;
+
+	}
+
+	type BackgroundBlurEffectInitOptionsMixin = Clutter.OffscreenEffectInitOptions
+	export interface BackgroundBlurEffectInitOptions extends BackgroundBlurEffectInitOptionsMixin {}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link BackgroundBlurEffect} instead.
+	 */
+	type BackgroundBlurEffectMixin = IBackgroundBlurEffect & Clutter.OffscreenEffect;
+
+	interface BackgroundBlurEffect extends BackgroundBlurEffectMixin {}
+
+	class BackgroundBlurEffect {
+		public constructor(options?: Partial<BackgroundBlurEffectInitOptions>);
+		public static new(actor: Clutter.Actor): Clutter.Effect;
+	}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link BackgroundBumpmapEffect} instead.
+	 */
+	interface IBackgroundBumpmapEffect {
+		readonly actor: Clutter.Actor;
+		readonly bg_texture: Cogl.Texture;
+		readonly corner_texture: Cogl.Texture;
+		readonly bg_bumpmap: Cogl.Handle;
+		readonly bumpmap_path: string;
+		readonly pixel_step_uniform0: number;
+		readonly BumpTex_uniform: number;
+		readonly bump_step_uniform: number;
+		readonly border_radius: number[];
+		readonly bg_posx: number;
+		readonly bg_posy: number;
+		readonly bg_width: number;
+		readonly bg_height: number;
+		readonly bumptex_width: number;
+		readonly bumptex_height: number;
+		readonly pipeline0: Cogl.Pipeline;
+
+		connect(signal: "notify::actor", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::bg_texture", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::corner_texture", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::bg_bumpmap", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::bumpmap_path", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::pixel_step_uniform0", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::BumpTex_uniform", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::bump_step_uniform", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::border_radius", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::bg_posx", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::bg_posy", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::bg_width", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::bg_height", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::bumptex_width", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::bumptex_height", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::pipeline0", callback: (owner: this, ...args: any) => void): number;
+
+	}
+
+	type BackgroundBumpmapEffectInitOptionsMixin = Clutter.OffscreenEffectInitOptions
+	export interface BackgroundBumpmapEffectInitOptions extends BackgroundBumpmapEffectInitOptionsMixin {}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link BackgroundBumpmapEffect} instead.
+	 */
+	type BackgroundBumpmapEffectMixin = IBackgroundBumpmapEffect & Clutter.OffscreenEffect;
+
+	interface BackgroundBumpmapEffect extends BackgroundBumpmapEffectMixin {}
+
+	class BackgroundBumpmapEffect {
+		public constructor(options?: Partial<BackgroundBumpmapEffectInitOptions>);
+		public static new(actor: Clutter.Actor): Clutter.Effect;
+	}
+
+	/** This construct is only for enabling class multi-inheritance,
 	 * use {@link Bin} instead.
 	 */
 	interface IBin {
@@ -463,6 +563,13 @@ declare namespace imports.gi.St {
 		 */
 		get_text(type: ClipboardType, callback: ClipboardCallbackFunc): void;
 		/**
+		 * Sets the clipboard content.
+		 * @param type The type of clipboard that you want to set
+		 * @param mimetype content mimetype
+		 * @param bytes content data
+		 */
+		set_content(type: ClipboardType, mimetype: string, bytes: GLib.Bytes): void;
+		/**
 		 * Sets text as the current contents of the clipboard.
 		 * @param type The type of clipboard that you want to set
 		 * @param text text to copy to the clipboard
@@ -492,6 +599,7 @@ declare namespace imports.gi.St {
 		 * unrefferenced or freed.
 		 */
 		public static get_default(): Clipboard;
+		public static set_selection(selection: Meta.Selection): void;
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -1147,14 +1255,19 @@ declare namespace imports.gi.St {
 		readonly font_name: string;
 		readonly gtk_icon_theme: string;
 		readonly magnifier_active: boolean;
+		slow_down_factor: number;
 
 		connect(signal: "notify::font-name", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::gtk-icon-theme", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::magnifier-active", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::slow-down-factor", callback: (owner: this, ...args: any) => void): number;
 
 	}
 
-	type SettingsInitOptionsMixin = GObject.ObjectInitOptions
+	type SettingsInitOptionsMixin = GObject.ObjectInitOptions & 
+	Pick<ISettings,
+		"slow_down_factor">;
+
 	export interface SettingsInitOptions extends SettingsInitOptionsMixin {}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -1416,6 +1529,7 @@ declare namespace imports.gi.St {
 		 * @returns A new {@link Widget}
 		 */
 		bind_cairo_surface_property(object: GObject.Object, property_name: string, size: number): Widget;
+		get_icon_theme(): Gtk.IconTheme;
 		/**
 		 * Load an arbitrary texture, caching it.  The string chosen for #key
 		 * should be of the form "type-prefix:type-uuid".  For example,
@@ -2124,7 +2238,7 @@ declare namespace imports.gi.St {
 		 * location to store the shadow
 		 */
 		lookup_shadow(property_name: string, inherit: boolean): [ boolean, Shadow ];
-		paint(framebuffer: Cogl.Framebuffer, box: Clutter.ActorBox, paint_opacity: number): void;
+		paint(framebuffer: Cogl.Framebuffer, box: Clutter.ActorBox, paint_opacity: number, background_blur_effect: BackgroundBlurEffect, background_bumpmap_effect: BackgroundBumpmapEffect): void;
 		/**
 		 * Check if {@link St.ThemeNode.paint} will paint identically for #node as it does
 		 * for #other. Note that in some cases this function may return %TRUE even
@@ -2437,7 +2551,7 @@ declare namespace imports.gi.St {
 		navigate_focus(from: Clutter.Actor | null, direction: Gtk.DirectionType, wrap_around: boolean): boolean;
 		/**
 		 * Paint the background of the widget. This is meant to be called by
-		 * subclasses of StWiget that need to paint the background without
+		 * subclasses of StWidget that need to paint the background without
 		 * painting children.
 		 * @param paint_context
 		 */
@@ -3067,12 +3181,22 @@ declare namespace imports.gi.St {
 	 * @returns the debug name.
 	 */
 	function describe_actor(actor: Clutter.Actor): string;
-	function get_slow_down_factor(): number;
 	/**
-	 * Set a global factor applied to all animation durations
-	 * @param factor new slow-down factor
+	 * paints a blur effect by snapshotting the screen and processing it
+	 * @param background_blur_effect
+	 * @param fb a #CoglFramebuffer
+	 * @param box a #ClutterActorBox
+	 * @returns %TRUE if successful
 	 */
-	function set_slow_down_factor(factor: number): void;
+	function paint_background_blur_effect(background_blur_effect: BackgroundBlurEffect, fb: Cogl.Framebuffer, box: Clutter.ActorBox): boolean;
+	/**
+	 * paints a bumpmap effect by snapshotting the screen and processing it
+	 * @param background_blur_effect
+	 * @param fb a #CoglFramebuffer
+	 * @param box a #ClutterActorBox
+	 * @returns %TRUE if successful
+	 */
+	function paint_background_bumpmap_effect(background_blur_effect: BackgroundBumpmapEffect, fb: Cogl.Framebuffer, box: Clutter.ActorBox): boolean;
 	const PARAM_READABLE: number;
 
 	const PARAM_READWRITE: number;

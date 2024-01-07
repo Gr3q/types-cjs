@@ -15,6 +15,10 @@ declare namespace imports.gi.Clutter {
 	 */
 	type ActionMixin = IAction & ActorMeta;
 
+	/**
+	 * The {@link Action} structure contains only private data and
+	 * should be accessed using the provided API.
+	 */
 	interface Action extends ActionMixin {}
 
 	class Action {
@@ -32,6 +36,56 @@ declare namespace imports.gi.Clutter {
 		 * actor moves or resizes
 		 */
 		readonly allocation: ActorBox;
+		/**
+		 * @deprecated
+		 * Use {@link Actor.pivot_point} instead
+		 * 
+		 * The anchor point expressed as a {@link Gravity}
+		 * 
+		 * It is highly recommended not to use #ClutterActor:anchor-x,
+		 * #ClutterActor:anchor-y, and #ClutterActor:anchor-gravity in newly
+		 * written code; the anchor point adds an additional translation that
+		 * will affect the actor's relative position with regards to its
+		 * parent, as well as the position of its children. This change needs
+		 * to always be taken into account when positioning the actor. It is
+		 * recommended to use the #ClutterActor:pivot-point property instead,
+		 * as it will affect only the transformations.
+		 */
+		anchor_gravity: Gravity;
+		/**
+		 * @deprecated
+		 * Use {@link Actor.pivot_point} instead
+		 * 
+		 * The X coordinate of an actor's anchor point, relative to
+		 * the actor coordinate space, in pixels.
+		 * 
+		 * It is highly recommended not to use {@link Actor.anchor_x},
+		 * #ClutterActor:anchor-y, and #ClutterActor:anchor-gravity in newly
+		 * written code; the anchor point adds an additional translation that
+		 * will affect the actor's relative position with regards to its
+		 * parent, as well as the position of its children. This change needs
+		 * to always be taken into account when positioning the actor. It is
+		 * recommended to use the #ClutterActor:pivot-point property instead,
+		 * as it will affect only the transformations.
+		 */
+		anchor_x: number;
+		/**
+		 * @deprecated
+		 * Use {@link Actor.pivot_point} instead
+		 * 
+		 * The Y coordinate of an actor's anchor point, relative to
+		 * the actor coordinate space, in pixels
+		 * 
+		 * It is highly recommended not to use {@link Actor.anchor_x},
+		 * #ClutterActor:anchor-y, and #ClutterActor:anchor-gravity in newly
+		 * written code; the anchor point adds an additional translation that
+		 * will affect the actor's relative position with regards to its
+		 * parent, as well as the position of its children. This change needs
+		 * to always be taken into account when positioning the actor. It is
+		 * recommended to use the #ClutterActor:pivot-point property instead,
+		 * as it will affect only the transformations.
+		 */
+		anchor_y: number;
 		/**
 		 * Paints a solid fill of the actor's allocation using the specified
 		 * color.
@@ -111,6 +165,21 @@ declare namespace imports.gi.Clutter {
 		 * The repeat policy for the actor's {@link Actor.content}.
 		 */
 		content_repeat: ContentRepeat;
+		/**
+		 * @deprecated
+		 * Use {@link Actor.z_position} instead.
+		 * 
+		 * The position of the actor on the Z axis.
+		 * 
+		 * The {@link Actor.depth} property is relative to the parent's
+		 * modelview matrix.
+		 * 
+		 * Setting this property will call {@link #ClutterContainerIface.sort.depth_order}
+		 * which is usually a no-op, and it's most likely not what you want.
+		 * 
+		 * The #ClutterActor:depth property is animatable.
+		 */
+		depth: number;
 		/**
 		 * The actor's first child.
 		 */
@@ -371,6 +440,10 @@ declare namespace imports.gi.Clutter {
 		 */
 		request_mode: RequestMode;
 		/**
+		 * The resource-scale of the {@link Actor} if any or -1 if not available
+		 */
+		readonly resource_scale: number;
+		/**
 		 * The rotation angle on the X axis.
 		 * 
 		 * The {@link Actor.rotation_angle_x} property is animatable.
@@ -388,6 +461,55 @@ declare namespace imports.gi.Clutter {
 		 * The {@link Actor.rotation_angle_z} property is animatable.
 		 */
 		rotation_angle_z: number;
+		/**
+		 * @deprecated
+		 * Use {@link Actor.pivot_point} instead
+		 * 
+		 * The rotation center on the X axis.
+		 */
+		rotation_center_x: Graphene.Point3D;
+		/**
+		 * @deprecated
+		 * Use {@link Actor.pivot_point} instead
+		 * 
+		 * The rotation center on the Y axis.
+		 */
+		rotation_center_y: Graphene.Point3D;
+		/**
+		 * @deprecated
+		 * Use {@link Actor.pivot_point} instead
+		 * 
+		 * The rotation center on the Z axis.
+		 */
+		rotation_center_z: Graphene.Point3D;
+		/**
+		 * @deprecated
+		 * Use {@link Actor.pivot_point} instead
+		 * 
+		 * The rotation center on the Z axis expressed as a {@link Gravity}.
+		 */
+		rotation_center_z_gravity: Gravity;
+		/**
+		 * @deprecated
+		 * Use {@link Actor.pivot_point} instead
+		 * 
+		 * The horizontal center point for scaling
+		 */
+		scale_center_x: number;
+		/**
+		 * @deprecated
+		 * Use {@link Actor.pivot_point} instead
+		 * 
+		 * The vertical center point for scaling
+		 */
+		scale_center_y: number;
+		/**
+		 * @deprecated
+		 * Use {@link Actor.pivot_point} instead
+		 * 
+		 * The center point for scaling expressed as a {@link Gravity}
+		 */
+		scale_gravity: Gravity;
 		/**
 		 * The horizontal scale of the actor.
 		 * 
@@ -662,8 +784,9 @@ declare namespace imports.gi.Clutter {
 		 * the parent has moved with respect to the stage, for example because
 		 * a grandparent's origin has moved.
 		 * @param box new allocation of the actor, in parent-relative coordinates
+		 * @param flags flags that control the allocation
 		 */
-		allocate(box: ActorBox): void;
+		allocate(box: ActorBox, flags?: AllocationFlags): void;
 		/**
 		 * Allocates #self by taking into consideration the available allocation
 		 * area; an alignment factor on either axis; and whether the actor should
@@ -686,8 +809,9 @@ declare namespace imports.gi.Clutter {
 		 * @param y_align the vertical alignment, between 0 and 1
 		 * @param x_fill whether the actor should fill horizontally
 		 * @param y_fill whether the actor should fill vertically
+		 * @param flags allocation flags to be passed to {@link Clutter.Actor.allocate}
 		 */
-		allocate_align_fill(box: ActorBox, x_align: number, y_align: number, x_fill: boolean, y_fill: boolean): void;
+		allocate_align_fill(box: ActorBox, x_align: number, y_align: number, x_fill: boolean, y_fill: boolean, flags: AllocationFlags): void;
 		/**
 		 * Allocates #self taking into account the {@link Actor}'s
 		 * preferred size, but limiting it to the maximum available width
@@ -734,7 +858,7 @@ declare namespace imports.gi.Clutter {
 		 *   box.x1 = x; box.y1 = y;
 		 *   box.x2 = box.x1 + available_width;
 		 *   box.y2 = box.y1 + available_height;
-		 *   clutter_actor_allocate (self, &box);
+		 *   clutter_actor_allocate (self, &box, flags);
 		 * ]|
 		 * 
 		 * This function can be used by fluid layout managers to allocate
@@ -746,8 +870,9 @@ declare namespace imports.gi.Clutter {
 		 *   actor's natural width
 		 * @param available_height the maximum available height, or -1 to use the
 		 *   actor's natural height
+		 * @param flags flags controlling the allocation
 		 */
-		allocate_available_size(x: number, y: number, available_width: number, available_height: number): void;
+		allocate_available_size(x: number, y: number, available_width: number, available_height: number, flags: AllocationFlags): void;
 		/**
 		 * Allocates the natural size of #self.
 		 * 
@@ -761,10 +886,188 @@ declare namespace imports.gi.Clutter {
 		 * This function is not meant to be used by applications. It is also
 		 * not meant to be used outside the implementation of the
 		 * #ClutterActorClass.allocate virtual function.
-		 * @param x the actor's X coordinate
-		 * @param y the actor's Y coordinate
+		 * @param flags flags controlling the allocation
 		 */
-		allocate_preferred_size(x: number, y: number): void;
+		allocate_preferred_size(flags: AllocationFlags): void;
+		/**
+		 * @deprecated
+		 * Use the implicit transition for animatable properties
+		 *   in {@link Actor} instead. See {@link Clutter.Actor.save_easing_state},
+		 *   clutter_actor_set_easing_mode(), clutter_actor_set_easing_duration(),
+		 *   clutter_actor_set_easing_delay(), and clutter_actor_restore_easing_state().
+		 * 
+		 * Animates the given list of properties of #actor between the current
+		 * value for each property and a new final value. The animation has a
+		 * definite duration and a speed given by the #mode.
+		 * 
+		 * For example, this:
+		 * 
+		 * |[<!-- language="C" -->
+		 *   clutter_actor_animate (rectangle, CLUTTER_LINEAR, 250,
+		 *                          "width", 100.0,
+		 *                          "height", 100.0,
+		 *                          NULL);
+		 * ]|
+		 * 
+		 * will make width and height properties of the {@link Actor} "rectangle"
+		 * grow linearly between the current value and 100 pixels, in 250 milliseconds.
+		 * 
+		 * The animation #mode is a logical id, either from the #ClutterAnimationMode
+		 * enumeration of from {@link Clutter.Alpha.register_func}.
+		 * 
+		 * All the properties specified will be animated between the current value
+		 * and the final value. If a property should be set at the beginning of
+		 * the animation but not updated during the animation, it should be prefixed
+		 * by the "fixed::" string, for instance:
+		 * 
+		 * |[<!-- language="C" -->
+		 *   clutter_actor_animate (actor, CLUTTER_EASE_IN_SINE, 100,
+		 *                          "rotation-angle-z", 360.0,
+		 *                          "fixed::rotation-center-z", &center,
+		 *                          NULL);
+		 * ]|
+		 * 
+		 * Will animate the "rotation-angle-z" property between the current value
+		 * and 360 degrees, and set the "rotation-center-z" property to the fixed
+		 * value of the #graphene_point3d_t "center".
+		 * 
+		 * This function will implicitly create a #ClutterAnimation object which
+		 * will be assigned to the #actor and will be returned to the developer
+		 * to control the animation or to know when the animation has been
+		 * completed.
+		 * 
+		 * If a name argument starts with "signal::", "signal-after::",
+		 * "signal-swapped::" or "signal-swapped-after::" the two following arguments
+		 * are used as callback function and data for a signal handler installed on
+		 * the #ClutterAnimation object for the specified signal name, for instance:
+		 * 
+		 * |[<!-- language="C" -->
+		 *   static void
+		 *   on_animation_completed (ClutterAnimation *animation,
+		 *                           ClutterActor     *actor)
+		 *   {
+		 *     clutter_actor_hide (actor);
+		 *   }
+		 * 
+		 *   clutter_actor_animate (actor, CLUTTER_EASE_IN_CUBIC, 100,
+		 *                          "opacity", 0,
+		 *                          "signal::completed", on_animation_completed, actor,
+		 *                          NULL);
+		 * ]|
+		 * 
+		 * or, to automatically destroy an actor at the end of the animation:
+		 * 
+		 * |[<!-- language="C" -->
+		 *   clutter_actor_animate (actor, CLUTTER_EASE_IN_CUBIC, 100,
+		 *                          "opacity", 0,
+		 *                          "signal-swapped-after::completed",
+		 *                            clutter_actor_destroy,
+		 *                            actor,
+		 *                          NULL);
+		 * ]|
+		 * 
+		 * The "signal::" modifier is the equivalent of using g_signal_connect();
+		 * the "signal-after::" modifier is the equivalent of using
+		 * g_signal_connect_after() or g_signal_connect_data() with the
+		 * %G_CONNECT_AFTER; the "signal-swapped::" modifier is the equivalent
+		 * of using g_signal_connect_swapped() or g_signal_connect_data() with the
+		 * %G_CONNECT_SWAPPED flah; finally, the "signal-swapped-after::" modifier
+		 * is the equivalent of using g_signal_connect_data() with both the
+		 * %G_CONNECT_AFTER and %G_CONNECT_SWAPPED flags. The clutter_actor_animate()
+		 * function will not keep track of multiple connections to the same signal,
+		 * so it is your responsability to avoid them when calling
+		 * clutter_actor_animate() multiple times on the same actor.
+		 * 
+		 * Calling this function on an actor that is already being animated
+		 * will cause the current animation to change with the new final values,
+		 * the new easing mode and the new duration - that is, this code:
+		 * 
+		 * |[<!-- language="C" -->
+		 *   clutter_actor_animate (actor, CLUTTER_LINEAR, 250,
+		 *                          "width", 100.0,
+		 *                          "height", 100.0,
+		 *                          NULL);
+		 *   clutter_actor_animate (actor, CLUTTER_EASE_IN_CUBIC, 500,
+		 *                          "x", 100.0,
+		 *                          "y", 100.0,
+		 *                          "width", 200.0,
+		 *                          NULL);
+		 * ]|
+		 * 
+		 * is the equivalent of:
+		 * 
+		 * |[<!-- language="C" -->
+		 *   clutter_actor_animate (actor, CLUTTER_EASE_IN_CUBIC, 500,
+		 *                          "x", 100.0,
+		 *                          "y", 100.0,
+		 *                          "width", 200.0,
+		 *                          "height", 100.0,
+		 *                          NULL);
+		 * ]|
+		 * 
+		 * Unless the animation is looping, the #ClutterAnimation created by
+		 * clutter_actor_animate() will become invalid as soon as it is
+		 * complete.
+		 * 
+		 * Since the created #ClutterAnimation instance attached to #actor
+		 * is guaranteed to be valid throughout the #ClutterAnimation::completed
+		 * signal emission chain, you will not be able to create a new animation
+		 * using clutter_actor_animate() on the same #actor from within the
+		 * #ClutterAnimation::completed signal handler unless you use
+		 * g_signal_connect_after() to connect the callback function, for instance:
+		 * 
+		 * |[<!-- language="C" -->
+		 *   static void
+		 *   on_animation_completed (ClutterAnimation *animation,
+		 *                           ClutterActor     *actor)
+		 *   {
+		 *     clutter_actor_animate (actor, CLUTTER_EASE_OUT_CUBIC, 250,
+		 *                            "x", 500.0,
+		 *                            "y", 500.0,
+		 *                            NULL);
+		 *   }
+		 * 
+		 *     ...
+		 *     animation = clutter_actor_animate (actor, CLUTTER_EASE_IN_CUBIC, 250,
+		 *                                        "x", 100.0,
+		 *                                        "y", 100.0,
+		 *                                        NULL);
+		 *     g_signal_connect (animation, "completed",
+		 *                       G_CALLBACK (on_animation_completed),
+		 *                       actor);
+		 *     ...
+		 * ]|
+		 * @param mode an animation mode logical id
+		 * @param duration duration of the animation, in milliseconds
+		 * @param first_property_name the name of a property
+		 * @returns a {@link Animation} object. The object is
+		 *   owned by the #ClutterActor and should not be unreferenced with
+		 *   {@link GObject.Object.unref}
+		 */
+		animate(mode: number, duration: number, first_property_name: string): Animation;
+		/**
+		 * @deprecated
+		 * Use the implicit transition for animatable properties
+		 *   in {@link Actor} instead. See {@link Clutter.Actor.save_easing_state},
+		 *   clutter_actor_set_easing_mode(), clutter_actor_set_easing_duration(),
+		 *   clutter_actor_set_easing_delay(), and clutter_actor_restore_easing_state().
+		 * 
+		 * Animates the given list of properties of #actor between the current
+		 * value for each property and a new final value. The animation has a
+		 * definite duration given by #timeline and a speed given by the #mode.
+		 * 
+		 * See {@link Clutter.Actor.animate} for further details.
+		 * 
+		 * This function is useful if you want to use an existing timeline
+		 * to animate #actor.
+		 * @param mode an animation mode logical id
+		 * @param timeline a {@link Timeline}
+		 * @param first_property_name the name of a property
+		 * @returns a {@link Animation} object. The object is
+		 *    owned by the #ClutterActor and should not be unreferenced with
+		 *    {@link GObject.Object.unref}
+		 */
+		animate_with_timeline(mode: number, timeline: Timeline, first_property_name: string): Animation;
 		/**
 		 * Transforms #point in coordinates relative to the actor into
 		 * ancestor-relative coordinates using the relevant transform
@@ -921,6 +1224,9 @@ declare namespace imports.gi.Clutter {
 		 * container, the actor will be removed.
 		 * 
 		 * When you destroy a container, its children will be destroyed as well.
+		 * 
+		 * Note: you cannot destroy the {@link Stage} returned by
+		 * {@link Clutter.Stage.get_default}.
 		 */
 		destroy(): void;
 		/**
@@ -1008,7 +1314,7 @@ declare namespace imports.gi.Clutter {
 		 * only be assumed valid inside a paint() method; anywhere else, it
 		 * may be out-of-date.
 		 * 
-		 * An allocation does not incorporate the actor's scale or translation;
+		 * An allocation does not incorporate the actor's scale or anchor point;
 		 * those transformations do not affect layout, only rendering.
 		 * 
 		 * Do not call any of the clutter_actor_get_allocation_*() family
@@ -1017,6 +1323,36 @@ declare namespace imports.gi.Clutter {
 		 * @returns the function fills this in with the actor's allocation
 		 */
 		get_allocation_box(): ActorBox;
+		/**
+		 * Calculates the transformed coordinates of the four corners of the
+		 * actor in the plane of #ancestor. The returned vertices relate to
+		 * the {@link ActorBox} coordinates as follows:
+		 * 
+		 *  - #verts[0] contains (x1, y1)
+		 *  - #verts[1] contains (x2, y1)
+		 *  - #verts[2] contains (x1, y2)
+		 *  - #verts[3] contains (x2, y2)
+		 * 
+		 * If #ancestor is %NULL the ancestor will be the #ClutterStage. In
+		 * this case, the coordinates returned will be the coordinates on
+		 * the stage before the projection is applied. This is different from
+		 * the behaviour of {@link Clutter.Actor.get_abs_allocation_vertices}.
+		 * @param ancestor A {@link Actor} to calculate the vertices
+		 *   against, or %NULL to use the #ClutterStage
+		 * @returns return
+		 *   location for an array of 4 #graphene_point3d_t in which to store the result
+		 */
+		get_allocation_vertices(ancestor?: Actor | null): Graphene.Point3D[];
+		/**
+		 * @deprecated
+		 * Use {@link Actor.pivot_point} instead.
+		 * 
+		 * Retrieves the anchor position expressed as a {@link Gravity}. If
+		 * the anchor point was specified using pixels or units this will
+		 * return %CLUTTER_GRAVITY_NONE.
+		 * @returns the {@link Gravity} used by the anchor point
+		 */
+		get_anchor_point_gravity(): Gravity;
 		/**
 		 * Retrieves the color set using {@link Clutter.Actor.set_background_color}.
 		 * @returns return location for a {@link Color}
@@ -1144,6 +1480,14 @@ declare namespace imports.gi.Clutter {
 		 */
 		get_default_paint_volume(): PaintVolume;
 		/**
+		 * @deprecated
+		 * Use {@link Clutter.Actor.get_z_position} instead.
+		 * 
+		 * Retrieves the depth of #self.
+		 * @returns the depth of the actor
+		 */
+		get_depth(): number;
+		/**
 		 * Retrieves the delay that should be applied when tweening animatable
 		 * properties.
 		 * @returns a delay, in milliseconds
@@ -1187,17 +1531,6 @@ declare namespace imports.gi.Clutter {
 		 * @returns a pointer to a {@link Actor}, or %NULL
 		 */
 		get_first_child(): Actor;
-		/**
-		 * This function gets the fixed position of the actor, if set. If there
-		 * is no fixed position set, this function returns %FALSE and doesn't set
-		 * the x and y coordinates.
-		 * @returns %TRUE if the fixed position is set, %FALSE if it isn't
-		 * 
-		 * return location for the X coordinate, or %NULL
-		 * 
-		 * return location for the Y coordinate, or %NULL
-		 */
-		get_fixed_position(): [ boolean, number | null, number | null ];
 		/**
 		 * Checks whether an actor has a fixed position set (and will thus be
 		 * unaffected by any layout manager).
@@ -1348,7 +1681,7 @@ declare namespace imports.gi.Clutter {
 		 * visible parents.
 		 * 
 		 * This is by definition the same as %CLUTTER_ACTOR_IS_MAPPED.
-		 * @returns %TRUE if the actor is visible and will be painted.
+		 * @returns %TRUE if the actor is visibile and will be painted.
 		 */
 		get_paint_visibility(): boolean;
 		/**
@@ -1431,7 +1764,7 @@ declare namespace imports.gi.Clutter {
 		 * An actor may not get its request - depending on the layout
 		 * manager that's in effect.
 		 * 
-		 * A request should not incorporate the actor's scale or translation;
+		 * A request should not incorporate the actor's scale or anchor point;
 		 * those transformations do not affect layout, only rendering.
 		 * @param for_width available width to assume in computing desired height,
 		 *   or a negative value to indicate that no width is defined
@@ -1475,7 +1808,7 @@ declare namespace imports.gi.Clutter {
 		 * An actor may not get its request - depending on the layout
 		 * manager that's in effect.
 		 * 
-		 * A request should not incorporate the actor's scaleor translation;
+		 * A request should not incorporate the actor's scale or anchor point;
 		 * those transformations do not affect layout, only rendering.
 		 * @param for_height available height when computing the preferred width,
 		 *   or a negative value to indicate that no height is defined
@@ -1507,7 +1840,7 @@ declare namespace imports.gi.Clutter {
 		 */
 		get_request_mode(): RequestMode;
 		/**
-		 * Retrieves the resource scale for this actor.
+		 * Retrieves the resource scale for this actor, if available.
 		 * 
 		 * The resource scale refers to the scale the actor should use for its resources.
 		 * For example if an actor draws a a picture of size 100 x 100 in the stage
@@ -1516,27 +1849,28 @@ declare namespace imports.gi.Clutter {
 		 * 
 		 * The resource scale is determined by calculating the highest {@link StageView}
 		 * scale the actor will get painted on.
+		 * @returns TRUE if resource scale is set for the actor, otherwise FALSE
 		 * 
-		 * Note that the scale returned by this function is only guaranteed to be
-		 * correct when queried during the paint cycle, in all other cases this
-		 * function will only return a best guess. If your implementation really
-		 * needs to get a resource scale outside of the paint cycle, make sure to
-		 * subscribe to the "resource-scale-changed" signal to get notified about
-		 * the new, correct resource scale before painting.
-		 * 
-		 * Also avoid getting the resource scale for actors that are not attached
-		 * to a stage. There's no sane way for Clutter to guess which #ClutterStageView
-		 * the actor is going to be painted on, so you'll probably end up receiving
-		 * the "resource-scale-changed" signal and having to rebuild your resources.
-		 * 
-		 * The best guess this function may return is usually just the last resource
-		 * scale the actor got painted with. If this resource scale couldn't be found
-		 * because the actor was never painted so far or Clutter was unable to
-		 * determine its position and size, this function will return the resource
-		 * scale of a parent.
-		 * @returns The resource scale the actor should use for its textures
+		 * return location for the resource scale
 		 */
-		get_resource_scale(): number;
+		get_resource_scale(): [ boolean, number ];
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.Actor.get_rotation_angle} and
+		 *   clutter_actor_get_pivot_point() instead.
+		 * 
+		 * Retrieves the angle and center of rotation on the given axis,
+		 * set using {@link Clutter.Actor.set_rotation}.
+		 * @param axis the axis of rotation
+		 * @returns the angle of rotation
+		 * 
+		 * return value for the X coordinate of the center of rotation
+		 * 
+		 * return value for the Y coordinate of the center of rotation
+		 * 
+		 * return value for the Z coordinate of the center of rotation
+		 */
+		get_rotation(axis: RotateAxis): [ number, number, number, number ];
 		/**
 		 * Retrieves the angle of rotation set by {@link Clutter.Actor.set_rotation_angle}.
 		 * @param axis the axis of the rotation
@@ -1545,13 +1879,38 @@ declare namespace imports.gi.Clutter {
 		get_rotation_angle(axis: RotateAxis): number;
 		/**
 		 * Retrieves an actors scale factors.
-		 * @returns Location to store horizontal
+		 * @returns Location to store horizonal
 		 *   scale factor, or %NULL.
 		 * 
 		 * Location to store vertical
 		 *   scale factor, or %NULL.
 		 */
 		get_scale(): [ scale_x: number | null, scale_y: number | null ];
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.Actor.get_pivot_point} instead.
+		 * 
+		 * Retrieves the scale center coordinate in pixels relative to the top
+		 * left corner of the actor. If the scale center was specified using a
+		 * {@link Gravity} this will calculate the pixel offset using the
+		 * current size of the actor.
+		 * @returns Location to store the X position
+		 *   of the scale center, or %NULL.
+		 * 
+		 * Location to store the Y position
+		 *   of the scale center, or %NULL.
+		 */
+		get_scale_center(): [ center_x: number | null, center_y: number | null ];
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.Actor.get_pivot_point} instead.
+		 * 
+		 * Retrieves the scale center as a compass direction. If the scale
+		 * center was specified in pixels or units this will return
+		 * %CLUTTER_GRAVITY_NONE.
+		 * @returns the scale gravity
+		 */
+		get_scale_gravity(): Gravity;
 		/**
 		 * Retrieves the scaling factor along the Z axis, as set using
 		 * {@link Clutter.Actor.set_scale_z}.
@@ -1593,11 +1952,6 @@ declare namespace imports.gi.Clutter {
 		 * @returns a {@link Matrix}
 		 */
 		get_transform(): Matrix;
-		/**
-		 * Gets the transformed bounding rect of an actor, in pixels relative to the stage.
-		 * @returns return location for the transformed bounding rect
-		 */
-		get_transformed_extents(): Graphene.Rect;
 		/**
 		 * Retrieves the 3D paint volume of an actor like
 		 * {@link Clutter.Actor.get_paint_volume} does (Please refer to the
@@ -1659,7 +2013,7 @@ declare namespace imports.gi.Clutter {
 		 * 
 		 * |[<!-- language="C" -->
 		 *   clutter_actor_set_easing_duration (actor, 1000);
-		 *   clutter_actor_set_rotation_angle (actor, CLUTTER_Y_AXIS, 360.0);
+		 *   clutter_actor_set_rotation (actor, CLUTTER_Y_AXIS, 360.0, x, y, z);
 		 * 
 		 *   transition = clutter_actor_get_transition (actor, "rotation-angle-y");
 		 *   g_signal_connect (transition, "stopped",
@@ -1781,6 +2135,17 @@ declare namespace imports.gi.Clutter {
 		 */
 		get_z_position(): number;
 		/**
+		 * @deprecated
+		 * Use the {@link Actor.pivot_point} instead of
+		 *   a #ClutterGravity
+		 * 
+		 * Retrieves the center for the rotation around the Z axis as a
+		 * compass direction. If the center was specified in pixels or units
+		 * this will return %CLUTTER_GRAVITY_NONE.
+		 * @returns the Z rotation center
+		 */
+		get_z_rotation_gravity(): Gravity;
+		/**
 		 * Sets the key focus of the {@link Stage} including #self
 		 * to this #ClutterActor.
 		 */
@@ -1830,9 +2195,8 @@ declare namespace imports.gi.Clutter {
 		 */
 		has_key_focus(): boolean;
 		/**
-		 * Returns whether a {@link Actor} or any parent actors have mapped clones
-		 * that are clone-painting #self.
-		 * @returns %TRUE if the actor has mapped clones, %FALSE otherwise
+		 * Returns whether a {@link Actor} has any mapped clones.
+		 * @returns %TRUE if the actor has mapped clones, and %FALSE otherwise
 		 */
 		has_mapped_clones(): boolean;
 		/**
@@ -1857,7 +2221,6 @@ declare namespace imports.gi.Clutter {
 		 *   %FALSE otherwise
 		 */
 		has_pointer(): boolean;
-		has_transitions(): boolean;
 		/**
 		 * Flags an actor to be hidden. A hidden actor will not be
 		 * rendered on the stage.
@@ -1933,14 +2296,6 @@ declare namespace imports.gi.Clutter {
 		 */
 		insert_child_below(child: Actor, sibling?: Actor | null): void;
 		/**
-		 * Invalidate the cached transformation matrix of #self.
-		 * This is needed for implementations overriding the {@link Apply.transform}
-		 * vfunc and has to be called if the matrix returned by apply_transform()
-		 * would change.
-		 */
-		invalidate_transform(): void;
-		is_effectively_on_stage_view(view: StageView): boolean;
-		/**
 		 * Checks whether #self is being currently painted by a {@link Clone}
 		 * 
 		 * This function is useful only inside the ::paint virtual function
@@ -1988,7 +2343,7 @@ declare namespace imports.gi.Clutter {
 		 * and realizes its children if they are visible. Does nothing if the
 		 * actor is not visible.
 		 * 
-		 * Calling this function is strongly discouraged: the default
+		 * Calling this function is strongly disencouraged: the default
 		 * implementation of {@link ActorClass}.map() will map all the children
 		 * of an actor when mapping its parent.
 		 * 
@@ -1997,12 +2352,41 @@ declare namespace imports.gi.Clutter {
 		 */
 		map(): void;
 		/**
+		 * @deprecated
+		 * Use {@link Actor.pivot_point} and
+		 * {@link Clutter.Actor.set_translation} instead.
+		 * 
+		 * Sets an anchor point for the actor, and adjusts the actor postion so that
+		 * the relative position of the actor toward its parent remains the same.
+		 * @param anchor_x X coordinate of the anchor point
+		 * @param anchor_y Y coordinate of the anchor point
+		 */
+		move_anchor_point(anchor_x: number, anchor_y: number): void;
+		/**
+		 * @deprecated
+		 * Use {@link Actor.pivot_point} and
+		 * {@link Clutter.Actor.set_translation} instead.
+		 * 
+		 * Sets an anchor point on the actor based on the given gravity, adjusting the
+		 * actor postion so that its relative position within its parent remains
+		 * unchanged.
+		 * 
+		 * Since version 1.0 the anchor point will be stored as a gravity so
+		 * that if the actor changes size then the anchor point will move. For
+		 * example, if you set the anchor point to %CLUTTER_GRAVITY_SOUTH_EAST
+		 * and later double the size of the actor, the anchor point will move
+		 * to the bottom right.
+		 * @param gravity {@link Gravity}.
+		 */
+		move_anchor_point_from_gravity(gravity: Gravity): void;
+		/**
 		 * Moves an actor by the specified distance relative to its current
 		 * position in pixels.
 		 * 
 		 * This function modifies the fixed position of an actor and thus removes
 		 * it from any layout management. Another way to move an actor is with an
-		 * additional translation, using {@link Clutter.Actor.set_translation}.
+		 * anchor point, see {@link Clutter.Actor.set_anchor_point}, or with an additional
+		 * translation, using clutter_actor_set_translation().
 		 * @param dx Distance to move Actor on X axis.
 		 * @param dy Distance to move Actor on Y axis.
 		 */
@@ -2038,27 +2422,6 @@ declare namespace imports.gi.Clutter {
 		 */
 		paint(paint_context: PaintContext): void;
 		/**
-		 * Retrieves the list of {@link StageView}<!-- -->s the actor is being
-		 * painted on.
-		 * 
-		 * If this function is called during the paint cycle, the list is guaranteed
-		 * to be up-to-date, if called outside the paint cycle, the list will
-		 * contain the views the actor was painted on last.
-		 * 
-		 * The list returned by this function is not updated when the actors
-		 * visibility changes: If an actor gets hidden and is not being painted
-		 * anymore, this function will return the list of views the actor was
-		 * painted on last.
-		 * 
-		 * If an actor is not attached to a stage (realized), this function will
-		 * always return an empty list.
-		 * @returns The list of
-		 *   {@link StageView}<!-- -->s the actor is being painted on. The list and
-		 *   its contents are owned by the #ClutterActor and the list may not be
-		 *   freed or modified.
-		 */
-		peek_stage_views(): StageView[];
-		/**
 		 * Asks #actor to perform a pick.
 		 * @param pick_context
 		 */
@@ -2073,14 +2436,8 @@ declare namespace imports.gi.Clutter {
 		 * @param box A rectangle in the actor's own local coordinates.
 		 */
 		pick_box(pick_context: PickContext, box: ActorBox): void;
-		/**
-		 * Pick the most suitable frame clock for driving animations for this actor.
-		 * 
-		 * The {@link Actor} used for picking the frame clock is written #out_actor.
-		 * @param out_actor a pointer to an {@link Actor}
-		 * @returns a {@link FrameClock}
-		 */
-		pick_frame_clock(out_actor?: Actor | null): FrameClock;
+		pop_internal(): void;
+		push_internal(): void;
 		/**
 		 * Queues up a redraw of an actor and any children. The redraw occurs
 		 * once the main loop becomes idle (after the current batch of events
@@ -2247,17 +2604,105 @@ declare namespace imports.gi.Clutter {
 		 * This function can only be called from within the implementation of
 		 * the {@link ActorClass}.allocate() virtual function.
 		 * 
-		 * The allocation #box should have been adjusted to take into account
-		 * constraints, alignment, and margin properties.
+		 * The allocation should have been adjusted to take into account constraints,
+		 * alignment, and margin properties. If you are implementing a #ClutterActor
+		 * subclass that provides its own layout management policy for its children
+		 * instead of using a #ClutterLayoutManager delegate, you should not call
+		 * this function on the children of #self; instead, you should call
+		 * clutter_actor_allocate(), which will adjust the allocation box for
+		 * you.
 		 * 
 		 * This function should only be used by subclasses of #ClutterActor
 		 * that wish to store their allocation but cannot chain up to the
 		 * parent's implementation; the default implementation of the
 		 * #ClutterActorClass.allocate() virtual function will call this
 		 * function.
+		 * 
+		 * It is important to note that, while chaining up was the recommended
+		 * behaviour for #ClutterActor subclasses prior to the introduction of
+		 * this function, it is recommended to call clutter_actor_set_allocation()
+		 * instead.
+		 * 
+		 * If the #ClutterActor is using a #ClutterLayoutManager delegate object
+		 * to handle the allocation of its children, this function will call
+		 * the clutter_layout_manager_allocate() function only if the
+		 * %CLUTTER_DELEGATE_LAYOUT flag is set on #flags, otherwise it is
+		 * expected that the subclass will call clutter_layout_manager_allocate()
+		 * by itself. For instance, the following code:
+		 * 
+		 * |[<!-- language="C" -->
+		 * static void
+		 * my_actor_allocate (ClutterActor *actor,
+		 *                    const ClutterActorBox *allocation,
+		 *                    ClutterAllocationFlags flags)
+		 * {
+		 *   ClutterActorBox new_alloc;
+		 *   ClutterAllocationFlags new_flags;
+		 * 
+		 *   adjust_allocation (allocation, &new_alloc);
+		 * 
+		 *   new_flags = flags | CLUTTER_DELEGATE_LAYOUT;
+		 * 
+		 *   // this will use the layout manager set on the actor
+		 *   clutter_actor_set_allocation (actor, &new_alloc, new_flags);
+		 * }
+		 * ]|
+		 * 
+		 * is equivalent to this:
+		 * 
+		 * |[<!-- language="C" -->
+		 * static void
+		 * my_actor_allocate (ClutterActor *actor,
+		 *                    const ClutterActorBox *allocation,
+		 *                    ClutterAllocationFlags flags)
+		 * {
+		 *   ClutterLayoutManager *layout;
+		 *   ClutterActorBox new_alloc;
+		 * 
+		 *   adjust_allocation (allocation, &new_alloc);
+		 * 
+		 *   clutter_actor_set_allocation (actor, &new_alloc, flags);
+		 * 
+		 *   layout = clutter_actor_get_layout_manager (actor);
+		 *   clutter_layout_manager_allocate (layout,
+		 *                                    CLUTTER_CONTAINER (actor),
+		 *                                    &new_alloc,
+		 *                                    flags);
+		 * }
+		 * ]|
 		 * @param box a {@link ActorBox}
+		 * @param flags allocation flags
 		 */
-		set_allocation(box: ActorBox): void;
+		set_allocation(box: ActorBox, flags: AllocationFlags): void;
+		/**
+		 * @deprecated
+		 * Use {@link Actor.pivot_point} instead.
+		 * 
+		 * Sets an anchor point for #self. The anchor point is a point in the
+		 * coordinate space of an actor to which the actor position within its
+		 * parent is relative; the default is (0, 0), i.e. the top-left corner
+		 * of the actor.
+		 * @param anchor_x X coordinate of the anchor point
+		 * @param anchor_y Y coordinate of the anchor point
+		 */
+		set_anchor_point(anchor_x: number, anchor_y: number): void;
+		/**
+		 * @deprecated
+		 * Use {@link Actor.pivot_point} and
+		 * {@link Clutter.Actor.set_translation} instead. E.g. For %CLUTTER_GRAVITY_CENTER set
+		 * pivot_point to (0.5,0.5) and the translation to (width/2,height/2).
+		 * 
+		 * Sets an anchor point on the actor, based on the given gravity (this is a
+		 * convenience function wrapping {@link Clutter.Actor.set_anchor_point}).
+		 * 
+		 * Since version 1.0 the anchor point will be stored as a gravity so
+		 * that if the actor changes size then the anchor point will move. For
+		 * example, if you set the anchor point to %CLUTTER_GRAVITY_SOUTH_EAST
+		 * and later double the size of the actor, the anchor point will move
+		 * to the bottom right.
+		 * @param gravity {@link Gravity}.
+		 */
+		set_anchor_point_from_gravity(gravity: Gravity): void;
 		/**
 		 * Sets the background color of a {@link Actor}.
 		 * 
@@ -2319,7 +2764,8 @@ declare namespace imports.gi.Clutter {
 		set_child_transform(transform?: Matrix | null): void;
 		/**
 		 * Sets clip area for #self. The clip area is always computed from the
-		 * upper left corner of the actor.
+		 * upper left corner of the actor, even if the anchor point is set
+		 * otherwise.
 		 * @param xoff X offset of the clip rectangle
 		 * @param yoff Y offset of the clip rectangle
 		 * @param width Width of the clip rectangle
@@ -2365,6 +2811,17 @@ declare namespace imports.gi.Clutter {
 		 * @param mag_filter the magnification filter for the content
 		 */
 		set_content_scaling_filters(min_filter: ScalingFilter, mag_filter: ScalingFilter): void;
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.Actor.set_z_position} instead.
+		 * 
+		 * Sets the Z coordinate of #self to #depth.
+		 * 
+		 * The unit used by #depth is dependant on the perspective setup. See
+		 * also {@link Clutter.Stage.set_perspective}.
+		 * @param depth Z co-ord
+		 */
+		set_depth(depth: number): void;
 		/**
 		 * Sets the delay that should be applied before tweening animatable
 		 * properties.
@@ -2529,12 +2986,27 @@ declare namespace imports.gi.Clutter {
 		 * Allows overriding the calculated paint opacity (as returned by
 		 * {@link Clutter.Actor.get_paint_opacity}). This is used internally by
 		 * ClutterClone and ClutterOffscreenEffect, and should be used by
-		 * actors that need to mimic those.
+		 * actors that need to mimick those.
 		 * 
 		 * In almost all cases this should not used by applications.
 		 * @param opacity the override opacity value, or -1 to reset
 		 */
 		set_opacity_override(opacity: number): void;
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.Actor.add_child} instead.
+		 * 
+		 * Sets the parent of #self to #parent.
+		 * 
+		 * This function will result in #parent acquiring a reference on #self,
+		 * eventually by sinking its floating reference first. The reference
+		 * will be released by {@link Clutter.Actor.unparent}.
+		 * 
+		 * This function should only be called by legacy {@link Actor}<!-- -->s
+		 * implementing the #ClutterContainer interface.
+		 * @param parent A new {@link Actor} parent
+		 */
+		set_parent(parent: Actor): void;
 		/**
 		 * Sets the position of the {@link Actor.pivot_point} around which the
 		 * scaling and rotation transformations occur.
@@ -2579,6 +3051,29 @@ declare namespace imports.gi.Clutter {
 		 */
 		set_request_mode(mode: RequestMode): void;
 		/**
+		 * @deprecated
+		 * Use {@link Clutter.Actor.set_rotation_angle} and
+		 *   clutter_actor_set_pivot_point() instead.
+		 * 
+		 * Sets the rotation angle of #self around the given axis.
+		 * 
+		 * The rotation center coordinates used depend on the value of #axis:
+		 * 
+		 *  - %CLUTTER_X_AXIS requires #y and #z
+		 *  - %CLUTTER_Y_AXIS requires #x and #z
+		 *  - %CLUTTER_Z_AXIS requires #x and #y
+		 * 
+		 * The rotation coordinates are relative to the anchor point of the
+		 * actor, set using {@link Clutter.Actor.set_anchor_point}. If no anchor
+		 * point is set, the upper left corner is assumed as the origin.
+		 * @param axis the axis of rotation
+		 * @param angle the angle of rotation
+		 * @param x X coordinate of the rotation center
+		 * @param y Y coordinate of the rotation center
+		 * @param z Z coordinate of the rotation center
+		 */
+		set_rotation(axis: RotateAxis, angle: number, x: number, y: number, z: number): void;
+		/**
 		 * Sets the #angle of rotation of a {@link Actor} on the given #axis.
 		 * 
 		 * This function is a convenience for setting the rotation properties
@@ -2602,6 +3097,23 @@ declare namespace imports.gi.Clutter {
 		 * @param scale_y double factor to scale actor by vertically.
 		 */
 		set_scale(scale_x: number, scale_y: number): void;
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.Actor.set_pivot_point} to control
+		 *   the scale center
+		 * 
+		 * Scales an actor with the given factors around the given center
+		 * point. The center point is specified in pixels relative to the
+		 * anchor point (usually the top left corner of the actor).
+		 * 
+		 * The {@link Actor.scale_x} and #ClutterActor:scale-y properties
+		 * are animatable.
+		 * @param scale_x double factor to scale actor by horizontally.
+		 * @param scale_y double factor to scale actor by vertically.
+		 * @param center_x X coordinate of the center of the scaling
+		 * @param center_y Y coordinate of the center of the scaling
+		 */
+		set_scale_full(scale_x: number, scale_y: number, center_x: number, center_y: number): void;
 		/**
 		 * Scales an actor on the Z axis by the given #scale_z factor.
 		 * 
@@ -2735,6 +3247,20 @@ declare namespace imports.gi.Clutter {
 		 */
 		set_z_position(z_position: number): void;
 		/**
+		 * @deprecated
+		 * Use {@link Clutter.Actor.set_rotation_angle} and
+		 *   clutter_actor_set_pivot_point() instead.
+		 * 
+		 * Sets the rotation angle of #self around the Z axis using the center
+		 * point specified as a compass point. For example to rotate such that
+		 * the center of the actor remains static you can use
+		 * %CLUTTER_GRAVITY_CENTER. If the actor changes size the center point
+		 * will move accordingly.
+		 * @param angle the angle of rotation
+		 * @param gravity the center point of the rotation
+		 */
+		set_z_rotation_from_gravity(angle: number, gravity: Gravity): void;
+		/**
 		 * Should be called inside the implementation of the
 		 * {@link Actor.pick} virtual function in order to check whether
 		 * the actor should paint itself in pick mode or not.
@@ -2755,6 +3281,13 @@ declare namespace imports.gi.Clutter {
 		 * effect.
 		 */
 		show(): void;
+		/**
+		 * @deprecated
+		 * Actors are visible by default
+		 * 
+		 * Calls {@link Clutter.Actor.show} on all children of an actor (if any).
+		 */
+		show_all(): void;
 		/**
 		 * This function translates screen coordinates (#x, #y) to
 		 * coordinates relative to the actor. For example, it can be used to translate
@@ -2808,6 +3341,21 @@ declare namespace imports.gi.Clutter {
 		unmap(): void;
 		/**
 		 * @deprecated
+		 * Use {@link Clutter.Actor.remove_child} instead.
+		 * 
+		 * Removes the parent of #self.
+		 * 
+		 * This will cause the parent of #self to release the reference
+		 * acquired when calling {@link Clutter.Actor.set_parent}, so if you
+		 * want to keep #self you will have to acquire a reference of
+		 * your own, through g_object_ref().
+		 * 
+		 * This function should only be called by legacy {@link Actor}<!-- -->s
+		 * implementing the #ClutterContainer interface.
+		 */
+		unparent(): void;
+		/**
+		 * @deprecated
 		 * Actors are automatically unrealized, and nothing
 		 *   requires explicit realization.
 		 * 
@@ -2845,6 +3393,22 @@ declare namespace imports.gi.Clutter {
 		 * @param flags the flags to unset
 		 */
 		unset_flags(flags: ActorFlags): void;
+		/**
+		 * The ::allocation-changed signal is emitted when the
+		 * {@link Actor.allocation} property changes. Usually, application
+		 * code should just use the notifications for the :allocation property
+		 * but if you want to track the allocation flags as well, for instance
+		 * to know whether the absolute origin of #actor changed, then you might
+		 * want use this signal instead.
+		 * @param signal 
+		 * @param callback Callback function
+		 *  - owner: owner of the emitted event 
+		 *  - box: a {@link ActorBox} with the new allocation 
+		 *  - flags: #ClutterAllocationFlags for the allocation 
+		 * 
+		 * @returns Callback ID
+		 */
+		connect(signal: "allocation-changed", callback: (owner: this, box: ActorBox, flags: AllocationFlags) => void): number;
 		/**
 		 * The ::button-press-event signal is emitted each time a mouse button
 		 * is pressed on #actor.
@@ -3149,19 +3713,6 @@ declare namespace imports.gi.Clutter {
 		 */
 		connect(signal: "realize", callback: (owner: this) => void): number;
 		/**
-		 * The ::resource-scale-changed signal is emitted when the resource scale
-		 * value returned by {@link Clutter.Actor.get_resource_scale} changes.
-		 * 
-		 * This signal can be used to get notified about the correct resource scale
-		 * when the scale had to be queried outside of the paint cycle.
-		 * @param signal 
-		 * @param callback Callback function
-		 *  - owner: owner of the emitted event 
-		 * 
-		 * @returns Callback ID
-		 */
-		connect(signal: "resource-scale-changed", callback: (owner: this) => void): number;
-		/**
 		 * The ::scroll-event signal is emitted each time the mouse is
 		 * scrolled on #actor
 		 * @param signal 
@@ -3184,21 +3735,6 @@ declare namespace imports.gi.Clutter {
 		 * @returns Callback ID
 		 */
 		connect(signal: "show", callback: (owner: this) => void): number;
-		/**
-		 * The ::stage-views-changed signal is emitted when the position or
-		 * size an actor is being painted at have changed so that it's visible
-		 * on different stage views.
-		 * 
-		 * This signal is also emitted when the actor gets detached from the stage
-		 * or when the views of the stage have been invalidated and will be
-		 * replaced; it's not emitted when the actor gets hidden.
-		 * @param signal 
-		 * @param callback Callback function
-		 *  - owner: owner of the emitted event 
-		 * 
-		 * @returns Callback ID
-		 */
-		connect(signal: "stage-views-changed", callback: (owner: this) => void): number;
 		/**
 		 * The ::touch-event signal is emitted each time a touch
 		 * begin/end/update/cancel event.
@@ -3249,6 +3785,9 @@ declare namespace imports.gi.Clutter {
 		connect(signal: "unrealize", callback: (owner: this) => void): number;
 
 		connect(signal: "notify::allocation", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::anchor-gravity", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::anchor-x", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::anchor-y", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::background-color", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::background-color-set", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::child-transform", callback: (owner: this, ...args: any) => void): number;
@@ -3259,6 +3798,7 @@ declare namespace imports.gi.Clutter {
 		connect(signal: "notify::content-box", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::content-gravity", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::content-repeat", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::depth", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::first-child", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::fixed-position-set", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::fixed-x", callback: (owner: this, ...args: any) => void): number;
@@ -3292,9 +3832,17 @@ declare namespace imports.gi.Clutter {
 		connect(signal: "notify::reactive", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::realized", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::request-mode", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::resource-scale", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::rotation-angle-x", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::rotation-angle-y", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::rotation-angle-z", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::rotation-center-x", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::rotation-center-y", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::rotation-center-z", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::rotation-center-z-gravity", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::scale-center-x", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::scale-center-y", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::scale-gravity", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::scale-x", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::scale-y", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::scale-z", callback: (owner: this, ...args: any) => void): number;
@@ -3321,6 +3869,9 @@ declare namespace imports.gi.Clutter {
 
 	type ActorInitOptionsMixin = GObject.InitiallyUnownedInitOptions & Atk.ImplementorIfaceInitOptions & AnimatableInitOptions & ContainerInitOptions & ScriptableInitOptions & 
 	Pick<IActor,
+		"anchor_gravity" |
+		"anchor_x" |
+		"anchor_y" |
 		"background_color" |
 		"child_transform" |
 		"clip_rect" |
@@ -3328,6 +3879,7 @@ declare namespace imports.gi.Clutter {
 		"content" |
 		"content_gravity" |
 		"content_repeat" |
+		"depth" |
 		"fixed_position_set" |
 		"fixed_x" |
 		"fixed_y" |
@@ -3358,6 +3910,13 @@ declare namespace imports.gi.Clutter {
 		"rotation_angle_x" |
 		"rotation_angle_y" |
 		"rotation_angle_z" |
+		"rotation_center_x" |
+		"rotation_center_y" |
+		"rotation_center_z" |
+		"rotation_center_z_gravity" |
+		"scale_center_x" |
+		"scale_center_y" |
+		"scale_gravity" |
 		"scale_x" |
 		"scale_y" |
 		"scale_z" |
@@ -3466,6 +4025,10 @@ declare namespace imports.gi.Clutter {
 	 */
 	type ActorMetaMixin = IActorMeta & GObject.InitiallyUnowned;
 
+	/**
+	 * The {@link ActorMeta} structure contains only
+	 * private data and should be accessed using the provided API
+	 */
 	interface ActorMeta extends ActorMetaMixin {}
 
 	class ActorMeta {
@@ -3516,21 +4079,6 @@ declare namespace imports.gi.Clutter {
 		 */
 		factor: number;
 		/**
-		 * The pivot point used by the constraint. The pivot point is the
-		 * point in the constraint actor around which the aligning is applied,
-		 * with (0, 0) being the top left corner of the actor and (1, 1) the
-		 * bottom right corner of the actor.
-		 * 
-		 * For example, setting the pivot point to (0.5, 0.5) and using a factor
-		 * of 1 for both axes will align the actors horizontal and vertical
-		 * center point with the bottom right corner of the source actor.
-		 * 
-		 * By default, the pivot point is set to (-1, -1), which means it's not
-		 * used and the constrained actor will be aligned to always stay inside
-		 * the source actor.
-		 */
-		pivot_point: Graphene.Point;
-		/**
 		 * The {@link Actor} used as the source for the alignment.
 		 * 
 		 * The #ClutterActor must not be a child or a grandchild of the actor
@@ -3547,13 +4095,6 @@ declare namespace imports.gi.Clutter {
 		 * @returns the alignment factor
 		 */
 		get_factor(): number;
-		/**
-		 * Gets the pivot point used by the constraint set with
-		 * {@link Clutter.AlignConstraint.set_pivot_point}. If no custom pivot
-		 * point is set, -1 is set.
-		 * @returns return location for a #GraphenePoint
-		 */
-		get_pivot_point(): Graphene.Point;
 		/**
 		 * Retrieves the source of the alignment
 		 * @returns the {@link Actor} used as the source
@@ -3581,24 +4122,12 @@ declare namespace imports.gi.Clutter {
 		 */
 		set_factor(factor: number): void;
 		/**
-		 * Sets the pivot point used by the constraint, the pivot point is the
-		 * point in the constraint actor around which the aligning is applied,
-		 * with (0, 0) being the top left corner of the actor and (1, 1) the
-		 * bottom right corner of the actor.
-		 * 
-		 * If -1 is used, the pivot point is unset and the constrained actor
-		 * will be aligned to always stay inside the source actor.
-		 * @param pivot_point A #GraphenePoint
-		 */
-		set_pivot_point(pivot_point: Graphene.Point): void;
-		/**
 		 * Sets the source of the alignment constraint
 		 * @param source a {@link Actor}, or %NULL to unset the source
 		 */
 		set_source(source?: Actor | null): void;
 		connect(signal: "notify::align-axis", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::factor", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::pivot-point", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::source", callback: (owner: this, ...args: any) => void): number;
 
 	}
@@ -3607,7 +4136,6 @@ declare namespace imports.gi.Clutter {
 	Pick<IAlignConstraint,
 		"align_axis" |
 		"factor" |
-		"pivot_point" |
 		"source">;
 
 	export interface AlignConstraintInitOptions extends AlignConstraintInitOptionsMixin {}
@@ -3636,6 +4164,389 @@ declare namespace imports.gi.Clutter {
 		 * @returns the newly created {@link AlignConstraint}
 		 */
 		public static new(source: Actor | null, axis: AlignAxis, factor: number): Constraint;
+	}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link Alpha} instead.
+	 */
+	interface IAlpha {
+		/**
+		 * @deprecated
+		 * Use {@link Timeline.new_frame} and
+		 *   {@link Clutter.Timeline.get_progress} instead
+		 * 
+		 * The alpha value as computed by the alpha function. The linear
+		 * interval is 0.0 to 1.0, but the Alpha allows overshooting by
+		 * one unit in each direction, so the valid interval is -1.0 to 2.0.
+		 */
+		readonly alpha: number;
+		/**
+		 * @deprecated
+		 * Use {@link Timeline.progress_mode}
+		 * 
+		 * The progress function logical id - a value from the
+		 * {@link AnimationMode} enumeration.
+		 * 
+		 * If %CLUTTER_CUSTOM_MODE is used then the function set using
+		 * {@link Clutter.Alpha.set_closure} or clutter_alpha_set_func()
+		 * will be used.
+		 */
+		mode: number;
+		/**
+		 * A {@link Timeline} instance used to drive the alpha function.
+		 */
+		timeline: Timeline;
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.Timeline.get_progress}
+		 * 
+		 * Query the current alpha value.
+		 * @returns The current alpha value for the alpha
+		 */
+		get_alpha(): number;
+		/**
+		 * @deprecated
+		 * Use {@link Timeline} instead
+		 * 
+		 * Retrieves the {@link AnimationMode} used by #alpha.
+		 * @returns the animation mode
+		 */
+		get_mode(): number;
+		/**
+		 * @deprecated
+		 * Use {@link Timeline} directlry
+		 * 
+		 * Gets the {@link Timeline} bound to #alpha.
+		 * @returns a {@link Timeline} instance
+		 */
+		get_timeline(): Timeline;
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.Timeline.set_progress_func}
+		 * 
+		 * Sets the #GClosure used to compute the alpha value at each
+		 * frame of the {@link Timeline} bound to #alpha.
+		 * @param closure A #GClosure
+		 */
+		set_closure(closure: GObject.Closure): void;
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.Timeline.set_progress_func}
+		 * 
+		 * Sets the {@link AlphaFunc} function used to compute
+		 * the alpha value at each frame of the #ClutterTimeline
+		 * bound to #alpha.
+		 * 
+		 * This function will not register #func as a global alpha function.
+		 * @param func A {@link AlphaFunc}
+		 */
+		set_func(func: AlphaFunc): void;
+		/**
+		 * @deprecated
+		 * Use {@link Timeline} and
+		 *   {@link Clutter.Timeline.set_progress_mode} instead
+		 * 
+		 * Sets the progress function of #alpha using the symbolic value
+		 * of #mode, as taken by the {@link AnimationMode} enumeration.
+		 * @param mode a {@link AnimationMode}
+		 */
+		set_mode(mode: number): void;
+		/**
+		 * @deprecated
+		 * Use {@link Timeline} directly
+		 * 
+		 * Binds #alpha to #timeline.
+		 * @param timeline A {@link Timeline}
+		 */
+		set_timeline(timeline: Timeline): void;
+		connect(signal: "notify::alpha", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::mode", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::timeline", callback: (owner: this, ...args: any) => void): number;
+
+	}
+
+	type AlphaInitOptionsMixin = GObject.InitiallyUnownedInitOptions & ScriptableInitOptions & 
+	Pick<IAlpha,
+		"mode" |
+		"timeline">;
+
+	export interface AlphaInitOptions extends AlphaInitOptionsMixin {}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link Alpha} instead.
+	 */
+	type AlphaMixin = IAlpha & GObject.InitiallyUnowned & Scriptable;
+
+	/**
+	 * {@link Alpha} combines a #ClutterTimeline and a function.
+	 * The contents of the #ClutterAlpha structure are private and should
+	 * only be accessed using the provided API.
+	 */
+	interface Alpha extends AlphaMixin {}
+
+	class Alpha {
+		public constructor(options?: Partial<AlphaInitOptions>);
+		/**
+		 * @deprecated
+		 * Use {@link Timeline} instead
+		 * 
+		 * Creates a new {@link Alpha} instance.  You must set a function
+		 * to compute the alpha value using {@link Clutter.Alpha.set_func} and
+		 * bind a #ClutterTimeline object to the #ClutterAlpha instance
+		 * using clutter_alpha_set_timeline().
+		 * @returns the newly created empty {@link Alpha} instance.
+		 */
+		public static new(): Alpha;
+		/**
+		 * @deprecated
+		 * Use {@link Timeline} instead
+		 * 
+		 * Creates a new {@link Alpha} instance and sets the timeline
+		 * and animation mode.
+		 * 
+		 * See also {@link Clutter.Alpha.set_timeline} and clutter_alpha_set_mode().
+		 * @param timeline {@link Timeline} timeline
+		 * @param mode animation mode
+		 * @returns the newly created {@link Alpha}
+		 */
+		public static new_full(timeline: Timeline, mode: number): Alpha;
+	}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link Animation} instead.
+	 */
+	interface IAnimation {
+		/**
+		 * @deprecated
+		 * Use the {@link Animation.timeline} property and
+		 *   the #ClutterTimeline:progress-mode property instead.
+		 * 
+		 * The {@link Alpha} used by the animation.
+		 */
+		alpha: Alpha;
+		/**
+		 * @deprecated
+		 * Use {@link PropertyTransition} instead
+		 * 
+		 * The duration of the animation, expressed in milliseconds.
+		 */
+		duration: number;
+		/**
+		 * @deprecated
+		 * Use {@link PropertyTransition} instead
+		 * 
+		 * Whether the animation should loop.
+		 */
+		loop: boolean;
+		/**
+		 * @deprecated
+		 * Use {@link PropertyTransition} instead
+		 * 
+		 * The animation mode, either a value from {@link AnimationMode}
+		 * or a value returned by {@link Clutter.Alpha.register_func}. The
+		 * default value is %CLUTTER_LINEAR.
+		 */
+		mode: number;
+		/**
+		 * @deprecated
+		 * Use {@link PropertyTransition} instead
+		 * 
+		 * The #GObject to which the animation applies.
+		 */
+		object: GObject.Object;
+		/**
+		 * @deprecated
+		 * Use {@link PropertyTransition} instead
+		 * 
+		 * The {@link Timeline} used by the animation.
+		 */
+		timeline: Timeline;
+		/**
+		 * @deprecated
+		 * Use {@link PropertyTransition} instead
+		 * 
+		 * Retrieves the duration of #animation, in milliseconds.
+		 * @returns the duration of the animation
+		 */
+		get_duration(): number;
+		/**
+		 * @deprecated
+		 * Use {@link PropertyTransition} instead
+		 * 
+		 * Retrieves the {@link Interval} associated to #property_name
+		 * inside #animation.
+		 * @param property_name name of the property
+		 * @returns a {@link Interval} or %NULL if no
+		 *   property with the same name was found. The returned interval is
+		 *   owned by the #ClutterAnimation and should not be unreferenced
+		 */
+		get_interval(property_name: string): Interval;
+		/**
+		 * @deprecated
+		 * Use {@link PropertyTransition} instead
+		 * 
+		 * Retrieves whether #animation is looping.
+		 * @returns %TRUE if the animation is looping
+		 */
+		get_loop(): boolean;
+		/**
+		 * @deprecated
+		 * Use {@link PropertyTransition} instead
+		 * 
+		 * Retrieves the animation mode of #animation, as set by
+		 * {@link Clutter.Animation.set_mode}.
+		 * @returns the mode for the animation
+		 */
+		get_mode(): number;
+		/**
+		 * @deprecated
+		 * Use {@link PropertyTransition} instead
+		 * 
+		 * Retrieves the {@link Timeline} used by #animation
+		 * @returns the timeline used by the animation
+		 */
+		get_timeline(): Timeline;
+		/**
+		 * @deprecated
+		 * Use {@link PropertyTransition} instead
+		 * 
+		 * Checks whether #animation is controlling #property_name.
+		 * @param property_name name of the property
+		 * @returns %TRUE if the property is animated by the
+		 *   {@link Animation}, %FALSE otherwise
+		 */
+		has_property(property_name: string): boolean;
+		/**
+		 * @deprecated
+		 * Use {@link PropertyTransition} instead
+		 * 
+		 * Sets the duration of #animation in milliseconds.
+		 * 
+		 * This function will set {@link Animation.alpha} and
+		 * #ClutterAnimation:timeline if needed.
+		 * @param msecs the duration in milliseconds
+		 */
+		set_duration(msecs: number): void;
+		/**
+		 * @deprecated
+		 * Use {@link PropertyTransition} instead
+		 * 
+		 * Sets whether #animation should loop over itself once finished.
+		 * 
+		 * A looping {@link Animation} will not emit the #ClutterAnimation::completed
+		 * signal when finished.
+		 * 
+		 * This function will set #ClutterAnimation:alpha and
+		 * #ClutterAnimation:timeline if needed.
+		 * @param loop %TRUE if the animation should loop
+		 */
+		set_loop(loop: boolean): void;
+		/**
+		 * @deprecated
+		 * Use {@link PropertyTransition} instead
+		 * 
+		 * Sets the animation #mode of #animation. The animation #mode is
+		 * a logical id, either coming from the {@link AnimationMode} enumeration
+		 * or the return value of {@link Clutter.Alpha.register_func}.
+		 * 
+		 * This function will also set #ClutterAnimation:alpha if needed.
+		 * @param mode an animation mode logical id
+		 */
+		set_mode(mode: number): void;
+		/**
+		 * @deprecated
+		 * Use {@link PropertyTransition} instead
+		 * 
+		 * Attaches #animation to #object. The {@link Animation} will take a
+		 * reference on #object.
+		 * @param object a #GObject
+		 */
+		set_object(object: GObject.Object): void;
+		/**
+		 * @deprecated
+		 * Use {@link PropertyTransition} instead
+		 * 
+		 * Sets the {@link Timeline} used by #animation.
+		 * 
+		 * This function will take a reference on the passed #timeline.
+		 * @param timeline a {@link Timeline}, or %NULL to unset the
+		 *   current #ClutterTimeline
+		 */
+		set_timeline(timeline?: Timeline | null): void;
+		/**
+		 * The ::completed signal is emitted once the animation has
+		 * been completed.
+		 * 
+		 * The #animation instance is guaranteed to be valid for the entire
+		 * duration of the signal emission chain.
+		 * @param signal 
+		 * @param callback Callback function
+		 *  - owner: owner of the emitted event 
+		 * 
+		 * @returns Callback ID
+		 */
+		connect(signal: "completed", callback: (owner: this) => void): number;
+		/**
+		 * The ::started signal is emitted once the animation has been
+		 * started
+		 * @param signal 
+		 * @param callback Callback function
+		 *  - owner: owner of the emitted event 
+		 * 
+		 * @returns Callback ID
+		 */
+		connect(signal: "started", callback: (owner: this) => void): number;
+
+		connect(signal: "notify::alpha", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::duration", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::loop", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::mode", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::object", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::timeline", callback: (owner: this, ...args: any) => void): number;
+
+	}
+
+	type AnimationInitOptionsMixin = GObject.ObjectInitOptions & ScriptableInitOptions & 
+	Pick<IAnimation,
+		"alpha" |
+		"duration" |
+		"loop" |
+		"mode" |
+		"object" |
+		"timeline">;
+
+	export interface AnimationInitOptions extends AnimationInitOptionsMixin {}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link Animation} instead.
+	 */
+	type AnimationMixin = IAnimation & GObject.Object & Scriptable;
+
+	/**
+	 * The {@link Animation} structure contains only private data and should
+	 * be accessed using the provided functions.
+	 */
+	interface Animation extends AnimationMixin {}
+
+	class Animation {
+		public constructor(options?: Partial<AnimationInitOptions>);
+		/**
+		 * @deprecated
+		 * Use {@link PropertyTransition} instead
+		 * 
+		 * Creates a new {@link Animation} instance. You should set the
+		 * #GObject to be animated using {@link Clutter.Animation.set_object},
+		 * set the duration with clutter_animation_set_duration() and the
+		 * easing mode using clutter_animation_set_mode().
+		 * 
+		 * The clutter_actor_animate() and relative family of functions provide
+		 * an easy way to animate a #ClutterActor and automatically manage the
+		 * lifetime of a #ClutterAnimation instance, so you should consider using
+		 * those functions instead of manually creating an animation.
+		 * @returns the newly created {@link Animation}. Use {@link GObject.Object.unref}
+		 *   to release the associated resources
+		 */
+		public static new(): Animation;
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -4133,9 +5044,225 @@ declare namespace imports.gi.Clutter {
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link Box} instead.
+	 */
+	interface IBox {
+		/**
+		 * @deprecated
+		 * Use the {@link Actor.background_color} property
+		 * 
+		 * The color to be used to paint the background of the
+		 * {@link Box}. Setting this property will set the
+		 * #ClutterBox:color-set property as a side effect
+		 * 
+		 * This property sets the #ClutterActor:background-color property
+		 * internally.
+		 */
+		color: Color;
+		/**
+		 * @deprecated
+		 * Use the {@link Actor.background_color_set} property
+		 * 
+		 * Whether the {@link Box.color} property has been set.
+		 * 
+		 * This property reads the #ClutterActor:background-color-set property
+		 * internally.
+		 */
+		color_set: boolean;
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.Actor.get_background_color} instead.
+		 * 
+		 * Retrieves the background color of #box
+		 * 
+		 * If the {@link Box.color_set} property is set to %FALSE the
+		 * returned #ClutterColor is undefined
+		 * @returns return location for a {@link Color}
+		 */
+		get_color(): Color;
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.Actor.get_layout_manager} instead.
+		 * 
+		 * Retrieves the {@link LayoutManager} instance used by #box
+		 * @returns a {@link LayoutManager}. The returned
+		 *   #ClutterLayoutManager is owned by the #ClutterBox and it should not
+		 *   be unreferenced
+		 */
+		get_layout_manager(): LayoutManager;
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.Actor.add_child} instead. To set
+		 *   specific layout properties, use clutter_layout_manager_child_set()
+		 * 
+		 * Adds #actor to #box and sets layout properties at the same time,
+		 * if the {@link LayoutManager} used by #box has them
+		 * 
+		 * This function is a wrapper around {@link Clutter.Container.add_actor}
+		 * and clutter_layout_manager_child_set()
+		 * 
+		 * Language bindings should use the vector-based clutter_box_packv()
+		 * variant instead
+		 * @param actor a {@link Actor}
+		 * @param first_property the name of the first property to set, or %NULL
+		 */
+		pack(actor: Actor, first_property: string): void;
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.Actor.insert_child_above} instead.
+		 *   To set specific layout properties, use clutter_layout_manager_child_set()
+		 * 
+		 * Adds #actor to #box, placing it after #sibling, and sets layout
+		 * properties at the same time, if the {@link LayoutManager} used by
+		 * #box supports them
+		 * 
+		 * If #sibling is %NULL then #actor is placed at the end of the
+		 * list of children, to be allocated and painted after every other child
+		 * 
+		 * This function is a wrapper around {@link Clutter.Container.add_actor},
+		 * clutter_container_raise_child() and clutter_layout_manager_child_set()
+		 * @param actor a {@link Actor}
+		 * @param sibling a {@link Actor} or %NULL
+		 * @param first_property the name of the first property to set, or %NULL
+		 */
+		pack_after(actor: Actor, sibling: Actor | null, first_property: string): void;
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.Actor.insert_child_at_index} instead.
+		 *   To set specific layout properties, use clutter_layout_manager_child_set()
+		 * 
+		 * Adds #actor to #box, placing it at #position, and sets layout
+		 * properties at the same time, if the {@link LayoutManager} used by
+		 * #box supports them
+		 * 
+		 * If #position is a negative number, or is larger than the number of
+		 * children of #box, the new child is added at the end of the list of
+		 * children
+		 * @param actor a {@link Actor}
+		 * @param position the position to insert the #actor at
+		 * @param first_property the name of the first property to set, or %NULL
+		 */
+		pack_at(actor: Actor, position: number, first_property: string): void;
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.Actor.insert_child_below} instead.
+		 *   To set specific layout properties, use clutter_layout_manager_child_set()
+		 * 
+		 * Adds #actor to #box, placing it before #sibling, and sets layout
+		 * properties at the same time, if the {@link LayoutManager} used by
+		 * #box supports them
+		 * 
+		 * If #sibling is %NULL then #actor is placed at the beginning of the
+		 * list of children, to be allocated and painted below every other child
+		 * 
+		 * This function is a wrapper around {@link Clutter.Container.add_actor},
+		 * clutter_container_lower_child() and clutter_layout_manager_child_set()
+		 * @param actor a {@link Actor}
+		 * @param sibling a {@link Actor} or %NULL
+		 * @param first_property the name of the first property to set, or %NULL
+		 */
+		pack_before(actor: Actor, sibling: Actor | null, first_property: string): void;
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.Actor.add_child} instead. To set
+		 *   specific layout properties, use clutter_layout_manager_child_set()
+		 * 
+		 * Vector-based variant of {@link Clutter.Box.pack}, intended for language
+		 * bindings to use
+		 * @param actor a {@link Actor}
+		 * @param properties a vector
+		 *   containing the property names to set
+		 * @param values a vector containing the property
+		 *   values to set
+		 */
+		packv(actor: Actor, properties: string[], values: GObject.Value[]): void;
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.Actor.set_background_color} instead.
+		 * 
+		 * Sets (or unsets) the background color for #box
+		 * @param color the background color, or %NULL to unset
+		 */
+		set_color(color?: Color | null): void;
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.Actor.set_layout_manager} instead.
+		 * 
+		 * Sets the {@link LayoutManager} for #box
+		 * 
+		 * A #ClutterLayoutManager is a delegate object that controls the
+		 * layout of the children of #box
+		 * @param manager a {@link LayoutManager}
+		 */
+		set_layout_manager(manager: LayoutManager): void;
+		connect(signal: "notify::color", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::color-set", callback: (owner: this, ...args: any) => void): number;
+
+	}
+
+	type BoxInitOptionsMixin = ActorInitOptions & Atk.ImplementorIfaceInitOptions & AnimatableInitOptions & ContainerInitOptions & ScriptableInitOptions & 
+	Pick<IBox,
+		"color" |
+		"color_set">;
+
+	export interface BoxInitOptions extends BoxInitOptionsMixin {}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link Box} instead.
+	 */
+	type BoxMixin = IBox & Actor & Atk.ImplementorIface & Animatable & Container & Scriptable;
+
+	/**
+	 * The {@link Box} structure contains only private data and should
+	 * be accessed using the provided API
+	 */
+	interface Box extends BoxMixin {}
+
+	class Box {
+		public constructor(options?: Partial<BoxInitOptions>);
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.Actor.new} instead.
+		 * 
+		 * Creates a new {@link Box}. The children of the box will be layed
+		 * out by the passed #manager
+		 * @param manager a {@link LayoutManager}
+		 * @returns the newly created {@link Box} actor
+		 */
+		public static new(manager: LayoutManager): Actor;
+	}
+
+	/** This construct is only for enabling class multi-inheritance,
 	 * use {@link BoxLayout} instead.
 	 */
 	interface IBoxLayout {
+		/**
+		 * @deprecated
+		 * The {@link BoxLayout} will honour the easing state of
+		 *   the children when allocating them.
+		 * 
+		 * The duration of the animations, in case {@link BoxLayout.use_animations}
+		 * is set to %TRUE.
+		 * 
+		 * The duration is expressed in milliseconds.
+		 */
+		easing_duration: number;
+		/**
+		 * @deprecated
+		 * The {@link BoxLayout} will honour the easing state of
+		 *   the children when allocating them.
+		 * 
+		 * The easing mode for the animations, in case
+		 * {@link BoxLayout.use_animations} is set to %TRUE.
+		 * 
+		 * The easing mode has the same semantics of #ClutterAnimation:mode: it can
+		 * either be a value from the #ClutterAnimationMode enumeration, like
+		 * %CLUTTER_EASE_OUT_CUBIC, or a logical id as returned by
+		 * {@link Clutter.Alpha.register_func}.
+		 * 
+		 * The default value is %CLUTTER_EASE_OUT_CUBIC.
+		 */
+		easing_mode: number;
 		/**
 		 * Whether the {@link BoxLayout} should arrange its children
 		 * homogeneously, i.e. all children get the same size
@@ -4155,6 +5282,69 @@ declare namespace imports.gi.Clutter {
 		 * The spacing between children of the {@link BoxLayout}, in pixels
 		 */
 		spacing: number;
+		/**
+		 * @deprecated
+		 * {@link BoxLayout} will honour the easing state
+		 *   of the children when allocating them.
+		 * 
+		 * Whether the {@link BoxLayout} should animate changes in the
+		 * layout, overriding the easing state of the children.
+		 */
+		use_animations: boolean;
+		/**
+		 * @deprecated
+		 * Use {@link BoxLayout.orientation} instead.
+		 * 
+		 * Whether the {@link BoxLayout} should arrange its children
+		 * alongside the Y axis, instead of alongside the X axis
+		 */
+		vertical: boolean;
+		/**
+		 * @deprecated
+		 * {@link BoxLayout} will honour #ClutterActor's
+		 *   #ClutterActor:x-align and #ClutterActor:y-align properies
+		 * 
+		 * Retrieves the horizontal and vertical alignment policies for #actor
+		 * as set using {@link Clutter.BoxLayout.pack} or clutter_box_layout_set_alignment()
+		 * @param actor a {@link Actor} child of #layout
+		 * @returns return location for the horizontal alignment policy
+		 * 
+		 * return location for the vertical alignment policy
+		 */
+		get_alignment(actor: Actor): [ x_align: BoxAlignment, y_align: BoxAlignment ];
+		/**
+		 * Retrieves the duration set using {@link Clutter.BoxLayout.set_easing_duration}
+		 * @returns the duration of the animations, in milliseconds
+		 */
+		get_easing_duration(): number;
+		/**
+		 * Retrieves the easing mode set using {@link Clutter.BoxLayout.set_easing_mode}
+		 * @returns an easing mode
+		 */
+		get_easing_mode(): number;
+		/**
+		 * @deprecated
+		 * {@link BoxLayout} will honour #ClutterActor's
+		 *   #ClutterActor:x-expand and #ClutterActor:y-expand properies
+		 * 
+		 * Retrieves whether #actor should expand inside #layout
+		 * @param actor a {@link Actor} child of #layout
+		 * @returns %TRUE if the {@link Actor} should expand, %FALSE otherwise
+		 */
+		get_expand(actor: Actor): boolean;
+		/**
+		 * @deprecated
+		 * {@link BoxLayout} will honour #ClutterActor's
+		 *   #ClutterActor:x-align and #ClutterActor:y-align properies
+		 * 
+		 * Retrieves the horizontal and vertical fill policies for #actor
+		 * as set using {@link Clutter.BoxLayout.pack} or clutter_box_layout_set_fill()
+		 * @param actor a {@link Actor} child of #layout
+		 * @returns return location for the horizontal fill policy
+		 * 
+		 * return location for the vertical fill policy
+		 */
+		get_fill(actor: Actor): [ x_fill: boolean, y_fill: boolean ];
 		/**
 		 * Retrieves if the children sizes are allocated homogeneously.
 		 * @returns %TRUE if the {@link BoxLayout} is arranging its children
@@ -4178,6 +5368,94 @@ declare namespace imports.gi.Clutter {
 		 */
 		get_spacing(): number;
 		/**
+		 * Retrieves whether #layout should animate changes in the layout properties.
+		 * @returns %TRUE if the animations should be used, %FALSE otherwise
+		 */
+		get_use_animations(): boolean;
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.BoxLayout.get_orientation} instead
+		 * 
+		 * Retrieves the orientation of the #layout as set using the
+		 * {@link Clutter.BoxLayout.set_vertical} function
+		 * @returns %TRUE if the {@link BoxLayout} is arranging its children
+		 *   vertically, and %FALSE otherwise
+		 */
+		get_vertical(): boolean;
+		/**
+		 * @deprecated
+		 * {@link BoxLayout} honours #ClutterActor's
+		 *   align and expand properties. The preferred way is adding
+		 *   the #actor with {@link Clutter.Actor.add_child} and setting
+		 *   #ClutterActor:x-align, #ClutterActor:y-align,
+		 *   #ClutterActor:x-expand and #ClutterActor:y-expand
+		 * 
+		 * Packs #actor inside the {@link Container} associated to #layout
+		 * and sets the layout properties
+		 * @param actor a {@link Actor}
+		 * @param expand whether the #actor should expand
+		 * @param x_fill whether the #actor should fill horizontally
+		 * @param y_fill whether the #actor should fill vertically
+		 * @param x_align the horizontal alignment policy for #actor
+		 * @param y_align the vertical alignment policy for #actor
+		 */
+		pack(actor: Actor, expand: boolean, x_fill: boolean, y_fill: boolean, x_align: BoxAlignment, y_align: BoxAlignment): void;
+		/**
+		 * @deprecated
+		 * {@link BoxLayout} will honour #ClutterActor's
+		 *   #ClutterActor:x-align and #ClutterActor:y-align properies
+		 * 
+		 * Sets the horizontal and vertical alignment policies for #actor
+		 * inside #layout
+		 * @param actor a {@link Actor} child of #layout
+		 * @param x_align Horizontal alignment policy for #actor
+		 * @param y_align Vertical alignment policy for #actor
+		 */
+		set_alignment(actor: Actor, x_align: BoxAlignment, y_align: BoxAlignment): void;
+		/**
+		 * @deprecated
+		 * The layout manager will honour the easing state
+		 *   of the children when allocating them.
+		 * 
+		 * Sets the duration of the animations used by #layout when animating changes
+		 * in the layout properties.
+		 * @param msecs the duration of the animations, in milliseconds
+		 */
+		set_easing_duration(msecs: number): void;
+		/**
+		 * @deprecated
+		 * The layout manager will honour the easing state
+		 *   of the children when allocating them.
+		 * 
+		 * Sets the easing mode to be used by #layout when animating changes in layout
+		 * properties.
+		 * @param mode an easing mode, either from {@link AnimationMode} or a logical id
+		 *   from {@link Clutter.Alpha.register_func}
+		 */
+		set_easing_mode(mode: number): void;
+		/**
+		 * @deprecated
+		 * {@link BoxLayout} will honour #ClutterActor's
+		 *   #ClutterActor:x-expand and #ClutterActor:y-expand properies
+		 * 
+		 * Sets whether #actor should expand inside #layout
+		 * @param actor a {@link Actor} child of #layout
+		 * @param expand whether #actor should expand
+		 */
+		set_expand(actor: Actor, expand: boolean): void;
+		/**
+		 * @deprecated
+		 * {@link BoxLayout} will honour #ClutterActor's
+		 *   #ClutterActor:x-align and #ClutterActor:y-align properies
+		 * 
+		 * Sets the horizontal and vertical fill policies for #actor
+		 * inside #layout
+		 * @param actor a {@link Actor} child of #layout
+		 * @param x_fill whether #actor should fill horizontally the allocated space
+		 * @param y_fill whether #actor should fill vertically the allocated space
+		 */
+		set_fill(actor: Actor, x_fill: boolean, y_fill: boolean): void;
+		/**
 		 * Sets whether the size of #layout children should be
 		 * homogeneous
 		 * @param homogeneous %TRUE if the layout should be homogeneous
@@ -4189,7 +5467,7 @@ declare namespace imports.gi.Clutter {
 		 */
 		set_orientation(orientation: Orientation): void;
 		/**
-		 * Sets whether children of #layout should be laid out by appending
+		 * Sets whether children of #layout should be layed out by appending
 		 * them or by prepending them
 		 * @param pack_start %TRUE if the #layout should pack children at the
 		 *   beginning of the layout
@@ -4200,19 +5478,53 @@ declare namespace imports.gi.Clutter {
 		 * @param spacing the spacing between children of the layout, in pixels
 		 */
 		set_spacing(spacing: number): void;
+		/**
+		 * @deprecated
+		 * The layout manager will honour the easing state
+		 *   of the children when allocating them.
+		 * 
+		 * Sets whether #layout should animate changes in the layout properties
+		 * 
+		 * The duration of the animations is controlled by
+		 * {@link Clutter.BoxLayout.set_easing_duration}; the easing mode to be used
+		 * by the animations is controlled by clutter_box_layout_set_easing_mode().
+		 * 
+		 * Enabling animations will override the easing state of each child
+		 * of the actor using #layout, and will use the {@link BoxLayout.easing_mode}
+		 * and #ClutterBoxLayout:easing-duration properties instead.
+		 * @param animate %TRUE if the #layout should use animations
+		 */
+		set_use_animations(animate: boolean): void;
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.BoxLayout.set_orientation} instead.
+		 * 
+		 * Sets whether #layout should arrange its children vertically alongside
+		 * the Y axis, instead of horizontally alongside the X axis
+		 * @param vertical %TRUE if the layout should be vertical
+		 */
+		set_vertical(vertical: boolean): void;
+		connect(signal: "notify::easing-duration", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::easing-mode", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::homogeneous", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::orientation", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::pack-start", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::spacing", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::use-animations", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::vertical", callback: (owner: this, ...args: any) => void): number;
 
 	}
 
 	type BoxLayoutInitOptionsMixin = LayoutManagerInitOptions & 
 	Pick<IBoxLayout,
+		"easing_duration" |
+		"easing_mode" |
 		"homogeneous" |
 		"orientation" |
 		"pack_start" |
-		"spacing">;
+		"spacing" |
+		"use_animations" |
+		"vertical">;
 
 	export interface BoxLayoutInitOptions extends BoxLayoutInitOptionsMixin {}
 
@@ -4665,6 +5977,10 @@ declare namespace imports.gi.Clutter {
 	 */
 	type ClickActionMixin = IClickAction & Action;
 
+	/**
+	 * The {@link ClickAction} structure contains
+	 * only private data and should be accessed using the provided API
+	 */
 	interface ClickAction extends ClickActionMixin {}
 
 	class ClickAction {
@@ -5015,6 +6331,390 @@ declare namespace imports.gi.Clutter {
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link DragAction} instead.
+	 */
+	interface IDragAction {
+		/**
+		 * Constains the dragging action (or in particular, the resulting
+		 * actor position) to the specified {@link Rect}, in parent's
+		 * coordinates.
+		 */
+		drag_area: Graphene.Rect;
+		/**
+		 * Whether the {@link DragAction.drag_area} property has been set.
+		 */
+		readonly drag_area_set: boolean;
+		/**
+		 * Constraints the dragging action to the specified axis
+		 */
+		drag_axis: DragAxis;
+		/**
+		 * The {@link Actor} that is effectively being dragged
+		 * 
+		 * A #ClutterDragAction will, be default, use the #ClutterActor that
+		 * has been attached to the action; it is possible to create a
+		 * separate #ClutterActor and use it instead.
+		 * 
+		 * Setting this property has no effect on the #ClutterActor argument
+		 * passed to the #ClutterDragAction signals
+		 */
+		drag_handle: Actor;
+		/**
+		 * The horizontal threshold, in pixels, that the cursor must travel
+		 * in order to begin a drag action.
+		 * 
+		 * When set to a positive value, {@link DragAction} will only emit
+		 * #ClutterDragAction::drag-begin if the pointer has moved
+		 * horizontally at least of the given amount of pixels since
+		 * the button press event.
+		 * 
+		 * When set to -1, #ClutterDragAction will use the default threshold
+		 * stored in the #ClutterSettings:dnd-drag-threshold property of
+		 * #ClutterSettings.
+		 * 
+		 * When read, this property will always return a valid drag
+		 * threshold, either as set or the default one.
+		 */
+		x_drag_threshold: number;
+		/**
+		 * The vertical threshold, in pixels, that the cursor must travel
+		 * in order to begin a drag action.
+		 * 
+		 * When set to a positive value, {@link DragAction} will only emit
+		 * #ClutterDragAction::drag-begin if the pointer has moved
+		 * vertically at least of the given amount of pixels since
+		 * the button press event.
+		 * 
+		 * When set to -1, #ClutterDragAction will use the value stored
+		 * in the #ClutterSettings:dnd-drag-threshold property of
+		 * #ClutterSettings.
+		 * 
+		 * When read, this property will always return a valid drag
+		 * threshold, either as set or the default one.
+		 */
+		y_drag_threshold: number;
+		/**
+		 * Retrieves the "drag area" associated with #action, that
+		 * is a #graphene_rect_t that constrains the actor movements,
+		 * in parents coordinates.
+		 * @returns %TRUE if the actor is actually constrained (and thus
+		 *          #drag_area is valid), %FALSE otherwise
+		 * 
+		 * a #graphene_rect_t to be filled
+		 */
+		get_drag_area(): [ boolean, Graphene.Rect ];
+		/**
+		 * Retrieves the axis constraint set by {@link Clutter.DragAction.set_drag_axis}
+		 * @returns the axis constraint
+		 */
+		get_drag_axis(): DragAxis;
+		/**
+		 * Retrieves the drag handle set by {@link Clutter.DragAction.set_drag_handle}
+		 * @returns a {@link Actor}, used as the drag
+		 *   handle, or %NULL if none was set
+		 */
+		get_drag_handle(): Actor;
+		/**
+		 * Retrieves the values set by {@link Clutter.DragAction.set_drag_threshold}.
+		 * 
+		 * If the {@link DragAction.x_drag_threshold} property or the
+		 * #ClutterDragAction:y-drag-threshold property have been set to -1 then
+		 * this function will return the default drag threshold value as stored
+		 * by the #ClutterSettings:dnd-drag-threshold property of #ClutterSettings.
+		 * @returns return location for the horizontal drag
+		 *   threshold value, in pixels
+		 * 
+		 * return location for the vertical drag
+		 *   threshold value, in pixels
+		 */
+		get_drag_threshold(): [ x_threshold: number, y_threshold: number ];
+		/**
+		 * Retrieves the coordinates, in stage space, of the latest motion
+		 * event during the dragging
+		 * @returns return location for the latest motion
+		 *   event's X coordinate
+		 * 
+		 * return location for the latest motion
+		 *   event's Y coordinate
+		 */
+		get_motion_coords(): [ motion_x: number, motion_y: number ];
+		/**
+		 * Retrieves the coordinates, in stage space, of the press event
+		 * that started the dragging
+		 * @returns return location for the press event's X coordinate
+		 * 
+		 * return location for the press event's Y coordinate
+		 */
+		get_press_coords(): [ press_x: number, press_y: number ];
+		/**
+		 * Sets #drag_area to constrain the dragging of the actor associated
+		 * with #action, so that it position is always within #drag_area, expressed
+		 * in parent's coordinates.
+		 * If #drag_area is %NULL, the actor is not constrained.
+		 * @param drag_area a {@link Rect}
+		 */
+		set_drag_area(drag_area?: Graphene.Rect | null): void;
+		/**
+		 * Restricts the dragging action to a specific axis
+		 * @param axis the axis to constraint the dragging to
+		 */
+		set_drag_axis(axis: DragAxis): void;
+		/**
+		 * Sets the actor to be used as the drag handle.
+		 * @param handle a {@link Actor}, or %NULL to unset
+		 */
+		set_drag_handle(handle?: Actor | null): void;
+		/**
+		 * Sets the horizontal and vertical drag thresholds that must be
+		 * cleared by the pointer before #action can begin the dragging.
+		 * 
+		 * If #x_threshold or #y_threshold are set to -1 then the default
+		 * drag threshold stored in the {@link Settings.dnd_drag_threshold}
+		 * property of #ClutterSettings will be used.
+		 * @param x_threshold a distance on the horizontal axis, in pixels, or
+		 *   -1 to use the default drag threshold from {@link Settings}
+		 * @param y_threshold a distance on the vertical axis, in pixels, or
+		 *   -1 to use the default drag threshold from {@link Settings}
+		 */
+		set_drag_threshold(x_threshold: number, y_threshold: number): void;
+		/**
+		 * The ::drag-begin signal is emitted when the {@link DragAction}
+		 * starts the dragging
+		 * 
+		 * The emission of this signal can be delayed by using the
+		 * #ClutterDragAction:x-drag-threshold and
+		 * #ClutterDragAction:y-drag-threshold properties
+		 * @param signal 
+		 * @param callback Callback function
+		 *  - owner: owner of the emitted event 
+		 *  - actor: the {@link Actor} attached to the action 
+		 *  - event_x: the X coordinate (in stage space) of the press event 
+		 *  - event_y: the Y coordinate (in stage space) of the press event 
+		 *  - modifiers: the modifiers of the press event 
+		 * 
+		 * @returns Callback ID
+		 */
+		connect(signal: "drag-begin", callback: (owner: this, actor: Actor, event_x: number, event_y: number, modifiers: ModifierType) => void): number;
+		/**
+		 * The ::drag-end signal is emitted at the end of the dragging,
+		 * when the pointer button's is released
+		 * 
+		 * This signal is emitted if and only if the {@link DragAction.drag_begin}
+		 * signal has been emitted first
+		 * @param signal 
+		 * @param callback Callback function
+		 *  - owner: owner of the emitted event 
+		 *  - actor: the {@link Actor} attached to the action 
+		 *  - event_x: the X coordinate (in stage space) of the release event 
+		 *  - event_y: the Y coordinate (in stage space) of the release event 
+		 *  - modifiers: the modifiers of the release event 
+		 * 
+		 * @returns Callback ID
+		 */
+		connect(signal: "drag-end", callback: (owner: this, actor: Actor, event_x: number, event_y: number, modifiers: ModifierType) => void): number;
+		/**
+		 * The ::drag-motion signal is emitted for each motion event after
+		 * the {@link DragAction.drag_begin} signal has been emitted.
+		 * 
+		 * The components of the distance between the press event and the
+		 * latest motion event are computed in the actor's coordinate space,
+		 * to take into account eventual transformations. If you want the
+		 * stage coordinates of the latest motion event you can use
+		 * {@link Clutter.DragAction.get_motion_coords}.
+		 * 
+		 * The default handler of the signal will call clutter_actor_move_by()
+		 * either on #actor or, if set, of #ClutterDragAction:drag-handle using
+		 * the #delta_x and #delta_y components of the dragging motion. If you
+		 * want to override the default behaviour, you can connect to the
+		 * #ClutterDragAction::drag-progress signal and return %FALSE from the
+		 * handler.
+		 * @param signal 
+		 * @param callback Callback function
+		 *  - owner: owner of the emitted event 
+		 *  - actor: the {@link Actor} attached to the action 
+		 *  - delta_x: the X component of the distance between the press event
+		 *   that began the dragging and the current position of the pointer,
+		 *   as of the latest motion event 
+		 *  - delta_y: the Y component of the distance between the press event
+		 *   that began the dragging and the current position of the pointer,
+		 *   as of the latest motion event 
+		 * 
+		 * @returns Callback ID
+		 */
+		connect(signal: "drag-motion", callback: (owner: this, actor: Actor, delta_x: number, delta_y: number) => void): number;
+		/**
+		 * The ::drag-progress signal is emitted for each motion event after
+		 * the {@link DragAction.drag_begin} signal has been emitted.
+		 * 
+		 * The components of the distance between the press event and the
+		 * latest motion event are computed in the actor's coordinate space,
+		 * to take into account eventual transformations. If you want the
+		 * stage coordinates of the latest motion event you can use
+		 * {@link Clutter.DragAction.get_motion_coords}.
+		 * 
+		 * The default handler will emit #ClutterDragAction::drag-motion,
+		 * if #ClutterDragAction::drag-progress emission returns %TRUE.
+		 * @param signal 
+		 * @param callback Callback function
+		 *  - owner: owner of the emitted event 
+		 *  - actor: the {@link Actor} attached to the action 
+		 *  - delta_x: the X component of the distance between the press event
+		 *   that began the dragging and the current position of the pointer,
+		 *   as of the latest motion event 
+		 *  - delta_y: the Y component of the distance between the press event
+		 *   that began the dragging and the current position of the pointer,
+		 *   as of the latest motion event 
+		 *  - returns %TRUE if the drag should continue, and %FALSE
+		 *   if it should be stopped. 
+		 * 
+		 * @returns Callback ID
+		 */
+		connect(signal: "drag-progress", callback: (owner: this, actor: Actor, delta_x: number, delta_y: number) => boolean): number;
+
+		connect(signal: "notify::drag-area", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::drag-area-set", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::drag-axis", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::drag-handle", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::x-drag-threshold", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::y-drag-threshold", callback: (owner: this, ...args: any) => void): number;
+
+	}
+
+	type DragActionInitOptionsMixin = ActionInitOptions & 
+	Pick<IDragAction,
+		"drag_area" |
+		"drag_axis" |
+		"drag_handle" |
+		"x_drag_threshold" |
+		"y_drag_threshold">;
+
+	export interface DragActionInitOptions extends DragActionInitOptionsMixin {}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link DragAction} instead.
+	 */
+	type DragActionMixin = IDragAction & Action;
+
+	/**
+	 * The {@link DragAction} structure contains only
+	 * private data and should be accessed using the provided API
+	 */
+	interface DragAction extends DragActionMixin {}
+
+	class DragAction {
+		public constructor(options?: Partial<DragActionInitOptions>);
+		/**
+		 * Creates a new {@link DragAction} instance
+		 * @returns the newly created {@link DragAction}
+		 */
+		public static new(): Action;
+	}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link DropAction} instead.
+	 */
+	interface IDropAction {
+
+		/**
+		 * The ::can-drop signal is emitted when the dragged actor is dropped
+		 * on #actor. The return value of the ::can-drop signal will determine
+		 * whether or not the {@link DropAction.drop} signal is going to be
+		 * emitted on #action.
+		 * 
+		 * The default implementation of #ClutterDropAction returns %TRUE for
+		 * this signal.
+		 * @param signal 
+		 * @param callback Callback function
+		 *  - owner: owner of the emitted event 
+		 *  - actor: the {@link Actor} attached to the #action 
+		 *  - event_x: the X coordinate (in stage space) of the drop event 
+		 *  - event_y: the Y coordinate (in stage space) of the drop event 
+		 *  - returns %TRUE if the drop is accepted, and %FALSE otherwise 
+		 * 
+		 * @returns Callback ID
+		 */
+		connect(signal: "can-drop", callback: (owner: this, actor: Actor, event_x: number, event_y: number) => boolean): number;
+		/**
+		 * The ::drop signal is emitted when the dragged actor is dropped
+		 * on #actor. This signal is only emitted if at least an handler of
+		 * {@link DropAction.can_drop} returns %TRUE.
+		 * @param signal 
+		 * @param callback Callback function
+		 *  - owner: owner of the emitted event 
+		 *  - actor: the {@link Actor} attached to the #action 
+		 *  - event_x: the X coordinate (in stage space) of the drop event 
+		 *  - event_y: the Y coordinate (in stage space) of the drop event 
+		 * 
+		 * @returns Callback ID
+		 */
+		connect(signal: "drop", callback: (owner: this, actor: Actor, event_x: number, event_y: number) => void): number;
+		/**
+		 * The ::drop-cancel signal is emitted when the drop is refused
+		 * by an emission of the {@link DropAction.can_drop} signal.
+		 * 
+		 * After the ::drop-cancel signal is fired the active drag is
+		 * terminated.
+		 * @param signal 
+		 * @param callback Callback function
+		 *  - owner: owner of the emitted event 
+		 *  - actor: the {@link Actor} attached to the #action 
+		 *  - event_x: the X coordinate (in stage space) of the drop event 
+		 *  - event_y: the Y coordinate (in stage space) of the drop event 
+		 * 
+		 * @returns Callback ID
+		 */
+		connect(signal: "drop-cancel", callback: (owner: this, actor: Actor, event_x: number, event_y: number) => void): number;
+		/**
+		 * The ::over-in signal is emitted when the dragged actor crosses
+		 * into #actor.
+		 * @param signal 
+		 * @param callback Callback function
+		 *  - owner: owner of the emitted event 
+		 *  - actor: the {@link Actor} attached to the #action 
+		 * 
+		 * @returns Callback ID
+		 */
+		connect(signal: "over-in", callback: (owner: this, actor: Actor) => void): number;
+		/**
+		 * The ::over-out signal is emitted when the dragged actor crosses
+		 * outside #actor.
+		 * @param signal 
+		 * @param callback Callback function
+		 *  - owner: owner of the emitted event 
+		 *  - actor: the {@link Actor} attached to the #action 
+		 * 
+		 * @returns Callback ID
+		 */
+		connect(signal: "over-out", callback: (owner: this, actor: Actor) => void): number;
+
+	}
+
+	type DropActionInitOptionsMixin = ActionInitOptions
+	export interface DropActionInitOptions extends DropActionInitOptionsMixin {}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link DropAction} instead.
+	 */
+	type DropActionMixin = IDropAction & Action;
+
+	/**
+	 * The {@link DropAction} structure contains only
+	 * private data and should be accessed using the provided API.
+	 */
+	interface DropAction extends DropActionMixin {}
+
+	class DropAction {
+		public constructor(options?: Partial<DropActionInitOptions>);
+		/**
+		 * Creates a new {@link DropAction}.
+		 * 
+		 * Use {@link Clutter.Actor.add_action} to add the action to a #ClutterActor.
+		 * @returns the newly created {@link DropAction}
+		 */
+		public static new(): Action;
+	}
+
+	/** This construct is only for enabling class multi-inheritance,
 	 * use {@link Effect} instead.
 	 */
 	interface IEffect {
@@ -5045,7 +6745,7 @@ declare namespace imports.gi.Clutter {
 		 * the actor itself so the %CLUTTER_EFFECT_PAINT_ACTOR_DIRTY would still
 		 * not be set. The effect can detect this case by keeping track of the
 		 * last modelview matrix that was used to render the actor and
-		 * verifying that it remains the same in the next paint.
+		 * veryifying that it remains the same in the next paint.
 		 * 
 		 * Any other effects that are layered on top of the passed in effect
 		 * will still be passed the %CLUTTER_EFFECT_PAINT_ACTOR_DIRTY flag. If
@@ -5141,7 +6841,7 @@ declare namespace imports.gi.Clutter {
 		min_row_height: number;
 		/**
 		 * The orientation of the {@link FlowLayout}. The children
-		 * of the layout will be laid out following the orientation.
+		 * of the layout will be layed out following the orientation.
 		 * 
 		 * This property also controls the overflowing directions
 		 */
@@ -5285,38 +6985,6 @@ declare namespace imports.gi.Clutter {
 		 * @returns the newly created {@link FlowLayout}
 		 */
 		public static new(orientation: FlowOrientation): LayoutManager;
-	}
-
-	/** This construct is only for enabling class multi-inheritance,
-	 * use {@link FrameClock} instead.
-	 */
-	interface IFrameClock {
-		add_timeline(timeline: Timeline): void;
-		destroy(): void;
-		get_refresh_rate(): number;
-		inhibit(): void;
-		notify_presented(frame_info: FrameInfo): void;
-		remove_timeline(timeline: Timeline): void;
-		schedule_update(): void;
-		schedule_update_now(): void;
-		uninhibit(): void;
-		connect(signal: "destroy", callback: (owner: this) => void): number;
-
-	}
-
-	type FrameClockInitOptionsMixin = GObject.ObjectInitOptions
-	export interface FrameClockInitOptions extends FrameClockInitOptionsMixin {}
-
-	/** This construct is only for enabling class multi-inheritance,
-	 * use {@link FrameClock} instead.
-	 */
-	type FrameClockMixin = IFrameClock & GObject.Object;
-
-	interface FrameClock extends FrameClockMixin {}
-
-	class FrameClock {
-		public constructor(options?: Partial<FrameClockInitOptions>);
-		public static new(refresh_rate: number, iface: FrameListenerIface, user_data?: any | null): FrameClock;
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -5568,6 +7236,10 @@ declare namespace imports.gi.Clutter {
 	 */
 	type GestureActionMixin = IGestureAction & Action;
 
+	/**
+	 * The {@link GestureAction} structure contains
+	 * only private data and should be accessed using the provided API
+	 */
 	interface GestureAction extends GestureActionMixin {}
 
 	class GestureAction {
@@ -5767,6 +7439,63 @@ declare namespace imports.gi.Clutter {
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link Group} instead.
+	 */
+	interface IGroup {
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.Actor.get_n_children} instead.
+		 * 
+		 * Gets the number of actors held in the group.
+		 * @returns The number of child actors held in the group.
+		 */
+		get_n_children(): number;
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.Actor.get_child_at_index} instead.
+		 * 
+		 * Gets a groups child held at #index_ in stack.
+		 * @param index_ the position of the requested actor.
+		 * @returns A Clutter actor, or %NULL if
+		 *   #index_ is invalid.
+		 */
+		get_nth_child(index_: number): Actor;
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.Actor.remove_all_children} instead.
+		 * 
+		 * Removes all children actors from the {@link Group}.
+		 */
+		remove_all(): void;
+	}
+
+	type GroupInitOptionsMixin = ActorInitOptions & Atk.ImplementorIfaceInitOptions & AnimatableInitOptions & ContainerInitOptions & ScriptableInitOptions
+	export interface GroupInitOptions extends GroupInitOptionsMixin {}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link Group} instead.
+	 */
+	type GroupMixin = IGroup & Actor & Atk.ImplementorIface & Animatable & Container & Scriptable;
+
+	/**
+	 * The {@link Group} structure contains only private data
+	 * and should be accessed using the provided API
+	 */
+	interface Group extends GroupMixin {}
+
+	class Group {
+		public constructor(options?: Partial<GroupInitOptions>);
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.Actor.new} instead.
+		 * 
+		 * Create a new  {@link Group}.
+		 * @returns the newly created {@link Group} actor
+		 */
+		public static new(): Actor;
+	}
+
+	/** This construct is only for enabling class multi-inheritance,
 	 * use {@link Image} instead.
 	 */
 	interface IImage {
@@ -5906,7 +7635,7 @@ declare namespace imports.gi.Clutter {
 		 * Whether the device is enabled.
 		 * 
 		 * A device with the {@link InputDevice.device_mode} property set
-		 * to %CLUTTER_INPUT_MODE_LOGICAL cannot be disabled.
+		 * to %CLUTTER_INPUT_MODE_MASTER cannot be disabled.
 		 * 
 		 * A device must be enabled in order to receive events from it.
 		 */
@@ -5944,18 +7673,11 @@ declare namespace imports.gi.Clutter {
 		 */
 		vendor_id: string;
 		/**
-		 * Retrieves the {@link Actor} underneath the pointer or touchpoint
-		 * of #device and #sequence.
-		 * @param sequence an optional {@link EventSequence}
-		 * @returns a pointer to the {@link Actor} or %NULL
-		 */
-		get_actor(sequence?: EventSequence | null): Actor;
-		/**
 		 * Retrieves a pointer to the {@link InputDevice} that has been
 		 * associated to #device.
 		 * 
 		 * If the #ClutterInputDevice:device-mode property of #device is
-		 * set to %CLUTTER_INPUT_MODE_LOGICAL, this function will return
+		 * set to %CLUTTER_INPUT_MODE_MASTER, this function will return
 		 * %NULL.
 		 * @returns a {@link InputDevice}, or %NULL
 		 */
@@ -6074,12 +7796,10 @@ declare namespace imports.gi.Clutter {
 		get_n_rings(): number;
 		get_n_strips(): number;
 		/**
-		 * Retrieves the physical devices attached to #device.
-		 * @returns a
-		 *   list of {@link InputDevice}, or %NULL. The contents of the list are
-		 *   owned by the device. Use {@link GObject.list_free} when done
+		 * Retrieves the {@link Actor} underneath the pointer of #device
+		 * @returns a pointer to the {@link Actor} or %NULL
 		 */
-		get_physical_devices(): InputDevice[];
+		get_pointer_actor(): Actor;
 		/**
 		 * Retrieves the {@link Stage} underneath the pointer of #device
 		 * @returns a pointer to the {@link Stage} or %NULL
@@ -6095,6 +7815,13 @@ declare namespace imports.gi.Clutter {
 		 * @returns the device seat
 		 */
 		get_seat(): Seat;
+		/**
+		 * Retrieves the slave devices attached to #device.
+		 * @returns a
+		 *   list of {@link InputDevice}, or %NULL. The contents of the list are
+		 *   owned by the device. Use {@link GObject.list_free} when done
+		 */
+		get_slave_devices(): InputDevice[];
 		/**
 		 * Gets the vendor ID of this device.
 		 * @returns the vendor ID
@@ -6160,7 +7887,7 @@ declare namespace imports.gi.Clutter {
 		 * Enables or disables a {@link InputDevice}.
 		 * 
 		 * Only devices with a #ClutterInputDevice:device-mode property set
-		 * to %CLUTTER_INPUT_MODE_PHYSICAL or %CLUTTER_INPUT_MODE_FLOATING can
+		 * to %CLUTTER_INPUT_MODE_SLAVE or %CLUTTER_INPUT_MODE_FLOATING can
 		 * be disabled.
 		 * @param enabled %TRUE to enable the #device
 		 */
@@ -6454,7 +8181,7 @@ declare namespace imports.gi.Clutter {
 		 * g_object_set_property()
 		 * @param factor the progress factor, between 0 and 1
 		 * @returns a pointer to the computed value,
-		 *   or %NULL if the computation was not successful
+		 *   or %NULL if the computation was not successfull
 		 */
 		compute(factor: number): GObject.Value;
 		/**
@@ -6818,8 +8545,9 @@ declare namespace imports.gi.Clutter {
 		 * @param container the {@link Container} using #manager
 		 * @param allocation the {@link ActorBox} containing the allocated area
 		 *   of #container
+		 * @param flags the allocation flags
 		 */
-		allocate(container: Container, allocation: ActorBox): void;
+		allocate(container: Container, allocation: ActorBox, flags: AllocationFlags): void;
 		/**
 		 * Retrieves the values for a list of properties out of the
 		 * {@link LayoutMeta} created by #manager and attached to the
@@ -7235,6 +8963,14 @@ declare namespace imports.gi.Clutter {
 		 * @param text_coords_len number of items of #text_coords
 		 */
 		add_multitexture_rectangle(rect: ActorBox, text_coords: number, text_coords_len: number): void;
+		/**
+		 * Adds a region described as a path to the #node.
+		 * 
+		 * This function acquires a reference on the passed #path, so it
+		 * is safe to call {@link Cogl.Object.unref} when it returns.
+		 * @param path a Cogl path
+		 */
+		add_path(path: any): void;
 		/**
 		 * Adds a region described by a Cogl primitive to the #node.
 		 * 
@@ -7973,14 +9709,132 @@ declare namespace imports.gi.Clutter {
 		 *   Use {@link GObject.Object.unref} when done
 		 */
 		public static new(property_name?: string | null): Transition;
+	}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link Rectangle} instead.
+	 */
+	interface IRectangle {
 		/**
-		 * Creates a new {@link PropertyTransition}.
-		 * @param actor a {@link Actor}
-		 * @param property_name a property of #animatable, or %NULL
-		 * @returns the newly created {@link PropertyTransition}.
-		 *   Use {@link GObject.Object.unref} when done
+		 * The color of the border of the rectangle.
 		 */
-		public static new_for_actor(actor: Actor, property_name?: string | null): Transition;
+		border_color: Color;
+		/**
+		 * The width of the border of the rectangle, in pixels.
+		 */
+		border_width: number;
+		/**
+		 * The color of the rectangle.
+		 */
+		color: Color;
+		/**
+		 * Whether the {@link Rectangle} should be displayed with a border.
+		 */
+		has_border: boolean;
+		/**
+		 * @deprecated
+		 * Use {@link Actor} and a #ClutterCanvas to draw
+		 *   the border with Cairo
+		 * 
+		 * Gets the color of the border used by #rectangle and places
+		 * it into #color.
+		 * @returns return location for a {@link Color}
+		 */
+		get_border_color(): Color;
+		/**
+		 * @deprecated
+		 * Use {@link Actor} and a #ClutterCanvas content
+		 *   to draw the border using Cairo
+		 * 
+		 * Gets the width (in pixels) of the border used by #rectangle
+		 * @returns the border's width
+		 */
+		get_border_width(): number;
+		/**
+		 * @deprecated
+		 * Use {@link Actor} and {@link Clutter.Actor.get_background_color}
+		 *   instead
+		 * 
+		 * Retrieves the color of #rectangle.
+		 * @returns return location for a {@link Color}
+		 */
+		get_color(): Color;
+		/**
+		 * @deprecated
+		 * Use {@link Actor} and a #ClutterCanvas to draw
+		 *   the border with Cairo
+		 * 
+		 * Sets the color of the border used by #rectangle using #color
+		 * @param color the color of the border
+		 */
+		set_border_color(color: Color): void;
+		/**
+		 * @deprecated
+		 * Use {@link Actor} and a #ClutterCanvas content
+		 *   to draw the border using Cairo
+		 * 
+		 * Sets the width (in pixel) of the border used by #rectangle.
+		 * A #width of 0 will unset the border.
+		 * @param width the width of the border
+		 */
+		set_border_width(width: number): void;
+		/**
+		 * @deprecated
+		 * Use {@link Actor} and {@link Clutter.Actor.set_background_color}
+		 *   instead
+		 * 
+		 * Sets the color of #rectangle.
+		 * @param color a {@link Color}
+		 */
+		set_color(color: Color): void;
+		connect(signal: "notify::border-color", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::border-width", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::color", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::has-border", callback: (owner: this, ...args: any) => void): number;
+
+	}
+
+	type RectangleInitOptionsMixin = ActorInitOptions & Atk.ImplementorIfaceInitOptions & AnimatableInitOptions & ContainerInitOptions & ScriptableInitOptions & 
+	Pick<IRectangle,
+		"border_color" |
+		"border_width" |
+		"color" |
+		"has_border">;
+
+	export interface RectangleInitOptions extends RectangleInitOptionsMixin {}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link Rectangle} instead.
+	 */
+	type RectangleMixin = IRectangle & Actor & Atk.ImplementorIface & Animatable & Container & Scriptable;
+
+	/**
+	 * The {@link Rectangle} structure contains only private data
+	 * and should be accessed using the provided API
+	 */
+	interface Rectangle extends RectangleMixin {}
+
+	class Rectangle {
+		public constructor(options?: Partial<RectangleInitOptions>);
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.Actor.new} instead
+		 * 
+		 * Creates a new {@link Actor} with a rectangular shape.
+		 * @returns a new {@link Rectangle}
+		 */
+		public static new(): Actor;
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.Actor.new} and
+		 *   clutter_actor_set_background_color() instead
+		 * 
+		 * Creates a new {@link Actor} with a rectangular shape
+		 * and of the given #color.
+		 * @param color a {@link Color}
+		 * @returns a new {@link Rectangle}
+		 */
+		public static new_with_color(color: Color): Actor;
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -8090,6 +9944,20 @@ declare namespace imports.gi.Clutter {
 		 */
 		add_search_paths(paths: string[]): void;
 		/**
+		 * Associates a {@link State} to the #ClutterScript instance using the given
+		 * name.
+		 * 
+		 * The #ClutterScript instance will use #state to resolve target states when
+		 * connecting signal handlers.
+		 * 
+		 * The #ClutterScript instance will take a reference on the #ClutterState
+		 * passed to this function.
+		 * @param name a name for the #state, or %NULL to
+		 *   set the default {@link State}
+		 * @param state a {@link State}
+		 */
+		add_states(name: string | null, state: State): void;
+		/**
 		 * Connects all the signals defined into a UI definition file to their
 		 * handlers.
 		 * 
@@ -8150,6 +10018,17 @@ declare namespace imports.gi.Clutter {
 		 * @returns the number of objects returned.
 		 */
 		get_objects(first_name: string): number;
+		/**
+		 * Retrieves the {@link State} for the given #state_name.
+		 * 
+		 * If #name is %NULL, this function will return the default
+		 * #ClutterState instance.
+		 * @param name the name of the {@link State}, or %NULL
+		 * @returns a pointer to the {@link State} for the
+		 *   given name. The #ClutterState is owned by the #ClutterScript instance
+		 *   and it should not be unreferenced
+		 */
+		get_states(name?: string | null): State;
 		/**
 		 * Retrieves the translation domain set using
 		 * {@link Clutter.Script.set_translation_domain}.
@@ -8265,7 +10144,7 @@ declare namespace imports.gi.Clutter {
 	 */
 	interface IScrollActor {
 		/**
-		 * The scrolling direction.
+		 * The scrollin direction.
 		 */
 		scroll_mode: ScrollMode;
 		/**
@@ -8346,8 +10225,8 @@ declare namespace imports.gi.Clutter {
 		ensure_a11y_state(): void;
 		get_kbd_a11y_settings(settings: KbdA11ySettings): void;
 		/**
-		 * Returns the logical keyboard
-		 * @returns the logical keyboard
+		 * Returns the master keyboard
+		 * @returns the master keyboard
 		 */
 		get_keyboard(): InputDevice;
 		/**
@@ -8356,8 +10235,8 @@ declare namespace imports.gi.Clutter {
 		 */
 		get_keymap(): Keymap;
 		/**
-		 * Returns the logical pointer
-		 * @returns the logical pointer
+		 * Returns the master pointer
+		 * @returns the master pointer
 		 */
 		get_pointer(): InputDevice;
 		/**
@@ -8401,7 +10280,6 @@ declare namespace imports.gi.Clutter {
 		 *   {@link GObject.list_free} when done.
 		 */
 		list_devices(): InputDevice[];
-		peek_devices(): any[];
 		set_kbd_a11y_settings(settings: KbdA11ySettings): void;
 		/**
 		 * Sets the dwell click type
@@ -8691,7 +10569,7 @@ declare namespace imports.gi.Clutter {
 		 * values; and %CLUTTER_TYPE_SHADER_MATRIX, for a pointer to an array of
 		 * floating point values mapping a matrix
 		 * 
-		 * The number of values interpreted is defined by the #n_value
+		 * The number of values interepreted is defined by the #n_value
 		 * argument, and by the #gtype argument. For instance, a uniform named
 		 * "sampler0" and containing a single integer value is set using:
 		 * 
@@ -8951,6 +10829,22 @@ declare namespace imports.gi.Clutter {
 	 */
 	interface IStage {
 		/**
+		 * Whether the {@link Stage} should accept key focus when shown.
+		 */
+		accept_focus: boolean;
+		/**
+		 * @deprecated
+		 * Use the {@link Actor.background_color} property of
+		 *   #ClutterActor instead.
+		 * 
+		 * The background color of the main stage.
+		 */
+		color: Color;
+		/**
+		 * Whether the mouse pointer should be visible
+		 */
+		cursor_visible: boolean;
+		/**
 		 * The {@link Actor} that will receive key events from the underlying
 		 * windowing system.
 		 * 
@@ -8961,13 +10855,47 @@ declare namespace imports.gi.Clutter {
 		 * The parameters used for the perspective projection from 3D
 		 * coordinates to 2D
 		 */
-		readonly perspective: Perspective;
+		perspective: Perspective;
 		/**
 		 * The stage's title - usually displayed in stage windows title decorations.
 		 */
 		title: string;
+		/**
+		 * Whether the {@link Stage} should honour the alpha component of the
+		 * #ClutterStage:color property when painting. If Clutter is run under
+		 * a compositing manager this will result in the stage being blended
+		 * with the underlying window(s)
+		 */
+		use_alpha: boolean;
+		/**
+		 * Captures the stage pixels of #rect into #captures. #rect is in stage
+		 * coordinates.
+		 * @param paint whether to pain the frame
+		 * @param rect a #cairo_rectangle_int_t in stage coordinates
+		 * @returns %TRUE if a {@link Capture} has been created, %FALSE otherwise
+		 * 
+		 * an array of
+		 *   #ClutterCapture
+		 */
+		capture(paint: boolean, rect: cairo.RectangleInt): [ boolean, Capture[] ];
 		capture_into(paint: boolean, rect: cairo.RectangleInt, data: number): void;
-		clear_stage_views(): void;
+		/**
+		 * @deprecated
+		 * mutter: This function does not do anything.
+		 * 
+		 * This function essentially makes sure the right GL context is
+		 * current for the passed stage. It is not intended to
+		 * be used by applications.
+		 */
+		ensure_current(): void;
+		/**
+		 * Ensures that #stage is redrawn
+		 * 
+		 * This function should not be called by applications: it is
+		 * used when embedding a {@link Stage} into a toolkit with
+		 * another windowing system, like GTK+.
+		 */
+		ensure_redraw(): void;
 		/**
 		 * Ensures that the GL viewport is updated with the current
 		 * stage window size.
@@ -8989,6 +10917,25 @@ declare namespace imports.gi.Clutter {
 		 */
 		event(event: Event): boolean;
 		/**
+		 * Freezing updates makes Clutter stop processing events,
+		 * redrawing, and advancing timelines, by pausing the master clock. This is
+		 * necessary when implementing a display server, to ensure that Clutter doesn't
+		 * keep trying to page flip when DRM master has been dropped, e.g. when VT
+		 * switched away.
+		 * 
+		 * The master clock starts out running, so if you are VT switched away on
+		 * startup, you need to call this immediately.
+		 * 
+		 * To thaw updates, use {@link Clutter.Stage.thaw_updates}.
+		 */
+		freeze_updates(): void;
+		/**
+		 * Retrieves the value set with {@link Clutter.Stage.set_accept_focus}.
+		 * @returns %TRUE if the {@link Stage} should accept focus, and %FALSE
+		 *   otherwise
+		 */
+		get_accept_focus(): boolean;
+		/**
 		 * Checks the scene at the coordinates #x and #y and returns a pointer
 		 * to the {@link Actor} at those coordinates. The result is the actor which
 		 * would be at the specified location on the next redraw, and is not
@@ -9006,6 +10953,14 @@ declare namespace imports.gi.Clutter {
 		 */
 		get_actor_at_pos(pick_mode: PickMode, x: number, y: number): Actor;
 		get_capture_final_size(rect: cairo.RectangleInt, width: number, height: number, scale: number): boolean;
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.Actor.get_background_color} instead.
+		 * 
+		 * Retrieves the stage color.
+		 * @returns return location for a {@link Color}
+		 */
+		get_color(): Color;
 		get_frame_counter(): number;
 		/**
 		 * Retrieves the actor that is currently under key focus.
@@ -9051,12 +11006,41 @@ declare namespace imports.gi.Clutter {
 		 * be modified or freed.
 		 */
 		get_title(): string;
+		/**
+		 * Retrieves the value set using {@link Clutter.Stage.set_use_alpha}
+		 * @returns %TRUE if the stage should honour the opacity and the
+		 *   alpha channel of the stage color
+		 */
 		get_use_alpha(): boolean;
 		get_view_at(x: number, y: number): StageView;
-		is_redraw_queued_on_view(view: StageView): boolean;
-		paint_to_buffer(rect: cairo.RectangleInt, scale: number, data: number, stride: number, format: Cogl.PixelFormat, paint_flags: PaintFlag): boolean;
-		paint_to_framebuffer(framebuffer: Cogl.Framebuffer, rect: cairo.RectangleInt, scale: number, paint_flags: PaintFlag): void;
-		peek_stage_views(): any[];
+		/**
+		 * Makes the cursor invisible on the stage window
+		 */
+		hide_cursor(): void;
+		/**
+		 * @deprecated
+		 * Track the stage pointer inside your application
+		 *   code, or use {@link Clutter.Actor.get_stage} to retrieve the stage for
+		 *   a given actor.
+		 * 
+		 * Checks if #stage is the default stage, or an instance created using
+		 * {@link Clutter.Stage.new} but internally using the same implementation.
+		 * @returns %TRUE if the passed stage is the default one
+		 */
+		is_default(): boolean;
+		is_redraw_queued(): boolean;
+		paint_to_buffer(rect: cairo.RectangleInt, scale: number, data: number, stride: number, format: Cogl.PixelFormat, paint_flags: any): boolean;
+		paint_to_framebuffer(framebuffer: Cogl.Framebuffer, rect: cairo.RectangleInt, scale: number, paint_flags: any): void;
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.Actor.queue_redraw} instead.
+		 * 
+		 * Queues a redraw for the passed stage.
+		 * 
+		 * Applications should call {@link Clutter.Actor.queue_redraw} and not
+		 * this function.
+		 */
+		queue_redraw(): void;
 		/**
 		 * Makes a screenshot of the stage in RGBA 8bit data, returns a
 		 * linear buffer with #width * 4 as rowstride.
@@ -9065,9 +11049,9 @@ declare namespace imports.gi.Clutter {
 		 * and not guaranteed to hold any sensible value.
 		 * @param x x coordinate of the first pixel that is read from stage
 		 * @param y y coordinate of the first pixel that is read from stage
-		 * @param width Width dimension of pixels to be read, or -1 for the
+		 * @param width Width dimention of pixels to be read, or -1 for the
 		 *   entire stage width
-		 * @param height Height dimension of pixels to be read, or -1 for the
+		 * @param height Height dimention of pixels to be read, or -1 for the
 		 *   entire stage height
 		 * @returns a pointer to newly allocated memory with the buffer
 		 *   or %NULL if the read failed. Use {@link GObject.free} on the returned data
@@ -9078,6 +11062,22 @@ declare namespace imports.gi.Clutter {
 		 * Schedules a redraw of the {@link Stage} at the next optimal timestamp.
 		 */
 		schedule_update(): void;
+		/**
+		 * Sets whether the #stage should accept the key focus when shown.
+		 * 
+		 * This function should be called before showing #stage using
+		 * {@link Clutter.Actor.show}.
+		 * @param accept_focus %TRUE to accept focus on show
+		 */
+		set_accept_focus(accept_focus: boolean): void;
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.Actor.set_background_color} instead.
+		 * 
+		 * Sets the stage color.
+		 * @param color A {@link Color}
+		 */
+		set_color(color: Color): void;
 		/**
 		 * Sets the key focus on #actor. An actor with key focus will receive
 		 * all the key events. If #actor is %NULL, the stage will receive
@@ -9124,6 +11124,13 @@ declare namespace imports.gi.Clutter {
 		 */
 		set_motion_events_enabled(enabled: boolean): void;
 		/**
+		 * Sets the stage perspective. Using this function is not recommended
+		 * because it will disable Clutter's attempts to generate an
+		 * appropriate perspective based on the size of the stage.
+		 * @param perspective A {@link Perspective}
+		 */
+		set_perspective(perspective: Perspective): void;
+		/**
 		 * Sets whether motion events received between redraws should
 		 * be throttled or not. If motion events are throttled, those
 		 * events received by the windowing system between redraws will
@@ -9140,7 +11147,26 @@ declare namespace imports.gi.Clutter {
 		 * @param title A utf8 string for the stage windows title.
 		 */
 		set_title(title: string): void;
+		/**
+		 * Sets whether the #stage should honour the {@link Actor.opacity} and
+		 * the alpha channel of the #ClutterStage:color
+		 * @param use_alpha whether the stage should honour the opacity or the
+		 *   alpha channel of the stage color
+		 */
 		set_use_alpha(use_alpha: boolean): void;
+		/**
+		 * Shows the cursor on the stage window
+		 */
+		show_cursor(): void;
+		/**
+		 * Resumes a master clock that has previously been frozen with
+		 * {@link Clutter.Stage.freeze_updates}, and start pumping the master clock
+		 * again at the next iteration. Note that if you're switching back to your
+		 * own VT, you should probably also queue a stage redraw with
+		 * clutter_stage_ensure_redraw().
+		 */
+		thaw_updates(): void;
+		update_resource_scales(): void;
 		/**
 		 * The ::activate signal is emitted when the stage receives key focus
 		 * from the underlying window system.
@@ -9157,23 +11183,21 @@ declare namespace imports.gi.Clutter {
 		 * @param signal 
 		 * @param callback Callback function
 		 *  - owner: owner of the emitted event 
-		 *  - view: a {@link StageView} 
 		 * 
 		 * @returns Callback ID
 		 */
-		connect(signal: "after-paint", callback: (owner: this, view: StageView) => void): number;
-		connect(signal: "after-update", callback: (owner: this, view: StageView) => void): number;
+		connect(signal: "after-paint", callback: (owner: this) => void): number;
+		connect(signal: "after-update", callback: (owner: this) => void): number;
 		/**
 		 * The ::before-paint signal is emitted before the stage is painted.
 		 * @param signal 
 		 * @param callback Callback function
 		 *  - owner: owner of the emitted event 
-		 *  - view: a {@link StageView} 
 		 * 
 		 * @returns Callback ID
 		 */
-		connect(signal: "before-paint", callback: (owner: this, view: StageView) => void): number;
-		connect(signal: "before-update", callback: (owner: this, view: StageView) => void): number;
+		connect(signal: "before-paint", callback: (owner: this) => void): number;
+		connect(signal: "before-update", callback: (owner: this) => void): number;
 		/**
 		 * The ::deactivate signal is emitted when the stage loses key focus
 		 * from the underlying window system.
@@ -9185,16 +11209,28 @@ declare namespace imports.gi.Clutter {
 		 */
 		connect(signal: "deactivate", callback: (owner: this) => void): number;
 		/**
-		 * Signals that the underlying GL driver has had its texture memory purged
-		 * so anything presently held in texture memory is now invalidated, and
-		 * likely corrupt. It needs redrawing.
+		 * The ::delete-event signal is emitted when the user closes a
+		 * {@link Stage} window using the window controls.
+		 * 
+		 * Clutter by default will call {@link Clutter.main.quit} if #stage is
+		 * the default stage, and clutter_actor_destroy() for any other
+		 * stage.
+		 * 
+		 * It is possible to override the default behaviour by connecting
+		 * a new handler and returning %TRUE there.
+		 * 
+		 * This signal is emitted only on Clutter backends that
+		 * embed #ClutterStage in native windows. It is not emitted for
+		 * backends that use a static frame buffer.
 		 * @param signal 
 		 * @param callback Callback function
 		 *  - owner: owner of the emitted event 
+		 *  - event: a {@link Event} of type %CLUTTER_DELETE 
+		 *  - returns  
 		 * 
 		 * @returns Callback ID
 		 */
-		connect(signal: "gl-video-memory-purged", callback: (owner: this) => void): number;
+		connect(signal: "delete-event", callback: (owner: this, event: Event) => boolean): number;
 		/**
 		 * The ::paint-view signal is emitted before a {@link StageView} is being
 		 * painted.
@@ -9210,36 +11246,45 @@ declare namespace imports.gi.Clutter {
 		 * 
 		 * @returns Callback ID
 		 */
-		connect(signal: "paint-view", callback: (owner: this, view: StageView, redraw_clip: cairo.Region) => void): number;
+		connect(signal: "paint-view", callback: (owner: this, view: StageView, redraw_clip: any | null) => void): number;
 		/**
 		 * Signals that the {@link Stage} was presented on the screen to the user.
 		 * @param signal 
 		 * @param callback Callback function
 		 *  - owner: owner of the emitted event 
-		 *  - view: the {@link StageView} presented 
-		 *  - frame_info: a #ClutterFrameInfo 
+		 *  - frame_event: a #CoglFrameEvent 
+		 *  - frame_info: a {@link FrameInfo} 
 		 * 
 		 * @returns Callback ID
 		 */
-		connect(signal: "presented", callback: (owner: this, view: StageView, frame_info: any | null) => void): number;
+		connect(signal: "presented", callback: (owner: this, frame_event: number, frame_info: any | null) => void): number;
 
+		connect(signal: "notify::accept-focus", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::color", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::cursor-visible", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::key-focus", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::perspective", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::title", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::use-alpha", callback: (owner: this, ...args: any) => void): number;
 
 	}
 
-	type StageInitOptionsMixin = ActorInitOptions & Atk.ImplementorIfaceInitOptions & AnimatableInitOptions & ContainerInitOptions & ScriptableInitOptions & 
+	type StageInitOptionsMixin = GroupInitOptions & Atk.ImplementorIfaceInitOptions & AnimatableInitOptions & ContainerInitOptions & ScriptableInitOptions & 
 	Pick<IStage,
+		"accept_focus" |
+		"color" |
+		"cursor_visible" |
 		"key_focus" |
-		"title">;
+		"perspective" |
+		"title" |
+		"use_alpha">;
 
 	export interface StageInitOptions extends StageInitOptionsMixin {}
 
 	/** This construct is only for enabling class multi-inheritance,
 	 * use {@link Stage} instead.
 	 */
-	type StageMixin = IStage & Actor & Atk.ImplementorIface & Animatable & Container & Scriptable;
+	type StageMixin = IStage & Group & Atk.ImplementorIface & Animatable & Container & Scriptable;
 
 	/**
 	 * The {@link Stage} structure contains only private data
@@ -9249,6 +11294,48 @@ declare namespace imports.gi.Clutter {
 
 	class Stage {
 		public constructor(options?: Partial<StageInitOptions>);
+		/**
+		 * Creates a new, non-default stage. A non-default stage is a new
+		 * top-level actor which can be used as another container. It works
+		 * exactly like the default stage, but while {@link Clutter.Stage.get_default}
+		 * will always return the same instance, you will have to keep a pointer
+		 * to any {@link Stage} returned by clutter_stage_new().
+		 * 
+		 * The ability to support multiple stages depends on the current
+		 * backend. Use clutter_feature_available() and
+		 * %CLUTTER_FEATURE_STAGE_MULTIPLE to check at runtime whether a
+		 * backend supports multiple stages.
+		 * @returns a new stage, or %NULL if the default backend does
+		 *   not support multiple stages. Use {@link Clutter.Actor.destroy} to
+		 *   programmatically close the returned stage.
+		 */
+		public static new(): Actor;
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.Stage.new} instead.
+		 * 
+		 * Retrieves a {@link Stage} singleton.
+		 * 
+		 * This function is not as useful as it sounds, and will most likely
+		 * by deprecated in the future. Application code should only create
+		 * a #ClutterStage instance using {@link Clutter.Stage.new}, and manage the
+		 * lifetime of the stage manually.
+		 * 
+		 * The default stage singleton has a platform-specific behaviour: on
+		 * platforms without the %CLUTTER_FEATURE_STAGE_MULTIPLE feature flag
+		 * set, the first #ClutterStage instance will also be set to be the
+		 * default stage instance, and this function will always return a
+		 * pointer to it.
+		 * 
+		 * On platforms with the %CLUTTER_FEATURE_STAGE_MULTIPLE feature flag
+		 * set, the default stage will be created by the first call to this
+		 * function, and every following call will return the same pointer to
+		 * it.
+		 * @returns the main
+		 *   {@link Stage}. You should never destroy or unref the returned
+		 *   actor.
+		 */
+		public static get_default(): Stage;
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -9336,15 +11423,9 @@ declare namespace imports.gi.Clutter {
 	interface IStageView {
 		framebuffer: any;
 		layout: cairo.RectangleInt;
-		name: string;
 		offscreen: any;
-		refresh_rate: number;
 		scale: number;
-		stage: Stage;
-		use_shadowfb: boolean;
-		assign_next_scanout(scanout: Cogl.Scanout): void;
-		destroy(): void;
-		get_frame_clock(): FrameClock;
+		shadowfb: any;
 		/**
 		 * Retrieves the framebuffer of #view to draw to.
 		 * @returns a #CoglFramebuffer
@@ -9357,18 +11438,14 @@ declare namespace imports.gi.Clutter {
 		 * @returns a #CoglFramebuffer
 		 */
 		get_onscreen(): Cogl.Framebuffer;
-		get_refresh_rate(): number;
 		get_scale(): number;
 		invalidate_offscreen_blit_pipeline(): void;
-		peek_scanout(): Cogl.Scanout;
+		transform_to_onscreen(x: number, y: number): void;
 		connect(signal: "notify::framebuffer", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::layout", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::name", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::offscreen", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::refresh-rate", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::scale", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::stage", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::use-shadowfb", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::shadowfb", callback: (owner: this, ...args: any) => void): number;
 
 	}
 
@@ -9376,12 +11453,9 @@ declare namespace imports.gi.Clutter {
 	Pick<IStageView,
 		"framebuffer" |
 		"layout" |
-		"name" |
 		"offscreen" |
-		"refresh_rate" |
 		"scale" |
-		"stage" |
-		"use_shadowfb">;
+		"shadowfb">;
 
 	export interface StageViewInitOptions extends StageViewInitOptionsMixin {}
 
@@ -9394,6 +11468,257 @@ declare namespace imports.gi.Clutter {
 
 	class StageView {
 		public constructor(options?: Partial<StageViewInitOptions>);
+	}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link State} instead.
+	 */
+	interface IState {
+		/**
+		 * @deprecated
+		 * Use {@link KeyframeTransition} and
+		 *   #ClutterTransitionGroup instead
+		 * 
+		 * Default duration used if an duration has not been specified for a specific
+		 * source/target state pair. The values is in milliseconds.
+		 */
+		duration: number;
+		/**
+		 * @deprecated
+		 * Use {@link KeyframeTransition} and
+		 *   #ClutterTransitionGroup instead
+		 * 
+		 * The currently set target state, setting it causes the
+		 * state machine to transition to the new state, use
+		 * {@link Clutter.State.warp_to_state} to change state without
+		 * a transition.
+		 */
+		state: string;
+		/**
+		 * @deprecated
+		 * Use {@link KeyframeTransition} and
+		 *   #ClutterTransitionGroup instead
+		 * 
+		 * Queries the duration used for transitions between a source and
+		 * target state pair
+		 * 
+		 * The semantics for the query are the same as the semantics used for
+		 * setting the duration with {@link Clutter.State.set_duration}
+		 * @param source_state_name the name of the source state to
+		 *   get the duration of, or %NULL
+		 * @param target_state_name the name of the source state to
+		 *   get the duration of, or %NULL
+		 * @returns the duration, in milliseconds
+		 */
+		get_duration(source_state_name?: string | null, target_state_name?: string | null): number;
+		/**
+		 * @deprecated
+		 * Use {@link KeyframeTransition} and
+		 *   #ClutterTransitionGroup instead
+		 * 
+		 * Queries the currently set target state.
+		 * 
+		 * During a transition this function will return the target of the transition.
+		 * 
+		 * This function is useful when called from handlers of the
+		 * {@link State.completed} signal.
+		 * @returns a string containing the target state. The returned string
+		 *   is owned by the {@link State} and should not be modified or freed
+		 */
+		get_state(): string;
+		/**
+		 * @deprecated
+		 * Use {@link KeyframeTransition} and
+		 *   #ClutterTransitionGroup instead
+		 * 
+		 * Gets a list of all the state names managed by this {@link State}.
+		 * @returns a newly allocated
+		 *   #GList of state names. The contents of the returned #GList are owned
+		 *   by the {@link State} and should not be modified or freed. Use
+		 *   {@link GObject.list_free} to free the resources allocated by the returned list when
+		 *   done using it
+		 */
+		get_states(): string[];
+		/**
+		 * @deprecated
+		 * Use {@link KeyframeTransition} and
+		 *   #ClutterTransitionGroup instead
+		 * 
+		 * Adds multiple keys to a named state of a {@link State} instance, specifying
+		 * the easing mode and value a given property of an object should have at a
+		 * given progress of the animation.
+		 * 
+		 * The mode specified is the easing mode used when going to from the previous
+		 * key to the specified key.
+		 * 
+		 * For instance, the code below:
+		 * 
+		 * |[
+		 *   clutter_state_set (state, NULL, "hover",
+		 *                      button, "opacity", CLUTTER_LINEAR, 255,
+		 *                      button, "scale-x", CLUTTER_EASE_OUT_CUBIC, 1.2,
+		 *                      button, "scale-y", CLUTTER_EASE_OUT_CUBIC, 1.2,
+		 *                      NULL);
+		 * ]|
+		 * 
+		 * will create a transition from any state (a #source_state_name or NULL is
+		 * treated as a wildcard) and a state named "hover"; the
+		 * button object will have the #ClutterActor:opacity
+		 * property animated to a value of 255 using %CLUTTER_LINEAR as the animation
+		 * mode, and the #ClutterActor:scale-x and #ClutterActor:scale-y properties
+		 * animated to a value of 1.2 using %CLUTTER_EASE_OUT_CUBIC as the animation
+		 * mode. To change the state (and start the transition) you can use the
+		 * {@link Clutter.State.set_state} function:
+		 * 
+		 * |[
+		 *   clutter_state_set_state (state, "hover");
+		 * ]|
+		 * 
+		 * If a given object, state_name, property tuple already exist in the
+		 * #ClutterState instance, then the mode and value will be replaced with
+		 * the new specified values.
+		 * 
+		 * If a property name is prefixed with "delayed::" two additional
+		 * arguments per key are expected: a value relative to the full state time
+		 * to pause before transitioning and a similar value to pause after
+		 * transitioning, e.g.:
+		 * 
+		 * |[
+		 *   clutter_state_set (state, "hover", "toggled",
+		 *                      button, "delayed::scale-x", CLUTTER_LINEAR, 1.0, 0.2, 0.2,
+		 *                      button, "delayed::scale-y", CLUTTER_LINEAR, 1.0, 0.2, 0.2,
+		 *                      NULL);
+		 * ]|
+		 * 
+		 * will pause for 20% of the duration of the transition before animating,
+		 * and 20% of the duration after animating.
+		 * @param source_state_name the name of the source state keys are being added for
+		 * @param target_state_name the name of the target state keys are being added for
+		 * @param first_object a #GObject
+		 * @param first_property_name a property of #first_object to specify a key for
+		 * @param first_mode the id of the alpha function to use
+		 */
+		set(source_state_name: string | null, target_state_name: string, first_object: any | null, first_property_name: string, first_mode: number): void;
+		/**
+		 * @deprecated
+		 * Use {@link KeyframeTransition} and
+		 *   #ClutterTransitionGroup instead
+		 * 
+		 * Sets the duration of a transition.
+		 * 
+		 * If both state names are %NULL the default duration for #state is set.
+		 * 
+		 * If only #target_state_name is specified, the passed #duration becomes
+		 * the default duration for transitions to the target state.
+		 * 
+		 * If both states names are specified, the passed #duration only applies
+		 * to the specified transition.
+		 * @param source_state_name the name of the source state, or %NULL
+		 * @param target_state_name the name of the target state, or %NULL
+		 * @param duration the duration of the transition, in milliseconds
+		 */
+		set_duration(source_state_name: string | null, target_state_name: string | null, duration: number): void;
+		/**
+		 * @deprecated
+		 * Use {@link KeyframeTransition} and
+		 *   #ClutterTransitionGroup instead
+		 * 
+		 * Sets one specific end key for a state name, #object, #property_name
+		 * combination.
+		 * @param source_state_name the source transition to specify
+		 *   transition for, or %NULL to specify the default fallback when a
+		 *   more specific source state doesn't exist.
+		 * @param target_state_name the name of the transition to set a key value for.
+		 * @param object the #GObject to set a key for
+		 * @param property_name the property to set a key for
+		 * @param mode the id of the alpha function to use
+		 * @param value the value for property_name of object in state_name
+		 * @param pre_delay relative time of the transition to be idle in the beginning
+		 *   of the transition
+		 * @param post_delay relative time of the transition to be idle in the end of
+		 *   the transition
+		 * @returns the {@link State} instance, allowing
+		 *   chaining of multiple calls
+		 */
+		set_key(source_state_name: string | null, target_state_name: string, object: GObject.Object, property_name: string, mode: number, value: GObject.Value, pre_delay: number, post_delay: number): State;
+		/**
+		 * @deprecated
+		 * Use {@link KeyframeTransition} and
+		 *   #ClutterTransitionGroup instead
+		 * 
+		 * Change the current state of {@link State} to #target_state_name.
+		 * 
+		 * The state will animate during its transition, see
+		 * #clutter_state_warp_to_state for animation-free state switching.
+		 * 
+		 * Setting a %NULL state will stop the current animation and unset
+		 * the current state, but keys will be left intact.
+		 * @param target_state_name the state to transition to
+		 * @returns the {@link Timeline} that drives the
+		 *   state transition. The returned timeline is owned by the #ClutterState
+		 *   and it should not be unreferenced
+		 */
+		set_state(target_state_name: string): Timeline;
+		/**
+		 * @deprecated
+		 * Use {@link KeyframeTransition} and
+		 *   #ClutterTransitionGroup instead
+		 * 
+		 * Change to the specified target state immediately with no animation.
+		 * 
+		 * See {@link Clutter.State.set_state}.
+		 * @param target_state_name the state to transition to
+		 * @returns the {@link Timeline} that drives the
+		 *   state transition. The returned timeline is owned by the #ClutterState
+		 *   and it should not be unreferenced
+		 */
+		warp_to_state(target_state_name: string): Timeline;
+		/**
+		 * The ::completed signal is emitted when a {@link State} reaches
+		 * the target state specified by {@link Clutter.State.set_state} or
+		 * clutter_state_warp_to_state().
+		 * @param signal 
+		 * @param callback Callback function
+		 *  - owner: owner of the emitted event 
+		 * 
+		 * @returns Callback ID
+		 */
+		connect(signal: "completed", callback: (owner: this) => void): number;
+
+		connect(signal: "notify::duration", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::state", callback: (owner: this, ...args: any) => void): number;
+
+	}
+
+	type StateInitOptionsMixin = GObject.ObjectInitOptions & ScriptableInitOptions & 
+	Pick<IState,
+		"duration" |
+		"state">;
+
+	export interface StateInitOptions extends StateInitOptionsMixin {}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link State} instead.
+	 */
+	type StateMixin = IState & GObject.Object & Scriptable;
+
+	/**
+	 * The {@link State} structure contains only
+	 * private data and should be accessed using the provided API
+	 */
+	interface State extends StateMixin {}
+
+	class State {
+		public constructor(options?: Partial<StateInitOptions>);
+		/**
+		 * @deprecated
+		 * Use {@link KeyframeTransition} and
+		 *   #ClutterTransitionGroup instead
+		 * 
+		 * Creates a new {@link State}
+		 * @returns the newly create {@link State} instance
+		 */
+		public static new(): State;
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -9651,7 +11976,7 @@ declare namespace imports.gi.Clutter {
 		/**
 		 * Whether the text includes Pango markup.
 		 * 
-		 * For more information about the Pango markup format, see
+		 * For more informations about the Pango markup format, see
 		 * {@link Pango.Layout.set_markup} in the Pango documentation.
 		 * 
 		 * It is not possible to round-trip this property between
@@ -10621,6 +12946,48 @@ declare namespace imports.gi.Clutter {
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link TextureContent} instead.
+	 */
+	interface ITextureContent {
+		/**
+		 * Retrieves a pointer to the #CoglTexture used by #texture_content.
+		 * 
+		 * If you change the contents of the returned #CoglTexture you will need
+		 * to manually invalidate the #texture_content with {@link Clutter.Content.invalidate}
+		 * in order to update the actors using #texture_content as their content.
+		 * @returns a pointer to the #CoglTexture
+		 */
+		get_texture(): Cogl.Texture;
+	}
+
+	type TextureContentInitOptionsMixin = GObject.ObjectInitOptions & ContentInitOptions
+	export interface TextureContentInitOptions extends TextureContentInitOptionsMixin {}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link TextureContent} instead.
+	 */
+	type TextureContentMixin = ITextureContent & GObject.Object & Content;
+
+	interface TextureContent extends TextureContentMixin {}
+
+	class TextureContent {
+		public constructor(options?: Partial<TextureContentInitOptions>);
+		/**
+		 * Creates a new {@link TextureContent} instance for #texture, taking an
+		 * internal reference to #texture.
+		 * 
+		 * If you change the contents of the #CoglTexture you will need
+		 * to manually invalidate the #texture_content with {@link Clutter.Content.invalidate}
+		 * in order to update the actors using #texture_content as their content.
+		 * @param texture a #CoglTexture
+		 * @param clip A clipping rectangle
+		 * @returns the newly created {@link TextureContent} instance.
+		 *   Use {@link GObject.Object.unref} when done.
+		 */
+		public static new_from_texture(texture: Cogl.Texture, clip?: cairo.RectangleInt | null): Content;
+	}
+
+	/** This construct is only for enabling class multi-inheritance,
 	 * use {@link TextureNode} instead.
 	 */
 	interface ITextureNode {
@@ -10666,7 +13033,6 @@ declare namespace imports.gi.Clutter {
 	 * use {@link Timeline} instead.
 	 */
 	interface ITimeline {
-		actor: Actor;
 		/**
 		 * If the direction of the timeline should be automatically reversed
 		 * when reaching the end.
@@ -10688,9 +13054,17 @@ declare namespace imports.gi.Clutter {
 		 */
 		duration: number;
 		/**
-		 * The frame clock driving the timeline.
+		 * @deprecated
+		 * Use the {@link Timeline.repeat_count} property instead.
+		 * 
+		 * Whether the timeline should automatically rewind and restart.
+		 * 
+		 * As a side effect, setting this property to %TRUE will set the
+		 * {@link Timeline.repeat_count} property to -1, while setting this
+		 * property to %FALSE will set the #ClutterTimeline:repeat-count
+		 * property to 0.
 		 */
-		frame_clock: FrameClock;
+		loop: boolean;
 		/**
 		 * Controls the way a {@link Timeline} computes the normalized progress.
 		 */
@@ -10760,10 +13134,26 @@ declare namespace imports.gi.Clutter {
 		 */
 		advance_to_marker(marker_name: string): void;
 		/**
-		 * Get the actor the timeline is associated with.
-		 * @returns the associated {@link Actor}
+		 * @deprecated
+		 * Use {@link Clutter.Timeline.new} or g_object_new()
+		 *   instead
+		 * 
+		 * Create a new {@link Timeline} instance which has property values
+		 * matching that of supplied timeline. The cloned timeline will not
+		 * be started and will not be positioned to the current position of
+		 * the original #timeline: you will have to start it with
+		 * {@link Clutter.Timeline.start}.
+		 * 
+		 * The only cloned properties are:
+		 * 
+		 *  - #ClutterTimeline:duration
+		 *  - #ClutterTimeline:loop
+		 *  - #ClutterTimeline:delay
+		 *  - #ClutterTimeline:direction
+		 * @returns a new {@link Timeline}, cloned
+		 *   from #timeline
 		 */
-		get_actor(): Actor;
+		clone(): Timeline;
 		/**
 		 * Retrieves the value set by {@link Clutter.Timeline.set_auto_reverse}.
 		 * @returns %TRUE if the timeline should automatically reverse, and
@@ -10834,7 +13224,14 @@ declare namespace imports.gi.Clutter {
 		 * @returns current elapsed time in milliseconds.
 		 */
 		get_elapsed_time(): number;
-		get_frame_clock(): FrameClock;
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.Timeline.get_repeat_count} instead.
+		 * 
+		 * Gets whether #timeline is looping
+		 * @returns %TRUE if the timeline is looping
+		 */
+		get_loop(): boolean;
 		/**
 		 * The position of the timeline in a normalized [-1, 2] interval.
 		 * 
@@ -10905,11 +13302,6 @@ declare namespace imports.gi.Clutter {
 		 */
 		rewind(): void;
 		/**
-		 * Set the actor the timeline is associated with.
-		 * @param actor a {@link Actor}
-		 */
-		set_actor(actor?: Actor | null): void;
-		/**
 		 * Sets whether #timeline should reverse the direction after the
 		 * emission of the {@link Timeline.completed} signal.
 		 * 
@@ -10978,7 +13370,17 @@ declare namespace imports.gi.Clutter {
 		 * @param msecs duration of the timeline in milliseconds
 		 */
 		set_duration(msecs: number): void;
-		set_frame_clock(frame_clock: FrameClock): void;
+		/**
+		 * @deprecated
+		 * Use {@link Clutter.Timeline.set_repeat_count} instead.
+		 * 
+		 * Sets whether #timeline should loop.
+		 * 
+		 * This function is equivalent to calling {@link Clutter.Timeline.set_repeat_count}
+		 * with -1 if #loop is %TRUE, and with 0 if #loop is %FALSE.
+		 * @param loop %TRUE for enable looping
+		 */
+		set_loop(loop: boolean): void;
 		/**
 		 * Sets a custom progress function for #timeline. The progress function will
 		 * be called by {@link Clutter.Timeline.get_progress} and will be used to compute
@@ -11134,12 +13536,11 @@ declare namespace imports.gi.Clutter {
 		 */
 		connect(signal: "stopped", callback: (owner: this, is_finished: boolean) => void): number;
 
-		connect(signal: "notify::actor", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::auto-reverse", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::delay", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::direction", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::duration", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::frame-clock", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::loop", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::progress-mode", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::repeat-count", callback: (owner: this, ...args: any) => void): number;
 
@@ -11147,12 +13548,11 @@ declare namespace imports.gi.Clutter {
 
 	type TimelineInitOptionsMixin = GObject.ObjectInitOptions & ScriptableInitOptions & 
 	Pick<ITimeline,
-		"actor" |
 		"auto_reverse" |
 		"delay" |
 		"direction" |
 		"duration" |
-		"frame_clock" |
+		"loop" |
 		"progress_mode" |
 		"repeat_count">;
 
@@ -11172,28 +13572,12 @@ declare namespace imports.gi.Clutter {
 	class Timeline {
 		public constructor(options?: Partial<TimelineInitOptions>);
 		/**
-		 * Creates a new {@link Timeline} with a duration of #duration_ms milli seconds.
-		 * @param duration_ms Duration of the timeline in milliseconds
+		 * Creates a new {@link Timeline} with a duration of #msecs.
+		 * @param msecs Duration of the timeline in milliseconds
 		 * @returns the newly created {@link Timeline} instance. Use
 		 *   {@link GObject.Object.unref} when done using it
 		 */
-		public static new(duration_ms: number): Timeline;
-		/**
-		 * Creates a new {@link Timeline} with a duration of #duration milli seconds.
-		 * @param actor The {@link Actor} the timeline is associated with
-		 * @param duration_ms Duration of the timeline in milliseconds
-		 * @returns the newly created {@link Timeline} instance. Use
-		 *   {@link GObject.Object.unref} when done using it
-		 */
-		public static new_for_actor(actor: Actor, duration_ms: number): Timeline;
-		/**
-		 * Creates a new {@link Timeline} with a duration of #duration_ms milli seconds.
-		 * @param frame_clock The {@link FrameClock} the timeline is driven by
-		 * @param duration_ms Duration of the timeline in milliseconds
-		 * @returns the newly created {@link Timeline} instance. Use
-		 *   {@link GObject.Object.unref} when done using it
-		 */
-		public static new_for_frame_clock(frame_clock: FrameClock, duration_ms: number): Timeline;
+		public static new(msecs: number): Timeline;
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -11585,7 +13969,7 @@ declare namespace imports.gi.Clutter {
 		public clamp_to_pixel(): void;
 		/**
 		 * Checks whether a point with #x, #y coordinates is contained
-		 * within #box
+		 * withing #box
 		 * @param x X coordinate of the point
 		 * @param y Y coordinate of the point
 		 * @returns %TRUE if the point is contained by the {@link ActorBox}
@@ -11678,12 +14062,6 @@ declare namespace imports.gi.Clutter {
 		 * @returns return location for the interpolation
 		 */
 		public interpolate(_final: ActorBox, progress: number): ActorBox;
-		/**
-		 * Checks if #box has been initialized, a {@link ActorBox} is uninitialized
-		 * if it has a size of -1 at an origin of 0, 0.
-		 * @returns %TRUE if the box is uninitialized, %FALSE if it isn't
-		 */
-		public is_initialized(): boolean;
 		/**
 		 * Rescale the #box by provided #scale factor.
 		 * @param scale scale factor for resizing this box
@@ -11809,15 +14187,19 @@ declare namespace imports.gi.Clutter {
 	}
 
 	export interface AnimatableInterfaceInitOptions {}
+	/**
+	 * Base interface for #GObject<!-- -->s that can be animated by a
+	 * a {@link Animation}.
+	 */
 	interface AnimatableInterface {}
 	class AnimatableInterface {
 		public constructor(options?: Partial<AnimatableInterfaceInitOptions>);
 		public readonly parent_iface: GObject.TypeInterface;
+		public animate_property: {(animatable: Animatable, animation: Animation, property_name: string, initial_value: GObject.Value, final_value: GObject.Value, progress: number, value: GObject.Value): boolean;};
 		public find_property: {(animatable: Animatable, property_name: string): GObject.ParamSpec;};
 		public get_initial_state: {(animatable: Animatable, property_name: string, value: GObject.Value): void;};
 		public set_final_state: {(animatable: Animatable, property_name: string, value: GObject.Value): void;};
 		public interpolate_value: {(animatable: Animatable, property_name: string, interval: Interval, progress: number): [ boolean, GObject.Value ];};
-		public get_actor: {(animatable: Animatable): Actor;};
 	}
 
 	export interface AnyEventInitOptions {}
@@ -11997,7 +14379,7 @@ declare namespace imports.gi.Clutter {
 		 * 
 		 * If the alpha component is not specified then it is assumed to be set to
 		 * be fully opaque.
-		 * @param str a string specifying a color
+		 * @param str a string specifiying a color
 		 * @returns %TRUE if parsing succeeded, and %FALSE otherwise
 		 * 
 		 * return location for a {@link Color}
@@ -12264,14 +14646,6 @@ declare namespace imports.gi.Clutter {
 		public refresh_rate: number;
 	}
 
-	export interface FrameListenerIfaceInitOptions {}
-	interface FrameListenerIface {}
-	class FrameListenerIface {
-		public constructor(options?: Partial<FrameListenerIfaceInitOptions>);
-		public before_frame: {(frame_clock: FrameClock, frame_count: number): void;};
-		public frame: {(frame_clock: FrameClock, frame_count: number, time_us: number): FrameResult;};
-	}
-
 	export interface IMEventInitOptions {}
 	interface IMEvent {}
 	class IMEvent {
@@ -12531,10 +14905,9 @@ declare namespace imports.gi.Clutter {
 	interface PaintContext {}
 	class PaintContext {
 		public constructor(options?: Partial<PaintContextInitOptions>);
-		public static new_for_framebuffer(framebuffer: Cogl.Framebuffer, redraw_clip: cairo.Region, paint_flags: PaintFlag): PaintContext;
+		public static new_for_framebuffer(framebuffer: Cogl.Framebuffer): PaintContext;
 		public destroy(): void;
 		public get_framebuffer(): Cogl.Framebuffer;
-		public get_paint_flags(): PaintFlag;
 		public get_redraw_clip(): cairo.Region;
 		public get_stage_view(): StageView;
 		public pop_framebuffer(): void;
@@ -12786,7 +15159,8 @@ declare namespace imports.gi.Clutter {
 
 	export interface PerspectiveInitOptions {}
 	/**
-	 * Stage perspective definition.
+	 * Stage perspective definition. {@link Perspective} is only used by
+	 * the fixed point version of {@link Clutter.Stage.set_perspective}.
 	 */
 	interface Perspective {}
 	class Perspective {
@@ -12995,6 +15369,25 @@ declare namespace imports.gi.Clutter {
 		 * bitwise OR of the current state flags
 		 */
 		public new_state: StageState;
+	}
+
+	export interface StateKeyInitOptions {}
+	/**
+	 * {@link StateKey} is an opaque structure whose
+	 * members cannot be accessed directly
+	 */
+	interface StateKey {}
+	class StateKey {
+		public constructor(options?: Partial<StateKeyInitOptions>);
+		/**
+		 * @deprecated
+		 * Use {@link KeyframeTransition} and
+		 *   #ClutterTransitionGroup instead
+		 * 
+		 * Retrieves the #GType of the property a key applies to
+		 * @returns the #GType of the property
+		 */
+		public get_property_type(): GObject.Type;
 	}
 
 	export interface TouchEventInitOptions {}
@@ -13332,11 +15725,6 @@ declare namespace imports.gi.Clutter {
 		 *   or %NULL
 		 */
 		find_property(property_name: string): GObject.ParamSpec;
-		/**
-		 * Get animated actor.
-		 * @returns a {@link Actor}
-		 */
-		get_actor(): Actor;
 		/**
 		 * Retrieves the current state of #property_name and sets #value with it
 		 * @param property_name the name of the animatable property to retrieve
@@ -13848,7 +16236,7 @@ declare namespace imports.gi.Clutter {
 	}
 
 	/**
-	 * The animation modes used by {@link Animatable}. This
+	 * The animation modes used by {@link Alpha} and #ClutterAnimation. This
 	 * enumeration can be expanded in later versions of Clutter.
 	 * 
 	 * <figure id="easing-modes">
@@ -13856,7 +16244,7 @@ declare namespace imports.gi.Clutter {
 	 *   <graphic fileref="easing-modes.png" format="PNG"/>
 	 * </figure>
 	 * 
-	 * Every global alpha function registered using {@link Clutter.alpha_register_func}
+	 * Every global alpha function registered using {@link Clutter.Alpha.register_func}
 	 * or clutter_alpha_register_closure() will have a logical id greater than
 	 * %CLUTTER_ANIMATION_LAST.
 	 */
@@ -13888,7 +16276,7 @@ declare namespace imports.gi.Clutter {
 		 */
 		EASE_IN_CUBIC = 5,
 		/**
-		 * cubic tweening, inverse of
+		 * cubic tweening, invers of
 		 *    %CLUTTER_EASE_IN_CUBIC
 		 */
 		EASE_OUT_CUBIC = 6,
@@ -14272,59 +16660,63 @@ declare namespace imports.gi.Clutter {
 		 */
 		CLIENT_MESSAGE = 11,
 		/**
+		 * Stage delete event
+		 */
+		DELETE = 12,
+		/**
 		 * A new touch event sequence has started;
 		 *   event added in 1.10
 		 */
-		TOUCH_BEGIN = 12,
+		TOUCH_BEGIN = 13,
 		/**
 		 * A touch event sequence has been updated;
 		 *   event added in 1.10
 		 */
-		TOUCH_UPDATE = 13,
+		TOUCH_UPDATE = 14,
 		/**
 		 * A touch event sequence has finished;
 		 *   event added in 1.10
 		 */
-		TOUCH_END = 14,
+		TOUCH_END = 15,
 		/**
 		 * A touch event sequence has been canceled;
 		 *   event added in 1.10
 		 */
-		TOUCH_CANCEL = 15,
+		TOUCH_CANCEL = 16,
 		/**
 		 * A pinch gesture event, the current state is
 		 *   determined by its phase field; event added in 1.24
 		 */
-		TOUCHPAD_PINCH = 16,
+		TOUCHPAD_PINCH = 17,
 		/**
 		 * A swipe gesture event, the current state is
 		 *   determined by its phase field; event added in 1.24
 		 */
-		TOUCHPAD_SWIPE = 17,
+		TOUCHPAD_SWIPE = 18,
 		/**
 		 * A tool entered in proximity to a tablet;
 		 *   event added in 1.28
 		 */
-		PROXIMITY_IN = 18,
+		PROXIMITY_IN = 19,
 		/**
 		 * A tool left from the proximity area of a tablet;
 		 *   event added in 1.28
 		 */
-		PROXIMITY_OUT = 19,
-		PAD_BUTTON_PRESS = 20,
-		PAD_BUTTON_RELEASE = 21,
-		PAD_STRIP = 22,
-		PAD_RING = 23,
-		DEVICE_ADDED = 24,
-		DEVICE_REMOVED = 25,
-		IM_COMMIT = 26,
-		IM_DELETE = 27,
-		IM_PREEDIT = 28,
+		PROXIMITY_OUT = 20,
+		PAD_BUTTON_PRESS = 21,
+		PAD_BUTTON_RELEASE = 22,
+		PAD_STRIP = 23,
+		PAD_RING = 24,
+		IM_COMMIT = 25,
+		IM_DELETE = 26,
+		IM_PREEDIT = 27,
+		DEVICE_ADDED = 28,
+		DEVICE_REMOVED = 29,
 		/**
 		 * Marks the end of the {@link EventType} enumeration;
 		 *   added in 1.10
 		 */
-		EVENT_LAST = 29
+		EVENT_LAST = 30
 	}
 
 	/**
@@ -14342,11 +16734,6 @@ declare namespace imports.gi.Clutter {
 		 *   vertically first
 		 */
 		VERTICAL = 1
-	}
-
-	enum FrameResult {
-		PENDING_PRESENTED = 0,
-		IDLE = 1
 	}
 
 	/**
@@ -14658,17 +17045,17 @@ declare namespace imports.gi.Clutter {
 	 */
 	enum InputMode {
 		/**
-		 * A logical, virtual device
+		 * A master, virtual device
 		 */
-		LOGICAL = 0,
+		MASTER = 0,
 		/**
-		 * A physical device, attached to
-		 *   a logical device
+		 * A slave, physical device, attached to
+		 *   a master device
 		 */
-		PHYSICAL = 1,
+		SLAVE = 1,
 		/**
-		 * A physical device, not attached
-		 *   to a logical device
+		 * A slave, physical device, not attached
+		 *   to a master device
 		 */
 		FLOATING = 2
 	}
@@ -15401,7 +17788,7 @@ declare namespace imports.gi.Clutter {
 		 */
 		REALIZED = 4,
 		/**
-		 * the actor 'reacts' to mouse events emitting event
+		 * the actor 'reacts' to mouse events emmitting event
 		 *   signals
 		 */
 		REACTIVE = 8,
@@ -15415,6 +17802,33 @@ declare namespace imports.gi.Clutter {
 		 *   queueing of relayout and will defer all layouting to the actor itself
 		 */
 		NO_LAYOUT = 32
+	}
+
+	/**
+	 * Flags passed to the {@link ActorClass}.allocate() virtual function
+	 * and to the clutter_actor_allocate() function.
+	 */
+	enum AllocationFlags {
+		/**
+		 * No flag set
+		 */
+		ALLOCATION_NONE = 0,
+		/**
+		 * Whether the absolute origin of the
+		 *   actor has changed; this implies that any ancestor of the actor has
+		 *   been moved.
+		 */
+		ABSOLUTE_ORIGIN_CHANGED = 2,
+		/**
+		 * Whether the allocation should be delegated
+		 *   to the {@link LayoutManager} instance stored inside the
+		 *   #ClutterActor:layout-manager property of #ClutterActor. This flag
+		 *   should only be used if you are subclassing #ClutterActor and
+		 *   overriding the #ClutterActorClass.allocate() virtual function, but
+		 *   you wish to use the default implementation of the virtual function
+		 *   inside #ClutterActor. Added in Clutter 1.10.
+		 */
+		DELEGATE_LAYOUT = 4
 	}
 
 	/**
@@ -15513,6 +17927,10 @@ declare namespace imports.gi.Clutter {
 	 * system and graphics backend.
 	 */
 	enum FeatureFlags {
+		/**
+		 * Set if backend throttles buffer swaps.
+		 */
+		SWAP_THROTTLE = 8,
 		/**
 		 * Set if stage size if fixed (i.e framebuffer)
 		 */
@@ -15693,13 +18111,6 @@ declare namespace imports.gi.Clutter {
 		ON_IDLE = 4
 	}
 
-	enum PaintFlag {
-		NONE = 0,
-		NO_CURSORS = 1,
-		FORCE_CURSORS = 2,
-		CLEAR = 4
-	}
-
 	enum PickDebugFlag {
 		PICKING = 1
 	}
@@ -15725,7 +18136,12 @@ declare namespace imports.gi.Clutter {
 		 * Run the repaint function after
 		 *   painting the stages
 		 */
-		POST_PAINT = 2
+		POST_PAINT = 2,
+		/**
+		 * Ensure that a new frame
+		 *   is queued after adding the repaint function
+		 */
+		QUEUE_REDRAW_ON_ADD = 4
 	}
 
 	/**
@@ -15850,6 +18266,23 @@ declare namespace imports.gi.Clutter {
 		 * @returns The newly created child {@link Actor}
 		 */
 		(item: GObject.Object): Actor;
+	}
+
+	/**
+	 * A function returning a value depending on the position of
+	 * the {@link Timeline} bound to #alpha.
+	 */
+	interface AlphaFunc {
+		/**
+		 * @deprecated
+		 * Use {@link TimelineProgressFunc} instead.
+		 * 
+		 * A function returning a value depending on the position of
+		 * the {@link Timeline} bound to #alpha.
+		 * @param alpha a {@link Alpha}
+		 * @returns a floating point value
+		 */
+		(alpha: Alpha): number;
 	}
 
 	/**
@@ -16435,6 +18868,30 @@ declare namespace imports.gi.Clutter {
 	 */
 	function cairo_set_source_color(cr: cairo.Context, color: Color): void;
 	/**
+	 * Checks the run-time name of the Clutter windowing system backend, using
+	 * the symbolic macros like %CLUTTER_WINDOWING_X11.
+	 * 
+	 * This function should be used in conjuction with the compile-time macros
+	 * inside applications and libraries that are using the platform-specific
+	 * windowing system API, to ensure that they are running on the correct
+	 * windowing system; for instance:
+	 * 
+	 * |[
+	 * #ifdef CLUTTER_WINDOWING_X11
+	 *   if (clutter_check_windowing_backend (CLUTTER_WINDOWING_X11))
+	 *     {
+	 *       // it is safe to use the clutter_x11_* API
+	 *     }
+	 *   else
+	 * #endif
+	 *     g_error ("Unknown Clutter backend.");
+	 * ]|
+	 * @param backend_type the name of the backend to check
+	 * @returns %TRUE if the current Clutter windowing system backend is
+	 *   the one checked, and %FALSE otherwise
+	 */
+	function check_windowing_backend(backend_type: string): boolean;
+	/**
 	 * Converts a color expressed in HLS (hue, luminance and saturation)
 	 * values into a {@link Color}.
 	 * @param hue hue value, in the 0 .. 360 range
@@ -16485,7 +18942,7 @@ declare namespace imports.gi.Clutter {
 	 * 
 	 * If the alpha component is not specified then it is assumed to be set to
 	 * be fully opaque.
-	 * @param str a string specifying a color
+	 * @param str a string specifiying a color
 	 * @returns %TRUE if parsing succeeded, and %FALSE otherwise
 	 * 
 	 * return location for a {@link Color}
@@ -16588,6 +19045,13 @@ declare namespace imports.gi.Clutter {
 	 * @returns %TRUE if Clutter has accessibility support enabled
 	 */
 	function get_accessibility_enabled(): boolean;
+	/**
+	 * Retrieves the {@link Actor} with #id_.
+	 * @param id_ a {@link Actor} unique id.
+	 * @returns the actor with the passed id or %NULL.
+	 *   The returned actor does not have its reference count increased.
+	 */
+	function get_actor_by_gid(id_: number): Actor;
 	/**
 	 * If an event is currently being processed, return that event.
 	 * This function is intended to be used to access event state
@@ -16741,6 +19205,19 @@ declare namespace imports.gi.Clutter {
 	 */
 	function keysym_to_unicode(keyval: number): number;
 	/**
+	 * Starts the Clutter mainloop.
+	 */
+	function main(): void;
+	/**
+	 * Retrieves the depth of the Clutter mainloop.
+	 * @returns The level of the mainloop.
+	 */
+	function main_level(): number;
+	/**
+	 * Terminates the Clutter mainloop.
+	 */
+	function main_quit(): void;
+	/**
 	 * Allocates enough memory to hold a {@link Matrix}.
 	 * @returns the newly allocated {@link Matrix}
 	 */
@@ -16757,7 +19234,7 @@ declare namespace imports.gi.Clutter {
 	 * @param matrix a {@link Matrix}
 	 * @param values a C array of 16 floating point values,
 	 *   representing a 4x4 matrix, with column-major order
-	 * @returns the initialized {@link Matrix}
+	 * @returns the initialzed {@link Matrix}
 	 */
 	function matrix_init_from_array(matrix: Matrix, values: number[]): Matrix;
 	/**
@@ -16902,7 +19379,7 @@ declare namespace imports.gi.Clutter {
 	 * list of repaint functions and will not be called again.
 	 * 
 	 * This function is guaranteed to be called from within the same thread
-	 * that called {@link Clutter.main}, and while the Clutter lock is being held;
+	 * that called clutter_main(), and while the Clutter lock is being held;
 	 * the function will be called within the main loop, so it is imperative
 	 * that it does not block, otherwise the frame time budget may be lost.
 	 * 
@@ -16933,7 +19410,7 @@ declare namespace imports.gi.Clutter {
 	 * list of repaint functions and will not be called again.
 	 * 
 	 * This function is guaranteed to be called from within the same thread
-	 * that called {@link Clutter.main}, and while the Clutter lock is being held;
+	 * that called clutter_main(), and while the Clutter lock is being held;
 	 * the function will be called within the main loop, so it is imperative
 	 * that it does not block, otherwise the frame time budget may be lost.
 	 * 

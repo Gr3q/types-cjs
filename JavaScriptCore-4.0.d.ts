@@ -820,10 +820,9 @@ declare namespace imports.gi.JavaScriptCore {
 		 * @param context A #JSCContext
 		 * @param data Pointer to a region of memory.
 		 * @param size Size in bytes of the memory region.
-		 * @param user_data user data.
 		 * @returns A #JSCValue, or %NULL in case of exception.
 		 */
-		public static new_array_buffer(context: Context, data: any | null, size: number, user_data?: any | null): Value | null;
+		public static new_array_buffer(context: Context, data: any | null, size: number): Value | null;
 		/**
 		 * Create a new #JSCValue referencing an array with the items from #array. If #array
 		 * is %NULL or empty a new empty array will be created. Elements of #array should be

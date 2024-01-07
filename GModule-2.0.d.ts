@@ -10,6 +10,10 @@ declare namespace imports.gi.GModule {
 	class Module {
 		public constructor(options?: Partial<ModuleInitOptions>);
 		/**
+		 * @deprecated
+		 * Use {@link GModule.open} instead with #module_name as the
+		 * basename of the file_name argument. See %G_MODULE_SUFFIX for why.
+		 * 
 		 * A portable way to build the filename of a module. The platform-specific
 		 * prefix and suffix are added to the filename, if needed, and the result
 		 * is added to the directory, using the correct separator character.
@@ -39,28 +43,32 @@ declare namespace imports.gi.GModule {
 		public static error_quark(): GLib.Quark;
 		/**
 		 * A thin wrapper function around {@link GModule.open_full}
-		 * @param file_name the name of the file containing the module, or %NULL
-		 *     to obtain a #GModule representing the main program itself
+		 * @param file_name the name or path to the file containing the module,
+		 *     or %NULL to obtain a #GModule representing the main program itself
 		 * @param flags the flags used for opening the module. This can be the
 		 *     logical OR of any of the {@link Flags}.
 		 * @returns a #GModule on success, or %NULL on failure
 		 */
 		public static open(file_name: string | null, flags: ModuleFlags): Module;
 		/**
-		 * Opens a module. If the module has already been opened,
-		 * its reference count is incremented.
+		 * Opens a module. If the module has already been opened, its reference count
+		 * is incremented. If not, the module is searched in the following order:
 		 * 
-		 * First of all {@link GModule.open_full} tries to open #file_name as a module.
-		 * If that fails and #file_name has the ".la"-suffix (and is a libtool
-		 * archive) it tries to open the corresponding module. If that fails
-		 * and it doesn't have the proper module suffix for the platform
-		 * (#G_MODULE_SUFFIX), this suffix will be appended and the corresponding
-		 * module will be opened. If that fails and #file_name doesn't have the
-		 * ".la"-suffix, this suffix is appended and g_module_open_full() tries to open
-		 * the corresponding module. If eventually that fails as well, %NULL is
-		 * returned.
-		 * @param file_name the name of the file containing the module, or %NULL
-		 *     to obtain a #GModule representing the main program itself
+		 * 1. If #file_name exists as a regular file, it is used as-is; else
+		 * 2. If #file_name doesn't have the correct suffix and/or prefix for the
+		 *    platform, then possible suffixes and prefixes will be added to the
+		 *    basename till a file is found and whatever is found will be used; else
+		 * 3. If #file_name doesn't have the ".la"-suffix, ".la" is appended. Either
+		 *    way, if a matching .la file exists (and is a libtool archive) the
+		 *    libtool archive is parsed to find the actual file name, and that is
+		 *    used.
+		 * 
+		 * At the end of all this, we would have a file path that we can access on
+		 * disk, and it is opened as a module. If not, #file_name is opened as
+		 * a module verbatim in the hopes that the system implementation will somehow
+		 * be able to access it.
+		 * @param file_name the name or path to the file containing the module,
+		 *     or %NULL to obtain a #GModule representing the main program itself
 		 * @param flags the flags used for opening the module. This can be the
 		 *     logical OR of any of the {@link Flags}
 		 * @returns a #GModule on success, or %NULL on failure
@@ -90,7 +98,7 @@ declare namespace imports.gi.GModule {
 		public name(): string;
 		/**
 		 * Gets a symbol pointer from a module, such as one exported
-		 * by #G_MODULE_EXPORT. Note that a valid symbol can be %NULL.
+		 * by %G_MODULE_EXPORT. Note that a valid symbol can be %NULL.
 		 * @param symbol_name the name of the symbol to find
 		 * @returns %TRUE on success
 		 * 

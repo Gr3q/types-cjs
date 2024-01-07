@@ -21,6 +21,8 @@ declare namespace imports.gi.Atk {
 	type GObjectAccessibleMixin = IGObjectAccessible & Object;
 
 	/**
+	 * This object class is derived from AtkObject and can be used as a basis implementing accessible objects.
+	 * 
 	 * This object class is derived from AtkObject. It can be used as a
 	 * basis for implementing accessible objects for GObjects which are
 	 * not derived from GtkWidget. One example of its use is in providing
@@ -140,6 +142,8 @@ declare namespace imports.gi.Atk {
 	type HyperlinkMixin = IHyperlink & GObject.Object & Action;
 
 	/**
+	 * An ATK object which encapsulates a link or set of links in a hypertext document.
+	 * 
 	 * An ATK object which encapsulates a link or set of links (for
 	 * instance in the case of client-side image maps) in a hypertext
 	 * document.  It may implement the AtkAction interface.  AtkHyperlink
@@ -193,6 +197,8 @@ declare namespace imports.gi.Atk {
 	type MiscMixin = IMisc & GObject.Object;
 
 	/**
+	 * A set of ATK utility functions for thread locking
+	 * 
 	 * A set of utility functions for thread locking. This interface and
 	 * all his related methods are deprecated since 2.12.
 	 */
@@ -226,6 +232,8 @@ declare namespace imports.gi.Atk {
 	type NoOpObjectMixin = INoOpObject & Object & Action & Component & Document & EditableText & Hypertext & Image & Selection & Table & TableCell & Text & Value & Window;
 
 	/**
+	 * An AtkObject which purports to implement all ATK interfaces.
+	 * 
 	 * An AtkNoOpObject is an AtkObject which purports to implement all
 	 * ATK interfaces. It is the type of AtkObject which is created if an
 	 * accessible object is requested for an object type for which no
@@ -260,6 +268,8 @@ declare namespace imports.gi.Atk {
 	type NoOpObjectFactoryMixin = INoOpObjectFactory & ObjectFactory;
 
 	/**
+	 * The AtkObjectFactory which creates an AtkNoOpObject.
+	 * 
 	 * The AtkObjectFactory which creates an AtkNoOpObject. An instance of
 	 * this is created by an AtkRegistry if no factory type has not been
 	 * specified to create an accessible object of a particular type.
@@ -561,6 +571,19 @@ declare namespace imports.gi.Atk {
 		 */
 		connect(signal: "active-descendant-changed", callback: (owner: this, arg1: Object) => void): number;
 		/**
+		 * The "announcement" signal can be emitted to pass an announcement on to
+		 * be read by a screen reader.
+		 * 
+		 * Depcrecated (2.50): Use AtkObject::notification instead.
+		 * @param signal 
+		 * @param callback Callback function
+		 *  - owner: owner of the emitted event 
+		 *  - arg1: the text to be announced. 
+		 * 
+		 * @returns Callback ID
+		 */
+		connect(signal: "announcement", callback: (owner: this, arg1: string) => void): number;
+		/**
 		 * The signal "children-changed" is emitted when a child is added or
 		 * removed form an object. It supports two details: "add" and
 		 * "remove"
@@ -590,6 +613,19 @@ declare namespace imports.gi.Atk {
 		 * @returns Callback ID
 		 */
 		connect(signal: "focus-event", callback: (owner: this, arg1: boolean) => void): number;
+		/**
+		 * The "notification" signal can be emitted to pass an announcement on to
+		 * be read by a screen reader.
+		 * @param signal 
+		 * @param callback Callback function
+		 *  - owner: owner of the emitted event 
+		 *  - arg1: the text to be announced. 
+		 *  - arg2: an {@link Live} specifying the politeness of the notification.
+		 * Should be either ATK_LIVE_POLITE or ATK_LIVE_ASSERTIVE. 
+		 * 
+		 * @returns Callback ID
+		 */
+		connect(signal: "notification", callback: (owner: this, arg1: string, arg2: number) => void): number;
 		/**
 		 * The signal "property-change" is emitted when an object's property
 		 * value changes. #arg1 contains an {@link PropertyValues} with the name
@@ -684,6 +720,8 @@ declare namespace imports.gi.Atk {
 	type ObjectMixin = IObject & GObject.Object;
 
 	/**
+	 * The base object class for the Accessibility Toolkit API.
+	 * 
 	 * This class is the primary class for accessibility support via the
 	 * Accessibility ToolKit (ATK).  Objects which are instances of
 	 * {@link Object} (or instances of AtkObject-derived types) are queried
@@ -702,7 +740,7 @@ declare namespace imports.gi.Atk {
 	 * implementation is insufficient, via instances of a new #AtkObject
 	 * subclass.
 	 * 
-	 * See also: #AtkObjectFactory, #AtkRegistry.  (GTK+ users see also
+	 * See [class#AtkObjectFactory], [class#AtkRegistry].  (GTK+ users see also
 	 * #GtkAccessible).
 	 */
 	interface Object extends ObjectMixin {}
@@ -748,6 +786,9 @@ declare namespace imports.gi.Atk {
 	type ObjectFactoryMixin = IObjectFactory & GObject.Object;
 
 	/**
+	 * The base object class for a factory used to
+	 *  create accessible objects for objects of a specific GType.
+	 * 
 	 * This class is the base object class for a factory used to create an
 	 * accessible object for a specific GType. The function
 	 * {@link Atk.Registry.set_factory_type} is normally called to store in the
@@ -800,7 +841,9 @@ declare namespace imports.gi.Atk {
 	type PlugMixin = IPlug & Object & Component;
 
 	/**
-	 * See {@link Socket}
+	 * Toplevel for embedding into other processes
+	 * 
+	 * See [class{@link Socket}]
 	 */
 	interface Plug extends PlugMixin {}
 
@@ -859,6 +902,10 @@ declare namespace imports.gi.Atk {
 	type RegistryMixin = IRegistry & GObject.Object;
 
 	/**
+	 * An object used to store the GType of the
+	 * factories used to create an accessible object for an object of a
+	 * particular GType.
+	 * 
 	 * The AtkRegistry is normally used to create appropriate ATK "peers"
 	 * for user interface components.  Application developers usually need
 	 * only interact with the AtkRegistry by associating appropriate ATK
@@ -922,6 +969,9 @@ declare namespace imports.gi.Atk {
 	type RelationMixin = IRelation & GObject.Object;
 
 	/**
+	 * An object used to describe a relation between a
+	 *  object and one or more other objects.
+	 * 
 	 * An AtkRelation describes a relation between an object and one or
 	 * more other objects. The actual relations that an object has with
 	 * other objects are defined as an AtkRelationSet, which is a set of
@@ -1023,6 +1073,9 @@ declare namespace imports.gi.Atk {
 	type RelationSetMixin = IRelationSet & GObject.Object;
 
 	/**
+	 * A set of AtkRelations, normally the set of
+	 *  AtkRelations which an AtkObject has.
+	 * 
 	 * The AtkRelationSet held by an object establishes its relationships
 	 * with objects beyond the normal "parent/child" hierarchical
 	 * relationships that all user interface objects have.
@@ -1077,6 +1130,8 @@ declare namespace imports.gi.Atk {
 	type SocketMixin = ISocket & Object & Component;
 
 	/**
+	 * Container for AtkPlug objects from other processes
+	 * 
 	 * Together with {@link Plug}, #AtkSocket provides the ability to embed
 	 * accessibles from one process into another in a fashion that is
 	 * transparent to assistive technologies. #AtkSocket works as the
@@ -1099,6 +1154,8 @@ declare namespace imports.gi.Atk {
 	 * atk_object_get_n_accessible_children() and
 	 * atk_object_ref_accessible_child(). All the logic related to those
 	 * functions will be implemented by the IPC layer.
+	 * 
+	 * See [class#AtkPlug]
 	 */
 	interface Socket extends SocketMixin {}
 
@@ -1205,6 +1262,8 @@ declare namespace imports.gi.Atk {
 	type StateSetMixin = IStateSet & GObject.Object;
 
 	/**
+	 * An AtkStateSet contains the states of an object.
+	 * 
 	 * An AtkStateSet is a read-only representation of the full set of {@link States}
 	 * that apply to an object at a given time. This set is not meant to be
 	 * modified, but rather created when {@link #atk.object_ref_state_set} is called.
@@ -1236,6 +1295,8 @@ declare namespace imports.gi.Atk {
 	type UtilMixin = IUtil & GObject.Object;
 
 	/**
+	 * A set of ATK utility functions for event and toolkit support.
+	 * 
 	 * A set of ATK utility functions which are used to support event
 	 * registration of various types, and obtaining the 'root' accessible
 	 * of a process and information about the current ATK implementation
@@ -1469,7 +1530,9 @@ declare namespace imports.gi.Atk {
 
 	export interface RangeInitOptions {}
 	/**
-	 * {@link Range} are used on #AtkValue, in order to represent the full
+	 * A given range or subrange, to be used with {@link Value}
+	 * 
+	 * #AtkRange are used on #AtkValue, in order to represent the full
 	 * range of a given component (for example an slider or a range
 	 * control), or to define each individual subrange this full range is
 	 * splitted if available. See #AtkValue documentation for further
@@ -1825,6 +1888,9 @@ declare namespace imports.gi.Atk {
 	type ActionMixin = IAction;
 
 	/**
+	 * The ATK interface provided by UI components
+	 * which the user can activate/interact with.
+	 * 
 	 * {@link Action} should be implemented by instances of #AtkObject classes
 	 * with which the user can interact directly, i.e. buttons,
 	 * checkboxes, scrollbars, e.g. components which are not "passive"
@@ -2048,6 +2114,10 @@ declare namespace imports.gi.Atk {
 	type ComponentMixin = IComponent;
 
 	/**
+	 * The ATK interface provided by UI components
+	 * which occupy a physical area on the screen.
+	 * which the user can activate/interact with.
+	 * 
 	 * {@link Component} should be implemented by most if not all UI elements
 	 * with an actual on-screen presence, i.e. components which can be
 	 * said to have a screen-coordinate bounding box.  Virtually all
@@ -2214,6 +2284,9 @@ declare namespace imports.gi.Atk {
 	type DocumentMixin = IDocument;
 
 	/**
+	 * The ATK interface which represents the toplevel
+	 *  container for document content.
+	 * 
 	 * The AtkDocument interface should be supported by any object whose
 	 * content is a representation or view of a document.  The AtkDocument
 	 * interface should appear on the toplevel container for the document
@@ -2296,6 +2369,8 @@ declare namespace imports.gi.Atk {
 	type EditableTextMixin = IEditableText;
 
 	/**
+	 * The ATK interface implemented by components containing user-editable text content.
+	 * 
 	 * {@link EditableText} should be implemented by UI components which
 	 * contain text which the user can edit, via the #AtkObject
 	 * corresponding to that component (see #AtkObject).
@@ -2304,7 +2379,7 @@ declare namespace imports.gi.Atk {
 	 * which implements #AtkEditableText is by definition an #AtkText
 	 * implementor as well.
 	 * 
-	 * See also: #AtkText
+	 * See [iface#AtkText]
 	 */
 	interface EditableText extends EditableTextMixin {}
 
@@ -2335,34 +2410,11 @@ declare namespace imports.gi.Atk {
 	type HyperlinkImplMixin = IHyperlinkImpl;
 
 	/**
-	 * AtkHyperlinkImpl allows AtkObjects to refer to their associated
-	 * AtkHyperlink instance, if one exists.  AtkHyperlinkImpl differs
-	 * from AtkHyperlink in that AtkHyperlinkImpl is an interface, whereas
-	 * AtkHyperlink is a object type.  The AtkHyperlinkImpl interface
-	 * allows a client to query an AtkObject for the availability of an
-	 * associated AtkHyperlink instance, and obtain that instance.  It is
-	 * thus particularly useful in cases where embedded content or inline
-	 * content within a text object is present, since the embedding text
-	 * object implements AtkHypertext and the inline/embedded objects are
-	 * exposed as children which implement AtkHyperlinkImpl, in addition
-	 * to their being obtainable via AtkHypertext:getLink followed by
-	 * AtkHyperlink:getObject.
-	 * 
-	 * The AtkHyperlinkImpl interface should be supported by objects
-	 * exposed within the hierarchy as children of an AtkHypertext
-	 * container which correspond to "links" or embedded content within
-	 * the text.  HTML anchors are not, for instance, normally exposed
-	 * this way, but embedded images and components which appear inline in
-	 * the content of a text object are. The AtkHyperlinkIface interface
-	 * allows a means of determining which children are hyperlinks in this
-	 * sense of the word, and for obtaining their corresponding
-	 * AtkHyperlink object, from which the embedding range, URI, etc. can
-	 * be obtained.
-	 * 
-	 * To some extent this interface exists because, for historical
-	 * reasons, AtkHyperlink was defined as an object type, not an
-	 * interface.  Thus, in order to interact with AtkObjects via
-	 * AtkHyperlink semantics, a new interface was required.
+	 * A queryable interface which allows AtkHyperlink instances
+	 * associated with an AtkObject to be obtained.  AtkHyperlinkImpl
+	 * corresponds to AT-SPI's Hyperlink interface, and differs from
+	 * AtkHyperlink in that AtkHyperlink is an object type, rather than an
+	 * interface, and thus cannot be directly queried. FTW
 	 */
 	interface HyperlinkImpl extends HyperlinkImplMixin {}
 
@@ -2421,6 +2473,8 @@ declare namespace imports.gi.Atk {
 	type HypertextMixin = IHypertext;
 
 	/**
+	 * The ATK interface which provides standard mechanism for manipulating hyperlinks.
+	 * 
 	 * An interface used for objects which implement linking between
 	 * multiple resource or content locations, or multiple 'markers'
 	 * within a single document.  A Hypertext instance is associated with
@@ -2497,6 +2551,9 @@ declare namespace imports.gi.Atk {
 	type ImageMixin = IImage;
 
 	/**
+	 * The ATK Interface implemented by components
+	 *  which expose image or pixmap content on-screen.
+	 * 
 	 * {@link Image} should be implemented by #AtkObject subtypes on behalf of
 	 * components which display image/pixmap information onscreen, and
 	 * which provide information (other than just widget borders, etc.)
@@ -2634,7 +2691,9 @@ declare namespace imports.gi.Atk {
 	type SelectionMixin = ISelection;
 
 	/**
-	 * {@link Selection} should be implemented by UI components with children
+	 * The ATK interface implemented by container objects whose {@link Object} children can be selected.
+	 * 
+	 * #AtkSelection should be implemented by UI components with children
 	 * which are exposed by #atk_object_ref_child and
 	 * #atk_object_get_n_children, if the use of the parent UI component
 	 * ordinarily involves selection of one or more of the objects
@@ -2703,6 +2762,8 @@ declare namespace imports.gi.Atk {
 	type StreamableContentMixin = IStreamableContent;
 
 	/**
+	 * The ATK interface which provides access to streamable content.
+	 * 
 	 * An interface whereby an object allows its backing content to be
 	 * streamed to clients.  Typical implementors would be images or
 	 * icons, HTML content, or multimedia display/rendering widgets.
@@ -3046,6 +3107,8 @@ declare namespace imports.gi.Atk {
 	type TableMixin = ITable;
 
 	/**
+	 * The ATK interface implemented for UI components which contain tabular or row/column information.
+	 * 
 	 * {@link Table} should be implemented by components which present
 	 * elements ordered via rows and columns.  It may also be used to
 	 * present tree-structured information if the nodes of the trees can
@@ -3153,11 +3216,13 @@ declare namespace imports.gi.Atk {
 	type TableCellMixin = ITableCell;
 
 	/**
-	 * Being {@link Table} a component which present elements ordered via rows
+	 * The ATK interface implemented for a cell inside a two-dimentional {@link Table}
+	 * 
+	 * Being #AtkTable a component which present elements ordered via rows
 	 * and columns, an #AtkTableCell is the interface which each of those
 	 * elements, so "cells" should implement.
 	 * 
-	 * See also #AtkTable.
+	 * See [iface#AtkTable]
 	 */
 	interface TableCell extends TableCellMixin {}
 
@@ -3582,6 +3647,8 @@ declare namespace imports.gi.Atk {
 	type TextMixin = IText;
 
 	/**
+	 * The ATK interface implemented by components with text content.
+	 * 
 	 * {@link Text} should be implemented by #AtkObjects on behalf of widgets
 	 * that have text content which is either attributed or otherwise
 	 * non-trivial.  #AtkObjects whose text content is simple,
@@ -3753,6 +3820,8 @@ declare namespace imports.gi.Atk {
 	type ValueMixin = IValue;
 
 	/**
+	 * The ATK interface implemented by valuators and components which display or select a value from a bounded range of values.
+	 * 
 	 * {@link Value} should be implemented for components which either display
 	 * a value from a bounded range, or which allow the user to specify a
 	 * value from a bounded range, or both. For instance, most sliders and
@@ -4009,9 +4078,13 @@ declare namespace imports.gi.Atk {
 	type WindowMixin = IWindow;
 
 	/**
+	 * The ATK Interface provided by UI components that represent a top-level window.
+	 * 
 	 * {@link Window} should be implemented by the UI elements that represent
 	 * a top-level window, such as the main window of an application or
 	 * dialog.
+	 * 
+	 * See [class#AtkObject]
 	 */
 	interface Window extends WindowMixin {}
 
@@ -4100,6 +4173,27 @@ declare namespace imports.gi.Atk {
 		 * This layer is used for toplevel windows.
 		 */
 		WINDOW = 7
+	}
+
+	/**
+	 * Enumeration used to indicate a type of live region and how assertive it
+	 * should be in terms of speaking notifications. Currently, this is only used
+	 * for "notification" events, but it may be used for additional purposes
+	 * in the future.
+	 */
+	enum Live {
+		/**
+		 * No live region.
+		 */
+		NONE = 0,
+		/**
+		 * This live region should be considered polite.
+		 */
+		POLITE = 1,
+		/**
+		 * This live region should be considered assertive.
+		 */
+		ASSERTIVE = 2
 	}
 
 	/**
@@ -4816,9 +4910,14 @@ declare namespace imports.gi.Atk {
 		 */
 		SUGGESTION = 126,
 		/**
+		 * A specialized push button to open a menu.
+		 * (Since: 2.46)
+		 */
+		PUSH_BUTTON_MENU = 127,
+		/**
 		 * not a valid role, used for finding end of the enumeration
 		 */
-		LAST_DEFINED = 127
+		LAST_DEFINED = 128
 	}
 
 	/**
@@ -5107,9 +5206,13 @@ declare namespace imports.gi.Atk {
 		 */
 		READ_ONLY = 42,
 		/**
+		 * Indicates this object is collapsed. #Since: ATK-2.38
+		 */
+		COLLAPSED = 43,
+		/**
 		 * Not a valid state, used for finding end of enumeration
 		 */
-		LAST_DEFINED = 43
+		LAST_DEFINED = 44
 	}
 
 	/**
@@ -5380,7 +5483,7 @@ declare namespace imports.gi.Atk {
 	 * supported are events of type "focus:".  Most clients of ATK will prefer to
 	 * attach signal handlers for the various ATK signals instead.
 	 * 
-	 * see atk_add_focus_tracker.
+	 * see [id#atk_add_focus_tracker]
 	 */
 	interface EventListener {
 		/**
@@ -5390,7 +5493,7 @@ declare namespace imports.gi.Atk {
 		 * supported are events of type "focus:".  Most clients of ATK will prefer to
 		 * attach signal handlers for the various ATK signals instead.
 		 * 
-		 * see atk_add_focus_tracker.
+		 * see [id#atk_add_focus_tracker]
 		 * @param obj An {@link Object} instance for whom the callback will be called when
 		 * the specified event (e.g. 'focus:') takes place.
 		 */
@@ -5402,7 +5505,7 @@ declare namespace imports.gi.Atk {
 	 * called in order to initialize the per-object event registration system
 	 * used by #AtkEventListener, if any preparation is required.
 	 * 
-	 * see atk_focus_tracker_init.
+	 * see [id#atk_focus_tracker_init]
 	 */
 	interface EventListenerInit {
 		/**
@@ -5410,7 +5513,7 @@ declare namespace imports.gi.Atk {
 		 * called in order to initialize the per-object event registration system
 		 * used by #AtkEventListener, if any preparation is required.
 		 * 
-		 * see atk_focus_tracker_init.
+		 * see [id#atk_focus_tracker_init]
 		 */
 		(): void;
 	}
@@ -5467,7 +5570,7 @@ declare namespace imports.gi.Atk {
 		 * discarded without being passed to the normal GUI recipient; FALSE (zero) if the
 		 * event dispatch to the client application should proceed as normal.
 		 * 
-		 * see atk_add_key_event_listener.
+		 * see [id#atk_add_key_event_listener]
 		 */
 		(event: KeyEventStruct): number;
 	}
@@ -5500,6 +5603,14 @@ declare namespace imports.gi.Atk {
 	 */
 	type AttributeSet = GLib.SList;
 
+	/**
+	 * An AtkState describes a single state of an object.
+	 * 
+	 * An AtkState describes a single state of an object. The full set of states
+	 * that apply to an object at a given time are contained in its {@link StateSet}.
+	 * 
+	 * See [id#atk_object_ref_state_set] and [id#atk_object_notify_state_change]
+	 */
 	type State = number;
 
 	/**

@@ -60,11 +60,22 @@ declare namespace imports.gi.ClutterX11 {
 	 */
 	function get_root_window(): xlib.Window;
 	/**
+	 * Retrieves whether the Clutter X11 backend is using ARGB visuals by default
+	 * @returns %TRUE if ARGB visuals are queried by default
+	 */
+	function get_use_argb_visual(): boolean;
+	/**
 	 * Retrieves whether the Clutter X11 backend will create stereo
 	 * stages if possible.
 	 * @returns %TRUE if stereo stages are used if possible
 	 */
 	function get_use_stereo_stage(): boolean;
+	/**
+	 * Retrieves whether Clutter is running on an X11 server with the
+	 * XComposite extension
+	 * @returns %TRUE if the XComposite extension is available
+	 */
+	function has_composite_extension(): boolean;
 	/**
 	 * Removes the given filter function.
 	 * @param func a filter function
@@ -82,6 +93,22 @@ declare namespace imports.gi.ClutterX11 {
 	 * @param xdpy pointer to a X display connection.
 	 */
 	function set_display(xdpy: xlib.Display): void;
+	/**
+	 * Sets whether the Clutter X11 backend should request ARGB visuals by default
+	 * or not.
+	 * 
+	 * By default, Clutter requests RGB visuals.
+	 * 
+	 * If no ARGB visuals are found, the X11 backend will fall back to
+	 * requesting a RGB visual instead.
+	 * 
+	 * ARGB visuals are required for the #ClutterStage:use-alpha property to work.
+	 * 
+	 * This function can only be called once, and before clutter_init() is
+	 * called.
+	 * @param use_argb %TRUE if ARGB visuals should be requested by default
+	 */
+	function set_use_argb_visual(use_argb: boolean): void;
 	/**
 	 * Sets whether the backend object for Clutter stages, will,
 	 * if possible, be created with the ability to support stereo drawing

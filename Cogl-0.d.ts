@@ -113,7 +113,6 @@ declare namespace imports.gi.Cogl {
 		 *               given #context.
 		 */
 		get_display(): any;
-		get_named_pipeline(key: PipelineKey): Pipeline;
 		/**
 		 * Retrieves the {@link Renderer} that is internally associated with the
 		 * given #context. This will return the same #CoglRenderer that was
@@ -125,17 +124,6 @@ declare namespace imports.gi.Cogl {
 		 *               given #context.
 		 */
 		get_renderer(): any;
-		is_hardware_accelerated(): boolean;
-		/**
-		 * Associate a {@link Pipeline} with a #context and #key. This will not take a new
-		 * reference to the #pipeline, but will unref all associated pipelines when
-		 * the #context gets destroyed. Similarly, if a pipeline gets overwritten,
-		 * it will get unreffed as well.
-		 * @param key a {@link PipelineKey} pointer
-		 * @param pipeline a {@link Pipeline} to associate with the #context and
-		 *            #key
-		 */
-		set_named_pipeline(key: PipelineKey, pipeline?: Pipeline | null): void;
 	}
 
 	type ContextInitOptionsMixin = ObjectInitOptions
@@ -157,62 +145,6 @@ declare namespace imports.gi.Cogl {
 		 * @returns A newly allocated {@link Context}
 		 */
 		public static new(display?: any | null): Context;
-	}
-
-	/** This construct is only for enabling class multi-inheritance,
-	 * use {@link FrameInfo} instead.
-	 */
-	interface IFrameInfo {
-		/**
-		 * Gets the frame counter for the {@link Onscreen} that corresponds
-		 * to this frame.
-		 * @returns The frame counter value
-		 */
-		get_frame_counter(): number;
-		get_global_frame_counter(): number;
-		/**
-		 * Gets the presentation time for the frame. This is the time at which
-		 * the frame became visible to the user.
-		 * 
-		 * The presentation time measured in nanoseconds, is based on
-		 * {@link Cogl.get.clock_time}.
-		 * 
-		 * <note>Linux kernel version less that 3.8 can result in
-		 * non-monotonic timestamps being reported when using a drm based
-		 * OpenGL driver. Also some buggy Mesa drivers up to 9.0.1 may also
-		 * incorrectly report non-monotonic timestamps.</note>
-		 * @returns the presentation time for the frame
-		 */
-		get_presentation_time(): number;
-		/**
-		 * Gets the refresh rate in Hertz for the output that the frame was on
-		 * at the time the frame was presented.
-		 * 
-		 * <note>Some platforms can't associate a {@link Output} with a
-		 * #CoglFrameInfo object but are able to report a refresh rate via
-		 * this api. Therefore if you need this information then this api is
-		 * more reliable than using {@link Cogl.FrameInfo.get_output} followed by
-		 * cogl_output_get_refresh_rate().</note>
-		 * @returns the refresh rate in Hertz
-		 */
-		get_refresh_rate(): number;
-	}
-
-	type FrameInfoInitOptionsMixin = ObjectInitOptions
-	export interface FrameInfoInitOptions extends FrameInfoInitOptionsMixin {}
-
-	/** This construct is only for enabling class multi-inheritance,
-	 * use {@link FrameInfo} instead.
-	 */
-	type FrameInfoMixin = IFrameInfo & Object;
-
-	/**
-	 * Frame information.
-	 */
-	interface FrameInfo extends FrameInfoMixin {}
-
-	class FrameInfo {
-		public constructor(options?: Partial<FrameInfoInitOptions>);
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -355,7 +287,7 @@ declare namespace imports.gi.Cogl {
 		 * been moved causing a region of the onscreen to be exposed.
 		 * 
 		 * The #callback will be passed a {@link OnscreenDirtyInfo} struct which
-		 * describes a rectangle containing the newly dirtied region. Note that
+		 * decribes a rectangle containing the newly dirtied region. Note that
 		 * this may be called multiple times to describe a non-rectangular
 		 * region composed of multiple smaller rectangles.
 		 * 
@@ -378,7 +310,7 @@ declare namespace imports.gi.Cogl {
 		 * ready for this application to render a new frame. In this case
 		 * %COGL_FRAME_EVENT_SYNC will be passed as the event argument to the
 		 * given #callback in addition to the {@link FrameInfo} corresponding to
-		 * the frame being acknowledged by the compositor.
+		 * the frame beeing acknowledged by the compositor.
 		 * 
 		 * The #callback will also be called to notify when the frame has
 		 * ended. In this case %COGL_FRAME_EVENT_COMPLETE will be passed as
@@ -428,7 +360,6 @@ declare namespace imports.gi.Cogl {
 		 *               remove the callback and associated #user_data later.
 		 */
 		add_resize_callback(callback: OnscreenResizeCallback, destroy?: UserDataDestroyCallback | null): OnscreenResizeClosure;
-		direct_scanout(scanout: Scanout, info: FrameInfo): boolean;
 		/**
 		 * Gets the current age of the buffer contents.
 		 * 
@@ -510,7 +441,7 @@ declare namespace imports.gi.Cogl {
 		 * framebuffer before hiding it.
 		 * 
 		 * <note>Since Cogl doesn't explicitly track the visibility status of
-		 * onscreen framebuffers it won't try to avoid redundant window system
+		 * onscreen framebuffers it wont try to avoid redundant window system
 		 * requests e.g. to show an already visible window. This also means
 		 * that it's acceptable to alternatively use native APIs to show and
 		 * hide windows without confusing Cogl.</note>
@@ -587,7 +518,7 @@ declare namespace imports.gi.Cogl {
 		 * client API via cogl_wayland_onscreen_get_surface().
 		 * 
 		 * <note>Since Cogl doesn't explicitly track the visibility status of
-		 * onscreen framebuffers it won't try to avoid redundant window system
+		 * onscreen framebuffers it wont try to avoid redundant window system
 		 * requests e.g. to show an already visible window. This also means
 		 * that it's acceptable to alternatively use native APIs to show and
 		 * hide windows without confusing Cogl.</note>
@@ -607,9 +538,8 @@ declare namespace imports.gi.Cogl {
 		 * and also use the cogl_onscreen_get_buffer_age() api so they can
 		 * perform incremental updates to older buffers instead of having to
 		 * render a full buffer for every frame.</note>
-		 * @param frame_info
 		 */
-		swap_buffers(frame_info: FrameInfo): void;
+		swap_buffers(): void;
 		/**
 		 * Swaps the current back buffer being rendered too, to the front for
 		 * display and provides information to any system compositor about
@@ -651,9 +581,8 @@ declare namespace imports.gi.Cogl {
 		 * @param rectangles An array of integer 4-tuples representing damaged
 		 *              rectangles as (x, y, width, height) tuples.
 		 * @param n_rectangles The number of 4-tuples to be read from #rectangles
-		 * @param info
 		 */
-		swap_buffers_with_damage(rectangles: number, n_rectangles: number, info: FrameInfo): void;
+		swap_buffers_with_damage(rectangles: number, n_rectangles: number): void;
 		/**
 		 * Swaps a region of the back buffer being rendered too, to the front for
 		 * display.  #rectangles represents the region as array of #n_rectangles each
@@ -667,9 +596,8 @@ declare namespace imports.gi.Cogl {
 		 * @param rectangles An array of integer 4-tuples representing rectangles as
 		 *              (x, y, width, height) tuples.
 		 * @param n_rectangles The number of 4-tuples to be read from #rectangles
-		 * @param info
 		 */
-		swap_region(rectangles: number, n_rectangles: number, info: FrameInfo): void;
+		swap_region(rectangles: number, n_rectangles: number): void;
 	}
 
 	type OnscreenInitOptionsMixin = ObjectInitOptions & FramebufferInitOptions
@@ -878,7 +806,7 @@ declare namespace imports.gi.Cogl {
 		 * 
 		 * This is the list of source-names usable as blend factors:
 		 * <itemizedlist>
-		 *   <listitem><para>SRC_COLOR: The color of the incoming fragment</para></listitem>
+		 *   <listitem><para>SRC_COLOR: The color of the in comming fragment</para></listitem>
 		 *   <listitem><para>DST_COLOR: The color of the framebuffer</para></listitem>
 		 *   <listitem><para>CONSTANT: The constant set via cogl_pipeline_set_blend_constant()</para></listitem>
 		 * </itemizedlist>
@@ -976,7 +904,7 @@ declare namespace imports.gi.Cogl {
 		 * get overridden. For example, if a model has gaps so that it is
 		 * impossible to see the inside then faces which are facing away from
 		 * the screen will never be seen so there is no point in drawing
-		 * them. This can be achieved by setting the cull face mode to
+		 * them. This can be acheived by setting the cull face mode to
 		 * %COGL_PIPELINE_CULL_FACE_MODE_BACK.
 		 * 
 		 * Face culling relies on the primitives being drawn with a specific
@@ -1186,7 +1114,7 @@ declare namespace imports.gi.Cogl {
 		 * and cogl_point_size_out is not written to then the results are
 		 * undefined.
 		 * @param enable whether to enable per-vertex point size
-		 * @returns %TRUE if the change succeeded or %FALSE otherwise
+		 * @returns %TRUE if the change suceeded or %FALSE otherwise
 		 */
 		set_per_vertex_point_size(enable: boolean): boolean;
 		/**
@@ -1968,7 +1896,7 @@ declare namespace imports.gi.Cogl {
 		 * 
 		 * This is the list of source-names usable as blend factors:
 		 * <itemizedlist>
-		 *   <listitem><para>SRC_COLOR: The color of the incoming fragment</para></listitem>
+		 *   <listitem><para>SRC_COLOR: The color of the in comming fragment</para></listitem>
 		 *   <listitem><para>DST_COLOR: The color of the framebuffer</para></listitem>
 		 *   <listitem><para>CONSTANT: The constant set via cogl_material_set_blend_constant()</para></listitem>
 		 * </itemizedlist>
@@ -2430,7 +2358,7 @@ declare namespace imports.gi.Cogl {
 		 * vector, which is normally simply (0, 1, 0) to map up to the
 		 * positive direction of the y axis.
 		 * 
-		 * Because there is a lot of misleading documentation online for
+		 * Because there is a lot of missleading documentation online for
 		 * gluLookAt regarding the up vector we want to try and be a bit
 		 * clearer here.
 		 * 
@@ -2438,7 +2366,7 @@ declare namespace imports.gi.Cogl {
 		 * and does not need to change as you move the eye and object
 		 * positions.  Many online sources may claim that the up vector needs
 		 * to be perpendicular to the vector between the eye and object
-		 * position (partly because the man page is somewhat misleading) but
+		 * position (partly because the man page is somewhat missleading) but
 		 * that is not necessary for this function.
 		 * 
 		 * <note>You should never look directly along the world-up
@@ -2489,7 +2417,7 @@ declare namespace imports.gi.Cogl {
 		 * 
 		 * <note>You should be careful not to have to great a #z_far / #z_near
 		 * ratio since that will reduce the effectiveness of depth testing
-		 * since there won't be enough precision to identify the depth of
+		 * since there wont be enough precision to identify the depth of
 		 * objects near to each other.</note>
 		 * @param fov_y Vertical field of view angle in degrees.
 		 * @param aspect The (width over height) aspect ratio for display
@@ -2502,7 +2430,7 @@ declare namespace imports.gi.Cogl {
 		 * Projects an array of input points and writes the result to another
 		 * array of output points. The input points can either have 2, 3 or 4
 		 * components each. The output points always have 4 components (known
-		 * as homogeneous coordinates). The output array can simply point to
+		 * as homogenous coordinates). The output array can simply point to
 		 * the input array to do the transform in-place.
 		 * 
 		 * Here's an example with differing input/output strides:
@@ -2564,7 +2492,7 @@ declare namespace imports.gi.Cogl {
 		 */
 		public scale(sx: number, sy: number, sz: number): void;
 		/**
-		 * Transforms a point whose position is given and returned as four float
+		 * Transforms a point whos position is given and returned as four float
 		 * components.
 		 */
 		public transform_point(): void;
@@ -2729,12 +2657,6 @@ declare namespace imports.gi.Cogl {
 		public constructor(options?: Partial<OnscreenResizeClosureInitOptions>);
 	}
 
-	export interface ScanoutInitOptions {}
-	interface Scanout {}
-	class Scanout {
-		public constructor(options?: Partial<ScanoutInitOptions>);
-	}
-
 	export interface TextureVertexInitOptions {}
 	/**
 	 * Used to specify vertex information when calling {@link Cogl.polygon}
@@ -2789,12 +2711,12 @@ declare namespace imports.gi.Cogl {
 	 * }
 	 * 
 	 * static void
-	 * my_path_set_data (CoglPipeline *pipeline, void *data)
+	 * my_path_set_data (CoglPath *path, void *data)
 	 * {
-	 *   cogl_object_set_user_data (COGL_OBJECT (pipeline),
+	 *   cogl_object_set_user_data (COGL_OBJECT (path),
 	 *                              &private_key,
 	 *                              data,
-	 *                              destroy_pipeline_private_cb);
+	 *                              destroy_path_private_cb);
 	 * }
 	 * ]|
 	 */
@@ -3283,7 +3205,7 @@ declare namespace imports.gi.Cogl {
 		 * 
 		 * <note>You should be careful not to have to great a #z_far / #z_near
 		 * ratio since that will reduce the effectiveness of depth testing
-		 * since there won't be enough precision to identify the depth of
+		 * since there wont be enough precision to identify the depth of
 		 * objects near to each other.</note>
 		 * @param fov_y Vertical field of view angle in degrees.
 		 * @param aspect The (width over height) aspect ratio for display
@@ -3409,7 +3331,7 @@ declare namespace imports.gi.Cogl {
 		 * use one of the formats ending in PRE.
 		 * @param x The x position to read from
 		 * @param y The y position to read from
-		 * @param source Identifies which auxiliary buffer you want to read
+		 * @param source Identifies which auxillary buffer you want to read
 		 *          (only COGL_READ_PIXELS_COLOR_BUFFER supported currently)
 		 * @param bitmap The bitmap to store the results in.
 		 * @returns %TRUE if the read succeeded or %FALSE otherwise. The
@@ -4154,12 +4076,7 @@ declare namespace imports.gi.Cogl {
 		 *    expected to return age values other than 0.
 		 */
 		OGL_FEATURE_ID_BUFFER_AGE = 7,
-		OGL_FEATURE_ID_TEXTURE_EGL_IMAGE_EXTERNAL = 8,
-		/**
-		 * Whether blitting using
-		 *    {@link Cogl.blit.framebuffer} is supported.
-		 */
-		OGL_FEATURE_ID_BLIT_FRAMEBUFFER = 9
+		OGL_FEATURE_ID_TEXTURE_EGL_IMAGE_EXTERNAL = 8
 	}
 
 	/**
@@ -4549,7 +4466,7 @@ declare namespace imports.gi.Cogl {
 	 */
 	enum ShaderType {
 		/**
-		 * A program for processing vertices
+		 * A program for proccessing vertices
 		 */
 		VERTEX = 0,
 		/**
@@ -4714,16 +4631,17 @@ declare namespace imports.gi.Cogl {
 
 	enum WinsysFeature {
 		MULTIPLE_ONSCREEN = 0,
-		VBLANK_COUNTER = 1,
-		VBLANK_WAIT = 2,
-		TEXTURE_FROM_PIXMAP = 3,
-		SWAP_BUFFERS_EVENT = 4,
-		SWAP_REGION = 5,
-		SWAP_REGION_THROTTLE = 6,
-		SWAP_REGION_SYNCHRONIZED = 7,
-		BUFFER_AGE = 8,
-		SYNC_AND_COMPLETE_EVENT = 9,
-		N_FEATURES = 10
+		SWAP_THROTTLE = 1,
+		VBLANK_COUNTER = 2,
+		VBLANK_WAIT = 3,
+		TEXTURE_FROM_PIXMAP = 4,
+		SWAP_BUFFERS_EVENT = 5,
+		SWAP_REGION = 6,
+		SWAP_REGION_THROTTLE = 7,
+		SWAP_REGION_SYNCHRONIZED = 8,
+		BUFFER_AGE = 9,
+		SYNC_AND_COMPLETE_EVENT = 10,
+		N_FEATURES = 11
 	}
 
 	/**
@@ -4859,22 +4777,6 @@ declare namespace imports.gi.Cogl {
 		 */
 		ABGR_2101010 = 125,
 		/**
-		 * RGBA half floating point, 64 bit
-		 */
-		RGBA_FP_16161616 = 27,
-		/**
-		 * BGRA half floating point, 64 bit
-		 */
-		BGRA_FP_16161616 = 59,
-		/**
-		 * ARGB half floating point, 64 bit
-		 */
-		ARGB_FP_16161616 = 91,
-		/**
-		 * ABGR half floating point, 64 bit
-		 */
-		ABGR_FP_16161616 = 123,
-		/**
 		 * Premultiplied RGBA, 32 bits
 		 */
 		RGBA_8888_PRE = 147,
@@ -4914,22 +4816,6 @@ declare namespace imports.gi.Cogl {
 		 * Premultiplied ABGR, 32 bits, 10 bpc
 		 */
 		ABGR_2101010_PRE = 253,
-		/**
-		 * Premultiplied RGBA half floating point, 64 bit
-		 */
-		RGBA_FP_16161616_PRE = 155,
-		/**
-		 * Premultiplied BGRA half floating point, 64 bit
-		 */
-		BGRA_FP_16161616_PRE = 187,
-		/**
-		 * Premultiplied ARGB half floating point, 64 bit
-		 */
-		ARGB_FP_16161616_PRE = 219,
-		/**
-		 * Premultiplied ABGR half floating point, 64 bit
-		 */
-		ABGR_FP_16161616_PRE = 251,
 		DEPTH_16 = 265,
 		DEPTH_32 = 259,
 		DEPTH_24_STENCIL_8 = 771
@@ -5019,7 +4905,7 @@ declare namespace imports.gi.Cogl {
 		 * @param info The meta information, such as timing information, about
 		 *        the frame that has progressed.
 		 */
-		(onscreen: Onscreen, event: FrameEvent, info: FrameInfo): void;
+		(onscreen: Onscreen, event: FrameEvent, info: any): void;
 	}
 
 	/**
@@ -5086,7 +4972,7 @@ declare namespace imports.gi.Cogl {
 		/**
 		 * The callback prototype used with {@link Cogl.Pipeline.foreach_layer} for
 		 * iterating all the layers of a #pipeline.
-		 * @param pipeline The {@link Pipeline} whose layers are being iterated
+		 * @param pipeline The {@link Pipeline} whos layers are being iterated
 		 * @param layer_index The current layer index
 		 * @returns 
 		 */
@@ -5113,8 +4999,6 @@ declare namespace imports.gi.Cogl {
 	 */
 	type Handle = any;
 
-	type PipelineKey = string;
-
 	/**
 	 * When associating private data with a {@link Object} a callback can be
 	 * given which will be called either if the object is destroyed or if
@@ -5129,7 +5013,7 @@ declare namespace imports.gi.Cogl {
 	 * 
 	 * This blits a region of the color buffer of the source buffer
 	 * to the destination buffer. This function should only be
-	 * called if the COGL_FEATURE_ID_BLIT_FRAMEBUFFER feature is
+	 * called if the COGL_PRIVATE_FEATURE_BLIT_FRAMEBUFFER feature is
 	 * advertised.
 	 * 
 	 * The source and destination rectangles are defined in offscreen
@@ -5363,13 +5247,6 @@ declare namespace imports.gi.Cogl {
 	 *   %FALSE otherwise
 	 */
 	function is_context(object: any | null): boolean;
-	/**
-	 * Gets whether the given object references a {@link FrameInfo}.
-	 * @param object A {@link Object} pointer
-	 * @returns %TRUE if the object references a {@link FrameInfo}
-	 *   and %FALSE otherwise.
-	 */
-	function is_frame_info(object: any | null): boolean;
 	/**
 	 * Gets whether the given object references a {@link Framebuffer}.
 	 * @param object A {@link Object} pointer

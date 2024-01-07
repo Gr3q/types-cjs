@@ -2102,6 +2102,12 @@ declare namespace imports.gi.GIRepository {
 	 */
 	function struct_info_get_alignment(info: StructInfo): number;
 	/**
+	 * Retrieves the name of the copy function for #info, if any is set.
+	 * @param info a struct information blob
+	 * @returns the name of the copy function
+	 */
+	function struct_info_get_copy_function(info: StructInfo): string | null;
+	/**
 	 * Obtain the type information for field with specified index.
 	 * @param info a #GIStructInfo
 	 * @param n a field index
@@ -2109,6 +2115,12 @@ declare namespace imports.gi.GIRepository {
 	 * when done.
 	 */
 	function struct_info_get_field(info: StructInfo, n: number): FieldInfo;
+	/**
+	 * Retrieves the name of the free function for #info, if any is set.
+	 * @param info a struct information blob
+	 * @returns the name of the free function
+	 */
+	function struct_info_get_free_function(info: StructInfo): string | null;
 	/**
 	 * Obtain the type information for method with specified index.
 	 * @param info a #GIStructInfo
@@ -2310,6 +2322,12 @@ declare namespace imports.gi.GIRepository {
 	 */
 	function union_info_get_alignment(info: UnionInfo): number;
 	/**
+	 * Retrieves the name of the copy function for #info, if any is set.
+	 * @param info a union information blob
+	 * @returns the name of the copy function
+	 */
+	function union_info_get_copy_function(info: UnionInfo): string | null;
+	/**
 	 * Obtain discriminator value assigned for n-th union field, i.e. n-th
 	 * union field is the active one if discriminator contains this
 	 * constant.
@@ -2340,6 +2358,12 @@ declare namespace imports.gi.GIRepository {
 	 * when done.
 	 */
 	function union_info_get_field(info: UnionInfo, n: number): FieldInfo;
+	/**
+	 * Retrieves the name of the free function for #info, if any is set.
+	 * @param info a union information blob
+	 * @returns the name of the free function
+	 */
+	function union_info_get_free_function(info: UnionInfo): string | null;
 	/**
 	 * Obtain the type information for method with specified index.
 	 * @param info a #GIUnionInfo

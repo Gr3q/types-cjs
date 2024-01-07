@@ -272,7 +272,7 @@ declare namespace imports.gi.GdkPixbuf {
 		 * This function will cause an implicit copy of the pixbuf data if the
 		 * pixbuf was created from read-only data.
 		 * 
-		 * Please see the section on [image data](#image-data) for information
+		 * Please see the section on [image data](class.Pixbuf.html#image-data) for information
 		 * about how the pixel data is stored in memory.
 		 * @returns A pointer to the pixbuf's
 		 * pixel data.
@@ -2075,15 +2075,42 @@ declare namespace imports.gi.GdkPixbuf {
 		 * a `GdkPixbufFormat` holding information about the module.
 		 */
 		public info: PixbufFormat;
-		public load: {(f: any): Pixbuf;};
-		public load_xpm_data: {(data: string): Pixbuf;};
-		public begin_load: {(size_func: PixbufModuleSizeFunc, prepared_func: PixbufModulePreparedFunc, updated_func: PixbufModuleUpdatedFunc): any;};
-		public stop_load: {(context: any): boolean;};
-		public load_increment: {(context: any, buf: number, size: number): boolean;};
-		public load_animation: {(f: any): PixbufAnimation;};
-		public save: {(f: any, pixbuf: Pixbuf, param_keys: string, param_values: string): boolean;};
-		public save_to_callback: {(save_func: PixbufSaveFunc, pixbuf: Pixbuf, option_keys: string, option_values: string): boolean;};
-		public is_save_option_supported: {(option_key: string): boolean;};
+		/**
+		 * loads an image from a file.
+		 */
+		public load: PixbufModuleLoadFunc;
+		/**
+		 * loads an image from data in memory.
+		 */
+		public load_xpm_data: PixbufModuleLoadXpmDataFunc;
+		/**
+		 * begins an incremental load.
+		 */
+		public begin_load: PixbufModuleBeginLoadFunc;
+		/**
+		 * stops an incremental load.
+		 */
+		public stop_load: PixbufModuleStopLoadFunc;
+		/**
+		 * continues an incremental load.
+		 */
+		public load_increment: PixbufModuleIncrementLoadFunc;
+		/**
+		 * loads an animation from a file.
+		 */
+		public load_animation: PixbufModuleLoadAnimationFunc;
+		/**
+		 * saves a `GdkPixbuf` to a file.
+		 */
+		public save: PixbufModuleSaveFunc;
+		/**
+		 * saves a `GdkPixbuf` by calling the given `GdkPixbufSaveFunc`.
+		 */
+		public save_to_callback: PixbufModuleSaveCallbackFunc;
+		/**
+		 * returns whether a save option key is supported by the module
+		 */
+		public is_save_option_supported: PixbufModuleSaveOptionSupportedFunc;
 		public _reserved1: {(): void;};
 		public _reserved2: {(): void;};
 		public _reserved3: {(): void;};
@@ -2337,6 +2364,38 @@ declare namespace imports.gi.GdkPixbuf {
 	}
 
 	/**
+	 * Sets up the image loading state.
+	 * 
+	 * The image loader is responsible for storing the given function pointers
+	 * and user data, and call them when needed.
+	 * 
+	 * The image loader should set up an internal state object, and return it
+	 * from this function; the state object will then be updated from the
+	 * [callback#GdkPixbuf.PixbufModuleIncrementLoadFunc] callback, and will be freed
+	 * by [callback#GdkPixbuf.PixbufModuleStopLoadFunc] callback.
+	 */
+	interface PixbufModuleBeginLoadFunc {
+		/**
+		 * Sets up the image loading state.
+		 * 
+		 * The image loader is responsible for storing the given function pointers
+		 * and user data, and call them when needed.
+		 * 
+		 * The image loader should set up an internal state object, and return it
+		 * from this function; the state object will then be updated from the
+		 * [callback#GdkPixbuf.PixbufModuleIncrementLoadFunc] callback, and will be freed
+		 * by [callback#GdkPixbuf.PixbufModuleStopLoadFunc] callback.
+		 * @param size_func the function to be called when the size is known
+		 * @param prepared_func the function to be called when the data has been prepared
+		 * @param updated_func the function to be called when the data has been updated
+		 * @returns the data to be passed to
+		 *   [callback#GdkPixbuf.PixbufModuleIncrementLoadFunc]
+		 *   and [callback#GdkPixbuf.PixbufModuleStopLoadFunc], or `NULL` in case of error
+		 */
+		(size_func: PixbufModuleSizeFunc, prepared_func: PixbufModulePreparedFunc, updated_func: PixbufModuleUpdatedFunc): any | null;
+	}
+
+	/**
 	 * Defines the type of the function used to fill a
 	 * {@link Format} structure with information about a module.
 	 */
@@ -2363,6 +2422,63 @@ declare namespace imports.gi.GdkPixbuf {
 	}
 
 	/**
+	 * Incrementally loads a buffer into the image data.
+	 */
+	interface PixbufModuleIncrementLoadFunc {
+		/**
+		 * Incrementally loads a buffer into the image data.
+		 * @param context the state object created by [callback#GdkPixbuf.PixbufModuleBeginLoadFunc]
+		 * @param buf the data to load
+		 * @returns `TRUE` if the incremental load was successful
+		 */
+		(context: any | null, buf: number[]): boolean;
+	}
+
+	/**
+	 * Loads a file from a standard C file stream into a new `GdkPixbufAnimation`.
+	 * 
+	 * In case of error, this function should return `NULL` and set the `error` argument.
+	 */
+	interface PixbufModuleLoadAnimationFunc {
+		/**
+		 * Loads a file from a standard C file stream into a new `GdkPixbufAnimation`.
+		 * 
+		 * In case of error, this function should return `NULL` and set the `error` argument.
+		 * @param f the file stream from which the image should be loaded
+		 * @returns a newly created `GdkPixbufAnimation` for the contents of the file
+		 */
+		(f?: any | null): PixbufAnimation;
+	}
+
+	/**
+	 * Loads a file from a standard C file stream into a new `GdkPixbuf`.
+	 * 
+	 * In case of error, this function should return `NULL` and set the `error` argument.
+	 */
+	interface PixbufModuleLoadFunc {
+		/**
+		 * Loads a file from a standard C file stream into a new `GdkPixbuf`.
+		 * 
+		 * In case of error, this function should return `NULL` and set the `error` argument.
+		 * @param f the file stream from which the image should be loaded
+		 * @returns a newly created `GdkPixbuf` for the contents of the file
+		 */
+		(f?: any | null): Pixbuf;
+	}
+
+	/**
+	 * Loads XPM data into a new `GdkPixbuf`.
+	 */
+	interface PixbufModuleLoadXpmDataFunc {
+		/**
+		 * Loads XPM data into a new `GdkPixbuf`.
+		 * @param data the XPM data
+		 * @returns a newly created `GdkPixbuf` for the XPM data
+		 */
+		(data: string[]): Pixbuf;
+	}
+
+	/**
 	 * Defines the type of the function that gets called once the initial
 	 * setup of #pixbuf is done.
 	 * 
@@ -2382,6 +2498,66 @@ declare namespace imports.gi.GdkPixbuf {
 		 * @param anim if an animation is being loaded, the {@link Animation}, else %NULL.
 		 */
 		(pixbuf: Pixbuf, anim: PixbufAnimation): void;
+	}
+
+	/**
+	 * Saves a `GdkPixbuf` by calling the provided function.
+	 * 
+	 * The optional `option_keys` and `option_values` arrays contain the keys and
+	 * values (in the same order) for attributes to be saved alongside the image
+	 * data.
+	 */
+	interface PixbufModuleSaveCallbackFunc {
+		/**
+		 * Saves a `GdkPixbuf` by calling the provided function.
+		 * 
+		 * The optional `option_keys` and `option_values` arrays contain the keys and
+		 * values (in the same order) for attributes to be saved alongside the image
+		 * data.
+		 * @param save_func the function to call when saving
+		 * @param pixbuf the `GdkPixbuf` to save
+		 * @param option_keys an array of option names
+		 * @param option_values an array of option values
+		 * @returns `TRUE` on success; in case of failure, `FALSE` is returned and
+		 *   the `error` is set
+		 */
+		(save_func: PixbufSaveFunc, pixbuf: Pixbuf, option_keys?: string[] | null, option_values?: string[] | null): boolean;
+	}
+
+	/**
+	 * Saves a `GdkPixbuf` into a standard C file stream.
+	 * 
+	 * The optional `param_keys` and `param_values` arrays contain the keys and
+	 * values (in the same order) for attributes to be saved alongside the image
+	 * data.
+	 */
+	interface PixbufModuleSaveFunc {
+		/**
+		 * Saves a `GdkPixbuf` into a standard C file stream.
+		 * 
+		 * The optional `param_keys` and `param_values` arrays contain the keys and
+		 * values (in the same order) for attributes to be saved alongside the image
+		 * data.
+		 * @param f the file stream into which the image should be saved
+		 * @param pixbuf the image to save
+		 * @param param_keys parameter keys to save
+		 * @param param_values parameter values to save
+		 * @returns `TRUE` on success; in case of failure, `FALSE` is returned and
+		 *   the `error` is set
+		 */
+		(f: any | null, pixbuf: Pixbuf, param_keys?: string[] | null, param_values?: string[] | null): boolean;
+	}
+
+	/**
+	 * Checks whether the given `option_key` is supported when saving.
+	 */
+	interface PixbufModuleSaveOptionSupportedFunc {
+		/**
+		 * Checks whether the given `option_key` is supported when saving.
+		 * @param option_key the option key to check
+		 * @returns `TRUE` if the option is supported
+		 */
+		(option_key: string): boolean;
 	}
 
 	/**
@@ -2418,6 +2594,22 @@ declare namespace imports.gi.GdkPixbuf {
 		 * @param height pointer to a location containing the current image height
 		 */
 		(width: number, height: number): void;
+	}
+
+	/**
+	 * Finalizes the image loading state.
+	 * 
+	 * This function is called on success and error states.
+	 */
+	interface PixbufModuleStopLoadFunc {
+		/**
+		 * Finalizes the image loading state.
+		 * 
+		 * This function is called on success and error states.
+		 * @param context the state object created by [callback#GdkPixbuf.PixbufModuleBeginLoadFunc]
+		 * @returns `TRUE` if the loading operation was successful
+		 */
+		(context?: any | null): boolean;
 	}
 
 	/**

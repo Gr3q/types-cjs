@@ -191,7 +191,7 @@ declare namespace imports.gi.Json {
 	 * 
 	 * json_builder_end_object (builder);
 	 * 
-	 * g_autoptr(JsonNode) root root = json_builder_get_root (builder);
+	 * g_autoptr(JsonNode) root = json_builder_get_root (builder);
 	 * 
 	 * g_autoptr(JsonGenerator) gen = json_generator_new ();
 	 * json_generator_set_root (gen, root);
@@ -910,6 +910,11 @@ declare namespace imports.gi.Json {
 		 * @returns the boolean value
 		 */
 		get_boolean_value(): boolean;
+		/**
+		 * Retrieves the reader node at the current position.
+		 * @returns the current node of the reader
+		 */
+		get_current_node(): Node | null;
 		/**
 		 * Retrieves the floating point value of the current position of the reader.
 		 * 
@@ -2408,6 +2413,9 @@ declare namespace imports.gi.Json {
 		 *   initialized with the expected type of the property by using the given
 		 *   property description (since JSON-GLib 1.6)
 		 * - a `GValue` initialized with the expected type of the property
+		 * 
+		 * This function will not be called for properties that are marked as
+		 * as `G_PARAM_CONSTRUCT_ONLY`.
 		 * @param property_name the name of the property to serialize
 		 * @param pspec a property description
 		 * @param property_node the JSON node containing the serialized property
@@ -2818,7 +2826,7 @@ declare namespace imports.gi.Json {
 	function boxed_serialize(gboxed_type: GObject.Type, boxed: any | null): Node | null;
 	/**
 	 * Deserializes a JSON data stream and creates an instance of the given
-	 * type
+	 * type.
 	 * 
 	 * If the given type implements the [iface#Json.Serializable] interface, it
 	 * will be asked to deserialize all the JSON members into their respective
@@ -2826,10 +2834,14 @@ declare namespace imports.gi.Json {
 	 * the compatible JSON native types.
 	 * 
 	 * **Note**: the JSON data stream must be an object.
+	 * 
+	 * For historical reasons, the `length` argument is unused. The given `data`
+	 * must be a `NUL`-terminated string.
 	 * @param gtype the type of the object to construct
 	 * @param data a JSON data stream
-	 * @param length length of the data stream
-	 * @returns a new object instance of the given type
+	 * @param length length of the data stream (unused)
+	 * @returns a new object instance of the given
+	 *   type
 	 */
 	function construct_gobject(gtype: GObject.Type, data: string, length: number): GObject.Object | null;
 	/**

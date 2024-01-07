@@ -43,6 +43,107 @@ declare namespace imports.gi.HarfBuzz {
 		public constructor(options?: Partial<buffer_tInitOptions>);
 	}
 
+	export interface color_line_tInitOptions {}
+	/**
+	 * A struct containing color information for a gradient.
+	 */
+	interface color_line_t {}
+	class color_line_t {
+		public constructor(options?: Partial<color_line_tInitOptions>);
+		public data: any;
+		public get_color_stops: color_line_get_color_stops_func_t;
+		public get_color_stops_user_data: any;
+		public get_extend: color_line_get_extend_func_t;
+		public get_extend_user_data: any;
+		public reserved0: any;
+		public reserved1: any;
+		public reserved2: any;
+		public reserved3: any;
+		public reserved5: any;
+		public reserved6: any;
+		public reserved7: any;
+		public reserved8: any;
+	}
+
+	export interface color_stop_tInitOptions {}
+	/**
+	 * Information about a color stop on a color line.
+	 * 
+	 * Color lines typically have offsets ranging between 0 and 1,
+	 * but that is not required.
+	 * 
+	 * Note: despite #color being unpremultiplied here, interpolation in
+	 * gradients shall happen in premultiplied space. See the OpenType spec
+	 * [COLR](https://learn.microsoft.com/en-us/typography/opentype/spec/colr)
+	 * section for details.
+	 */
+	interface color_stop_t {}
+	class color_stop_t {
+		public constructor(options?: Partial<color_stop_tInitOptions>);
+		/**
+		 * the offset of the color stop
+		 */
+		public offset: number;
+		/**
+		 * whether the color is the foreground
+		 */
+		public is_foreground: bool_t;
+		/**
+		 * the color, unpremultiplied
+		 */
+		public color: color_t;
+	}
+
+	export interface draw_funcs_tInitOptions {}
+	/**
+	 * Glyph draw callbacks.
+	 * 
+	 * #hb_draw_move_to_func_t, #hb_draw_line_to_func_t and
+	 * #hb_draw_cubic_to_func_t calls are necessary to be defined but we translate
+	 * #hb_draw_quadratic_to_func_t calls to #hb_draw_cubic_to_func_t if the
+	 * callback isn't defined.
+	 */
+	interface draw_funcs_t {}
+	class draw_funcs_t {
+		public constructor(options?: Partial<draw_funcs_tInitOptions>);
+	}
+
+	export interface draw_state_tInitOptions {}
+	/**
+	 * Current drawing state.
+	 */
+	interface draw_state_t {}
+	class draw_state_t {
+		public constructor(options?: Partial<draw_state_tInitOptions>);
+		/**
+		 * Whether there is an open path
+		 */
+		public path_open: bool_t;
+		/**
+		 * X component of the start of current path
+		 */
+		public path_start_x: number;
+		/**
+		 * Y component of the start of current path
+		 */
+		public path_start_y: number;
+		/**
+		 * X component of current point
+		 */
+		public current_x: number;
+		/**
+		 * Y component of current point
+		 */
+		public current_y: number;
+		public readonly reserved1: var_num_t;
+		public readonly reserved2: var_num_t;
+		public readonly reserved3: var_num_t;
+		public readonly reserved4: var_num_t;
+		public readonly reserved5: var_num_t;
+		public readonly reserved6: var_num_t;
+		public readonly reserved7: var_num_t;
+	}
+
 	export interface face_tInitOptions {}
 	/**
 	 * Data type for holding font faces.
@@ -82,7 +183,7 @@ declare namespace imports.gi.HarfBuzz {
 		 */
 		public end: number;
 		/**
-		 * Converts a #hb_feature_t into a %NULL-terminated string in the format
+		 * Converts a #hb_feature_t into a `NULL`-terminated string in the format
 		 * understood by {@link Hb.feature_from_string}. The client in responsible for
 		 * allocating big enough size for #buf, 128 bytes is more than enough.
 		 * @returns output string
@@ -250,7 +351,7 @@ declare namespace imports.gi.HarfBuzz {
 		/**
 		 * Converts an #hb_language_t to a string.
 		 * @returns 
-		 * A %NULL-terminated string representing the #language. Must not be freed by
+		 * A `NULL`-terminated string representing the #language. Must not be freed by
 		 * the caller.
 		 */
 		public _string(): string;
@@ -268,6 +369,10 @@ declare namespace imports.gi.HarfBuzz {
 	export interface ot_color_layer_tInitOptions {}
 	/**
 	 * Pairs of glyph and color index.
+	 * 
+	 * A color index of 0xFFFF does not refer to a palette
+	 * color, but indicates that the foreground color should
+	 * be used.
 	 */
 	interface ot_color_layer_t {}
 	class ot_color_layer_t {
@@ -330,6 +435,23 @@ declare namespace imports.gi.HarfBuzz {
 		public advance: position_t;
 	}
 
+	export interface ot_math_kern_entry_tInitOptions {}
+	/**
+	 * Data type to hold math kerning (cut-in) information for a glyph.
+	 */
+	interface ot_math_kern_entry_t {}
+	class ot_math_kern_entry_t {
+		public constructor(options?: Partial<ot_math_kern_entry_tInitOptions>);
+		/**
+		 * The maximum height at which this entry should be used
+		 */
+		public max_correction_height: position_t;
+		/**
+		 * The kern value of the entry
+		 */
+		public kern_value: position_t;
+	}
+
 	export interface ot_name_entry_tInitOptions {}
 	/**
 	 * Structure representing a name ID in a particular language.
@@ -377,7 +499,7 @@ declare namespace imports.gi.HarfBuzz {
 		 */
 		public flags: ot_var_axis_flags_t;
 		/**
-		 * The mininum value on the variation axis that the font covers
+		 * The minimum value on the variation axis that the font covers
 		 */
 		public min_value: number;
 		/**
@@ -418,6 +540,34 @@ declare namespace imports.gi.HarfBuzz {
 		 * maximum value of the axis
 		 */
 		public max_value: number;
+	}
+
+	export interface paint_funcs_tInitOptions {}
+	/**
+	 * Glyph paint callbacks.
+	 * 
+	 * The callbacks assume that the caller maintains a stack
+	 * of current transforms, clips and intermediate surfaces,
+	 * as evidenced by the pairs of push/pop callbacks. The
+	 * push/pop calls will be properly nested, so it is fine
+	 * to store the different kinds of object on a single stack.
+	 * 
+	 * Not all callbacks are required for all kinds of glyphs.
+	 * For rendering COLRv0 or non-color outline glyphs, the
+	 * gradient callbacks are not needed, and the composite
+	 * callback only needs to handle simple alpha compositing
+	 * (#HB_PAINT_COMPOSITE_MODE_SRC_OVER).
+	 * 
+	 * The paint-image callback is only needed for glyphs
+	 * with image blobs in the CBDT, sbix or SVG tables.
+	 * 
+	 * The custom-palette-color callback is only necessary if
+	 * you want to override colors from the font palette with
+	 * custom colors.
+	 */
+	interface paint_funcs_t {}
+	class paint_funcs_t {
+		public constructor(options?: Partial<paint_funcs_tInitOptions>);
 	}
 
 	export interface segment_properties_tInitOptions {}
@@ -518,1188 +668,12 @@ declare namespace imports.gi.HarfBuzz {
 		 */
 		public value: number;
 		/**
-		 * Converts an #hb_variation_t into a %NULL-terminated string in the format
+		 * Converts an #hb_variation_t into a `NULL`-terminated string in the format
 		 * understood by {@link Hb.variation_from_string}. The client in responsible for
 		 * allocating big enough size for #buf, 128 bytes is more than enough.
 		 * @returns output string
 		 */
 		public _string(): string[];
-	}
-
-	/**
-	 * The selectors defined for specifying AAT feature settings.
-	 */
-	enum aat_layout_feature_selector_t {
-		/**
-		 * Initial, unset feature selector
-		 */
-		INVALID = 65535,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ALL_TYPOGRAPHIC
-		 */
-		ALL_TYPE_FEATURES_ON = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ALL_TYPOGRAPHIC
-		 */
-		ALL_TYPE_FEATURES_OFF = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
-		 */
-		REQUIRED_LIGATURES_ON = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
-		 */
-		REQUIRED_LIGATURES_OFF = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
-		 */
-		COMMON_LIGATURES_ON = 2,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
-		 */
-		COMMON_LIGATURES_OFF = 3,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
-		 */
-		RARE_LIGATURES_ON = 4,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
-		 */
-		RARE_LIGATURES_OFF = 5,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
-		 */
-		LOGOS_ON = 6,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
-		 */
-		LOGOS_OFF = 7,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
-		 */
-		REBUS_PICTURES_ON = 8,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
-		 */
-		REBUS_PICTURES_OFF = 9,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
-		 */
-		DIPHTHONG_LIGATURES_ON = 10,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
-		 */
-		DIPHTHONG_LIGATURES_OFF = 11,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
-		 */
-		SQUARED_LIGATURES_ON = 12,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
-		 */
-		SQUARED_LIGATURES_OFF = 13,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
-		 */
-		ABBREV_SQUARED_LIGATURES_ON = 14,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
-		 */
-		ABBREV_SQUARED_LIGATURES_OFF = 15,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
-		 */
-		SYMBOL_LIGATURES_ON = 16,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
-		 */
-		SYMBOL_LIGATURES_OFF = 17,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
-		 */
-		CONTEXTUAL_LIGATURES_ON = 18,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
-		 */
-		CONTEXTUAL_LIGATURES_OFF = 19,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
-		 */
-		HISTORICAL_LIGATURES_ON = 20,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
-		 */
-		HISTORICAL_LIGATURES_OFF = 21,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
-		 */
-		UNCONNECTED = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
-		 */
-		PARTIALLY_CONNECTED = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
-		 */
-		CURSIVE = 2,
-		/**
-		 * Deprecated
-		 */
-		UPPER_AND_LOWER_CASE = 0,
-		/**
-		 * Deprecated
-		 */
-		ALL_CAPS = 1,
-		/**
-		 * Deprecated
-		 */
-		ALL_LOWER_CASE = 2,
-		/**
-		 * Deprecated
-		 */
-		SMALL_CAPS = 3,
-		/**
-		 * Deprecated
-		 */
-		INITIAL_CAPS = 4,
-		/**
-		 * Deprecated
-		 */
-		INITIAL_CAPS_AND_SMALL_CAPS = 5,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_VERTICAL_SUBSTITUTION
-		 */
-		SUBSTITUTE_VERTICAL_FORMS_ON = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_VERTICAL_SUBSTITUTION
-		 */
-		SUBSTITUTE_VERTICAL_FORMS_OFF = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LINGUISTIC_REARRANGEMENT
-		 */
-		LINGUISTIC_REARRANGEMENT_ON = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LINGUISTIC_REARRANGEMENT
-		 */
-		LINGUISTIC_REARRANGEMENT_OFF = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_NUMBER_SPACING
-		 */
-		MONOSPACED_NUMBERS = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_NUMBER_SPACING
-		 */
-		PROPORTIONAL_NUMBERS = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_NUMBER_SPACING
-		 */
-		THIRD_WIDTH_NUMBERS = 2,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_NUMBER_SPACING
-		 */
-		QUARTER_WIDTH_NUMBERS = 3,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_SMART_SWASH_TYPE
-		 */
-		WORD_INITIAL_SWASHES_ON = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_SMART_SWASH_TYPE
-		 */
-		WORD_INITIAL_SWASHES_OFF = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_SMART_SWASH_TYPE
-		 */
-		WORD_FINAL_SWASHES_ON = 2,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_SMART_SWASH_TYPE
-		 */
-		WORD_FINAL_SWASHES_OFF = 3,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_SMART_SWASH_TYPE
-		 */
-		LINE_INITIAL_SWASHES_ON = 4,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_SMART_SWASH_TYPE
-		 */
-		LINE_INITIAL_SWASHES_OFF = 5,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_SMART_SWASH_TYPE
-		 */
-		LINE_FINAL_SWASHES_ON = 6,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_SMART_SWASH_TYPE
-		 */
-		LINE_FINAL_SWASHES_OFF = 7,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_SMART_SWASH_TYPE
-		 */
-		NON_FINAL_SWASHES_ON = 8,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_SMART_SWASH_TYPE
-		 */
-		NON_FINAL_SWASHES_OFF = 9,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_DIACRITICS_TYPE
-		 */
-		SHOW_DIACRITICS = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_DIACRITICS_TYPE
-		 */
-		HIDE_DIACRITICS = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_DIACRITICS_TYPE
-		 */
-		DECOMPOSE_DIACRITICS = 2,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_VERTICAL_POSITION
-		 */
-		NORMAL_POSITION = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_VERTICAL_POSITION
-		 */
-		SUPERIORS = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_VERTICAL_POSITION
-		 */
-		INFERIORS = 2,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_VERTICAL_POSITION
-		 */
-		ORDINALS = 3,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_VERTICAL_POSITION
-		 */
-		SCIENTIFIC_INFERIORS = 4,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_FRACTIONS
-		 */
-		NO_FRACTIONS = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_FRACTIONS
-		 */
-		VERTICAL_FRACTIONS = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_FRACTIONS
-		 */
-		DIAGONAL_FRACTIONS = 2,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_OVERLAPPING_CHARACTERS_TYPE
-		 */
-		PREVENT_OVERLAP_ON = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_OVERLAPPING_CHARACTERS_TYPE
-		 */
-		PREVENT_OVERLAP_OFF = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TYPOGRAPHIC_EXTRAS
-		 */
-		HYPHENS_TO_EM_DASH_ON = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TYPOGRAPHIC_EXTRAS
-		 */
-		HYPHENS_TO_EM_DASH_OFF = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TYPOGRAPHIC_EXTRAS
-		 */
-		HYPHEN_TO_EN_DASH_ON = 2,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TYPOGRAPHIC_EXTRAS
-		 */
-		HYPHEN_TO_EN_DASH_OFF = 3,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TYPOGRAPHIC_EXTRAS
-		 */
-		SLASHED_ZERO_ON = 4,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TYPOGRAPHIC_EXTRAS
-		 */
-		SLASHED_ZERO_OFF = 5,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TYPOGRAPHIC_EXTRAS
-		 */
-		FORM_INTERROBANG_ON = 6,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TYPOGRAPHIC_EXTRAS
-		 */
-		FORM_INTERROBANG_OFF = 7,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TYPOGRAPHIC_EXTRAS
-		 */
-		SMART_QUOTES_ON = 8,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TYPOGRAPHIC_EXTRAS
-		 */
-		SMART_QUOTES_OFF = 9,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TYPOGRAPHIC_EXTRAS
-		 */
-		PERIODS_TO_ELLIPSIS_ON = 10,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TYPOGRAPHIC_EXTRAS
-		 */
-		PERIODS_TO_ELLIPSIS_OFF = 11,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_MATHEMATICAL_EXTRAS
-		 */
-		HYPHEN_TO_MINUS_ON = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_MATHEMATICAL_EXTRAS
-		 */
-		HYPHEN_TO_MINUS_OFF = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_MATHEMATICAL_EXTRAS
-		 */
-		ASTERISK_TO_MULTIPLY_ON = 2,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_MATHEMATICAL_EXTRAS
-		 */
-		ASTERISK_TO_MULTIPLY_OFF = 3,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_MATHEMATICAL_EXTRAS
-		 */
-		SLASH_TO_DIVIDE_ON = 4,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_MATHEMATICAL_EXTRAS
-		 */
-		SLASH_TO_DIVIDE_OFF = 5,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_MATHEMATICAL_EXTRAS
-		 */
-		INEQUALITY_LIGATURES_ON = 6,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_MATHEMATICAL_EXTRAS
-		 */
-		INEQUALITY_LIGATURES_OFF = 7,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_MATHEMATICAL_EXTRAS
-		 */
-		EXPONENTS_ON = 8,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_MATHEMATICAL_EXTRAS
-		 */
-		EXPONENTS_OFF = 9,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_MATHEMATICAL_EXTRAS
-		 */
-		MATHEMATICAL_GREEK_ON = 10,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_MATHEMATICAL_EXTRAS
-		 */
-		MATHEMATICAL_GREEK_OFF = 11,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ORNAMENT_SETS_TYPE
-		 */
-		NO_ORNAMENTS = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ORNAMENT_SETS_TYPE
-		 */
-		DINGBATS = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ORNAMENT_SETS_TYPE
-		 */
-		PI_CHARACTERS = 2,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ORNAMENT_SETS_TYPE
-		 */
-		FLEURONS = 3,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ORNAMENT_SETS_TYPE
-		 */
-		DECORATIVE_BORDERS = 4,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ORNAMENT_SETS_TYPE
-		 */
-		INTERNATIONAL_SYMBOLS = 5,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ORNAMENT_SETS_TYPE
-		 */
-		MATH_SYMBOLS = 6,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_ALTERNATIVES
-		 */
-		NO_ALTERNATES = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_DESIGN_COMPLEXITY_TYPE
-		 */
-		DESIGN_LEVEL1 = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_DESIGN_COMPLEXITY_TYPE
-		 */
-		DESIGN_LEVEL2 = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_DESIGN_COMPLEXITY_TYPE
-		 */
-		DESIGN_LEVEL3 = 2,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_DESIGN_COMPLEXITY_TYPE
-		 */
-		DESIGN_LEVEL4 = 3,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_DESIGN_COMPLEXITY_TYPE
-		 */
-		DESIGN_LEVEL5 = 4,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLE_OPTIONS
-		 */
-		NO_STYLE_OPTIONS = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLE_OPTIONS
-		 */
-		DISPLAY_TEXT = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLE_OPTIONS
-		 */
-		ENGRAVED_TEXT = 2,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLE_OPTIONS
-		 */
-		ILLUMINATED_CAPS = 3,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLE_OPTIONS
-		 */
-		TITLING_CAPS = 4,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLE_OPTIONS
-		 */
-		TALL_CAPS = 5,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_SHAPE
-		 */
-		TRADITIONAL_CHARACTERS = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_SHAPE
-		 */
-		SIMPLIFIED_CHARACTERS = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_SHAPE
-		 */
-		JIS1978_CHARACTERS = 2,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_SHAPE
-		 */
-		JIS1983_CHARACTERS = 3,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_SHAPE
-		 */
-		JIS1990_CHARACTERS = 4,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_SHAPE
-		 */
-		TRADITIONAL_ALT_ONE = 5,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_SHAPE
-		 */
-		TRADITIONAL_ALT_TWO = 6,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_SHAPE
-		 */
-		TRADITIONAL_ALT_THREE = 7,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_SHAPE
-		 */
-		TRADITIONAL_ALT_FOUR = 8,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_SHAPE
-		 */
-		TRADITIONAL_ALT_FIVE = 9,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_SHAPE
-		 */
-		EXPERT_CHARACTERS = 10,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_SHAPE
-		 */
-		JIS2004_CHARACTERS = 11,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_SHAPE
-		 */
-		HOJO_CHARACTERS = 12,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_SHAPE
-		 */
-		NLCCHARACTERS = 13,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_SHAPE
-		 */
-		TRADITIONAL_NAMES_CHARACTERS = 14,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_NUMBER_CASE
-		 */
-		LOWER_CASE_NUMBERS = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_NUMBER_CASE
-		 */
-		UPPER_CASE_NUMBERS = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TEXT_SPACING
-		 */
-		PROPORTIONAL_TEXT = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TEXT_SPACING
-		 */
-		MONOSPACED_TEXT = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TEXT_SPACING
-		 */
-		HALF_WIDTH_TEXT = 2,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TEXT_SPACING
-		 */
-		THIRD_WIDTH_TEXT = 3,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TEXT_SPACING
-		 */
-		QUARTER_WIDTH_TEXT = 4,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TEXT_SPACING
-		 */
-		ALT_PROPORTIONAL_TEXT = 5,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TEXT_SPACING
-		 */
-		ALT_HALF_WIDTH_TEXT = 6,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TRANSLITERATION
-		 */
-		NO_TRANSLITERATION = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TRANSLITERATION
-		 */
-		HANJA_TO_HANGUL = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TRANSLITERATION
-		 */
-		HIRAGANA_TO_KATAKANA = 2,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TRANSLITERATION
-		 */
-		KATAKANA_TO_HIRAGANA = 3,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TRANSLITERATION
-		 */
-		KANA_TO_ROMANIZATION = 4,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TRANSLITERATION
-		 */
-		ROMANIZATION_TO_HIRAGANA = 5,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TRANSLITERATION
-		 */
-		ROMANIZATION_TO_KATAKANA = 6,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TRANSLITERATION
-		 */
-		HANJA_TO_HANGUL_ALT_ONE = 7,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TRANSLITERATION
-		 */
-		HANJA_TO_HANGUL_ALT_TWO = 8,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TRANSLITERATION
-		 */
-		HANJA_TO_HANGUL_ALT_THREE = 9,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ANNOTATION_TYPE
-		 */
-		NO_ANNOTATION = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ANNOTATION_TYPE
-		 */
-		BOX_ANNOTATION = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ANNOTATION_TYPE
-		 */
-		ROUNDED_BOX_ANNOTATION = 2,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ANNOTATION_TYPE
-		 */
-		CIRCLE_ANNOTATION = 3,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ANNOTATION_TYPE
-		 */
-		INVERTED_CIRCLE_ANNOTATION = 4,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ANNOTATION_TYPE
-		 */
-		PARENTHESIS_ANNOTATION = 5,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ANNOTATION_TYPE
-		 */
-		PERIOD_ANNOTATION = 6,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ANNOTATION_TYPE
-		 */
-		ROMAN_NUMERAL_ANNOTATION = 7,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ANNOTATION_TYPE
-		 */
-		DIAMOND_ANNOTATION = 8,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ANNOTATION_TYPE
-		 */
-		INVERTED_BOX_ANNOTATION = 9,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ANNOTATION_TYPE
-		 */
-		INVERTED_ROUNDED_BOX_ANNOTATION = 10,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_KANA_SPACING_TYPE
-		 */
-		FULL_WIDTH_KANA = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_KANA_SPACING_TYPE
-		 */
-		PROPORTIONAL_KANA = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_IDEOGRAPHIC_SPACING_TYPE
-		 */
-		FULL_WIDTH_IDEOGRAPHS = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_IDEOGRAPHIC_SPACING_TYPE
-		 */
-		PROPORTIONAL_IDEOGRAPHS = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_IDEOGRAPHIC_SPACING_TYPE
-		 */
-		HALF_WIDTH_IDEOGRAPHS = 2,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_UNICODE_DECOMPOSITION_TYPE
-		 */
-		CANONICAL_COMPOSITION_ON = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_UNICODE_DECOMPOSITION_TYPE
-		 */
-		CANONICAL_COMPOSITION_OFF = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_UNICODE_DECOMPOSITION_TYPE
-		 */
-		COMPATIBILITY_COMPOSITION_ON = 2,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_UNICODE_DECOMPOSITION_TYPE
-		 */
-		COMPATIBILITY_COMPOSITION_OFF = 3,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_UNICODE_DECOMPOSITION_TYPE
-		 */
-		TRANSCODING_COMPOSITION_ON = 4,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_UNICODE_DECOMPOSITION_TYPE
-		 */
-		TRANSCODING_COMPOSITION_OFF = 5,
-		/**
-		 * Deprecated; use #HB_AAT_LAYOUT_FEATURE_SELECTOR_RUBY_KANA_OFF instead
-		 */
-		NO_RUBY_KANA = 0,
-		/**
-		 * Deprecated; use #HB_AAT_LAYOUT_FEATURE_SELECTOR_RUBY_KANA_ON instead
-		 */
-		RUBY_KANA = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_RUBY_KANA
-		 */
-		RUBY_KANA_ON = 2,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_RUBY_KANA
-		 */
-		RUBY_KANA_OFF = 3,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CJK_SYMBOL_ALTERNATIVES_TYPE
-		 */
-		NO_CJK_SYMBOL_ALTERNATIVES = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CJK_SYMBOL_ALTERNATIVES_TYPE
-		 */
-		CJK_SYMBOL_ALT_ONE = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CJK_SYMBOL_ALTERNATIVES_TYPE
-		 */
-		CJK_SYMBOL_ALT_TWO = 2,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CJK_SYMBOL_ALTERNATIVES_TYPE
-		 */
-		CJK_SYMBOL_ALT_THREE = 3,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CJK_SYMBOL_ALTERNATIVES_TYPE
-		 */
-		CJK_SYMBOL_ALT_FOUR = 4,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CJK_SYMBOL_ALTERNATIVES_TYPE
-		 */
-		CJK_SYMBOL_ALT_FIVE = 5,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_IDEOGRAPHIC_ALTERNATIVES_TYPE
-		 */
-		NO_IDEOGRAPHIC_ALTERNATIVES = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_IDEOGRAPHIC_ALTERNATIVES_TYPE
-		 */
-		IDEOGRAPHIC_ALT_ONE = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_IDEOGRAPHIC_ALTERNATIVES_TYPE
-		 */
-		IDEOGRAPHIC_ALT_TWO = 2,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_IDEOGRAPHIC_ALTERNATIVES_TYPE
-		 */
-		IDEOGRAPHIC_ALT_THREE = 3,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_IDEOGRAPHIC_ALTERNATIVES_TYPE
-		 */
-		IDEOGRAPHIC_ALT_FOUR = 4,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_IDEOGRAPHIC_ALTERNATIVES_TYPE
-		 */
-		IDEOGRAPHIC_ALT_FIVE = 5,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CJK_VERTICAL_ROMAN_PLACEMENT_TYPE
-		 */
-		CJK_VERTICAL_ROMAN_CENTERED = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CJK_VERTICAL_ROMAN_PLACEMENT_TYPE
-		 */
-		CJK_VERTICAL_ROMAN_HBASELINE = 1,
-		/**
-		 * Deprecated; use #HB_AAT_LAYOUT_FEATURE_SELECTOR_CJK_ITALIC_ROMAN_OFF instead
-		 */
-		NO_CJK_ITALIC_ROMAN = 0,
-		/**
-		 * Deprecated; use #HB_AAT_LAYOUT_FEATURE_SELECTOR_CJK_ITALIC_ROMAN_ON instead
-		 */
-		CJK_ITALIC_ROMAN = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ITALIC_CJK_ROMAN
-		 */
-		CJK_ITALIC_ROMAN_ON = 2,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ITALIC_CJK_ROMAN
-		 */
-		CJK_ITALIC_ROMAN_OFF = 3,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CASE_SENSITIVE_LAYOUT
-		 */
-		CASE_SENSITIVE_LAYOUT_ON = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CASE_SENSITIVE_LAYOUT
-		 */
-		CASE_SENSITIVE_LAYOUT_OFF = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CASE_SENSITIVE_LAYOUT
-		 */
-		CASE_SENSITIVE_SPACING_ON = 2,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CASE_SENSITIVE_LAYOUT
-		 */
-		CASE_SENSITIVE_SPACING_OFF = 3,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ALTERNATE_KANA
-		 */
-		ALTERNATE_HORIZ_KANA_ON = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ALTERNATE_KANA
-		 */
-		ALTERNATE_HORIZ_KANA_OFF = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ALTERNATE_KANA
-		 */
-		ALTERNATE_VERT_KANA_ON = 2,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ALTERNATE_KANA
-		 */
-		ALTERNATE_VERT_KANA_OFF = 3,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		NO_STYLISTIC_ALTERNATES = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_ONE_ON = 2,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_ONE_OFF = 3,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_TWO_ON = 4,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_TWO_OFF = 5,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_THREE_ON = 6,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_THREE_OFF = 7,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_FOUR_ON = 8,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_FOUR_OFF = 9,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_FIVE_ON = 10,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_FIVE_OFF = 11,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_SIX_ON = 12,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_SIX_OFF = 13,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_SEVEN_ON = 14,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_SEVEN_OFF = 15,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_EIGHT_ON = 16,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_EIGHT_OFF = 17,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_NINE_ON = 18,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_NINE_OFF = 19,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_TEN_ON = 20,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_TEN_OFF = 21,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_ELEVEN_ON = 22,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_ELEVEN_OFF = 23,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_TWELVE_ON = 24,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_TWELVE_OFF = 25,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_THIRTEEN_ON = 26,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_THIRTEEN_OFF = 27,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_FOURTEEN_ON = 28,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_FOURTEEN_OFF = 29,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_FIFTEEN_ON = 30,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_FIFTEEN_OFF = 31,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_SIXTEEN_ON = 32,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_SIXTEEN_OFF = 33,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_SEVENTEEN_ON = 34,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_SEVENTEEN_OFF = 35,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_EIGHTEEN_ON = 36,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_EIGHTEEN_OFF = 37,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_NINETEEN_ON = 38,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_NINETEEN_OFF = 39,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_TWENTY_ON = 40,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
-		 */
-		STYLISTIC_ALT_TWENTY_OFF = 41,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CONTEXTUAL_ALTERNATIVES
-		 */
-		CONTEXTUAL_ALTERNATES_ON = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CONTEXTUAL_ALTERNATIVES
-		 */
-		CONTEXTUAL_ALTERNATES_OFF = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CONTEXTUAL_ALTERNATIVES
-		 */
-		SWASH_ALTERNATES_ON = 2,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CONTEXTUAL_ALTERNATIVES
-		 */
-		SWASH_ALTERNATES_OFF = 3,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CONTEXTUAL_ALTERNATIVES
-		 */
-		CONTEXTUAL_SWASH_ALTERNATES_ON = 4,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CONTEXTUAL_ALTERNATIVES
-		 */
-		CONTEXTUAL_SWASH_ALTERNATES_OFF = 5,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LOWER_CASE
-		 */
-		DEFAULT_LOWER_CASE = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LOWER_CASE
-		 */
-		LOWER_CASE_SMALL_CAPS = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LOWER_CASE
-		 */
-		LOWER_CASE_PETITE_CAPS = 2,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_UPPER_CASE
-		 */
-		DEFAULT_UPPER_CASE = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_UPPER_CASE
-		 */
-		UPPER_CASE_SMALL_CAPS = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_UPPER_CASE
-		 */
-		UPPER_CASE_PETITE_CAPS = 2,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CJK_ROMAN_SPACING_TYPE
-		 */
-		HALF_WIDTH_CJK_ROMAN = 0,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CJK_ROMAN_SPACING_TYPE
-		 */
-		PROPORTIONAL_CJK_ROMAN = 1,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CJK_ROMAN_SPACING_TYPE
-		 */
-		DEFAULT_CJK_ROMAN = 2,
-		/**
-		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CJK_ROMAN_SPACING_TYPE
-		 */
-		FULL_WIDTH_CJK_ROMAN = 3
-	}
-
-	/**
-	 * The possible feature types defined for AAT shaping, from Apple [Font Feature Registry](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html).
-	 */
-	enum aat_layout_feature_type_t {
-		/**
-		 * Initial, unset feature type
-		 */
-		INVALID = 65535,
-		/**
-		 * [All Typographic Features](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type0)
-		 */
-		ALL_TYPOGRAPHIC = 0,
-		/**
-		 * [Ligatures](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type1)
-		 */
-		LIGATURES = 1,
-		/**
-		 * [Cursive Connection](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type2)
-		 */
-		CURISVE_CONNECTION = 2,
-		/**
-		 * [Letter Case](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type3)
-		 */
-		LETTER_CASE = 3,
-		/**
-		 * [Vertical Substitution](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type4)
-		 */
-		VERTICAL_SUBSTITUTION = 4,
-		/**
-		 * [Linguistic Rearrangement](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type5)
-		 */
-		LINGUISTIC_REARRANGEMENT = 5,
-		/**
-		 * [Number Spacing](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type6)
-		 */
-		NUMBER_SPACING = 6,
-		/**
-		 * [Smart Swash](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type8)
-		 */
-		SMART_SWASH_TYPE = 8,
-		/**
-		 * [Diacritics](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type9)
-		 */
-		DIACRITICS_TYPE = 9,
-		/**
-		 * [Vertical Position](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type10)
-		 */
-		VERTICAL_POSITION = 10,
-		/**
-		 * [Fractions](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type11)
-		 */
-		FRACTIONS = 11,
-		/**
-		 * [Overlapping Characters](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type13)
-		 */
-		OVERLAPPING_CHARACTERS_TYPE = 13,
-		/**
-		 * [Typographic Extras](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type14)
-		 */
-		TYPOGRAPHIC_EXTRAS = 14,
-		/**
-		 * [Mathematical Extras](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type15)
-		 */
-		MATHEMATICAL_EXTRAS = 15,
-		/**
-		 * [Ornament Sets](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type16)
-		 */
-		ORNAMENT_SETS_TYPE = 16,
-		/**
-		 * [Character Alternatives](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type17)
-		 */
-		CHARACTER_ALTERNATIVES = 17,
-		/**
-		 * [Design Complexity](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type18)
-		 */
-		DESIGN_COMPLEXITY_TYPE = 18,
-		/**
-		 * [Style Options](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type19)
-		 */
-		STYLE_OPTIONS = 19,
-		/**
-		 * [Character Shape](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type20)
-		 */
-		CHARACTER_SHAPE = 20,
-		/**
-		 * [Number Case](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type21)
-		 */
-		NUMBER_CASE = 21,
-		/**
-		 * [Text Spacing](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type22)
-		 */
-		TEXT_SPACING = 22,
-		/**
-		 * [Transliteration](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type23)
-		 */
-		TRANSLITERATION = 23,
-		/**
-		 * [Annotation](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type24)
-		 */
-		ANNOTATION_TYPE = 24,
-		/**
-		 * [Kana Spacing](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type25)
-		 */
-		KANA_SPACING_TYPE = 25,
-		/**
-		 * [Ideographic Spacing](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type26)
-		 */
-		IDEOGRAPHIC_SPACING_TYPE = 26,
-		/**
-		 * [Unicode Decomposition](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type27)
-		 */
-		UNICODE_DECOMPOSITION_TYPE = 27,
-		/**
-		 * [Ruby Kana](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type28)
-		 */
-		RUBY_KANA = 28,
-		/**
-		 * [CJK Symbol Alternatives](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type29)
-		 */
-		CJK_SYMBOL_ALTERNATIVES_TYPE = 29,
-		/**
-		 * [Ideographic Alternatives](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type30)
-		 */
-		IDEOGRAPHIC_ALTERNATIVES_TYPE = 30,
-		/**
-		 * [CJK Vertical Roman Placement](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type31)
-		 */
-		CJK_VERTICAL_ROMAN_PLACEMENT_TYPE = 31,
-		/**
-		 * [Italic CJK Roman](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type32)
-		 */
-		ITALIC_CJK_ROMAN = 32,
-		/**
-		 * [Case Sensitive Layout](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type33)
-		 */
-		CASE_SENSITIVE_LAYOUT = 33,
-		/**
-		 * [Alternate Kana](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type34)
-		 */
-		ALTERNATE_KANA = 34,
-		/**
-		 * [Stylistic Alternatives](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type35)
-		 */
-		STYLISTIC_ALTERNATIVES = 35,
-		/**
-		 * [Contextual Alternatives](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type36)
-		 */
-		CONTEXTUAL_ALTERNATIVES = 36,
-		/**
-		 * [Lower Case](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type37)
-		 */
-		LOWER_CASE = 37,
-		/**
-		 * [Upper Case](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type38)
-		 */
-		UPPER_CASE = 38,
-		/**
-		 * [Language Tag](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type39)
-		 */
-		LANGUAGE_TAG_TYPE = 39,
-		/**
-		 * [CJK Roman Spacing](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type103)
-		 */
-		CJK_ROMAN_SPACING_TYPE = 103
 	}
 
 	/**
@@ -1760,25 +734,6 @@ declare namespace imports.gi.HarfBuzz {
 	}
 
 	/**
-	 * The buffer serialization and de-serialization format used in
-	 * {@link Hb.buffer_serialize_glyphs} and hb_buffer_deserialize_glyphs().
-	 */
-	enum buffer_serialize_format_t {
-		/**
-		 * a human-readable, plain text format.
-		 */
-		TEXT = 1413830740,
-		/**
-		 * a machine-readable JSON format.
-		 */
-		JSON = 1246973774,
-		/**
-		 * invalid format.
-		 */
-		INVALID = 0
-	}
-
-	/**
 	 * The direction of a text segment or buffer.
 	 * 
 	 * A segment can also be tested for horizontal or vertical
@@ -1827,7 +782,7 @@ declare namespace imports.gi.HarfBuzz {
 	 *   HarfBuzz and doing that just once (no reuse!),
 	 * 
 	 * - If the font is mmap()ed, it's okay to use
-	 *   #HB_MEMORY_READONLY_MAY_MAKE_WRITABLE, however, using that mode
+	 *   #HB_MEMORY_MODE_READONLY_MAY_MAKE_WRITABLE, however, using that mode
 	 *   correctly is very tricky.  Use #HB_MEMORY_MODE_READONLY instead.
 	 */
 	enum memory_mode_t {
@@ -1849,50 +804,6 @@ declare namespace imports.gi.HarfBuzz {
 		 * See above
 		 */
 		READONLY_MAY_MAKE_WRITABLE = 3
-	}
-
-	/**
-	 * Baseline tags from [Baseline Tags](https://docs.microsoft.com/en-us/typography/opentype/spec/baselinetags) registry.
-	 */
-	enum ot_layout_baseline_tag_t {
-		/**
-		 * The baseline used by alphabetic scripts such as Latin, Cyrillic and Greek.
-		 * In vertical writing mode, the alphabetic baseline for characters rotated 90 degrees clockwise.
-		 * (This would not apply to alphabetic characters that remain upright in vertical writing mode, since these
-		 * characters are not rotated.)
-		 */
-		ROMAN = 1919905134,
-		/**
-		 * The hanging baseline. In horizontal direction, this is the horizontal
-		 * line from which syllables seem, to hang in Tibetan and other similar scripts. In vertical writing mode,
-		 * for Tibetan (or some other similar script) characters rotated 90 degrees clockwise.
-		 */
-		HANGING = 1751215719,
-		/**
-		 * Ideographic character face bottom or left edge,
-		 * if the direction is horizontal or vertical, respectively.
-		 */
-		IDEO_FACE_BOTTOM_OR_LEFT = 1768121954,
-		/**
-		 * Ideographic character face top or right edge,
-		 * if the direction is horizontal or vertical, respectively.
-		 */
-		IDEO_FACE_TOP_OR_RIGHT = 1768121972,
-		/**
-		 * Ideographic em-box bottom or left edge,
-		 * if the direction is horizontal or vertical, respectively.
-		 */
-		IDEO_EMBOX_BOTTOM_OR_LEFT = 1768187247,
-		/**
-		 * Ideographic em-box top or right edge baseline,
-		 * if the direction is horizontal or vertical, respectively.
-		 */
-		IDEO_EMBOX_TOP_OR_RIGHT = 1768191088,
-		/**
-		 * The baseline about which mathematical characters are centered.
-		 * In vertical writing mode when mathematical characters rotated 90 degrees clockwise, are centered.
-		 */
-		MATH = 1835103336
 	}
 
 	/**
@@ -2177,842 +1088,297 @@ declare namespace imports.gi.HarfBuzz {
 	}
 
 	/**
-	 * Known metadata tags from https://docs.microsoft.com/en-us/typography/opentype/spec/meta
-	 */
-	enum ot_meta_tag_t {
-		/**
-		 * Design languages. Text, using only
-		 * Basic Latin (ASCII) characters. Indicates languages and/or scripts
-		 * for the user audiences that the font was primarily designed for.
-		 */
-		DESIGN_LANGUAGES = 1684827751,
-		/**
-		 * Supported languages. Text, using
-		 * only Basic Latin (ASCII) characters. Indicates languages and/or scripts
-		 * that the font is declared to be capable of supporting.
-		 */
-		SUPPORTED_LANGUAGES = 1936485991
-	}
-
-	/**
-	 * Metric tags corresponding to [MVAR Value
-	 * Tags](https://docs.microsoft.com/en-us/typography/opentype/spec/mvar#value-tags)
-	 */
-	enum ot_metrics_tag_t {
-		/**
-		 * horizontal ascender.
-		 */
-		HORIZONTAL_ASCENDER = 1751216995,
-		/**
-		 * horizontal descender.
-		 */
-		HORIZONTAL_DESCENDER = 1751413603,
-		/**
-		 * horizontal line gap.
-		 */
-		HORIZONTAL_LINE_GAP = 1751934832,
-		/**
-		 * horizontal clipping ascent.
-		 */
-		HORIZONTAL_CLIPPING_ASCENT = 1751346273,
-		/**
-		 * horizontal clipping descent.
-		 */
-		HORIZONTAL_CLIPPING_DESCENT = 1751346276,
-		/**
-		 * vertical ascender.
-		 */
-		VERTICAL_ASCENDER = 1986098019,
-		/**
-		 * vertical descender.
-		 */
-		VERTICAL_DESCENDER = 1986294627,
-		/**
-		 * vertical line gap.
-		 */
-		VERTICAL_LINE_GAP = 1986815856,
-		/**
-		 * horizontal caret rise.
-		 */
-		HORIZONTAL_CARET_RISE = 1751347827,
-		/**
-		 * horizontal caret run.
-		 */
-		HORIZONTAL_CARET_RUN = 1751347822,
-		/**
-		 * horizontal caret offset.
-		 */
-		HORIZONTAL_CARET_OFFSET = 1751347046,
-		/**
-		 * vertical caret rise.
-		 */
-		VERTICAL_CARET_RISE = 1986228851,
-		/**
-		 * vertical caret run.
-		 */
-		VERTICAL_CARET_RUN = 1986228846,
-		/**
-		 * vertical caret offset.
-		 */
-		VERTICAL_CARET_OFFSET = 1986228070,
-		/**
-		 * x height.
-		 */
-		X_HEIGHT = 2020108148,
-		/**
-		 * cap height.
-		 */
-		CAP_HEIGHT = 1668311156,
-		/**
-		 * subscript em x size.
-		 */
-		SUBSCRIPT_EM_X_SIZE = 1935833203,
-		/**
-		 * subscript em y size.
-		 */
-		SUBSCRIPT_EM_Y_SIZE = 1935833459,
-		/**
-		 * subscript em x offset.
-		 */
-		SUBSCRIPT_EM_X_OFFSET = 1935833199,
-		/**
-		 * subscript em y offset.
-		 */
-		SUBSCRIPT_EM_Y_OFFSET = 1935833455,
-		/**
-		 * superscript em x size.
-		 */
-		SUPERSCRIPT_EM_X_SIZE = 1936750707,
-		/**
-		 * superscript em y size.
-		 */
-		SUPERSCRIPT_EM_Y_SIZE = 1936750963,
-		/**
-		 * superscript em x offset.
-		 */
-		SUPERSCRIPT_EM_X_OFFSET = 1936750703,
-		/**
-		 * superscript em y offset.
-		 */
-		SUPERSCRIPT_EM_Y_OFFSET = 1936750959,
-		/**
-		 * strikeout size.
-		 */
-		STRIKEOUT_SIZE = 1937011315,
-		/**
-		 * strikeout offset.
-		 */
-		STRIKEOUT_OFFSET = 1937011311,
-		/**
-		 * underline size.
-		 */
-		UNDERLINE_SIZE = 1970168947,
-		/**
-		 * underline offset.
-		 */
-		UNDERLINE_OFFSET = 1970168943
-	}
-
-	/**
-	 * Data type for scripts. Each #hb_script_t's value is an #hb_tag_t corresponding
-	 * to the four-letter values defined by [ISO 15924](https://unicode.org/iso15924/).
+	 * An enum type representing the pre-defined name IDs.
 	 * 
-	 * See also the Script (sc) property of the Unicode Character Database.
+	 * For more information on these fields, see the
+	 * [OpenType spec](https://docs.microsoft.com/en-us/typography/opentype/spec/name#name-ids).
 	 */
-	enum script_t {
+	enum ot_name_id_predefined_t {
 		/**
-		 * `Zyyy`
+		 * Copyright notice
 		 */
-		COMMON = 1517910393,
+		COPYRIGHT = 0,
 		/**
-		 * `Zinh`
+		 * Font Family name
 		 */
-		INHERITED = 1516858984,
+		FONT_FAMILY = 1,
 		/**
-		 * `Zzzz`
+		 * Font Subfamily name
 		 */
-		UNKNOWN = 1517976186,
+		FONT_SUBFAMILY = 2,
 		/**
-		 * `Arab`
+		 * Unique font identifier
 		 */
-		ARABIC = 1098015074,
+		UNIQUE_ID = 3,
 		/**
-		 * `Armn`
+		 * Full font name that reflects
+		 * all family and relevant subfamily descriptors
 		 */
-		ARMENIAN = 1098018158,
+		FULL_NAME = 4,
 		/**
-		 * `Beng`
+		 * Version string
 		 */
-		BENGALI = 1113943655,
+		VERSION_STRING = 5,
 		/**
-		 * `Cyrl`
+		 * PostScript name for the font
 		 */
-		CYRILLIC = 1132032620,
+		POSTSCRIPT_NAME = 6,
 		/**
-		 * `Deva`
+		 * Trademark
 		 */
-		DEVANAGARI = 1147500129,
+		TRADEMARK = 7,
 		/**
-		 * `Geor`
+		 * Manufacturer Name
 		 */
-		GEORGIAN = 1197830002,
+		MANUFACTURER = 8,
 		/**
-		 * `Grek`
+		 * Designer
 		 */
-		GREEK = 1198679403,
+		DESIGNER = 9,
 		/**
-		 * `Gujr`
+		 * Description
 		 */
-		GUJARATI = 1198877298,
+		DESCRIPTION = 10,
 		/**
-		 * `Guru`
+		 * URL of font vendor
 		 */
-		GURMUKHI = 1198879349,
+		VENDOR_URL = 11,
 		/**
-		 * `Hang`
+		 * URL of typeface designer
 		 */
-		HANGUL = 1214344807,
+		DESIGNER_URL = 12,
 		/**
-		 * `Hani`
+		 * License Description
 		 */
-		HAN = 1214344809,
+		LICENSE = 13,
 		/**
-		 * `Hebr`
+		 * URL where additional licensing
+		 * information can be found
 		 */
-		HEBREW = 1214603890,
+		LICENSE_URL = 14,
 		/**
-		 * `Hira`
+		 * Typographic Family name
 		 */
-		HIRAGANA = 1214870113,
+		TYPOGRAPHIC_FAMILY = 16,
 		/**
-		 * `Knda`
+		 * Typographic Subfamily name
 		 */
-		KANNADA = 1265525857,
+		TYPOGRAPHIC_SUBFAMILY = 17,
 		/**
-		 * `Kana`
+		 * Compatible Full Name for MacOS
 		 */
-		KATAKANA = 1264676449,
+		MAC_FULL_NAME = 18,
 		/**
-		 * `Laoo`
+		 * Sample text
 		 */
-		LAO = 1281453935,
+		SAMPLE_TEXT = 19,
 		/**
-		 * `Latn`
+		 * PostScript CID findfont name
 		 */
-		LATIN = 1281455214,
+		CID_FINDFONT_NAME = 20,
 		/**
-		 * `Mlym`
+		 * WWS Family Name
 		 */
-		MALAYALAM = 1298954605,
+		WWS_FAMILY = 21,
 		/**
-		 * `Orya`
+		 * WWS Subfamily Name
 		 */
-		ORIYA = 1332902241,
+		WWS_SUBFAMILY = 22,
 		/**
-		 * `Taml`
+		 * Light Background Palette
 		 */
-		TAMIL = 1415671148,
+		LIGHT_BACKGROUND = 23,
 		/**
-		 * `Telu`
+		 * Dark Background Palette
 		 */
-		TELUGU = 1415933045,
+		DARK_BACKGROUND = 24,
 		/**
-		 * `Thai`
+		 * Variations PostScript Name Prefix
 		 */
-		THAI = 1416126825,
+		VARIATIONS_PS_PREFIX = 25,
 		/**
-		 * `Tibt`
+		 * Value to represent a nonexistent name ID.
 		 */
-		TIBETAN = 1416192628,
-		/**
-		 * `Bopo`
-		 */
-		BOPOMOFO = 1114599535,
-		/**
-		 * `Brai`
-		 */
-		BRAILLE = 1114792297,
-		/**
-		 * `Cans`
-		 */
-		CANADIAN_SYLLABICS = 1130458739,
-		/**
-		 * `Cher`
-		 */
-		CHEROKEE = 1130915186,
-		/**
-		 * `Ethi`
-		 */
-		ETHIOPIC = 1165256809,
-		/**
-		 * `Khmr`
-		 */
-		KHMER = 1265134962,
-		/**
-		 * `Mong`
-		 */
-		MONGOLIAN = 1299148391,
-		/**
-		 * `Mymr`
-		 */
-		MYANMAR = 1299803506,
-		/**
-		 * `Ogam`
-		 */
-		OGHAM = 1332175213,
-		/**
-		 * `Runr`
-		 */
-		RUNIC = 1383427698,
-		/**
-		 * `Sinh`
-		 */
-		SINHALA = 1399418472,
-		/**
-		 * `Syrc`
-		 */
-		SYRIAC = 1400468067,
-		/**
-		 * `Thaa`
-		 */
-		THAANA = 1416126817,
-		/**
-		 * `Yiii`
-		 */
-		YI = 1500080489,
-		/**
-		 * `Dsrt`
-		 */
-		DESERET = 1148416628,
-		/**
-		 * `Goth`
-		 */
-		GOTHIC = 1198486632,
-		/**
-		 * `Ital`
-		 */
-		OLD_ITALIC = 1232363884,
-		/**
-		 * `Buhd`
-		 */
-		BUHID = 1114990692,
-		/**
-		 * `Hano`
-		 */
-		HANUNOO = 1214344815,
-		/**
-		 * `Tglg`
-		 */
-		TAGALOG = 1416064103,
-		/**
-		 * `Tagb`
-		 */
-		TAGBANWA = 1415669602,
-		/**
-		 * `Cprt`
-		 */
-		CYPRIOT = 1131442804,
-		/**
-		 * `Limb`
-		 */
-		LIMBU = 1281977698,
-		/**
-		 * `Linb`
-		 */
-		LINEAR_B = 1281977954,
-		/**
-		 * `Osma`
-		 */
-		OSMANYA = 1332964705,
-		/**
-		 * `Shaw`
-		 */
-		SHAVIAN = 1399349623,
-		/**
-		 * `Tale`
-		 */
-		TAI_LE = 1415670885,
-		/**
-		 * `Ugar`
-		 */
-		UGARITIC = 1432838514,
-		/**
-		 * `Bugi`
-		 */
-		BUGINESE = 1114990441,
-		/**
-		 * `Copt`
-		 */
-		COPTIC = 1131376756,
-		/**
-		 * `Glag`
-		 */
-		GLAGOLITIC = 1198285159,
-		/**
-		 * `Khar`
-		 */
-		KHAROSHTHI = 1265131890,
-		/**
-		 * `Talu`
-		 */
-		NEW_TAI_LUE = 1415670901,
-		/**
-		 * `Xpeo`
-		 */
-		OLD_PERSIAN = 1483761007,
-		/**
-		 * `Sylo`
-		 */
-		SYLOTI_NAGRI = 1400466543,
-		/**
-		 * `Tfng`
-		 */
-		TIFINAGH = 1415999079,
-		/**
-		 * `Bali`
-		 */
-		BALINESE = 1113681001,
-		/**
-		 * `Xsux`
-		 */
-		CUNEIFORM = 1483961720,
-		/**
-		 * `Nkoo`
-		 */
-		NKO = 1315663727,
-		/**
-		 * `Phag`
-		 */
-		PHAGS_PA = 1349017959,
-		/**
-		 * `Phnx`
-		 */
-		PHOENICIAN = 1349021304,
-		/**
-		 * `Cari`
-		 */
-		CARIAN = 1130459753,
-		/**
-		 * `Cham`
-		 */
-		CHAM = 1130914157,
-		/**
-		 * `Kali`
-		 */
-		KAYAH_LI = 1264675945,
-		/**
-		 * `Lepc`
-		 */
-		LEPCHA = 1281716323,
-		/**
-		 * `Lyci`
-		 */
-		LYCIAN = 1283023721,
-		/**
-		 * `Lydi`
-		 */
-		LYDIAN = 1283023977,
-		/**
-		 * `Olck`
-		 */
-		OL_CHIKI = 1332503403,
-		/**
-		 * `Rjng`
-		 */
-		REJANG = 1382706791,
-		/**
-		 * `Saur`
-		 */
-		SAURASHTRA = 1398895986,
-		/**
-		 * `Sund`
-		 */
-		SUNDANESE = 1400204900,
-		/**
-		 * `Vaii`
-		 */
-		VAI = 1449224553,
-		/**
-		 * `Avst`
-		 */
-		AVESTAN = 1098281844,
-		/**
-		 * `Bamu`
-		 */
-		BAMUM = 1113681269,
-		/**
-		 * `Egyp`
-		 */
-		EGYPTIAN_HIEROGLYPHS = 1164409200,
-		/**
-		 * `Armi`
-		 */
-		IMPERIAL_ARAMAIC = 1098018153,
-		/**
-		 * `Phli`
-		 */
-		INSCRIPTIONAL_PAHLAVI = 1349020777,
-		/**
-		 * `Prti`
-		 */
-		INSCRIPTIONAL_PARTHIAN = 1349678185,
-		/**
-		 * `Java`
-		 */
-		JAVANESE = 1247901281,
-		/**
-		 * `Kthi`
-		 */
-		KAITHI = 1265920105,
-		/**
-		 * `Lisu`
-		 */
-		LISU = 1281979253,
-		/**
-		 * `Mtei`
-		 */
-		MEETEI_MAYEK = 1299473769,
-		/**
-		 * `Sarb`
-		 */
-		OLD_SOUTH_ARABIAN = 1398895202,
-		/**
-		 * `Orkh`
-		 */
-		OLD_TURKIC = 1332898664,
-		/**
-		 * `Samr`
-		 */
-		SAMARITAN = 1398893938,
-		/**
-		 * `Lana`
-		 */
-		TAI_THAM = 1281453665,
-		/**
-		 * `Tavt`
-		 */
-		TAI_VIET = 1415673460,
-		/**
-		 * `Batk`
-		 */
-		BATAK = 1113683051,
-		/**
-		 * `Brah`
-		 */
-		BRAHMI = 1114792296,
-		/**
-		 * `Mand`
-		 */
-		MANDAIC = 1298230884,
-		/**
-		 * `Cakm`
-		 */
-		CHAKMA = 1130457965,
-		/**
-		 * `Merc`
-		 */
-		MEROITIC_CURSIVE = 1298494051,
-		/**
-		 * `Mero`
-		 */
-		MEROITIC_HIEROGLYPHS = 1298494063,
-		/**
-		 * `Plrd`
-		 */
-		MIAO = 1349284452,
-		/**
-		 * `Shrd`
-		 */
-		SHARADA = 1399353956,
-		/**
-		 * `Sora`
-		 */
-		SORA_SOMPENG = 1399812705,
-		/**
-		 * `Takr`
-		 */
-		TAKRI = 1415670642,
-		/**
-		 * `Bass`, Since: 0.9.30
-		 */
-		BASSA_VAH = 1113682803,
-		/**
-		 * `Aghb`, Since: 0.9.30
-		 */
-		CAUCASIAN_ALBANIAN = 1097295970,
-		/**
-		 * `Dupl`, Since: 0.9.30
-		 */
-		DUPLOYAN = 1148547180,
-		/**
-		 * `Elba`, Since: 0.9.30
-		 */
-		ELBASAN = 1164730977,
-		/**
-		 * `Gran`, Since: 0.9.30
-		 */
-		GRANTHA = 1198678382,
-		/**
-		 * `Khoj`, Since: 0.9.30
-		 */
-		KHOJKI = 1265135466,
-		/**
-		 * `Sind`, Since: 0.9.30
-		 */
-		KHUDAWADI = 1399418468,
-		/**
-		 * `Lina`, Since: 0.9.30
-		 */
-		LINEAR_A = 1281977953,
-		/**
-		 * `Mahj`, Since: 0.9.30
-		 */
-		MAHAJANI = 1298229354,
-		/**
-		 * `Mani`, Since: 0.9.30
-		 */
-		MANICHAEAN = 1298230889,
-		/**
-		 * `Mend`, Since: 0.9.30
-		 */
-		MENDE_KIKAKUI = 1298493028,
-		/**
-		 * `Modi`, Since: 0.9.30
-		 */
-		MODI = 1299145833,
-		/**
-		 * `Mroo`, Since: 0.9.30
-		 */
-		MRO = 1299345263,
-		/**
-		 * `Nbat`, Since: 0.9.30
-		 */
-		NABATAEAN = 1315070324,
-		/**
-		 * `Narb`, Since: 0.9.30
-		 */
-		OLD_NORTH_ARABIAN = 1315009122,
-		/**
-		 * `Perm`, Since: 0.9.30
-		 */
-		OLD_PERMIC = 1348825709,
-		/**
-		 * `Hmng`, Since: 0.9.30
-		 */
-		PAHAWH_HMONG = 1215131239,
-		/**
-		 * `Palm`, Since: 0.9.30
-		 */
-		PALMYRENE = 1348562029,
-		/**
-		 * `Pauc`, Since: 0.9.30
-		 */
-		PAU_CIN_HAU = 1348564323,
-		/**
-		 * `Phlp`, Since: 0.9.30
-		 */
-		PSALTER_PAHLAVI = 1349020784,
-		/**
-		 * `Sidd`, Since: 0.9.30
-		 */
-		SIDDHAM = 1399415908,
-		/**
-		 * `Tirh`, Since: 0.9.30
-		 */
-		TIRHUTA = 1416196712,
-		/**
-		 * `Wara`, Since: 0.9.30
-		 */
-		WARANG_CITI = 1466004065,
-		/**
-		 * `Ahom`, Since: 0.9.30
-		 */
-		AHOM = 1097363309,
-		/**
-		 * `Hluw`, Since: 0.9.30
-		 */
-		ANATOLIAN_HIEROGLYPHS = 1215067511,
-		/**
-		 * `Hatr`, Since: 0.9.30
-		 */
-		HATRAN = 1214346354,
-		/**
-		 * `Mult`, Since: 0.9.30
-		 */
-		MULTANI = 1299541108,
-		/**
-		 * `Hung`, Since: 0.9.30
-		 */
-		OLD_HUNGARIAN = 1215655527,
-		/**
-		 * `Sgnw`, Since: 0.9.30
-		 */
-		SIGNWRITING = 1399287415,
-		/**
-		 * `Adlm`, Since: 1.3.0
-		 */
-		ADLAM = 1097100397,
-		/**
-		 * `Bhks`, Since: 1.3.0
-		 */
-		BHAIKSUKI = 1114139507,
-		/**
-		 * `Marc`, Since: 1.3.0
-		 */
-		MARCHEN = 1298231907,
-		/**
-		 * `Osge`, Since: 1.3.0
-		 */
-		OSAGE = 1332963173,
-		/**
-		 * `Tang`, Since: 1.3.0
-		 */
-		TANGUT = 1415671399,
-		/**
-		 * `Newa`, Since: 1.3.0
-		 */
-		NEWA = 1315272545,
-		/**
-		 * `Gonm`, Since: 1.6.0
-		 */
-		MASARAM_GONDI = 1198485101,
-		/**
-		 * `Nshu`, Since: 1.6.0
-		 */
-		NUSHU = 1316186229,
-		/**
-		 * `Soyo`, Since: 1.6.0
-		 */
-		SOYOMBO = 1399814511,
-		/**
-		 * `Zanb`, Since: 1.6.0
-		 */
-		ZANABAZAR_SQUARE = 1516334690,
-		/**
-		 * `Dogr`, Since: 1.8.0
-		 */
-		DOGRA = 1148151666,
-		/**
-		 * `Gong`, Since: 1.8.0
-		 */
-		GUNJALA_GONDI = 1198485095,
-		/**
-		 * `Rohg`, Since: 1.8.0
-		 */
-		HANIFI_ROHINGYA = 1383032935,
-		/**
-		 * `Maka`, Since: 1.8.0
-		 */
-		MAKASAR = 1298230113,
-		/**
-		 * `Medf`, Since: 1.8.0
-		 */
-		MEDEFAIDRIN = 1298490470,
-		/**
-		 * `Sogo`, Since: 1.8.0
-		 */
-		OLD_SOGDIAN = 1399809903,
-		/**
-		 * `Sogd`, Since: 1.8.0
-		 */
-		SOGDIAN = 1399809892,
-		/**
-		 * `Elym`, Since: 2.4.0
-		 */
-		ELYMAIC = 1164736877,
-		/**
-		 * `Nand`, Since: 2.4.0
-		 */
-		NANDINAGARI = 1315008100,
-		/**
-		 * `Hmnp`, Since: 2.4.0
-		 */
-		NYIAKENG_PUACHUE_HMONG = 1215131248,
-		/**
-		 * `Wcho`, Since: 2.4.0
-		 */
-		WANCHO = 1466132591,
-		/**
-		 * `Chrs`, Since: 2.6.7
-		 */
-		CHORASMIAN = 1130918515,
-		/**
-		 * `Diak`, Since: 2.6.7
-		 */
-		DIVES_AKURU = 1147756907,
-		/**
-		 * `Kits`, Since: 2.6.7
-		 */
-		KHITAN_SMALL_SCRIPT = 1265202291,
-		/**
-		 * `Yezi`, Since: 2.6.7
-		 */
-		YEZIDI = 1499822697,
-		/**
-		 * `Cpmn`, Since: 3.0.0
-		 */
-		CYPRO_MINOAN = 1131441518,
-		/**
-		 * `Ougr`, Since: 3.0.0
-		 */
-		OLD_UYGHUR = 1333094258,
-		/**
-		 * `Tnsa`, Since: 3.0.0
-		 */
-		TANGSA = 1416524641,
-		/**
-		 * `Toto`, Since: 3.0.0
-		 */
-		TOTO = 1416590447,
-		/**
-		 * `Vith`, Since: 3.0.0
-		 */
-		VITHKUQI = 1449751656,
-		/**
-		 * No script set
-		 */
-		INVALID = 0
+		INVALID = 65535
 	}
 
 	/**
-	 * Defined by [OpenType Design-Variation Axis Tag Registry](https://docs.microsoft.com/en-us/typography/opentype/spec/dvaraxisreg).
+	 * The values of this enumeration describe the compositing modes
+	 * that can be used when combining temporary redirected drawing
+	 * with the backdrop.
+	 * 
+	 * See the OpenType spec [COLR](https://learn.microsoft.com/en-us/typography/opentype/spec/colr)
+	 * section for details.
 	 */
-	enum style_tag_t {
+	enum paint_composite_mode_t {
 		/**
-		 * Used to vary between non-italic and italic.
-		 * A value of 0 can be interpreted as "Roman" (non-italic); a value of 1 can
-		 * be interpreted as (fully) italic.
+		 * clear destination layer (bounded)
 		 */
-		ITALIC = 1769234796,
+		CLEAR = 0,
 		/**
-		 * Used to vary design to suit different text sizes.
-		 * Non-zero. Values can be interpreted as text size, in points.
+		 * replace destination layer (bounded)
 		 */
-		OPTICAL_SIZE = 1869640570,
+		SRC = 1,
 		/**
-		 * Used to vary between upright and slanted text. Values
-		 * must be greater than -90 and less than +90. Values can be interpreted as
-		 * the angle, in counter-clockwise degrees, of oblique slant from whatever the
-		 * designer considers to be upright for that font design.
+		 * ignore the source
 		 */
-		SLANT_ANGLE = 1936486004,
+		DEST = 2,
 		/**
-		 * same as #HB_STYLE_TAG_SLANT_ANGLE expression as ratio.
+		 * draw source layer on top of destination layer
+		 * (bounded)
 		 */
-		SLANT_RATIO = 1399615092,
+		SRC_OVER = 3,
 		/**
-		 * Used to vary width of text from narrower to wider.
-		 * Non-zero. Values can be interpreted as a percentage of whatever the font
-		 * designer considers “normal width” for that font design.
+		 * draw destination on top of source
 		 */
-		WIDTH = 2003072104,
+		DEST_OVER = 4,
 		/**
-		 * Used to vary stroke thicknesses or other design details
-		 * to give variation from lighter to blacker. Values can be interpreted in direct
-		 * comparison to values for usWeightClass in the OS/2 table,
-		 * or the CSS font-weight property.
+		 * draw source where there was destination content
+		 * (unbounded)
 		 */
-		WEIGHT = 2003265652
+		SRC_IN = 5,
+		/**
+		 * leave destination only where there was
+		 * source content (unbounded)
+		 */
+		DEST_IN = 6,
+		/**
+		 * draw source where there was no destination
+		 * content (unbounded)
+		 */
+		SRC_OUT = 7,
+		/**
+		 * leave destination only where there was no
+		 * source content
+		 */
+		DEST_OUT = 8,
+		/**
+		 * draw source on top of destination content and
+		 * only there
+		 */
+		SRC_ATOP = 9,
+		/**
+		 * leave destination on top of source content
+		 * and only there (unbounded)
+		 */
+		DEST_ATOP = 10,
+		/**
+		 * source and destination are shown where there is only
+		 * one of them
+		 */
+		XOR = 11,
+		/**
+		 * source and destination layers are accumulated
+		 */
+		PLUS = 12,
+		/**
+		 * source and destination are complemented and
+		 * multiplied. This causes the result to be at least as light as the lighter
+		 * inputs.
+		 */
+		SCREEN = 13,
+		/**
+		 * multiplies or screens, depending on the
+		 * lightness of the destination color.
+		 */
+		OVERLAY = 14,
+		/**
+		 * replaces the destination with the source if it
+		 * is darker, otherwise keeps the source.
+		 */
+		DARKEN = 15,
+		/**
+		 * replaces the destination with the source if it
+		 * is lighter, otherwise keeps the source.
+		 */
+		LIGHTEN = 16,
+		/**
+		 * brightens the destination color to reflect
+		 * the source color.
+		 */
+		COLOR_DODGE = 17,
+		/**
+		 * darkens the destination color to reflect
+		 * the source color.
+		 */
+		COLOR_BURN = 18,
+		/**
+		 * Multiplies or screens, dependent on source
+		 * color.
+		 */
+		HARD_LIGHT = 19,
+		/**
+		 * Darkens or lightens, dependent on source
+		 * color.
+		 */
+		SOFT_LIGHT = 20,
+		/**
+		 * Takes the difference of the source and
+		 * destination color.
+		 */
+		DIFFERENCE = 21,
+		/**
+		 * Produces an effect similar to difference, but
+		 * with lower contrast.
+		 */
+		EXCLUSION = 22,
+		/**
+		 * source and destination layers are multiplied.
+		 * This causes the result to be at least as dark as the darker inputs.
+		 */
+		MULTIPLY = 23,
+		/**
+		 * Creates a color with the hue of the source
+		 * and the saturation and luminosity of the target.
+		 */
+		HSL_HUE = 24,
+		/**
+		 * Creates a color with the saturation
+		 * of the source and the hue and luminosity of the target. Painting with
+		 * this mode onto a gray area produces no change.
+		 */
+		HSL_SATURATION = 25,
+		/**
+		 * Creates a color with the hue and saturation
+		 * of the source and the luminosity of the target. This preserves the gray
+		 * levels of the target and is useful for coloring monochrome images or
+		 * tinting color images.
+		 */
+		HSL_COLOR = 26,
+		/**
+		 * Creates a color with the luminosity of
+		 * the source and the hue and saturation of the target. This produces an
+		 * inverse effect to #HB_PAINT_COMPOSITE_MODE_HSL_COLOR.
+		 */
+		HSL_LUMINOSITY = 27
+	}
+
+	/**
+	 * The values of this enumeration determine how color values
+	 * outside the minimum and maximum defined offset on a #hb_color_line_t
+	 * are determined.
+	 * 
+	 * See the OpenType spec [COLR](https://learn.microsoft.com/en-us/typography/opentype/spec/colr)
+	 * section for details.
+	 */
+	enum paint_extend_t {
+		/**
+		 * Outside the defined interval,
+		 *   the color of the closest color stop is used.
+		 */
+		PAD = 0,
+		/**
+		 * The color line is repeated over
+		 *   repeated multiples of the defined interval
+		 */
+		REPEAT = 1,
+		/**
+		 * The color line is repeated over
+		 *      repeated intervals, as for the repeat mode.
+		 *      However, in each repeated interval, the ordering of
+		 *      color stops is the reverse of the adjacent interval.
+		 */
+		REFLECT = 2
 	}
 
 	/**
@@ -3185,9 +1551,9 @@ declare namespace imports.gi.HarfBuzz {
 		 */
 		CCC130 = 130,
 		/**
-		 * [Tibetan]
+		 * [Tibetan] Since: 7.2.0
 		 */
-		CCC133 = 132,
+		CCC132 = 132,
 		/**
 		 * Marks attached at the bottom left
 		 */
@@ -3382,6 +1748,1182 @@ declare namespace imports.gi.HarfBuzz {
 	}
 
 	/**
+	 * The selectors defined for specifying AAT feature settings.
+	 */
+	enum aat_layout_feature_selector_t {
+		/**
+		 * Initial, unset feature selector
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_INVALID = 65535,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ALL_TYPOGRAPHIC
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_ALL_TYPE_FEATURES_ON = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ALL_TYPOGRAPHIC
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_ALL_TYPE_FEATURES_OFF = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_REQUIRED_LIGATURES_ON = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_REQUIRED_LIGATURES_OFF = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_COMMON_LIGATURES_ON = 2,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_COMMON_LIGATURES_OFF = 3,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_RARE_LIGATURES_ON = 4,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_RARE_LIGATURES_OFF = 5,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_LOGOS_ON = 6,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_LOGOS_OFF = 7,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_REBUS_PICTURES_ON = 8,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_REBUS_PICTURES_OFF = 9,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_DIPHTHONG_LIGATURES_ON = 10,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_DIPHTHONG_LIGATURES_OFF = 11,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_SQUARED_LIGATURES_ON = 12,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_SQUARED_LIGATURES_OFF = 13,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_ABBREV_SQUARED_LIGATURES_ON = 14,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_ABBREV_SQUARED_LIGATURES_OFF = 15,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_SYMBOL_LIGATURES_ON = 16,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_SYMBOL_LIGATURES_OFF = 17,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_CONTEXTUAL_LIGATURES_ON = 18,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_CONTEXTUAL_LIGATURES_OFF = 19,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_HISTORICAL_LIGATURES_ON = 20,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_HISTORICAL_LIGATURES_OFF = 21,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_UNCONNECTED = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_PARTIALLY_CONNECTED = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LIGATURES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_CURSIVE = 2,
+		/**
+		 * Deprecated
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_UPPER_AND_LOWER_CASE = 0,
+		/**
+		 * Deprecated
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_ALL_CAPS = 1,
+		/**
+		 * Deprecated
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_ALL_LOWER_CASE = 2,
+		/**
+		 * Deprecated
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_SMALL_CAPS = 3,
+		/**
+		 * Deprecated
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_INITIAL_CAPS = 4,
+		/**
+		 * Deprecated
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_INITIAL_CAPS_AND_SMALL_CAPS = 5,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_VERTICAL_SUBSTITUTION
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_SUBSTITUTE_VERTICAL_FORMS_ON = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_VERTICAL_SUBSTITUTION
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_SUBSTITUTE_VERTICAL_FORMS_OFF = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LINGUISTIC_REARRANGEMENT
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_LINGUISTIC_REARRANGEMENT_ON = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LINGUISTIC_REARRANGEMENT
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_LINGUISTIC_REARRANGEMENT_OFF = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_NUMBER_SPACING
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_MONOSPACED_NUMBERS = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_NUMBER_SPACING
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_PROPORTIONAL_NUMBERS = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_NUMBER_SPACING
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_THIRD_WIDTH_NUMBERS = 2,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_NUMBER_SPACING
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_QUARTER_WIDTH_NUMBERS = 3,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_SMART_SWASH_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_WORD_INITIAL_SWASHES_ON = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_SMART_SWASH_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_WORD_INITIAL_SWASHES_OFF = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_SMART_SWASH_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_WORD_FINAL_SWASHES_ON = 2,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_SMART_SWASH_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_WORD_FINAL_SWASHES_OFF = 3,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_SMART_SWASH_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_LINE_INITIAL_SWASHES_ON = 4,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_SMART_SWASH_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_LINE_INITIAL_SWASHES_OFF = 5,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_SMART_SWASH_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_LINE_FINAL_SWASHES_ON = 6,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_SMART_SWASH_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_LINE_FINAL_SWASHES_OFF = 7,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_SMART_SWASH_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_NON_FINAL_SWASHES_ON = 8,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_SMART_SWASH_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_NON_FINAL_SWASHES_OFF = 9,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_DIACRITICS_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_SHOW_DIACRITICS = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_DIACRITICS_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_HIDE_DIACRITICS = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_DIACRITICS_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_DECOMPOSE_DIACRITICS = 2,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_VERTICAL_POSITION
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_NORMAL_POSITION = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_VERTICAL_POSITION
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_SUPERIORS = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_VERTICAL_POSITION
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_INFERIORS = 2,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_VERTICAL_POSITION
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_ORDINALS = 3,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_VERTICAL_POSITION
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_SCIENTIFIC_INFERIORS = 4,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_FRACTIONS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_NO_FRACTIONS = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_FRACTIONS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_VERTICAL_FRACTIONS = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_FRACTIONS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_DIAGONAL_FRACTIONS = 2,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_OVERLAPPING_CHARACTERS_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_PREVENT_OVERLAP_ON = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_OVERLAPPING_CHARACTERS_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_PREVENT_OVERLAP_OFF = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TYPOGRAPHIC_EXTRAS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_HYPHENS_TO_EM_DASH_ON = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TYPOGRAPHIC_EXTRAS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_HYPHENS_TO_EM_DASH_OFF = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TYPOGRAPHIC_EXTRAS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_HYPHEN_TO_EN_DASH_ON = 2,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TYPOGRAPHIC_EXTRAS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_HYPHEN_TO_EN_DASH_OFF = 3,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TYPOGRAPHIC_EXTRAS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_SLASHED_ZERO_ON = 4,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TYPOGRAPHIC_EXTRAS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_SLASHED_ZERO_OFF = 5,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TYPOGRAPHIC_EXTRAS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_FORM_INTERROBANG_ON = 6,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TYPOGRAPHIC_EXTRAS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_FORM_INTERROBANG_OFF = 7,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TYPOGRAPHIC_EXTRAS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_SMART_QUOTES_ON = 8,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TYPOGRAPHIC_EXTRAS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_SMART_QUOTES_OFF = 9,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TYPOGRAPHIC_EXTRAS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_PERIODS_TO_ELLIPSIS_ON = 10,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TYPOGRAPHIC_EXTRAS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_PERIODS_TO_ELLIPSIS_OFF = 11,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_MATHEMATICAL_EXTRAS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_HYPHEN_TO_MINUS_ON = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_MATHEMATICAL_EXTRAS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_HYPHEN_TO_MINUS_OFF = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_MATHEMATICAL_EXTRAS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_ASTERISK_TO_MULTIPLY_ON = 2,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_MATHEMATICAL_EXTRAS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_ASTERISK_TO_MULTIPLY_OFF = 3,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_MATHEMATICAL_EXTRAS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_SLASH_TO_DIVIDE_ON = 4,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_MATHEMATICAL_EXTRAS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_SLASH_TO_DIVIDE_OFF = 5,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_MATHEMATICAL_EXTRAS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_INEQUALITY_LIGATURES_ON = 6,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_MATHEMATICAL_EXTRAS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_INEQUALITY_LIGATURES_OFF = 7,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_MATHEMATICAL_EXTRAS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_EXPONENTS_ON = 8,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_MATHEMATICAL_EXTRAS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_EXPONENTS_OFF = 9,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_MATHEMATICAL_EXTRAS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_MATHEMATICAL_GREEK_ON = 10,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_MATHEMATICAL_EXTRAS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_MATHEMATICAL_GREEK_OFF = 11,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ORNAMENT_SETS_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_NO_ORNAMENTS = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ORNAMENT_SETS_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_DINGBATS = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ORNAMENT_SETS_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_PI_CHARACTERS = 2,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ORNAMENT_SETS_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_FLEURONS = 3,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ORNAMENT_SETS_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_DECORATIVE_BORDERS = 4,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ORNAMENT_SETS_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_INTERNATIONAL_SYMBOLS = 5,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ORNAMENT_SETS_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_MATH_SYMBOLS = 6,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_NO_ALTERNATES = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_DESIGN_COMPLEXITY_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_DESIGN_LEVEL1 = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_DESIGN_COMPLEXITY_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_DESIGN_LEVEL2 = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_DESIGN_COMPLEXITY_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_DESIGN_LEVEL3 = 2,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_DESIGN_COMPLEXITY_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_DESIGN_LEVEL4 = 3,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_DESIGN_COMPLEXITY_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_DESIGN_LEVEL5 = 4,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLE_OPTIONS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_NO_STYLE_OPTIONS = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLE_OPTIONS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_DISPLAY_TEXT = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLE_OPTIONS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_ENGRAVED_TEXT = 2,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLE_OPTIONS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_ILLUMINATED_CAPS = 3,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLE_OPTIONS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_TITLING_CAPS = 4,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLE_OPTIONS
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_TALL_CAPS = 5,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_SHAPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_TRADITIONAL_CHARACTERS = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_SHAPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_SIMPLIFIED_CHARACTERS = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_SHAPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_JIS1978_CHARACTERS = 2,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_SHAPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_JIS1983_CHARACTERS = 3,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_SHAPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_JIS1990_CHARACTERS = 4,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_SHAPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_TRADITIONAL_ALT_ONE = 5,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_SHAPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_TRADITIONAL_ALT_TWO = 6,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_SHAPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_TRADITIONAL_ALT_THREE = 7,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_SHAPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_TRADITIONAL_ALT_FOUR = 8,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_SHAPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_TRADITIONAL_ALT_FIVE = 9,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_SHAPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_EXPERT_CHARACTERS = 10,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_SHAPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_JIS2004_CHARACTERS = 11,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_SHAPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_HOJO_CHARACTERS = 12,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_SHAPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_NLCCHARACTERS = 13,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_SHAPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_TRADITIONAL_NAMES_CHARACTERS = 14,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_NUMBER_CASE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_LOWER_CASE_NUMBERS = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_NUMBER_CASE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_UPPER_CASE_NUMBERS = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TEXT_SPACING
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_PROPORTIONAL_TEXT = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TEXT_SPACING
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_MONOSPACED_TEXT = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TEXT_SPACING
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_HALF_WIDTH_TEXT = 2,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TEXT_SPACING
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_THIRD_WIDTH_TEXT = 3,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TEXT_SPACING
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_QUARTER_WIDTH_TEXT = 4,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TEXT_SPACING
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_ALT_PROPORTIONAL_TEXT = 5,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TEXT_SPACING
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_ALT_HALF_WIDTH_TEXT = 6,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TRANSLITERATION
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_NO_TRANSLITERATION = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TRANSLITERATION
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_HANJA_TO_HANGUL = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TRANSLITERATION
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_HIRAGANA_TO_KATAKANA = 2,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TRANSLITERATION
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_KATAKANA_TO_HIRAGANA = 3,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TRANSLITERATION
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_KANA_TO_ROMANIZATION = 4,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TRANSLITERATION
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_ROMANIZATION_TO_HIRAGANA = 5,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TRANSLITERATION
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_ROMANIZATION_TO_KATAKANA = 6,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TRANSLITERATION
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_HANJA_TO_HANGUL_ALT_ONE = 7,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TRANSLITERATION
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_HANJA_TO_HANGUL_ALT_TWO = 8,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_TRANSLITERATION
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_HANJA_TO_HANGUL_ALT_THREE = 9,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ANNOTATION_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_NO_ANNOTATION = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ANNOTATION_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_BOX_ANNOTATION = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ANNOTATION_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_ROUNDED_BOX_ANNOTATION = 2,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ANNOTATION_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_CIRCLE_ANNOTATION = 3,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ANNOTATION_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_INVERTED_CIRCLE_ANNOTATION = 4,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ANNOTATION_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_PARENTHESIS_ANNOTATION = 5,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ANNOTATION_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_PERIOD_ANNOTATION = 6,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ANNOTATION_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_ROMAN_NUMERAL_ANNOTATION = 7,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ANNOTATION_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_DIAMOND_ANNOTATION = 8,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ANNOTATION_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_INVERTED_BOX_ANNOTATION = 9,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ANNOTATION_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_INVERTED_ROUNDED_BOX_ANNOTATION = 10,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_KANA_SPACING_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_FULL_WIDTH_KANA = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_KANA_SPACING_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_PROPORTIONAL_KANA = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_IDEOGRAPHIC_SPACING_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_FULL_WIDTH_IDEOGRAPHS = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_IDEOGRAPHIC_SPACING_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_PROPORTIONAL_IDEOGRAPHS = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_IDEOGRAPHIC_SPACING_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_HALF_WIDTH_IDEOGRAPHS = 2,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_UNICODE_DECOMPOSITION_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_CANONICAL_COMPOSITION_ON = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_UNICODE_DECOMPOSITION_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_CANONICAL_COMPOSITION_OFF = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_UNICODE_DECOMPOSITION_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_COMPATIBILITY_COMPOSITION_ON = 2,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_UNICODE_DECOMPOSITION_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_COMPATIBILITY_COMPOSITION_OFF = 3,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_UNICODE_DECOMPOSITION_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_TRANSCODING_COMPOSITION_ON = 4,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_UNICODE_DECOMPOSITION_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_TRANSCODING_COMPOSITION_OFF = 5,
+		/**
+		 * Deprecated; use #HB_AAT_LAYOUT_FEATURE_SELECTOR_RUBY_KANA_OFF instead
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_NO_RUBY_KANA = 0,
+		/**
+		 * Deprecated; use #HB_AAT_LAYOUT_FEATURE_SELECTOR_RUBY_KANA_ON instead
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_RUBY_KANA = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_RUBY_KANA
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_RUBY_KANA_ON = 2,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_RUBY_KANA
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_RUBY_KANA_OFF = 3,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CJK_SYMBOL_ALTERNATIVES_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_NO_CJK_SYMBOL_ALTERNATIVES = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CJK_SYMBOL_ALTERNATIVES_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_CJK_SYMBOL_ALT_ONE = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CJK_SYMBOL_ALTERNATIVES_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_CJK_SYMBOL_ALT_TWO = 2,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CJK_SYMBOL_ALTERNATIVES_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_CJK_SYMBOL_ALT_THREE = 3,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CJK_SYMBOL_ALTERNATIVES_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_CJK_SYMBOL_ALT_FOUR = 4,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CJK_SYMBOL_ALTERNATIVES_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_CJK_SYMBOL_ALT_FIVE = 5,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_IDEOGRAPHIC_ALTERNATIVES_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_NO_IDEOGRAPHIC_ALTERNATIVES = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_IDEOGRAPHIC_ALTERNATIVES_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_IDEOGRAPHIC_ALT_ONE = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_IDEOGRAPHIC_ALTERNATIVES_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_IDEOGRAPHIC_ALT_TWO = 2,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_IDEOGRAPHIC_ALTERNATIVES_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_IDEOGRAPHIC_ALT_THREE = 3,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_IDEOGRAPHIC_ALTERNATIVES_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_IDEOGRAPHIC_ALT_FOUR = 4,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_IDEOGRAPHIC_ALTERNATIVES_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_IDEOGRAPHIC_ALT_FIVE = 5,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CJK_VERTICAL_ROMAN_PLACEMENT_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_CJK_VERTICAL_ROMAN_CENTERED = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CJK_VERTICAL_ROMAN_PLACEMENT_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_CJK_VERTICAL_ROMAN_HBASELINE = 1,
+		/**
+		 * Deprecated; use #HB_AAT_LAYOUT_FEATURE_SELECTOR_CJK_ITALIC_ROMAN_OFF instead
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_NO_CJK_ITALIC_ROMAN = 0,
+		/**
+		 * Deprecated; use #HB_AAT_LAYOUT_FEATURE_SELECTOR_CJK_ITALIC_ROMAN_ON instead
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_CJK_ITALIC_ROMAN = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ITALIC_CJK_ROMAN
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_CJK_ITALIC_ROMAN_ON = 2,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ITALIC_CJK_ROMAN
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_CJK_ITALIC_ROMAN_OFF = 3,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CASE_SENSITIVE_LAYOUT
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_CASE_SENSITIVE_LAYOUT_ON = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CASE_SENSITIVE_LAYOUT
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_CASE_SENSITIVE_LAYOUT_OFF = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CASE_SENSITIVE_LAYOUT
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_CASE_SENSITIVE_SPACING_ON = 2,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CASE_SENSITIVE_LAYOUT
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_CASE_SENSITIVE_SPACING_OFF = 3,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ALTERNATE_KANA
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_ALTERNATE_HORIZ_KANA_ON = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ALTERNATE_KANA
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_ALTERNATE_HORIZ_KANA_OFF = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ALTERNATE_KANA
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_ALTERNATE_VERT_KANA_ON = 2,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_ALTERNATE_KANA
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_ALTERNATE_VERT_KANA_OFF = 3,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_NO_STYLISTIC_ALTERNATES = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_ONE_ON = 2,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_ONE_OFF = 3,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_TWO_ON = 4,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_TWO_OFF = 5,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_THREE_ON = 6,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_THREE_OFF = 7,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_FOUR_ON = 8,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_FOUR_OFF = 9,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_FIVE_ON = 10,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_FIVE_OFF = 11,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_SIX_ON = 12,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_SIX_OFF = 13,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_SEVEN_ON = 14,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_SEVEN_OFF = 15,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_EIGHT_ON = 16,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_EIGHT_OFF = 17,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_NINE_ON = 18,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_NINE_OFF = 19,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_TEN_ON = 20,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_TEN_OFF = 21,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_ELEVEN_ON = 22,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_ELEVEN_OFF = 23,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_TWELVE_ON = 24,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_TWELVE_OFF = 25,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_THIRTEEN_ON = 26,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_THIRTEEN_OFF = 27,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_FOURTEEN_ON = 28,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_FOURTEEN_OFF = 29,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_FIFTEEN_ON = 30,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_FIFTEEN_OFF = 31,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_SIXTEEN_ON = 32,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_SIXTEEN_OFF = 33,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_SEVENTEEN_ON = 34,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_SEVENTEEN_OFF = 35,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_EIGHTEEN_ON = 36,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_EIGHTEEN_OFF = 37,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_NINETEEN_ON = 38,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_NINETEEN_OFF = 39,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_TWENTY_ON = 40,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_STYLISTIC_ALT_TWENTY_OFF = 41,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CONTEXTUAL_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_CONTEXTUAL_ALTERNATES_ON = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CONTEXTUAL_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_CONTEXTUAL_ALTERNATES_OFF = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CONTEXTUAL_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_SWASH_ALTERNATES_ON = 2,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CONTEXTUAL_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_SWASH_ALTERNATES_OFF = 3,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CONTEXTUAL_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_CONTEXTUAL_SWASH_ALTERNATES_ON = 4,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CONTEXTUAL_ALTERNATIVES
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_CONTEXTUAL_SWASH_ALTERNATES_OFF = 5,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LOWER_CASE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_DEFAULT_LOWER_CASE = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LOWER_CASE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_LOWER_CASE_SMALL_CAPS = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_LOWER_CASE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_LOWER_CASE_PETITE_CAPS = 2,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_UPPER_CASE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_DEFAULT_UPPER_CASE = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_UPPER_CASE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_UPPER_CASE_SMALL_CAPS = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_UPPER_CASE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_UPPER_CASE_PETITE_CAPS = 2,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CJK_ROMAN_SPACING_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_HALF_WIDTH_CJK_ROMAN = 0,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CJK_ROMAN_SPACING_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_PROPORTIONAL_CJK_ROMAN = 1,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CJK_ROMAN_SPACING_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_DEFAULT_CJK_ROMAN = 2,
+		/**
+		 * for #HB_AAT_LAYOUT_FEATURE_TYPE_CJK_ROMAN_SPACING_TYPE
+		 */
+		B_AAT_LAYOUT_FEATURE_SELECTOR_FULL_WIDTH_CJK_ROMAN = 3
+	}
+
+	/**
+	 * The possible feature types defined for AAT shaping, from Apple [Font Feature Registry](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html).
+	 */
+	enum aat_layout_feature_type_t {
+		/**
+		 * Initial, unset feature type
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_INVALID = 65535,
+		/**
+		 * [All Typographic Features](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type0)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_ALL_TYPOGRAPHIC = 0,
+		/**
+		 * [Ligatures](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type1)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_LIGATURES = 1,
+		/**
+		 * [Cursive Connection](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type2)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_CURSIVE_CONNECTION = 2,
+		/**
+		 * [Letter Case](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type3)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_LETTER_CASE = 3,
+		/**
+		 * [Vertical Substitution](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type4)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_VERTICAL_SUBSTITUTION = 4,
+		/**
+		 * [Linguistic Rearrangement](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type5)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_LINGUISTIC_REARRANGEMENT = 5,
+		/**
+		 * [Number Spacing](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type6)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_NUMBER_SPACING = 6,
+		/**
+		 * [Smart Swash](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type8)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_SMART_SWASH_TYPE = 8,
+		/**
+		 * [Diacritics](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type9)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_DIACRITICS_TYPE = 9,
+		/**
+		 * [Vertical Position](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type10)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_VERTICAL_POSITION = 10,
+		/**
+		 * [Fractions](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type11)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_FRACTIONS = 11,
+		/**
+		 * [Overlapping Characters](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type13)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_OVERLAPPING_CHARACTERS_TYPE = 13,
+		/**
+		 * [Typographic Extras](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type14)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_TYPOGRAPHIC_EXTRAS = 14,
+		/**
+		 * [Mathematical Extras](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type15)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_MATHEMATICAL_EXTRAS = 15,
+		/**
+		 * [Ornament Sets](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type16)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_ORNAMENT_SETS_TYPE = 16,
+		/**
+		 * [Character Alternatives](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type17)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_ALTERNATIVES = 17,
+		/**
+		 * [Design Complexity](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type18)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_DESIGN_COMPLEXITY_TYPE = 18,
+		/**
+		 * [Style Options](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type19)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_STYLE_OPTIONS = 19,
+		/**
+		 * [Character Shape](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type20)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_CHARACTER_SHAPE = 20,
+		/**
+		 * [Number Case](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type21)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_NUMBER_CASE = 21,
+		/**
+		 * [Text Spacing](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type22)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_TEXT_SPACING = 22,
+		/**
+		 * [Transliteration](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type23)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_TRANSLITERATION = 23,
+		/**
+		 * [Annotation](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type24)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_ANNOTATION_TYPE = 24,
+		/**
+		 * [Kana Spacing](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type25)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_KANA_SPACING_TYPE = 25,
+		/**
+		 * [Ideographic Spacing](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type26)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_IDEOGRAPHIC_SPACING_TYPE = 26,
+		/**
+		 * [Unicode Decomposition](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type27)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_UNICODE_DECOMPOSITION_TYPE = 27,
+		/**
+		 * [Ruby Kana](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type28)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_RUBY_KANA = 28,
+		/**
+		 * [CJK Symbol Alternatives](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type29)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_CJK_SYMBOL_ALTERNATIVES_TYPE = 29,
+		/**
+		 * [Ideographic Alternatives](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type30)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_IDEOGRAPHIC_ALTERNATIVES_TYPE = 30,
+		/**
+		 * [CJK Vertical Roman Placement](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type31)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_CJK_VERTICAL_ROMAN_PLACEMENT_TYPE = 31,
+		/**
+		 * [Italic CJK Roman](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type32)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_ITALIC_CJK_ROMAN = 32,
+		/**
+		 * [Case Sensitive Layout](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type33)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_CASE_SENSITIVE_LAYOUT = 33,
+		/**
+		 * [Alternate Kana](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type34)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_ALTERNATE_KANA = 34,
+		/**
+		 * [Stylistic Alternatives](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type35)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_STYLISTIC_ALTERNATIVES = 35,
+		/**
+		 * [Contextual Alternatives](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type36)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_CONTEXTUAL_ALTERNATIVES = 36,
+		/**
+		 * [Lower Case](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type37)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_LOWER_CASE = 37,
+		/**
+		 * [Upper Case](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type38)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_UPPER_CASE = 38,
+		/**
+		 * [Language Tag](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type39)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_LANGUAGE_TAG_TYPE = 39,
+		/**
+		 * [CJK Roman Spacing](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM09/AppendixF.html#Type103)
+		 */
+		B_AAT_LAYOUT_FEATURE_TYPE_CJK_ROMAN_SPACING_TYPE = 103
+	}
+
+	/**
 	 * Flags from comparing two #hb_buffer_t's.
 	 * 
 	 * Buffer with different #hb_buffer_content_type_t cannot be meaningfully
@@ -3478,9 +3020,35 @@ declare namespace imports.gi.HarfBuzz {
 		/**
 		 * flag indicating that a dotted circle should
 		 *                      not be inserted in the rendering of incorrect
-		 *                      character sequences (such at <0905 093E>). Since: 2.4
+		 *                      character sequences (such at <0905 093E>). Since: 2.4.0
 		 */
-		DO_NOT_INSERT_DOTTED_CIRCLE = 16
+		DO_NOT_INSERT_DOTTED_CIRCLE = 16,
+		/**
+		 * flag indicating that the {@link Hb.shape} call and its variants
+		 *                      should perform various verification processes on the results
+		 *                      of the shaping operation on the buffer.  If the verification
+		 *                      fails, then either a buffer message is sent, if a message
+		 *                      handler is installed on the buffer, or a message is written
+		 *                      to standard error.  In either case, the shaping result might
+		 *                      be modified to show the failed output. Since: 3.4.0
+		 */
+		VERIFY = 32,
+		/**
+		 * flag indicating that the #HB_GLYPH_FLAG_UNSAFE_TO_CONCAT
+		 *                      glyph-flag should be produced by the shaper. By default
+		 *                      it will not be produced since it incurs a cost. Since: 4.0.0
+		 */
+		PRODUCE_UNSAFE_TO_CONCAT = 64,
+		/**
+		 * flag indicating that the #HB_GLYPH_FLAG_SAFE_TO_INSERT_TATWEEL
+		 *                      glyph-flag should be produced by the shaper. By default
+		 *                      it will not be produced. Since: 5.1.0
+		 */
+		PRODUCE_SAFE_TO_INSERT_TATWEEL = 128,
+		/**
+		 * All currently defined flags: Since: 4.4.0
+		 */
+		DEFINED = 255
 	}
 
 	/**
@@ -3515,7 +3083,30 @@ declare namespace imports.gi.HarfBuzz {
 		 * do not serialize glyph advances,
 		 *  glyph offsets will reflect absolute glyph positions. Since: 1.8.0
 		 */
-		NO_ADVANCES = 32
+		NO_ADVANCES = 32,
+		/**
+		 * All currently defined flags. Since: 4.4.0
+		 */
+		DEFINED = 63
+	}
+
+	/**
+	 * The buffer serialization and de-serialization format used in
+	 * {@link Hb.buffer_serialize_glyphs} and hb_buffer_deserialize_glyphs().
+	 */
+	enum buffer_serialize_format_t {
+		/**
+		 * a human-readable, plain text format.
+		 */
+		TEXT = 1413830740,
+		/**
+		 * a machine-readable JSON format.
+		 */
+		JSON = 1246973774,
+		/**
+		 * invalid format.
+		 */
+		INVALID = 0
 	}
 
 	/**
@@ -3526,24 +3117,93 @@ declare namespace imports.gi.HarfBuzz {
 		 * Indicates that if input text is broken at the
 		 * 				   beginning of the cluster this glyph is part of,
 		 * 				   then both sides need to be re-shaped, as the
-		 * 				   result might be different.  On the flip side,
-		 * 				   it means that when this flag is not present,
-		 * 				   then it's safe to break the glyph-run at the
-		 * 				   beginning of this cluster, and the two sides
-		 * 				   represent the exact same result one would get
-		 * 				   if breaking input text at the beginning of
-		 * 				   this cluster and shaping the two sides
-		 * 				   separately.  This can be used to optimize
-		 * 				   paragraph layout, by avoiding re-shaping
-		 * 				   of each line after line-breaking, or limiting
-		 * 				   the reshaping to a small piece around the
-		 * 				   breaking point only.
+		 * 				   result might be different.
+		 * 				   On the flip side, it means that when this
+		 * 				   flag is not present, then it is safe to break
+		 * 				   the glyph-run at the beginning of this
+		 * 				   cluster, and the two sides will represent the
+		 * 				   exact same result one would get if breaking
+		 * 				   input text at the beginning of this cluster
+		 * 				   and shaping the two sides separately.
+		 * 				   This can be used to optimize paragraph
+		 * 				   layout, by avoiding re-shaping of each line
+		 * 				   after line-breaking.
 		 */
 		UNSAFE_TO_BREAK = 1,
 		/**
+		 * Indicates that if input text is changed on one
+		 * 				   side of the beginning of the cluster this glyph
+		 * 				   is part of, then the shaping results for the
+		 * 				   other side might change.
+		 * 				   Note that the absence of this flag will NOT by
+		 * 				   itself mean that it IS safe to concat text.
+		 * 				   Only two pieces of text both of which clear of
+		 * 				   this flag can be concatenated safely.
+		 * 				   This can be used to optimize paragraph
+		 * 				   layout, by avoiding re-shaping of each line
+		 * 				   after line-breaking, by limiting the
+		 * 				   reshaping to a small piece around the
+		 * 				   breaking position only, even if the breaking
+		 * 				   position carries the
+		 * 				   #HB_GLYPH_FLAG_UNSAFE_TO_BREAK or when
+		 * 				   hyphenation or other text transformation
+		 * 				   happens at line-break position, in the following
+		 * 				   way:
+		 * 				   1. Iterate back from the line-break position
+		 * 				   until the first cluster start position that is
+		 * 				   NOT unsafe-to-concat, 2. shape the segment from
+		 * 				   there till the end of line, 3. check whether the
+		 * 				   resulting glyph-run also is clear of the
+		 * 				   unsafe-to-concat at its start-of-text position;
+		 * 				   if it is, just splice it into place and the line
+		 * 				   is shaped; If not, move on to a position further
+		 * 				   back that is clear of unsafe-to-concat and retry
+		 * 				   from there, and repeat.
+		 * 				   At the start of next line a similar algorithm can
+		 * 				   be implemented. That is: 1. Iterate forward from
+		 * 				   the line-break position until the first cluster
+		 * 				   start position that is NOT unsafe-to-concat, 2.
+		 * 				   shape the segment from beginning of the line to
+		 * 				   that position, 3. check whether the resulting
+		 * 				   glyph-run also is clear of the unsafe-to-concat
+		 * 				   at its end-of-text position; if it is, just splice
+		 * 				   it into place and the beginning is shaped; If not,
+		 * 				   move on to a position further forward that is clear
+		 * 				   of unsafe-to-concat and retry up to there, and repeat.
+		 * 				   A slight complication will arise in the
+		 * 				   implementation of the algorithm above,
+		 * 				   because while our buffer API has a way to
+		 * 				   return flags for position corresponding to
+		 * 				   start-of-text, there is currently no position
+		 * 				   corresponding to end-of-text.  This limitation
+		 * 				   can be alleviated by shaping more text than needed
+		 * 				   and looking for unsafe-to-concat flag within text
+		 * 				   clusters.
+		 * 				   The #HB_GLYPH_FLAG_UNSAFE_TO_BREAK flag will
+		 * 				   always imply this flag.
+		 * 			   To use this flag, you must enable the buffer flag
+		 * 			   #HB_BUFFER_FLAG_PRODUCE_UNSAFE_TO_CONCAT during
+		 * 			   shaping, otherwise the buffer flag will not be
+		 * 			   reliably produced.
+		 * 				   Since: 4.0.0
+		 */
+		UNSAFE_TO_CONCAT = 2,
+		/**
+		 * In scripts that use elongation (Arabic,
+		 * 				   Mongolian, Syriac, etc.), this flag signifies
+		 * 				   that it is safe to insert a U+0640 TATWEEL
+		 * 				   character before this cluster for elongation.
+		 * 				   This flag does not determine the
+		 * 				   script-specific elongation places, but only
+		 * 				   when it is safe to do the elongation without
+		 * 				   interrupting text shaping.
+		 * 				   Since: 5.1.0
+		 */
+		SAFE_TO_INSERT_TATWEEL = 4,
+		/**
 		 * All the currently defined flags.
 		 */
-		DEFINED = 1
+		DEFINED = 7
 	}
 
 	/**
@@ -3568,6 +3228,58 @@ declare namespace imports.gi.HarfBuzz {
 	}
 
 	/**
+	 * Baseline tags from [Baseline Tags](https://docs.microsoft.com/en-us/typography/opentype/spec/baselinetags) registry.
+	 */
+	enum ot_layout_baseline_tag_t {
+		/**
+		 * The baseline used by alphabetic scripts such as Latin, Cyrillic and Greek.
+		 * In vertical writing mode, the alphabetic baseline for characters rotated 90 degrees clockwise.
+		 * (This would not apply to alphabetic characters that remain upright in vertical writing mode, since these
+		 * characters are not rotated.)
+		 */
+		B_OT_LAYOUT_BASELINE_TAG_ROMAN = 1919905134,
+		/**
+		 * The hanging baseline. In horizontal direction, this is the horizontal
+		 * line from which syllables seem, to hang in Tibetan and other similar scripts. In vertical writing mode,
+		 * for Tibetan (or some other similar script) characters rotated 90 degrees clockwise.
+		 */
+		B_OT_LAYOUT_BASELINE_TAG_HANGING = 1751215719,
+		/**
+		 * Ideographic character face bottom or left edge,
+		 * if the direction is horizontal or vertical, respectively.
+		 */
+		B_OT_LAYOUT_BASELINE_TAG_IDEO_FACE_BOTTOM_OR_LEFT = 1768121954,
+		/**
+		 * Ideographic character face top or right edge,
+		 * if the direction is horizontal or vertical, respectively.
+		 */
+		B_OT_LAYOUT_BASELINE_TAG_IDEO_FACE_TOP_OR_RIGHT = 1768121972,
+		/**
+		 * The center of the ideographic character face. Since: 4.0.0
+		 */
+		B_OT_LAYOUT_BASELINE_TAG_IDEO_FACE_CENTRAL = 1231251043,
+		/**
+		 * Ideographic em-box bottom or left edge,
+		 * if the direction is horizontal or vertical, respectively.
+		 */
+		B_OT_LAYOUT_BASELINE_TAG_IDEO_EMBOX_BOTTOM_OR_LEFT = 1768187247,
+		/**
+		 * Ideographic em-box top or right edge baseline,
+		 */
+		B_OT_LAYOUT_BASELINE_TAG_IDEO_EMBOX_TOP_OR_RIGHT = 1768191088,
+		/**
+		 * The center of the ideographic em-box. Since: 4.0.0
+		 * if the direction is horizontal or vertical, respectively.
+		 */
+		B_OT_LAYOUT_BASELINE_TAG_IDEO_EMBOX_CENTRAL = 1231315813,
+		/**
+		 * The baseline about which mathematical characters are centered.
+		 * In vertical writing mode when mathematical characters rotated 90 degrees clockwise, are centered.
+		 */
+		B_OT_LAYOUT_BASELINE_TAG_MATH = 1835103336
+	}
+
+	/**
 	 * Flags for math glyph parts.
 	 */
 	enum ot_math_glyph_part_flags_t {
@@ -3575,7 +3287,144 @@ declare namespace imports.gi.HarfBuzz {
 		 * This is an extender glyph part that
 		 * can be repeated to reach the desired length.
 		 */
-		EXTENDER = 1
+		OT_MATH_GLYPH_PART_FLAG_EXTENDER = 1
+	}
+
+	/**
+	 * Known metadata tags from https://docs.microsoft.com/en-us/typography/opentype/spec/meta
+	 */
+	enum ot_meta_tag_t {
+		/**
+		 * Design languages. Text, using only
+		 * Basic Latin (ASCII) characters. Indicates languages and/or scripts
+		 * for the user audiences that the font was primarily designed for.
+		 */
+		B_OT_META_TAG_DESIGN_LANGUAGES = 1684827751,
+		/**
+		 * Supported languages. Text, using
+		 * only Basic Latin (ASCII) characters. Indicates languages and/or scripts
+		 * that the font is declared to be capable of supporting.
+		 */
+		B_OT_META_TAG_SUPPORTED_LANGUAGES = 1936485991
+	}
+
+	/**
+	 * Metric tags corresponding to [MVAR Value
+	 * Tags](https://docs.microsoft.com/en-us/typography/opentype/spec/mvar#value-tags)
+	 */
+	enum ot_metrics_tag_t {
+		/**
+		 * horizontal ascender.
+		 */
+		B_OT_METRICS_TAG_HORIZONTAL_ASCENDER = 1751216995,
+		/**
+		 * horizontal descender.
+		 */
+		B_OT_METRICS_TAG_HORIZONTAL_DESCENDER = 1751413603,
+		/**
+		 * horizontal line gap.
+		 */
+		B_OT_METRICS_TAG_HORIZONTAL_LINE_GAP = 1751934832,
+		/**
+		 * horizontal clipping ascent.
+		 */
+		B_OT_METRICS_TAG_HORIZONTAL_CLIPPING_ASCENT = 1751346273,
+		/**
+		 * horizontal clipping descent.
+		 */
+		B_OT_METRICS_TAG_HORIZONTAL_CLIPPING_DESCENT = 1751346276,
+		/**
+		 * vertical ascender.
+		 */
+		B_OT_METRICS_TAG_VERTICAL_ASCENDER = 1986098019,
+		/**
+		 * vertical descender.
+		 */
+		B_OT_METRICS_TAG_VERTICAL_DESCENDER = 1986294627,
+		/**
+		 * vertical line gap.
+		 */
+		B_OT_METRICS_TAG_VERTICAL_LINE_GAP = 1986815856,
+		/**
+		 * horizontal caret rise.
+		 */
+		B_OT_METRICS_TAG_HORIZONTAL_CARET_RISE = 1751347827,
+		/**
+		 * horizontal caret run.
+		 */
+		B_OT_METRICS_TAG_HORIZONTAL_CARET_RUN = 1751347822,
+		/**
+		 * horizontal caret offset.
+		 */
+		B_OT_METRICS_TAG_HORIZONTAL_CARET_OFFSET = 1751347046,
+		/**
+		 * vertical caret rise.
+		 */
+		B_OT_METRICS_TAG_VERTICAL_CARET_RISE = 1986228851,
+		/**
+		 * vertical caret run.
+		 */
+		B_OT_METRICS_TAG_VERTICAL_CARET_RUN = 1986228846,
+		/**
+		 * vertical caret offset.
+		 */
+		B_OT_METRICS_TAG_VERTICAL_CARET_OFFSET = 1986228070,
+		/**
+		 * x height.
+		 */
+		B_OT_METRICS_TAG_X_HEIGHT = 2020108148,
+		/**
+		 * cap height.
+		 */
+		B_OT_METRICS_TAG_CAP_HEIGHT = 1668311156,
+		/**
+		 * subscript em x size.
+		 */
+		B_OT_METRICS_TAG_SUBSCRIPT_EM_X_SIZE = 1935833203,
+		/**
+		 * subscript em y size.
+		 */
+		B_OT_METRICS_TAG_SUBSCRIPT_EM_Y_SIZE = 1935833459,
+		/**
+		 * subscript em x offset.
+		 */
+		B_OT_METRICS_TAG_SUBSCRIPT_EM_X_OFFSET = 1935833199,
+		/**
+		 * subscript em y offset.
+		 */
+		B_OT_METRICS_TAG_SUBSCRIPT_EM_Y_OFFSET = 1935833455,
+		/**
+		 * superscript em x size.
+		 */
+		B_OT_METRICS_TAG_SUPERSCRIPT_EM_X_SIZE = 1936750707,
+		/**
+		 * superscript em y size.
+		 */
+		B_OT_METRICS_TAG_SUPERSCRIPT_EM_Y_SIZE = 1936750963,
+		/**
+		 * superscript em x offset.
+		 */
+		B_OT_METRICS_TAG_SUPERSCRIPT_EM_X_OFFSET = 1936750703,
+		/**
+		 * superscript em y offset.
+		 */
+		B_OT_METRICS_TAG_SUPERSCRIPT_EM_Y_OFFSET = 1936750959,
+		/**
+		 * strikeout size.
+		 */
+		B_OT_METRICS_TAG_STRIKEOUT_SIZE = 1937011315,
+		/**
+		 * strikeout offset.
+		 */
+		B_OT_METRICS_TAG_STRIKEOUT_OFFSET = 1937011311,
+		/**
+		 * underline size.
+		 */
+		B_OT_METRICS_TAG_UNDERLINE_SIZE = 1970168947,
+		/**
+		 * underline offset.
+		 */
+		B_OT_METRICS_TAG_UNDERLINE_OFFSET = 1970168943
 	}
 
 	/**
@@ -3585,14 +3434,730 @@ declare namespace imports.gi.HarfBuzz {
 		/**
 		 * The axis should not be exposed directly in user interfaces.
 		 */
-		HIDDEN = 1
+		B_OT_VAR_AXIS_FLAG_HIDDEN = 1
+	}
+
+	/**
+	 * Data type for scripts. Each #hb_script_t's value is an #hb_tag_t corresponding
+	 * to the four-letter values defined by [ISO 15924](https://unicode.org/iso15924/).
+	 * 
+	 * See also the Script (sc) property of the Unicode Character Database.
+	 */
+	enum script_t {
+		/**
+		 * `Zyyy`
+		 */
+		B_SCRIPT_COMMON = 1517910393,
+		/**
+		 * `Zinh`
+		 */
+		B_SCRIPT_INHERITED = 1516858984,
+		/**
+		 * `Zzzz`
+		 */
+		B_SCRIPT_UNKNOWN = 1517976186,
+		/**
+		 * `Arab`
+		 */
+		B_SCRIPT_ARABIC = 1098015074,
+		/**
+		 * `Armn`
+		 */
+		B_SCRIPT_ARMENIAN = 1098018158,
+		/**
+		 * `Beng`
+		 */
+		B_SCRIPT_BENGALI = 1113943655,
+		/**
+		 * `Cyrl`
+		 */
+		B_SCRIPT_CYRILLIC = 1132032620,
+		/**
+		 * `Deva`
+		 */
+		B_SCRIPT_DEVANAGARI = 1147500129,
+		/**
+		 * `Geor`
+		 */
+		B_SCRIPT_GEORGIAN = 1197830002,
+		/**
+		 * `Grek`
+		 */
+		B_SCRIPT_GREEK = 1198679403,
+		/**
+		 * `Gujr`
+		 */
+		B_SCRIPT_GUJARATI = 1198877298,
+		/**
+		 * `Guru`
+		 */
+		B_SCRIPT_GURMUKHI = 1198879349,
+		/**
+		 * `Hang`
+		 */
+		B_SCRIPT_HANGUL = 1214344807,
+		/**
+		 * `Hani`
+		 */
+		B_SCRIPT_HAN = 1214344809,
+		/**
+		 * `Hebr`
+		 */
+		B_SCRIPT_HEBREW = 1214603890,
+		/**
+		 * `Hira`
+		 */
+		B_SCRIPT_HIRAGANA = 1214870113,
+		/**
+		 * `Knda`
+		 */
+		B_SCRIPT_KANNADA = 1265525857,
+		/**
+		 * `Kana`
+		 */
+		B_SCRIPT_KATAKANA = 1264676449,
+		/**
+		 * `Laoo`
+		 */
+		B_SCRIPT_LAO = 1281453935,
+		/**
+		 * `Latn`
+		 */
+		B_SCRIPT_LATIN = 1281455214,
+		/**
+		 * `Mlym`
+		 */
+		B_SCRIPT_MALAYALAM = 1298954605,
+		/**
+		 * `Orya`
+		 */
+		B_SCRIPT_ORIYA = 1332902241,
+		/**
+		 * `Taml`
+		 */
+		B_SCRIPT_TAMIL = 1415671148,
+		/**
+		 * `Telu`
+		 */
+		B_SCRIPT_TELUGU = 1415933045,
+		/**
+		 * `Thai`
+		 */
+		B_SCRIPT_THAI = 1416126825,
+		/**
+		 * `Tibt`
+		 */
+		B_SCRIPT_TIBETAN = 1416192628,
+		/**
+		 * `Bopo`
+		 */
+		B_SCRIPT_BOPOMOFO = 1114599535,
+		/**
+		 * `Brai`
+		 */
+		B_SCRIPT_BRAILLE = 1114792297,
+		/**
+		 * `Cans`
+		 */
+		B_SCRIPT_CANADIAN_SYLLABICS = 1130458739,
+		/**
+		 * `Cher`
+		 */
+		B_SCRIPT_CHEROKEE = 1130915186,
+		/**
+		 * `Ethi`
+		 */
+		B_SCRIPT_ETHIOPIC = 1165256809,
+		/**
+		 * `Khmr`
+		 */
+		B_SCRIPT_KHMER = 1265134962,
+		/**
+		 * `Mong`
+		 */
+		B_SCRIPT_MONGOLIAN = 1299148391,
+		/**
+		 * `Mymr`
+		 */
+		B_SCRIPT_MYANMAR = 1299803506,
+		/**
+		 * `Ogam`
+		 */
+		B_SCRIPT_OGHAM = 1332175213,
+		/**
+		 * `Runr`
+		 */
+		B_SCRIPT_RUNIC = 1383427698,
+		/**
+		 * `Sinh`
+		 */
+		B_SCRIPT_SINHALA = 1399418472,
+		/**
+		 * `Syrc`
+		 */
+		B_SCRIPT_SYRIAC = 1400468067,
+		/**
+		 * `Thaa`
+		 */
+		B_SCRIPT_THAANA = 1416126817,
+		/**
+		 * `Yiii`
+		 */
+		B_SCRIPT_YI = 1500080489,
+		/**
+		 * `Dsrt`
+		 */
+		B_SCRIPT_DESERET = 1148416628,
+		/**
+		 * `Goth`
+		 */
+		B_SCRIPT_GOTHIC = 1198486632,
+		/**
+		 * `Ital`
+		 */
+		B_SCRIPT_OLD_ITALIC = 1232363884,
+		/**
+		 * `Buhd`
+		 */
+		B_SCRIPT_BUHID = 1114990692,
+		/**
+		 * `Hano`
+		 */
+		B_SCRIPT_HANUNOO = 1214344815,
+		/**
+		 * `Tglg`
+		 */
+		B_SCRIPT_TAGALOG = 1416064103,
+		/**
+		 * `Tagb`
+		 */
+		B_SCRIPT_TAGBANWA = 1415669602,
+		/**
+		 * `Cprt`
+		 */
+		B_SCRIPT_CYPRIOT = 1131442804,
+		/**
+		 * `Limb`
+		 */
+		B_SCRIPT_LIMBU = 1281977698,
+		/**
+		 * `Linb`
+		 */
+		B_SCRIPT_LINEAR_B = 1281977954,
+		/**
+		 * `Osma`
+		 */
+		B_SCRIPT_OSMANYA = 1332964705,
+		/**
+		 * `Shaw`
+		 */
+		B_SCRIPT_SHAVIAN = 1399349623,
+		/**
+		 * `Tale`
+		 */
+		B_SCRIPT_TAI_LE = 1415670885,
+		/**
+		 * `Ugar`
+		 */
+		B_SCRIPT_UGARITIC = 1432838514,
+		/**
+		 * `Bugi`
+		 */
+		B_SCRIPT_BUGINESE = 1114990441,
+		/**
+		 * `Copt`
+		 */
+		B_SCRIPT_COPTIC = 1131376756,
+		/**
+		 * `Glag`
+		 */
+		B_SCRIPT_GLAGOLITIC = 1198285159,
+		/**
+		 * `Khar`
+		 */
+		B_SCRIPT_KHAROSHTHI = 1265131890,
+		/**
+		 * `Talu`
+		 */
+		B_SCRIPT_NEW_TAI_LUE = 1415670901,
+		/**
+		 * `Xpeo`
+		 */
+		B_SCRIPT_OLD_PERSIAN = 1483761007,
+		/**
+		 * `Sylo`
+		 */
+		B_SCRIPT_SYLOTI_NAGRI = 1400466543,
+		/**
+		 * `Tfng`
+		 */
+		B_SCRIPT_TIFINAGH = 1415999079,
+		/**
+		 * `Bali`
+		 */
+		B_SCRIPT_BALINESE = 1113681001,
+		/**
+		 * `Xsux`
+		 */
+		B_SCRIPT_CUNEIFORM = 1483961720,
+		/**
+		 * `Nkoo`
+		 */
+		B_SCRIPT_NKO = 1315663727,
+		/**
+		 * `Phag`
+		 */
+		B_SCRIPT_PHAGS_PA = 1349017959,
+		/**
+		 * `Phnx`
+		 */
+		B_SCRIPT_PHOENICIAN = 1349021304,
+		/**
+		 * `Cari`
+		 */
+		B_SCRIPT_CARIAN = 1130459753,
+		/**
+		 * `Cham`
+		 */
+		B_SCRIPT_CHAM = 1130914157,
+		/**
+		 * `Kali`
+		 */
+		B_SCRIPT_KAYAH_LI = 1264675945,
+		/**
+		 * `Lepc`
+		 */
+		B_SCRIPT_LEPCHA = 1281716323,
+		/**
+		 * `Lyci`
+		 */
+		B_SCRIPT_LYCIAN = 1283023721,
+		/**
+		 * `Lydi`
+		 */
+		B_SCRIPT_LYDIAN = 1283023977,
+		/**
+		 * `Olck`
+		 */
+		B_SCRIPT_OL_CHIKI = 1332503403,
+		/**
+		 * `Rjng`
+		 */
+		B_SCRIPT_REJANG = 1382706791,
+		/**
+		 * `Saur`
+		 */
+		B_SCRIPT_SAURASHTRA = 1398895986,
+		/**
+		 * `Sund`
+		 */
+		B_SCRIPT_SUNDANESE = 1400204900,
+		/**
+		 * `Vaii`
+		 */
+		B_SCRIPT_VAI = 1449224553,
+		/**
+		 * `Avst`
+		 */
+		B_SCRIPT_AVESTAN = 1098281844,
+		/**
+		 * `Bamu`
+		 */
+		B_SCRIPT_BAMUM = 1113681269,
+		/**
+		 * `Egyp`
+		 */
+		B_SCRIPT_EGYPTIAN_HIEROGLYPHS = 1164409200,
+		/**
+		 * `Armi`
+		 */
+		B_SCRIPT_IMPERIAL_ARAMAIC = 1098018153,
+		/**
+		 * `Phli`
+		 */
+		B_SCRIPT_INSCRIPTIONAL_PAHLAVI = 1349020777,
+		/**
+		 * `Prti`
+		 */
+		B_SCRIPT_INSCRIPTIONAL_PARTHIAN = 1349678185,
+		/**
+		 * `Java`
+		 */
+		B_SCRIPT_JAVANESE = 1247901281,
+		/**
+		 * `Kthi`
+		 */
+		B_SCRIPT_KAITHI = 1265920105,
+		/**
+		 * `Lisu`
+		 */
+		B_SCRIPT_LISU = 1281979253,
+		/**
+		 * `Mtei`
+		 */
+		B_SCRIPT_MEETEI_MAYEK = 1299473769,
+		/**
+		 * `Sarb`
+		 */
+		B_SCRIPT_OLD_SOUTH_ARABIAN = 1398895202,
+		/**
+		 * `Orkh`
+		 */
+		B_SCRIPT_OLD_TURKIC = 1332898664,
+		/**
+		 * `Samr`
+		 */
+		B_SCRIPT_SAMARITAN = 1398893938,
+		/**
+		 * `Lana`
+		 */
+		B_SCRIPT_TAI_THAM = 1281453665,
+		/**
+		 * `Tavt`
+		 */
+		B_SCRIPT_TAI_VIET = 1415673460,
+		/**
+		 * `Batk`
+		 */
+		B_SCRIPT_BATAK = 1113683051,
+		/**
+		 * `Brah`
+		 */
+		B_SCRIPT_BRAHMI = 1114792296,
+		/**
+		 * `Mand`
+		 */
+		B_SCRIPT_MANDAIC = 1298230884,
+		/**
+		 * `Cakm`
+		 */
+		B_SCRIPT_CHAKMA = 1130457965,
+		/**
+		 * `Merc`
+		 */
+		B_SCRIPT_MEROITIC_CURSIVE = 1298494051,
+		/**
+		 * `Mero`
+		 */
+		B_SCRIPT_MEROITIC_HIEROGLYPHS = 1298494063,
+		/**
+		 * `Plrd`
+		 */
+		B_SCRIPT_MIAO = 1349284452,
+		/**
+		 * `Shrd`
+		 */
+		B_SCRIPT_SHARADA = 1399353956,
+		/**
+		 * `Sora`
+		 */
+		B_SCRIPT_SORA_SOMPENG = 1399812705,
+		/**
+		 * `Takr`
+		 */
+		B_SCRIPT_TAKRI = 1415670642,
+		/**
+		 * `Bass`, Since: 0.9.30
+		 */
+		B_SCRIPT_BASSA_VAH = 1113682803,
+		/**
+		 * `Aghb`, Since: 0.9.30
+		 */
+		B_SCRIPT_CAUCASIAN_ALBANIAN = 1097295970,
+		/**
+		 * `Dupl`, Since: 0.9.30
+		 */
+		B_SCRIPT_DUPLOYAN = 1148547180,
+		/**
+		 * `Elba`, Since: 0.9.30
+		 */
+		B_SCRIPT_ELBASAN = 1164730977,
+		/**
+		 * `Gran`, Since: 0.9.30
+		 */
+		B_SCRIPT_GRANTHA = 1198678382,
+		/**
+		 * `Khoj`, Since: 0.9.30
+		 */
+		B_SCRIPT_KHOJKI = 1265135466,
+		/**
+		 * `Sind`, Since: 0.9.30
+		 */
+		B_SCRIPT_KHUDAWADI = 1399418468,
+		/**
+		 * `Lina`, Since: 0.9.30
+		 */
+		B_SCRIPT_LINEAR_A = 1281977953,
+		/**
+		 * `Mahj`, Since: 0.9.30
+		 */
+		B_SCRIPT_MAHAJANI = 1298229354,
+		/**
+		 * `Mani`, Since: 0.9.30
+		 */
+		B_SCRIPT_MANICHAEAN = 1298230889,
+		/**
+		 * `Mend`, Since: 0.9.30
+		 */
+		B_SCRIPT_MENDE_KIKAKUI = 1298493028,
+		/**
+		 * `Modi`, Since: 0.9.30
+		 */
+		B_SCRIPT_MODI = 1299145833,
+		/**
+		 * `Mroo`, Since: 0.9.30
+		 */
+		B_SCRIPT_MRO = 1299345263,
+		/**
+		 * `Nbat`, Since: 0.9.30
+		 */
+		B_SCRIPT_NABATAEAN = 1315070324,
+		/**
+		 * `Narb`, Since: 0.9.30
+		 */
+		B_SCRIPT_OLD_NORTH_ARABIAN = 1315009122,
+		/**
+		 * `Perm`, Since: 0.9.30
+		 */
+		B_SCRIPT_OLD_PERMIC = 1348825709,
+		/**
+		 * `Hmng`, Since: 0.9.30
+		 */
+		B_SCRIPT_PAHAWH_HMONG = 1215131239,
+		/**
+		 * `Palm`, Since: 0.9.30
+		 */
+		B_SCRIPT_PALMYRENE = 1348562029,
+		/**
+		 * `Pauc`, Since: 0.9.30
+		 */
+		B_SCRIPT_PAU_CIN_HAU = 1348564323,
+		/**
+		 * `Phlp`, Since: 0.9.30
+		 */
+		B_SCRIPT_PSALTER_PAHLAVI = 1349020784,
+		/**
+		 * `Sidd`, Since: 0.9.30
+		 */
+		B_SCRIPT_SIDDHAM = 1399415908,
+		/**
+		 * `Tirh`, Since: 0.9.30
+		 */
+		B_SCRIPT_TIRHUTA = 1416196712,
+		/**
+		 * `Wara`, Since: 0.9.30
+		 */
+		B_SCRIPT_WARANG_CITI = 1466004065,
+		/**
+		 * `Ahom`, Since: 0.9.30
+		 */
+		B_SCRIPT_AHOM = 1097363309,
+		/**
+		 * `Hluw`, Since: 0.9.30
+		 */
+		B_SCRIPT_ANATOLIAN_HIEROGLYPHS = 1215067511,
+		/**
+		 * `Hatr`, Since: 0.9.30
+		 */
+		B_SCRIPT_HATRAN = 1214346354,
+		/**
+		 * `Mult`, Since: 0.9.30
+		 */
+		B_SCRIPT_MULTANI = 1299541108,
+		/**
+		 * `Hung`, Since: 0.9.30
+		 */
+		B_SCRIPT_OLD_HUNGARIAN = 1215655527,
+		/**
+		 * `Sgnw`, Since: 0.9.30
+		 */
+		B_SCRIPT_SIGNWRITING = 1399287415,
+		/**
+		 * `Adlm`, Since: 1.3.0
+		 */
+		B_SCRIPT_ADLAM = 1097100397,
+		/**
+		 * `Bhks`, Since: 1.3.0
+		 */
+		B_SCRIPT_BHAIKSUKI = 1114139507,
+		/**
+		 * `Marc`, Since: 1.3.0
+		 */
+		B_SCRIPT_MARCHEN = 1298231907,
+		/**
+		 * `Osge`, Since: 1.3.0
+		 */
+		B_SCRIPT_OSAGE = 1332963173,
+		/**
+		 * `Tang`, Since: 1.3.0
+		 */
+		B_SCRIPT_TANGUT = 1415671399,
+		/**
+		 * `Newa`, Since: 1.3.0
+		 */
+		B_SCRIPT_NEWA = 1315272545,
+		/**
+		 * `Gonm`, Since: 1.6.0
+		 */
+		B_SCRIPT_MASARAM_GONDI = 1198485101,
+		/**
+		 * `Nshu`, Since: 1.6.0
+		 */
+		B_SCRIPT_NUSHU = 1316186229,
+		/**
+		 * `Soyo`, Since: 1.6.0
+		 */
+		B_SCRIPT_SOYOMBO = 1399814511,
+		/**
+		 * `Zanb`, Since: 1.6.0
+		 */
+		B_SCRIPT_ZANABAZAR_SQUARE = 1516334690,
+		/**
+		 * `Dogr`, Since: 1.8.0
+		 */
+		B_SCRIPT_DOGRA = 1148151666,
+		/**
+		 * `Gong`, Since: 1.8.0
+		 */
+		B_SCRIPT_GUNJALA_GONDI = 1198485095,
+		/**
+		 * `Rohg`, Since: 1.8.0
+		 */
+		B_SCRIPT_HANIFI_ROHINGYA = 1383032935,
+		/**
+		 * `Maka`, Since: 1.8.0
+		 */
+		B_SCRIPT_MAKASAR = 1298230113,
+		/**
+		 * `Medf`, Since: 1.8.0
+		 */
+		B_SCRIPT_MEDEFAIDRIN = 1298490470,
+		/**
+		 * `Sogo`, Since: 1.8.0
+		 */
+		B_SCRIPT_OLD_SOGDIAN = 1399809903,
+		/**
+		 * `Sogd`, Since: 1.8.0
+		 */
+		B_SCRIPT_SOGDIAN = 1399809892,
+		/**
+		 * `Elym`, Since: 2.4.0
+		 */
+		B_SCRIPT_ELYMAIC = 1164736877,
+		/**
+		 * `Nand`, Since: 2.4.0
+		 */
+		B_SCRIPT_NANDINAGARI = 1315008100,
+		/**
+		 * `Hmnp`, Since: 2.4.0
+		 */
+		B_SCRIPT_NYIAKENG_PUACHUE_HMONG = 1215131248,
+		/**
+		 * `Wcho`, Since: 2.4.0
+		 */
+		B_SCRIPT_WANCHO = 1466132591,
+		/**
+		 * `Chrs`, Since: 2.6.7
+		 */
+		B_SCRIPT_CHORASMIAN = 1130918515,
+		/**
+		 * `Diak`, Since: 2.6.7
+		 */
+		B_SCRIPT_DIVES_AKURU = 1147756907,
+		/**
+		 * `Kits`, Since: 2.6.7
+		 */
+		B_SCRIPT_KHITAN_SMALL_SCRIPT = 1265202291,
+		/**
+		 * `Yezi`, Since: 2.6.7
+		 */
+		B_SCRIPT_YEZIDI = 1499822697,
+		/**
+		 * `Cpmn`, Since: 3.0.0
+		 */
+		B_SCRIPT_CYPRO_MINOAN = 1131441518,
+		/**
+		 * `Ougr`, Since: 3.0.0
+		 */
+		B_SCRIPT_OLD_UYGHUR = 1333094258,
+		/**
+		 * `Tnsa`, Since: 3.0.0
+		 */
+		B_SCRIPT_TANGSA = 1416524641,
+		/**
+		 * `Toto`, Since: 3.0.0
+		 */
+		B_SCRIPT_TOTO = 1416590447,
+		/**
+		 * `Vith`, Since: 3.0.0
+		 */
+		B_SCRIPT_VITHKUQI = 1449751656,
+		/**
+		 * `Zmth`, Since: 3.4.0
+		 */
+		B_SCRIPT_MATH = 1517122664,
+		/**
+		 * `Kawi`, Since: 5.2.0
+		 */
+		B_SCRIPT_KAWI = 1264678761,
+		/**
+		 * `Nagm`, Since: 5.2.0
+		 */
+		B_SCRIPT_NAG_MUNDARI = 1315006317,
+		/**
+		 * No script set
+		 */
+		B_SCRIPT_INVALID = 0
+	}
+
+	/**
+	 * Defined by [OpenType Design-Variation Axis Tag Registry](https://docs.microsoft.com/en-us/typography/opentype/spec/dvaraxisreg).
+	 */
+	enum style_tag_t {
+		/**
+		 * Used to vary between non-italic and italic.
+		 * A value of 0 can be interpreted as "Roman" (non-italic); a value of 1 can
+		 * be interpreted as (fully) italic.
+		 */
+		B_STYLE_TAG_ITALIC = 1769234796,
+		/**
+		 * Used to vary design to suit different text sizes.
+		 * Non-zero. Values can be interpreted as text size, in points.
+		 */
+		B_STYLE_TAG_OPTICAL_SIZE = 1869640570,
+		/**
+		 * Used to vary between upright and slanted text. Values
+		 * must be greater than -90 and less than +90. Values can be interpreted as
+		 * the angle, in counter-clockwise degrees, of oblique slant from whatever the
+		 * designer considers to be upright for that font design. Typical right-leaning
+		 * Italic fonts have a negative slant angle (typically around -12)
+		 */
+		B_STYLE_TAG_SLANT_ANGLE = 1936486004,
+		/**
+		 * same as #HB_STYLE_TAG_SLANT_ANGLE expression as ratio.
+		 * Typical right-leaning Italic fonts have a positive slant ratio (typically around 0.2)
+		 */
+		B_STYLE_TAG_SLANT_RATIO = 1399615092,
+		/**
+		 * Used to vary width of text from narrower to wider.
+		 * Non-zero. Values can be interpreted as a percentage of whatever the font
+		 * designer considers “normal width” for that font design.
+		 */
+		B_STYLE_TAG_WIDTH = 2003072104,
+		/**
+		 * Used to vary stroke thicknesses or other design details
+		 * to give variation from lighter to blacker. Values can be interpreted in direct
+		 * comparison to values for usWeightClass in the OS/2 table,
+		 * or the CSS font-weight property.
+		 */
+		B_STYLE_TAG_WEIGHT = 2003265652
 	}
 
 	/**
 	 * A callback method for #hb_buffer_t. The method gets called with the
 	 * #hb_buffer_t it was set on, the #hb_font_t the buffer is shaped with and a
 	 * message describing what step of the shaping process will be performed.
-	 * Returning %false from this method will skip this shaping step and move to
+	 * Returning `false` from this method will skip this shaping step and move to
 	 * the next one.
 	 */
 	interface buffer_message_func_t {
@@ -3600,14 +4165,43 @@ declare namespace imports.gi.HarfBuzz {
 		 * A callback method for #hb_buffer_t. The method gets called with the
 		 * #hb_buffer_t it was set on, the #hb_font_t the buffer is shaped with and a
 		 * message describing what step of the shaping process will be performed.
-		 * Returning %false from this method will skip this shaping step and move to
+		 * Returning `false` from this method will skip this shaping step and move to
 		 * the next one.
 		 * @param buffer An #hb_buffer_t to work upon
 		 * @param font The #hb_font_t the #buffer is shaped with
-		 * @param message %NULL-terminated message passed to the function
-		 * @returns %true to perform the shaping step, %false to skip it.
+		 * @param message `NULL`-terminated message passed to the function
+		 * @returns `true` to perform the shaping step, `false` to skip it.
 		 */
 		(buffer: buffer_t, font: font_t, message: string): bool_t;
+	}
+
+	/**
+	 * A virtual method for the #hb_color_line_t to fetch color stops.
+	 */
+	interface color_line_get_color_stops_func_t {
+		/**
+		 * A virtual method for the #hb_color_line_t to fetch color stops.
+		 * @param color_line a #hb_color_line_t object
+		 * @param color_line_data the data accompanying #color_line
+		 * @param start the index of the first color stop to return
+		 * @returns the total number of color stops in #color_line
+		 * 
+		 * Array of #hb_color_stop_t to populate
+		 */
+		(color_line: color_line_t, color_line_data: any | null, start: number): [ number, color_stop_t[] | null ];
+	}
+
+	/**
+	 * A virtual method for the #hb_color_line_t to fetches the extend mode.
+	 */
+	interface color_line_get_extend_func_t {
+		/**
+		 * A virtual method for the #hb_color_line_t to fetches the extend mode.
+		 * @param color_line a #hb_color_line_t object
+		 * @param color_line_data the data accompanying #color_line
+		 * @returns the extend mode of #color_line
+		 */
+		(color_line: color_line_t, color_line_data?: any | null): paint_extend_t;
 	}
 
 	/**
@@ -3618,6 +4212,110 @@ declare namespace imports.gi.HarfBuzz {
 		 * A virtual method for destroy user-data callbacks.
 		 */
 		(): void;
+	}
+
+	/**
+	 * A virtual method for the #hb_draw_funcs_t to perform a "close-path" draw
+	 * operation.
+	 */
+	interface draw_close_path_func_t {
+		/**
+		 * A virtual method for the #hb_draw_funcs_t to perform a "close-path" draw
+		 * operation.
+		 * @param dfuncs draw functions object
+		 * @param draw_data The data accompanying the draw functions in {@link Hb.font_draw_glyph}
+		 * @param st current draw state
+		 */
+		(dfuncs: draw_funcs_t, draw_data: any | null, st: draw_state_t): void;
+	}
+
+	/**
+	 * A virtual method for the #hb_draw_funcs_t to perform a "cubic-to" draw
+	 * operation.
+	 */
+	interface draw_cubic_to_func_t {
+		/**
+		 * A virtual method for the #hb_draw_funcs_t to perform a "cubic-to" draw
+		 * operation.
+		 * @param dfuncs draw functions object
+		 * @param draw_data The data accompanying the draw functions in {@link Hb.font_draw_glyph}
+		 * @param st current draw state
+		 * @param control1_x X component of first control point
+		 * @param control1_y Y component of first control point
+		 * @param control2_x X component of second control point
+		 * @param control2_y Y component of second control point
+		 * @param to_x X component of target point
+		 * @param to_y Y component of target point
+		 */
+		(dfuncs: draw_funcs_t, draw_data: any | null, st: draw_state_t, control1_x: number, control1_y: number, control2_x: number, control2_y: number, to_x: number, to_y: number): void;
+	}
+
+	/**
+	 * A virtual method for the #hb_draw_funcs_t to perform a "line-to" draw
+	 * operation.
+	 */
+	interface draw_line_to_func_t {
+		/**
+		 * A virtual method for the #hb_draw_funcs_t to perform a "line-to" draw
+		 * operation.
+		 * @param dfuncs draw functions object
+		 * @param draw_data The data accompanying the draw functions in {@link Hb.font_draw_glyph}
+		 * @param st current draw state
+		 * @param to_x X component of target point
+		 * @param to_y Y component of target point
+		 */
+		(dfuncs: draw_funcs_t, draw_data: any | null, st: draw_state_t, to_x: number, to_y: number): void;
+	}
+
+	/**
+	 * A virtual method for the #hb_draw_funcs_t to perform a "move-to" draw
+	 * operation.
+	 */
+	interface draw_move_to_func_t {
+		/**
+		 * A virtual method for the #hb_draw_funcs_t to perform a "move-to" draw
+		 * operation.
+		 * @param dfuncs draw functions object
+		 * @param draw_data The data accompanying the draw functions in {@link Hb.font_draw_glyph}
+		 * @param st current draw state
+		 * @param to_x X component of target point
+		 * @param to_y Y component of target point
+		 */
+		(dfuncs: draw_funcs_t, draw_data: any | null, st: draw_state_t, to_x: number, to_y: number): void;
+	}
+
+	/**
+	 * A virtual method for the #hb_draw_funcs_t to perform a "quadratic-to" draw
+	 * operation.
+	 */
+	interface draw_quadratic_to_func_t {
+		/**
+		 * A virtual method for the #hb_draw_funcs_t to perform a "quadratic-to" draw
+		 * operation.
+		 * @param dfuncs draw functions object
+		 * @param draw_data The data accompanying the draw functions in {@link Hb.font_draw_glyph}
+		 * @param st current draw state
+		 * @param control_x X component of control point
+		 * @param control_y Y component of control point
+		 * @param to_x X component of target point
+		 * @param to_y Y component of target point
+		 */
+		(dfuncs: draw_funcs_t, draw_data: any | null, st: draw_state_t, control_x: number, control_y: number, to_x: number, to_y: number): void;
+	}
+
+	/**
+	 * A virtual method for the #hb_font_funcs_t of an #hb_font_t object.
+	 */
+	interface font_draw_glyph_func_t {
+		/**
+		 * A virtual method for the #hb_font_funcs_t of an #hb_font_t object.
+		 * @param font #hb_font_t to work upon
+		 * @param font_data #font user data pointer
+		 * @param glyph The glyph ID to query
+		 * @param draw_funcs The draw functions to send the shape data to
+		 * @param draw_data The data accompanying the draw functions
+		 */
+		(font: font_t, font_data: any | null, glyph: codepoint_t, draw_funcs: draw_funcs_t, draw_data?: any | null): void;
 	}
 
 	/**
@@ -3694,7 +4392,7 @@ declare namespace imports.gi.HarfBuzz {
 		 * @param font_data #font user data pointer
 		 * @param glyph The glyph ID to query
 		 * @param point_index The contour-point index to query
-		 * @returns %true if data found, %false otherwise
+		 * @returns `true` if data found, `false` otherwise
 		 * 
 		 * The X value retrieved for the contour point
 		 * 
@@ -3718,7 +4416,7 @@ declare namespace imports.gi.HarfBuzz {
 		 * @param font #hb_font_t to work upon
 		 * @param font_data #font user data pointer
 		 * @param glyph The glyph ID to query
-		 * @returns %true if data found, %false otherwise
+		 * @returns `true` if data found, `false` otherwise
 		 * 
 		 * The #hb_glyph_extents_t retrieved
 		 */
@@ -3740,7 +4438,7 @@ declare namespace imports.gi.HarfBuzz {
 		 * @param font #hb_font_t to work upon
 		 * @param font_data #font user data pointer
 		 * @param name The name string to query
-		 * @returns %true if data found, %false otherwise
+		 * @returns `true` if data found, `false` otherwise
 		 * 
 		 * The glyph ID retrieved
 		 */
@@ -3763,7 +4461,7 @@ declare namespace imports.gi.HarfBuzz {
 		 * @param font_data #font user data pointer
 		 * @param unicode The Unicode code point to query
 		 * @param variation_selector The  variation-selector code point to query
-		 * @returns %true if data found, %false otherwise
+		 * @returns `true` if data found, `false` otherwise
 		 * 
 		 * The glyph ID retrieved
 		 */
@@ -3802,7 +4500,7 @@ declare namespace imports.gi.HarfBuzz {
 		 * @param font #hb_font_t to work upon
 		 * @param font_data #font user data pointer
 		 * @param glyph The glyph ID to query
-		 * @returns %true if data found, %false otherwise
+		 * @returns `true` if data found, `false` otherwise
 		 * 
 		 * Name string retrieved for the glyph ID
 		 */
@@ -3826,13 +4524,31 @@ declare namespace imports.gi.HarfBuzz {
 		 * @param font #hb_font_t to work upon
 		 * @param font_data #font user data pointer
 		 * @param glyph The glyph ID to query
-		 * @returns %true if data found, %false otherwise
+		 * @returns `true` if data found, `false` otherwise
 		 * 
 		 * The X coordinate of the origin
 		 * 
 		 * The Y coordinate of the origin
 		 */
 		(font: font_t, font_data: any | null, glyph: codepoint_t): [ bool_t, position_t, position_t ];
+	}
+
+	/**
+	 * A virtual method for the #hb_font_funcs_t of an #hb_font_t object.
+	 */
+	interface font_get_glyph_shape_func_t {
+		/**
+		 * @deprecated
+		 * Use #hb_font_draw_glyph_func_t instead
+		 * 
+		 * A virtual method for the #hb_font_funcs_t of an #hb_font_t object.
+		 * @param font #hb_font_t to work upon
+		 * @param font_data #font user data pointer
+		 * @param glyph The glyph ID to query
+		 * @param draw_funcs The draw functions to send the shape data to
+		 * @param draw_data The data accompanying the draw functions
+		 */
+		(font: font_t, font_data: any | null, glyph: codepoint_t, draw_funcs: draw_funcs_t, draw_data?: any | null): void;
 	}
 
 	/**
@@ -3850,7 +4566,7 @@ declare namespace imports.gi.HarfBuzz {
 		 * @param font #hb_font_t to work upon
 		 * @param font_data #font user data pointer
 		 * @param unicode The Unicode code point to query
-		 * @returns %true if data found, %false otherwise
+		 * @returns `true` if data found, `false` otherwise
 		 * 
 		 * The glyph ID retrieved
 		 */
@@ -3902,11 +4618,416 @@ declare namespace imports.gi.HarfBuzz {
 		 * @param font_data #font user data pointer
 		 * @param unicode The Unicode code point to query
 		 * @param variation_selector The  variation-selector code point to query
-		 * @returns %true if data found, %false otherwise
+		 * @returns `true` if data found, `false` otherwise
 		 * 
 		 * The glyph ID retrieved
 		 */
 		(font: font_t, font_data: any | null, unicode: codepoint_t, variation_selector: codepoint_t): [ bool_t, codepoint_t ];
+	}
+
+	/**
+	 * A virtual method for the #hb_font_funcs_t of an #hb_font_t object.
+	 */
+	interface font_paint_glyph_func_t {
+		/**
+		 * A virtual method for the #hb_font_funcs_t of an #hb_font_t object.
+		 * @param font #hb_font_t to work upon
+		 * @param font_data #font user data pointer
+		 * @param glyph The glyph ID to query
+		 * @param paint_funcs The paint functions to use
+		 * @param paint_data The data accompanying the paint functions
+		 * @param palette_index The color palette to use
+		 * @param foreground The foreground color
+		 */
+		(font: font_t, font_data: any | null, glyph: codepoint_t, paint_funcs: paint_funcs_t, paint_data: any | null, palette_index: number, foreground: color_t): void;
+	}
+
+	/**
+	 * A virtual method for the #hb_paint_funcs_t to paint a
+	 * color everywhere within the current clip.
+	 */
+	interface paint_color_func_t {
+		/**
+		 * A virtual method for the #hb_paint_funcs_t to paint a
+		 * color everywhere within the current clip.
+		 * @param funcs paint functions object
+		 * @param paint_data The data accompanying the paint functions in {@link Hb.font_paint_glyph}
+		 * @param is_foreground whether the color is the foreground
+		 * @param color The color to use, unpremultiplied
+		 */
+		(funcs: paint_funcs_t, paint_data: any | null, is_foreground: bool_t, color: color_t): void;
+	}
+
+	/**
+	 * A virtual method for the #hb_paint_funcs_t to render a color glyph by glyph index.
+	 */
+	interface paint_color_glyph_func_t {
+		/**
+		 * A virtual method for the #hb_paint_funcs_t to render a color glyph by glyph index.
+		 * @param funcs paint functions object
+		 * @param paint_data The data accompanying the paint functions in {@link Hb.font_paint_glyph}
+		 * @param glyph the glyph ID
+		 * @param font the font
+		 * @returns %true if the glyph was painted, %false otherwise.
+		 */
+		(funcs: paint_funcs_t, paint_data: any | null, glyph: codepoint_t, font: font_t): bool_t;
+	}
+
+	/**
+	 * A virtual method for the #hb_paint_funcs_t to fetch a color from the custom
+	 * color palette.
+	 * 
+	 * Custom palette colors override the colors from the fonts selected color
+	 * palette. It is not necessary to override all palette entries; for entries
+	 * that should be taken from the font palette, return `false`.
+	 * 
+	 * This function might get called multiple times, but the custom palette is
+	 * expected to remain unchanged for duration of a {@link Hb.font_paint_glyph} call.
+	 */
+	interface paint_custom_palette_color_func_t {
+		/**
+		 * A virtual method for the #hb_paint_funcs_t to fetch a color from the custom
+		 * color palette.
+		 * 
+		 * Custom palette colors override the colors from the fonts selected color
+		 * palette. It is not necessary to override all palette entries; for entries
+		 * that should be taken from the font palette, return `false`.
+		 * 
+		 * This function might get called multiple times, but the custom palette is
+		 * expected to remain unchanged for duration of a {@link Hb.font_paint_glyph} call.
+		 * @param funcs paint functions object
+		 * @param paint_data The data accompanying the paint functions in {@link Hb.font_paint_glyph}
+		 * @param color_index the color index
+		 * @returns `true` if found, `false` otherwise
+		 * 
+		 * fetched color
+		 */
+		(funcs: paint_funcs_t, paint_data: any | null, color_index: number): [ bool_t, color_t ];
+	}
+
+	/**
+	 * A virtual method for the #hb_paint_funcs_t to paint a glyph image.
+	 * 
+	 * This method is called for glyphs with image blobs in the CBDT,
+	 * sbix or SVG tables. The #format identifies the kind of data that
+	 * is contained in #image. Possible values include #HB_PAINT_IMAGE_FORMAT_PNG,
+	 * #HB_PAINT_IMAGE_FORMAT_SVG and #HB_PAINT_IMAGE_FORMAT_BGRA.
+	 * 
+	 * The image dimensions and glyph extents are provided if available,
+	 * and should be used to size and position the image.
+	 */
+	interface paint_image_func_t {
+		/**
+		 * A virtual method for the #hb_paint_funcs_t to paint a glyph image.
+		 * 
+		 * This method is called for glyphs with image blobs in the CBDT,
+		 * sbix or SVG tables. The #format identifies the kind of data that
+		 * is contained in #image. Possible values include #HB_PAINT_IMAGE_FORMAT_PNG,
+		 * #HB_PAINT_IMAGE_FORMAT_SVG and #HB_PAINT_IMAGE_FORMAT_BGRA.
+		 * 
+		 * The image dimensions and glyph extents are provided if available,
+		 * and should be used to size and position the image.
+		 * @param funcs paint functions object
+		 * @param paint_data The data accompanying the paint functions in {@link Hb.font_paint_glyph}
+		 * @param image the image data
+		 * @param width width of the raster image in pixels, or 0
+		 * @param height height of the raster image in pixels, or 0
+		 * @param format the image format as a tag
+		 * @param slant the synthetic slant ratio to be applied to the image during rendering
+		 * @param extents glyph extents for desired rendering
+		 * @returns Whether the operation was successful.
+		 */
+		(funcs: paint_funcs_t, paint_data: any | null, image: blob_t, width: number, height: number, format: tag_t, slant: number, extents?: glyph_extents_t | null): bool_t;
+	}
+
+	/**
+	 * A virtual method for the #hb_paint_funcs_t to paint a linear
+	 * gradient everywhere within the current clip.
+	 * 
+	 * The #color_line object contains information about the colors of the gradients.
+	 * It is only valid for the duration of the callback, you cannot keep it around.
+	 * 
+	 * The coordinates of the points are interpreted according
+	 * to the current transform.
+	 * 
+	 * See the OpenType spec [COLR](https://learn.microsoft.com/en-us/typography/opentype/spec/colr)
+	 * section for details on how the points define the direction
+	 * of the gradient, and how to interpret the #color_line.
+	 */
+	interface paint_linear_gradient_func_t {
+		/**
+		 * A virtual method for the #hb_paint_funcs_t to paint a linear
+		 * gradient everywhere within the current clip.
+		 * 
+		 * The #color_line object contains information about the colors of the gradients.
+		 * It is only valid for the duration of the callback, you cannot keep it around.
+		 * 
+		 * The coordinates of the points are interpreted according
+		 * to the current transform.
+		 * 
+		 * See the OpenType spec [COLR](https://learn.microsoft.com/en-us/typography/opentype/spec/colr)
+		 * section for details on how the points define the direction
+		 * of the gradient, and how to interpret the #color_line.
+		 * @param funcs paint functions object
+		 * @param paint_data The data accompanying the paint functions in {@link Hb.font_paint_glyph}
+		 * @param color_line Color information for the gradient
+		 * @param x0 X coordinate of the first point
+		 * @param y0 Y coordinate of the first point
+		 * @param x1 X coordinate of the second point
+		 * @param y1 Y coordinate of the second point
+		 * @param x2 X coordinate of the third point
+		 * @param y2 Y coordinate of the third point
+		 */
+		(funcs: paint_funcs_t, paint_data: any | null, color_line: color_line_t, x0: number, y0: number, x1: number, y1: number, x2: number, y2: number): void;
+	}
+
+	/**
+	 * A virtual method for the #hb_paint_funcs_t to undo
+	 * the effect of a prior call to the #hb_paint_funcs_push_clip_glyph_func_t
+	 * or #hb_paint_funcs_push_clip_rectangle_func_t vfuncs.
+	 */
+	interface paint_pop_clip_func_t {
+		/**
+		 * A virtual method for the #hb_paint_funcs_t to undo
+		 * the effect of a prior call to the #hb_paint_funcs_push_clip_glyph_func_t
+		 * or #hb_paint_funcs_push_clip_rectangle_func_t vfuncs.
+		 * @param funcs paint functions object
+		 * @param paint_data The data accompanying the paint functions in {@link Hb.font_paint_glyph}
+		 */
+		(funcs: paint_funcs_t, paint_data?: any | null): void;
+	}
+
+	/**
+	 * A virtual method for the #hb_paint_funcs_t to undo
+	 * the effect of a prior call to the #hb_paint_funcs_push_group_func_t
+	 * vfunc.
+	 * 
+	 * This call stops the redirection to the intermediate surface,
+	 * and then composites it on the previous surface, using the
+	 * compositing mode passed to this call.
+	 */
+	interface paint_pop_group_func_t {
+		/**
+		 * A virtual method for the #hb_paint_funcs_t to undo
+		 * the effect of a prior call to the #hb_paint_funcs_push_group_func_t
+		 * vfunc.
+		 * 
+		 * This call stops the redirection to the intermediate surface,
+		 * and then composites it on the previous surface, using the
+		 * compositing mode passed to this call.
+		 * @param funcs paint functions object
+		 * @param paint_data The data accompanying the paint functions in {@link Hb.font_paint_glyph}
+		 * @param mode the compositing mode to use
+		 */
+		(funcs: paint_funcs_t, paint_data: any | null, mode: paint_composite_mode_t): void;
+	}
+
+	/**
+	 * A virtual method for the #hb_paint_funcs_t to undo
+	 * the effect of a prior call to the #hb_paint_funcs_push_transform_func_t
+	 * vfunc.
+	 */
+	interface paint_pop_transform_func_t {
+		/**
+		 * A virtual method for the #hb_paint_funcs_t to undo
+		 * the effect of a prior call to the #hb_paint_funcs_push_transform_func_t
+		 * vfunc.
+		 * @param funcs paint functions object
+		 * @param paint_data The data accompanying the paint functions in {@link Hb.font_paint_glyph}
+		 */
+		(funcs: paint_funcs_t, paint_data?: any | null): void;
+	}
+
+	/**
+	 * A virtual method for the #hb_paint_funcs_t to clip
+	 * subsequent paint calls to the outline of a glyph.
+	 * 
+	 * The coordinates of the glyph outline are interpreted according
+	 * to the current transform.
+	 * 
+	 * This clip is applied in addition to the current clip,
+	 * and remains in effect until a matching call to
+	 * the #hb_paint_funcs_pop_clip_func_t vfunc.
+	 */
+	interface paint_push_clip_glyph_func_t {
+		/**
+		 * A virtual method for the #hb_paint_funcs_t to clip
+		 * subsequent paint calls to the outline of a glyph.
+		 * 
+		 * The coordinates of the glyph outline are interpreted according
+		 * to the current transform.
+		 * 
+		 * This clip is applied in addition to the current clip,
+		 * and remains in effect until a matching call to
+		 * the #hb_paint_funcs_pop_clip_func_t vfunc.
+		 * @param funcs paint functions object
+		 * @param paint_data The data accompanying the paint functions in {@link Hb.font_paint_glyph}
+		 * @param glyph the glyph ID
+		 * @param font the font
+		 */
+		(funcs: paint_funcs_t, paint_data: any | null, glyph: codepoint_t, font: font_t): void;
+	}
+
+	/**
+	 * A virtual method for the #hb_paint_funcs_t to clip
+	 * subsequent paint calls to a rectangle.
+	 * 
+	 * The coordinates of the rectangle are interpreted according
+	 * to the current transform.
+	 * 
+	 * This clip is applied in addition to the current clip,
+	 * and remains in effect until a matching call to
+	 * the #hb_paint_funcs_pop_clip_func_t vfunc.
+	 */
+	interface paint_push_clip_rectangle_func_t {
+		/**
+		 * A virtual method for the #hb_paint_funcs_t to clip
+		 * subsequent paint calls to a rectangle.
+		 * 
+		 * The coordinates of the rectangle are interpreted according
+		 * to the current transform.
+		 * 
+		 * This clip is applied in addition to the current clip,
+		 * and remains in effect until a matching call to
+		 * the #hb_paint_funcs_pop_clip_func_t vfunc.
+		 * @param funcs paint functions object
+		 * @param paint_data The data accompanying the paint functions in {@link Hb.font_paint_glyph}
+		 * @param xmin min X for the rectangle
+		 * @param ymin min Y for the rectangle
+		 * @param xmax max X for the rectangle
+		 * @param ymax max Y for the rectangle
+		 */
+		(funcs: paint_funcs_t, paint_data: any | null, xmin: number, ymin: number, xmax: number, ymax: number): void;
+	}
+
+	/**
+	 * A virtual method for the #hb_paint_funcs_t to use
+	 * an intermediate surface for subsequent paint calls.
+	 * 
+	 * The drawing will be redirected to an intermediate surface
+	 * until a matching call to the #hb_paint_funcs_pop_group_func_t
+	 * vfunc.
+	 */
+	interface paint_push_group_func_t {
+		/**
+		 * A virtual method for the #hb_paint_funcs_t to use
+		 * an intermediate surface for subsequent paint calls.
+		 * 
+		 * The drawing will be redirected to an intermediate surface
+		 * until a matching call to the #hb_paint_funcs_pop_group_func_t
+		 * vfunc.
+		 * @param funcs paint functions object
+		 * @param paint_data The data accompanying the paint functions in {@link Hb.font_paint_glyph}
+		 */
+		(funcs: paint_funcs_t, paint_data?: any | null): void;
+	}
+
+	/**
+	 * A virtual method for the #hb_paint_funcs_t to apply
+	 * a transform to subsequent paint calls.
+	 * 
+	 * This transform is applied after the current transform,
+	 * and remains in effect until a matching call to
+	 * the #hb_paint_funcs_pop_transform_func_t vfunc.
+	 */
+	interface paint_push_transform_func_t {
+		/**
+		 * A virtual method for the #hb_paint_funcs_t to apply
+		 * a transform to subsequent paint calls.
+		 * 
+		 * This transform is applied after the current transform,
+		 * and remains in effect until a matching call to
+		 * the #hb_paint_funcs_pop_transform_func_t vfunc.
+		 * @param funcs paint functions object
+		 * @param paint_data The data accompanying the paint functions in {@link Hb.font_paint_glyph}
+		 * @param xx xx component of the transform matrix
+		 * @param yx yx component of the transform matrix
+		 * @param xy xy component of the transform matrix
+		 * @param yy yy component of the transform matrix
+		 * @param dx dx component of the transform matrix
+		 * @param dy dy component of the transform matrix
+		 */
+		(funcs: paint_funcs_t, paint_data: any | null, xx: number, yx: number, xy: number, yy: number, dx: number, dy: number): void;
+	}
+
+	/**
+	 * A virtual method for the #hb_paint_funcs_t to paint a radial
+	 * gradient everywhere within the current clip.
+	 * 
+	 * The #color_line object contains information about the colors of the gradients.
+	 * It is only valid for the duration of the callback, you cannot keep it around.
+	 * 
+	 * The coordinates of the points are interpreted according
+	 * to the current transform.
+	 * 
+	 * See the OpenType spec [COLR](https://learn.microsoft.com/en-us/typography/opentype/spec/colr)
+	 * section for details on how the points define the direction
+	 * of the gradient, and how to interpret the #color_line.
+	 */
+	interface paint_radial_gradient_func_t {
+		/**
+		 * A virtual method for the #hb_paint_funcs_t to paint a radial
+		 * gradient everywhere within the current clip.
+		 * 
+		 * The #color_line object contains information about the colors of the gradients.
+		 * It is only valid for the duration of the callback, you cannot keep it around.
+		 * 
+		 * The coordinates of the points are interpreted according
+		 * to the current transform.
+		 * 
+		 * See the OpenType spec [COLR](https://learn.microsoft.com/en-us/typography/opentype/spec/colr)
+		 * section for details on how the points define the direction
+		 * of the gradient, and how to interpret the #color_line.
+		 * @param funcs paint functions object
+		 * @param paint_data The data accompanying the paint functions in {@link Hb.font_paint_glyph}
+		 * @param color_line Color information for the gradient
+		 * @param x0 X coordinate of the first circle's center
+		 * @param y0 Y coordinate of the first circle's center
+		 * @param r0 radius of the first circle
+		 * @param x1 X coordinate of the second circle's center
+		 * @param y1 Y coordinate of the second circle's center
+		 * @param r1 radius of the second circle
+		 */
+		(funcs: paint_funcs_t, paint_data: any | null, color_line: color_line_t, x0: number, y0: number, r0: number, x1: number, y1: number, r1: number): void;
+	}
+
+	/**
+	 * A virtual method for the #hb_paint_funcs_t to paint a sweep
+	 * gradient everywhere within the current clip.
+	 * 
+	 * The #color_line object contains information about the colors of the gradients.
+	 * It is only valid for the duration of the callback, you cannot keep it around.
+	 * 
+	 * The coordinates of the points are interpreted according
+	 * to the current transform.
+	 * 
+	 * See the OpenType spec [COLR](https://learn.microsoft.com/en-us/typography/opentype/spec/colr)
+	 * section for details on how the points define the direction
+	 * of the gradient, and how to interpret the #color_line.
+	 */
+	interface paint_sweep_gradient_func_t {
+		/**
+		 * A virtual method for the #hb_paint_funcs_t to paint a sweep
+		 * gradient everywhere within the current clip.
+		 * 
+		 * The #color_line object contains information about the colors of the gradients.
+		 * It is only valid for the duration of the callback, you cannot keep it around.
+		 * 
+		 * The coordinates of the points are interpreted according
+		 * to the current transform.
+		 * 
+		 * See the OpenType spec [COLR](https://learn.microsoft.com/en-us/typography/opentype/spec/colr)
+		 * section for details on how the points define the direction
+		 * of the gradient, and how to interpret the #color_line.
+		 * @param funcs paint functions object
+		 * @param paint_data The data accompanying the paint functions in {@link Hb.font_paint_glyph}
+		 * @param color_line Color information for the gradient
+		 * @param x0 X coordinate of the circle's center
+		 * @param y0 Y coordinate of the circle's center
+		 * @param start_angle the start angle, in radians
+		 * @param end_angle the end angle, in radians
+		 */
+		(funcs: paint_funcs_t, paint_data: any | null, color_line: color_line_t, x0: number, y0: number, start_angle: number, end_angle: number): void;
 	}
 
 	/**
@@ -3962,7 +5083,7 @@ declare namespace imports.gi.HarfBuzz {
 		 * @param ufuncs A Unicode-functions structure
 		 * @param a The first code point to compose
 		 * @param b The second code point to compose
-		 * @returns %true is #a,#b composed, %false otherwise
+		 * @returns `true` is #a,#b composed, `false` otherwise
 		 * 
 		 * The composed code point
 		 */
@@ -4015,7 +5136,7 @@ declare namespace imports.gi.HarfBuzz {
 		 * #hb_bool_t indicating the success of the composition.
 		 * @param ufuncs A Unicode-functions structure
 		 * @param ab The code point to decompose
-		 * @returns %true if #ab decomposed, %false otherwise
+		 * @returns `true` if #ab decomposed, `false` otherwise
 		 * 
 		 * The first decomposed code point
 		 * 
@@ -4141,6 +5262,51 @@ declare namespace imports.gi.HarfBuzz {
 
 	class var_int_t {
 		public constructor(options?: Partial<var_int_tInitOptions>);
+	}
+
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link var_num_t} instead.
+	 */
+	interface Ivar_num_t {
+		f: number;
+		u32: number;
+		i32: number;
+		u16: number[];
+		i16: number[];
+		u8: number[];
+		i8: number[];
+
+		connect(signal: "notify::f", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::u32", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::i32", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::u16", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::i16", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::u8", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::i8", callback: (owner: this, ...args: any) => void): number;
+
+	}
+
+	type var_num_tInitOptionsMixin = Pick<Ivar_num_t,
+		"f" |
+		"u32" |
+		"i32" |
+		"u16" |
+		"i16" |
+		"u8" |
+		"i8">;
+
+	export interface var_num_tInitOptions extends var_num_tInitOptionsMixin {}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link var_num_t} instead.
+	 */
+	type var_num_tMixin = Ivar_num_t;
+
+	interface var_num_t extends var_num_tMixin {}
+
+	class var_num_t {
+		public constructor(options?: Partial<var_num_tInitOptions>);
 	}
 
 
@@ -4315,7 +5481,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * 
 	 * <note>Note: does not examine the `GPOS` table.</note>
 	 * @param face #hb_face_t to work upon
-	 * @returns %true if data found, %false otherwise
+	 * @returns `true` if data found, `false` otherwise
 	 */
 	function aat_layout_has_positioning(face: face_t): bool_t;
 	/**
@@ -4324,14 +5490,14 @@ declare namespace imports.gi.HarfBuzz {
 	 * 
 	 * <note>Note: does not examine the `GSUB` table.</note>
 	 * @param face #hb_face_t to work upon
-	 * @returns %true if data found, %false otherwise
+	 * @returns `true` if data found, `false` otherwise
 	 */
 	function aat_layout_has_substitution(face: face_t): bool_t;
 	/**
 	 * Tests whether the specified face includes any tracking information
 	 * in the `trak` table.
 	 * @param face #hb_face_t to work upon
-	 * @returns %true if data found, %false otherwise
+	 * @returns `true` if data found, `false` otherwise
 	 */
 	function aat_layout_has_tracking(face: face_t): bool_t;
 	/**
@@ -4365,7 +5531,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * specified binary font file.
 	 * @param file_name A font filename
 	 * @returns An #hb_blob_t pointer with the content of the file,
-	 * or %NULL if failed.
+	 * or `NULL` if failed.
 	 */
 	function blob_create_from_file_or_fail(file_name: string): blob_t;
 	/**
@@ -4380,7 +5546,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param mode Memory mode for #data.
 	 * @param user_data Data parameter to pass to #destroy.
 	 * @param destroy Callback to call when #data is not needed anymore.
-	 * @returns New blob, or %NULL if failed.  Destroy with {@link Hb.blob_destroy}.
+	 * @returns New blob, or `NULL` if failed.  Destroy with {@link Hb.blob_destroy}.
 	 */
 	function blob_create_or_fail(data: string, length: number, mode: memory_mode_t, user_data: any | null, destroy: destroy_func_t | null): blob_t;
 	/**
@@ -4415,7 +5581,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * 
 	 * The length in bytes of the data retrieved
 	 */
-	function blob_get_data(blob: blob_t): [ string[], number ];
+	function blob_get_data(blob: blob_t): [ string[] | null, number ];
 	/**
 	 * Tries to make blob data writable (possibly copying it) and
 	 * return pointer to data.
@@ -4424,7 +5590,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * fails.
 	 * @param blob a blob.
 	 * @returns Writable blob data,
-	 * or %NULL if failed.
+	 * or `NULL` if failed.
 	 * 
 	 * output length of the writable data.
 	 */
@@ -4453,7 +5619,7 @@ declare namespace imports.gi.HarfBuzz {
 	/**
 	 * Tests whether a blob is immutable.
 	 * @param blob a blob.
-	 * @returns %true if #blob is immutable, %false otherwise
+	 * @returns `true` if #blob is immutable, `false` otherwise
 	 */
 	function blob_is_immutable(blob: blob_t): bool_t;
 	/**
@@ -4476,7 +5642,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param data A pointer to the user data to set
 	 * @param destroy A callback to call when #data is not needed anymore
 	 * @param replace Whether to replace an existing data with the same key
-	 * @returns %true if success, %false otherwise
+	 * @returns `true` if success, `false` otherwise
 	 */
 	function blob_set_user_data(blob: blob_t, key: user_data_key_t, data: any | null, destroy: destroy_func_t | null, replace: bool_t): bool_t;
 	/**
@@ -4505,12 +5671,14 @@ declare namespace imports.gi.HarfBuzz {
 	 * marks at stat of run.
 	 * 
 	 * This function does not check the validity of #text, it is up to the caller
-	 * to ensure it contains a valid Unicode code points.
+	 * to ensure it contains a valid Unicode scalar values.  In contrast,
+	 * {@link Hb.buffer_add_utf32} can be used that takes similar input but performs
+	 * sanity-check on the input.
 	 * @param buffer a #hb_buffer_t to append characters to.
 	 * @param text an array of Unicode code points to append.
 	 * @param item_offset the offset of the first code point to add to the #buffer.
 	 * @param item_length the number of code points to add to the #buffer, or -1 for the
-	 *               end of #text (assuming it is %NULL terminated).
+	 *               end of #text (assuming it is `NULL` terminated).
 	 */
 	function buffer_add_codepoints(buffer: buffer_t, text: codepoint_t[], item_offset: number, item_length: number): void;
 	/**
@@ -4523,7 +5691,7 @@ declare namespace imports.gi.HarfBuzz {
 	 *               characters to append
 	 * @param item_offset the offset of the first character to add to the #buffer
 	 * @param item_length the number of characters to add to the #buffer, or -1 for the
-	 *               end of #text (assuming it is %NULL terminated)
+	 *               end of #text (assuming it is `NULL` terminated)
 	 */
 	function buffer_add_latin1(buffer: buffer_t, text: number[], item_offset: number, item_length: number): void;
 	/**
@@ -4535,7 +5703,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param text An array of UTF-16 characters to append
 	 * @param item_offset The offset of the first character to add to the #buffer
 	 * @param item_length The number of characters to add to the #buffer, or -1 for the
-	 *               end of #text (assuming it is %NULL terminated)
+	 *               end of #text (assuming it is `NULL` terminated)
 	 */
 	function buffer_add_utf16(buffer: buffer_t, text: number[], item_offset: number, item_length: number): void;
 	/**
@@ -4547,7 +5715,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param text An array of UTF-32 characters to append
 	 * @param item_offset The offset of the first character to add to the #buffer
 	 * @param item_length The number of characters to add to the #buffer, or -1 for the
-	 *               end of #text (assuming it is %NULL terminated)
+	 *               end of #text (assuming it is `NULL` terminated)
 	 */
 	function buffer_add_utf32(buffer: buffer_t, text: number[], item_offset: number, item_length: number): void;
 	/**
@@ -4560,13 +5728,13 @@ declare namespace imports.gi.HarfBuzz {
 	 *               characters to append.
 	 * @param item_offset The offset of the first character to add to the #buffer.
 	 * @param item_length The number of characters to add to the #buffer, or -1 for the
-	 *               end of #text (assuming it is %NULL terminated).
+	 *               end of #text (assuming it is `NULL` terminated).
 	 */
 	function buffer_add_utf8(buffer: buffer_t, text: number[], item_offset: number, item_length: number): void;
 	/**
 	 * Check if allocating memory for the buffer succeeded.
 	 * @param buffer An #hb_buffer_t
-	 * @returns %true if #buffer memory allocation succeeded, %false otherwise.
+	 * @returns `true` if #buffer memory allocation succeeded, `false` otherwise.
 	 */
 	function buffer_allocation_successful(buffer: buffer_t): bool_t;
 	/**
@@ -4588,11 +5756,19 @@ declare namespace imports.gi.HarfBuzz {
 	 * @returns 
 	 * A newly allocated #hb_buffer_t with a reference count of 1. The initial
 	 * reference count should be released with {@link Hb.buffer_destroy} when you are done
-	 * using the #hb_buffer_t. This function never returns %NULL. If memory cannot
+	 * using the #hb_buffer_t. This function never returns `NULL`. If memory cannot
 	 * be allocated, a special #hb_buffer_t object will be returned on which
-	 * hb_buffer_allocation_successful() returns %false.
+	 * hb_buffer_allocation_successful() returns `false`.
 	 */
 	function buffer_create(): buffer_t;
+	/**
+	 * Creates a new #hb_buffer_t, similar to {@link Hb.buffer_create}. The only
+	 * difference is that the buffer is configured similarly to #src.
+	 * @param src An #hb_buffer_t
+	 * @returns 
+	 * A newly allocated #hb_buffer_t, similar to {@link Hb.buffer_create}.
+	 */
+	function buffer_create_similar(src: buffer_t): buffer_t;
 	/**
 	 * Deserializes glyphs #buffer from textual representation in the format
 	 * produced by {@link Hb.buffer_serialize_glyphs}.
@@ -4600,7 +5776,8 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param buf string to deserialize
 	 * @param font font for getting glyph IDs
 	 * @param format the #hb_buffer_serialize_format_t of the input #buf
-	 * @returns %true if #buf is not fully consumed, %false otherwise.
+	 * @returns `true` if parse was successful, `false` if an error
+	 * occurred.
 	 * 
 	 * output pointer to the character after last
 	 *                               consumed one.
@@ -4612,7 +5789,8 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param buffer an #hb_buffer_t buffer.
 	 * @param buf string to deserialize
 	 * @param format the #hb_buffer_serialize_format_t of the input #buf
-	 * @returns %true if #buf is not fully consumed, %false otherwise.
+	 * @returns `true` if parse was successful, `false` if an error
+	 * occurred.
 	 * 
 	 * output pointer to the character after last
 	 *                               consumed one.
@@ -4631,7 +5809,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * callers if just comparing two buffers is needed.
 	 * @param buffer a buffer.
 	 * @param reference other buffer to compare to.
-	 * @param dottedcircle_glyph glyph id of U+25CC DOTTED CIRCLE, or (hb_codepont_t) -1.
+	 * @param dottedcircle_glyph glyph id of U+25CC DOTTED CIRCLE, or (hb_codepoint_t) -1.
 	 * @param position_fuzz allowed absolute difference in position values.
 	 * @returns 
 	 */
@@ -4686,7 +5864,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * If buffer did not have positions before, the positions will be
 	 * initialized to zeros, unless this function is called from
 	 * within a buffer message callback (see {@link Hb.buffer_set_message_func}),
-	 * in which case %NULL is returned.
+	 * in which case `NULL` is returned.
 	 * @param buffer An #hb_buffer_t
 	 * @returns 
 	 * The #buffer glyph position array.
@@ -4715,6 +5893,12 @@ declare namespace imports.gi.HarfBuzz {
 	 * The value valid as long as buffer has not been modified.
 	 */
 	function buffer_get_length(buffer: buffer_t): number;
+	/**
+	 * See {@link Hb.buffer_set_not_found_glyph}.
+	 * @param buffer An #hb_buffer_t
+	 * @returns The #buffer not-found #hb_codepoint_t
+	 */
+	function buffer_get_not_found_glyph(buffer: buffer_t): codepoint_t;
 	/**
 	 * Fetches the #hb_codepoint_t that replaces invalid entries for a given encoding
 	 * when adding text to #buffer.
@@ -4778,7 +5962,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * A buffer gains position data when {@link Hb.buffer_get_glyph_positions} is called on it,
 	 * and cleared of position data when hb_buffer_clear_contents() is called.
 	 * @param buffer an #hb_buffer_t.
-	 * @returns %true if the #buffer has position array, %false otherwise.
+	 * @returns `true` if the #buffer has position array, `false` otherwise.
 	 */
 	function buffer_has_positions(buffer: buffer_t): bool_t;
 	/**
@@ -4793,7 +5977,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * Pre allocates memory for #buffer to fit at least #size number of items.
 	 * @param buffer An #hb_buffer_t
 	 * @param size Number of items to pre allocate.
-	 * @returns %true if #buffer memory allocation succeeded, %false otherwise
+	 * @returns `true` if #buffer memory allocation succeeded, `false` otherwise
 	 */
 	function buffer_pre_allocate(buffer: buffer_t, size: number): bool_t;
 	/**
@@ -4839,7 +6023,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param start the first item in #buffer to serialize.
 	 * @param end the last item in #buffer to serialize.
 	 * @param font the #hb_font_t used to shape this buffer, needed to
-	 *        read glyph names and extents. If %NULL, and empty font will be used.
+	 *        read glyph names and extents. If `NULL`, an empty font will be used.
 	 * @param format the #hb_buffer_serialize_format_t to use for formatting the output.
 	 * @param flags the #hb_buffer_serialize_flags_t that control what glyph properties
 	 *         to serialize.
@@ -4848,7 +6032,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * output string to
 	 *       write serialized buffer into.
 	 * 
-	 * if not %NULL, will be set to the number of byes written into #buf.
+	 * if not `NULL`, will be set to the number of bytes written into #buf.
 	 */
 	function buffer_serialize(buffer: buffer_t, start: number, end: number, font: font_t | null, format: buffer_serialize_format_t, flags: buffer_serialize_flags_t): [ number, number[], number | null ];
 	/**
@@ -4860,11 +6044,11 @@ declare namespace imports.gi.HarfBuzz {
 	 */
 	function buffer_serialize_format_from_string(str: number[]): buffer_serialize_format_t;
 	/**
-	 * Converts #format to the string corresponding it, or %NULL if it is not a valid
+	 * Converts #format to the string corresponding it, or `NULL` if it is not a valid
 	 * #hb_buffer_serialize_format_t.
 	 * @param format an #hb_buffer_serialize_format_t to convert.
 	 * @returns 
-	 * A %NULL terminated string corresponding to #format. Should not be freed.
+	 * A `NULL` terminated string corresponding to #format. Should not be freed.
 	 */
 	function buffer_serialize_format_to_string(format: buffer_serialize_format_t): string;
 	/**
@@ -4914,7 +6098,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param start the first item in #buffer to serialize.
 	 * @param end the last item in #buffer to serialize.
 	 * @param font the #hb_font_t used to shape this buffer, needed to
-	 *        read glyph names and extents. If %NULL, and empty font will be used.
+	 *        read glyph names and extents. If `NULL`, an empty font will be used.
 	 * @param format the #hb_buffer_serialize_format_t to use for formatting the output.
 	 * @param flags the #hb_buffer_serialize_flags_t that control what glyph properties
 	 *         to serialize.
@@ -4923,7 +6107,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * output string to
 	 *       write serialized buffer into.
 	 * 
-	 * if not %NULL, will be set to the number of byes written into #buf.
+	 * if not `NULL`, will be set to the number of bytes written into #buf.
 	 */
 	function buffer_serialize_glyphs(buffer: buffer_t, start: number, end: number, font: font_t | null, format: buffer_serialize_format_t, flags: buffer_serialize_flags_t): [ number, number[], number | null ];
 	/**
@@ -4976,7 +6160,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * output string to
 	 *       write serialized buffer into.
 	 * 
-	 * if not %NULL, will be set to the number of byes written into #buf.
+	 * if not `NULL`, will be set to the number of bytes written into #buf.
 	 */
 	function buffer_serialize_unicode(buffer: buffer_t, start: number, end: number, format: buffer_serialize_format_t, flags: buffer_serialize_flags_t): [ number, number[], number | null ];
 	/**
@@ -4990,6 +6174,32 @@ declare namespace imports.gi.HarfBuzz {
 	/**
 	 * Sets the type of #buffer contents. Buffers are either empty, contain
 	 * characters (before shaping), or contain glyphs (the result of shaping).
+	 * 
+	 * You rarely need to call this function, since a number of other
+	 * functions transition the content type for you. Namely:
+	 * 
+	 * - A newly created buffer starts with content type
+	 *   %HB_BUFFER_CONTENT_TYPE_INVALID. Calling {@link Hb.buffer_reset},
+	 *   hb_buffer_clear_contents(), as well as calling hb_buffer_set_length()
+	 *   with an argument of zero all set the buffer content type to invalid
+	 *   as well.
+	 * 
+	 * - Calling hb_buffer_add_utf8(), hb_buffer_add_utf16(),
+	 *   hb_buffer_add_utf32(), hb_buffer_add_codepoints() and
+	 *   hb_buffer_add_latin1() expect that buffer is either empty and
+	 *   have a content type of invalid, or that buffer content type is
+	 *   %HB_BUFFER_CONTENT_TYPE_UNICODE, and they also set the content
+	 *   type to Unicode if they added anything to an empty buffer.
+	 * 
+	 * - Finally hb_shape() and hb_shape_full() expect that the buffer
+	 *   is either empty and have content type of invalid, or that buffer
+	 *   content type is %HB_BUFFER_CONTENT_TYPE_UNICODE, and upon
+	 *   success they set the buffer content type to
+	 *   %HB_BUFFER_CONTENT_TYPE_GLYPHS.
+	 * 
+	 * The above transitions are designed such that one can use a buffer
+	 * in a loop of "reset : add-text : shape" without needing to ever
+	 * modify the content type manually.
 	 * @param buffer An #hb_buffer_t
 	 * @param content_type The type of buffer contents to set
 	 */
@@ -5040,7 +6250,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * end.
 	 * @param buffer An #hb_buffer_t
 	 * @param length The new length of #buffer
-	 * @returns %true if #buffer memory allocation succeeded, %false otherwise.
+	 * @returns `true` if #buffer memory allocation succeeded, `false` otherwise.
 	 */
 	function buffer_set_length(buffer: buffer_t, length: number): bool_t;
 	/**
@@ -5050,6 +6260,16 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param destroy The function to call when #user_data is not needed anymore
 	 */
 	function buffer_set_message_func(buffer: buffer_t, func: buffer_message_func_t, destroy: destroy_func_t | null): void;
+	/**
+	 * Sets the #hb_codepoint_t that replaces characters not found in
+	 * the font during shaping.
+	 * 
+	 * The not-found glyph defaults to zero, sometimes known as the
+	 * ".notdef" glyph.  This API allows for differentiating the two.
+	 * @param buffer An #hb_buffer_t
+	 * @param not_found the not-found #hb_codepoint_t
+	 */
+	function buffer_set_not_found_glyph(buffer: buffer_t, not_found: codepoint_t): void;
 	/**
 	 * Sets the #hb_codepoint_t that replaces invalid entries for a given encoding
 	 * when adding text to #buffer.
@@ -5095,7 +6315,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param data A pointer to the user data
 	 * @param destroy A callback to call when #data is not needed anymore
 	 * @param replace Whether to replace an existing data with the same key
-	 * @returns %true if success, %false otherwise
+	 * @returns `true` if success, `false` otherwise
 	 */
 	function buffer_set_user_data(buffer: buffer_t, key: user_data_key_t, data: any | null, destroy: destroy_func_t | null, replace: bool_t): bool_t;
 	/**
@@ -5123,6 +6343,25 @@ declare namespace imports.gi.HarfBuzz {
 	 */
 	function color_get_red(color: color_t): number;
 	/**
+	 * Fetches a list of color stops from the given color line object.
+	 * 
+	 * Note that due to variations being applied, the returned color stops
+	 * may be out of order. It is the callers responsibility to ensure that
+	 * color stops are sorted by their offset before they are used.
+	 * @param color_line a #hb_color_line_t object
+	 * @param start the index of the first color stop to return
+	 * @returns the total number of color stops in #color_line
+	 * 
+	 * Array of #hb_color_stop_t to populate
+	 */
+	function color_line_get_color_stops(color_line: color_line_t, start: number): [ number, color_stop_t[] | null ];
+	/**
+	 * Fetches the extend mode of the color line object.
+	 * @param color_line a #hb_color_line_t object
+	 * @returns the extend mode of #color_line
+	 */
+	function color_line_get_extend(color_line: color_line_t): paint_extend_t;
+	/**
 	 * Converts a string to an #hb_direction_t.
 	 * 
 	 * Matching is loose and applies only to the first letter. For
@@ -5140,6 +6379,151 @@ declare namespace imports.gi.HarfBuzz {
 	 */
 	function direction_to_string(direction: direction_t): string;
 	/**
+	 * Perform a "close-path" draw operation.
+	 * @param dfuncs draw functions
+	 * @param draw_data associated draw data passed by the caller
+	 * @param st current draw state
+	 */
+	function draw_close_path(dfuncs: draw_funcs_t, draw_data: any | null, st: draw_state_t): void;
+	/**
+	 * Perform a "cubic-to" draw operation.
+	 * @param dfuncs draw functions
+	 * @param draw_data associated draw data passed by the caller
+	 * @param st current draw state
+	 * @param control1_x X component of first control point
+	 * @param control1_y Y component of first control point
+	 * @param control2_x X component of second control point
+	 * @param control2_y Y component of second control point
+	 * @param to_x X component of target point
+	 * @param to_y Y component of target point
+	 */
+	function draw_cubic_to(dfuncs: draw_funcs_t, draw_data: any | null, st: draw_state_t, control1_x: number, control1_y: number, control2_x: number, control2_y: number, to_x: number, to_y: number): void;
+	/**
+	 * Creates a new draw callbacks object.
+	 * @returns 
+	 * A newly allocated #hb_draw_funcs_t with a reference count of 1. The initial
+	 * reference count should be released with hb_draw_funcs_destroy when you are
+	 * done using the #hb_draw_funcs_t. This function never returns `NULL`. If
+	 * memory cannot be allocated, a special singleton #hb_draw_funcs_t object will
+	 * be returned.
+	 */
+	function draw_funcs_create(): draw_funcs_t;
+	/**
+	 * Deallocate the #dfuncs.
+	 * Decreases the reference count on #dfuncs by one. If the result is zero, then
+	 * #dfuncs and all associated resources are freed. See {@link Hb.draw_funcs_reference}.
+	 * @param dfuncs draw functions
+	 */
+	function draw_funcs_destroy(dfuncs: draw_funcs_t): void;
+	/**
+	 * Fetches the singleton empty draw-functions structure.
+	 * @returns The empty draw-functions structure
+	 */
+	function draw_funcs_get_empty(): draw_funcs_t;
+	/**
+	 * Fetches the user-data associated with the specified key,
+	 * attached to the specified draw-functions structure.
+	 * @param dfuncs The draw-functions structure
+	 * @param key The user-data key to query
+	 * @returns A pointer to the user data
+	 */
+	function draw_funcs_get_user_data(dfuncs: draw_funcs_t, key: user_data_key_t): any | null;
+	/**
+	 * Checks whether #dfuncs is immutable.
+	 * @param dfuncs draw functions
+	 * @returns `true` if #dfuncs is immutable, `false` otherwise
+	 */
+	function draw_funcs_is_immutable(dfuncs: draw_funcs_t): bool_t;
+	/**
+	 * Makes #dfuncs object immutable.
+	 * @param dfuncs draw functions
+	 */
+	function draw_funcs_make_immutable(dfuncs: draw_funcs_t): void;
+	/**
+	 * Increases the reference count on #dfuncs by one.
+	 * 
+	 * This prevents #dfuncs from being destroyed until a matching
+	 * call to {@link Hb.draw_funcs_destroy} is made.
+	 * @param dfuncs draw functions
+	 * @returns 
+	 * The referenced #hb_draw_funcs_t.
+	 */
+	function draw_funcs_reference(dfuncs: draw_funcs_t): draw_funcs_t;
+	/**
+	 * Sets close-path callback to the draw functions object.
+	 * @param dfuncs draw functions object
+	 * @param func close-path callback
+	 * @param destroy The function to call when #user_data is not needed anymore
+	 */
+	function draw_funcs_set_close_path_func(dfuncs: draw_funcs_t, func: draw_close_path_func_t, destroy: destroy_func_t | null): void;
+	/**
+	 * Sets cubic-to callback to the draw functions object.
+	 * @param dfuncs draw functions
+	 * @param func cubic-to callback
+	 * @param destroy The function to call when #user_data is not needed anymore
+	 */
+	function draw_funcs_set_cubic_to_func(dfuncs: draw_funcs_t, func: draw_cubic_to_func_t, destroy: destroy_func_t | null): void;
+	/**
+	 * Sets line-to callback to the draw functions object.
+	 * @param dfuncs draw functions object
+	 * @param func line-to callback
+	 * @param destroy The function to call when #user_data is not needed anymore
+	 */
+	function draw_funcs_set_line_to_func(dfuncs: draw_funcs_t, func: draw_line_to_func_t, destroy: destroy_func_t | null): void;
+	/**
+	 * Sets move-to callback to the draw functions object.
+	 * @param dfuncs draw functions object
+	 * @param func move-to callback
+	 * @param destroy The function to call when #user_data is not needed anymore
+	 */
+	function draw_funcs_set_move_to_func(dfuncs: draw_funcs_t, func: draw_move_to_func_t, destroy: destroy_func_t | null): void;
+	/**
+	 * Sets quadratic-to callback to the draw functions object.
+	 * @param dfuncs draw functions object
+	 * @param func quadratic-to callback
+	 * @param destroy The function to call when #user_data is not needed anymore
+	 */
+	function draw_funcs_set_quadratic_to_func(dfuncs: draw_funcs_t, func: draw_quadratic_to_func_t, destroy: destroy_func_t | null): void;
+	/**
+	 * Attaches a user-data key/data pair to the specified draw-functions structure.
+	 * @param dfuncs The draw-functions structure
+	 * @param key The user-data key
+	 * @param data A pointer to the user data
+	 * @param destroy A callback to call when #data is not needed anymore
+	 * @param replace Whether to replace an existing data with the same key
+	 * @returns `true` if success, `false` otherwise
+	 */
+	function draw_funcs_set_user_data(dfuncs: draw_funcs_t, key: user_data_key_t, data: any | null, destroy: destroy_func_t | null, replace: bool_t): bool_t;
+	/**
+	 * Perform a "line-to" draw operation.
+	 * @param dfuncs draw functions
+	 * @param draw_data associated draw data passed by the caller
+	 * @param st current draw state
+	 * @param to_x X component of target point
+	 * @param to_y Y component of target point
+	 */
+	function draw_line_to(dfuncs: draw_funcs_t, draw_data: any | null, st: draw_state_t, to_x: number, to_y: number): void;
+	/**
+	 * Perform a "move-to" draw operation.
+	 * @param dfuncs draw functions
+	 * @param draw_data associated draw data passed by the caller
+	 * @param st current draw state
+	 * @param to_x X component of target point
+	 * @param to_y Y component of target point
+	 */
+	function draw_move_to(dfuncs: draw_funcs_t, draw_data: any | null, st: draw_state_t, to_x: number, to_y: number): void;
+	/**
+	 * Perform a "quadratic-to" draw operation.
+	 * @param dfuncs draw functions
+	 * @param draw_data associated draw data passed by the caller
+	 * @param st current draw state
+	 * @param control_x X component of control point
+	 * @param control_y Y component of control point
+	 * @param to_x X component of target point
+	 * @param to_y Y component of target point
+	 */
+	function draw_quadratic_to(dfuncs: draw_funcs_t, draw_data: any | null, st: draw_state_t, control_x: number, control_y: number, to_x: number, to_y: number): void;
+	/**
 	 * Add table for #tag with data provided by #blob to the face.  #face must
 	 * be created using {@link Hb.face_builder_create}.
 	 * @param face A face object created with {@link Hb.face_builder_create}
@@ -5156,27 +6540,45 @@ declare namespace imports.gi.HarfBuzz {
 	 */
 	function face_builder_create(): face_t;
 	/**
+	 * Set the ordering of tables for serialization. Any tables not
+	 * specified in the tags list will be ordered after the tables in
+	 * tags, ordered by the default sort ordering.
+	 * @param face A face object created with {@link Hb.face_builder_create}
+	 * @param tags ordered list of table tags terminated by
+	 *   %HB_TAG_NONE
+	 */
+	function face_builder_sort_tables(face: face_t, tags: tag_t[]): void;
+	/**
+	 * Collects the mapping from Unicode characters to nominal glyphs of the #face,
+	 * and optionally all of the Unicode characters covered by #face.
+	 * @param face A face object
+	 * @returns The map to add Unicode-to-glyph mapping to
+	 * 
+	 * The set to add Unicode characters to, or `NULL`
+	 */
+	function face_collect_nominal_glyph_mapping(face: face_t): [ mapping: map_t, unicodes: set_t | null ];
+	/**
 	 * Collects all of the Unicode characters covered by #face and adds
 	 * them to the #hb_set_t set #out.
 	 * @param face A face object
-	 * @param out The set to add Unicode characters to
+	 * @returns The set to add Unicode characters to
 	 */
-	function face_collect_unicodes(face: face_t, out: set_t): void;
+	function face_collect_unicodes(face: face_t): set_t;
 	/**
 	 * Collects all Unicode "Variation Selector" characters covered by #face and adds
 	 * them to the #hb_set_t set #out.
 	 * @param face A face object
-	 * @param out The set to add Variation Selector characters to
+	 * @returns The set to add Variation Selector characters to
 	 */
-	function face_collect_variation_selectors(face: face_t, out: set_t): void;
+	function face_collect_variation_selectors(face: face_t): set_t;
 	/**
 	 * Collects all Unicode characters for #variation_selector covered by #face and adds
 	 * them to the #hb_set_t set #out.
 	 * @param face A face object
 	 * @param variation_selector The Variation Selector to query
-	 * @param out The set to add Unicode characters to
+	 * @returns The set to add Unicode characters to
 	 */
-	function face_collect_variation_unicodes(face: face_t, variation_selector: codepoint_t, out: set_t): void;
+	function face_collect_variation_unicodes(face: face_t, variation_selector: codepoint_t): set_t;
 	/**
 	 * Fetches the number of faces in a blob.
 	 * @param blob a blob.
@@ -5185,9 +6587,19 @@ declare namespace imports.gi.HarfBuzz {
 	function face_count(blob: blob_t): number;
 	/**
 	 * Constructs a new face object from the specified blob and
-	 * a face index into that blob. This is used for blobs of
-	 * file formats such as Dfont and TTC that can contain more
-	 * than one face.
+	 * a face index into that blob.
+	 * 
+	 * The face index is used for blobs of file formats such as TTC and
+	 * DFont that can contain more than one face.  Face indices within
+	 * such collections are zero-based.
+	 * 
+	 * <note>Note: If the blob font format is not a collection, #index
+	 * is ignored.  Otherwise, only the lower 16-bits of #index are used.
+	 * The unmodified #index can be accessed via {@link Hb.face_get_index}.</note>
+	 * 
+	 * <note>Note: The high 16-bits of #index, if non-zero, are used by
+	 * hb_font_create() to load named-instances in variable fonts.  See
+	 * hb_font_create() for details.</note>
 	 * @param blob #hb_blob_t to work upon
 	 * @param index The index of the face within #blob
 	 * @returns The new face object
@@ -5243,7 +6655,10 @@ declare namespace imports.gi.HarfBuzz {
 	 */
 	function face_get_table_tags(face: face_t, start_offset: number): [ number, tag_t[] ];
 	/**
-	 * Fetches the units-per-em (upem) value of the specified face object.
+	 * Fetches the units-per-em (UPEM) value of the specified face object.
+	 * 
+	 * Typical UPEM values for fonts are 1000, or 2048, but any value
+	 * in between 16 and 16,384 is allowed for OpenType fonts.
 	 * @param face A face object
 	 * @returns The upem value of #face
 	 */
@@ -5259,7 +6674,7 @@ declare namespace imports.gi.HarfBuzz {
 	/**
 	 * Tests whether the given face object is immutable.
 	 * @param face A face object
-	 * @returns %true is #face is immutable, %false otherwise
+	 * @returns `true` is #face is immutable, `false` otherwise
 	 */
 	function face_is_immutable(face: face_t): bool_t;
 	/**
@@ -5291,6 +6706,8 @@ declare namespace imports.gi.HarfBuzz {
 	function face_reference_table(face: face_t, tag: tag_t): blob_t;
 	/**
 	 * Sets the glyph count for a face object to the specified value.
+	 * 
+	 * This API is used in rare circumstances.
 	 * @param face A face object
 	 * @param glyph_count The glyph-count value to assign
 	 */
@@ -5299,13 +6716,16 @@ declare namespace imports.gi.HarfBuzz {
 	 * Assigns the specified face-index to #face. Fails if the
 	 * face is immutable.
 	 * 
-	 * <note>Note: face indices within a collection are zero-based.</note>
+	 * <note>Note: changing the index has no effect on the face itself
+	 * This only changes the value returned by {@link Hb.face_get_index}.</note>
 	 * @param face A face object
 	 * @param index The index to assign
 	 */
 	function face_set_index(face: face_t, index: number): void;
 	/**
 	 * Sets the units-per-em (upem) for a face object to the specified value.
+	 * 
+	 * This API is used in rare circumstances.
 	 * @param face A face object
 	 * @param upem The units-per-em value to assign
 	 */
@@ -5317,7 +6737,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param data A pointer to the user data
 	 * @param destroy A callback to call when #data is not needed anymore
 	 * @param replace Whether to replace an existing data with the same key
-	 * @returns %true if success, %false otherwise
+	 * @returns `true` if success, `false` otherwise
 	 */
 	function face_set_user_data(face: face_t, key: user_data_key_t, data: any | null, destroy: destroy_func_t | null, replace: bool_t): bool_t;
 	/**
@@ -5359,13 +6779,13 @@ declare namespace imports.gi.HarfBuzz {
 	 * </tgroup>
 	 * </informaltable>
 	 * @param str a string to parse
-	 * @returns %true if #str is successfully parsed, %false otherwise
+	 * @returns `true` if #str is successfully parsed, `false` otherwise
 	 * 
 	 * the #hb_feature_t to initialize with the parsed values
 	 */
 	function feature_from_string(str: number[]): [ bool_t, feature_t ];
 	/**
-	 * Converts a #hb_feature_t into a %NULL-terminated string in the format
+	 * Converts a #hb_feature_t into a `NULL`-terminated string in the format
 	 * understood by {@link Hb.feature_from_string}. The client in responsible for
 	 * allocating big enough size for #buf, 128 bytes is more than enough.
 	 * @param feature an #hb_feature_t to convert
@@ -5384,7 +6804,21 @@ declare namespace imports.gi.HarfBuzz {
 	 */
 	function font_add_glyph_origin_for_direction(font: font_t, glyph: codepoint_t, direction: direction_t): void;
 	/**
+	 * Notifies the #font that underlying font data has changed.
+	 * This has the effect of increasing the serial as returned
+	 * by {@link Hb.font_get_serial}, which invalidates internal caches.
+	 * @param font #hb_font_t to work upon
+	 */
+	function font_changed(font: font_t): void;
+	/**
 	 * Constructs a new font object from the specified face.
+	 * 
+	 * <note>Note: If #face's index value (as passed to {@link Hb.face_create}
+	 * has non-zero top 16-bits, those bits minus one are passed to
+	 * hb_font_set_var_named_instance(), effectively loading a named-instance
+	 * of a variable font, instead of the default-instance.  This allows
+	 * specifying which named-instance to load by default when creating the
+	 * face.</note>
 	 * @param face a face.
 	 * @returns The new font object
 	 */
@@ -5403,6 +6837,17 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param font #hb_font_t to work upon
 	 */
 	function font_destroy(font: font_t): void;
+	/**
+	 * Draws the outline that corresponds to a glyph in the specified #font.
+	 * 
+	 * The outline is returned by way of calls to the callbacks of the #dfuncs
+	 * objects, with #draw_data passed to them.
+	 * @param font #hb_font_t to work upon
+	 * @param glyph The glyph ID
+	 * @param dfuncs #hb_draw_funcs_t to draw to
+	 * @param draw_data User data to pass to draw callbacks
+	 */
+	function font_draw_glyph(font: font_t, glyph: codepoint_t, dfuncs: draw_funcs_t, draw_data: any | null): void;
 	/**
 	 * Creates a new #hb_font_funcs_t structure of font functions.
 	 * @returns The font-functions structure
@@ -5431,7 +6876,7 @@ declare namespace imports.gi.HarfBuzz {
 	/**
 	 * Tests whether a font-functions structure is immutable.
 	 * @param ffuncs The font-functions structure
-	 * @returns %true if #ffuncs is immutable, %false otherwise
+	 * @returns `true` if #ffuncs is immutable, `false` otherwise
 	 */
 	function font_funcs_is_immutable(ffuncs: font_funcs_t): bool_t;
 	/**
@@ -5445,6 +6890,13 @@ declare namespace imports.gi.HarfBuzz {
 	 * @returns The font-functions structure
 	 */
 	function font_funcs_reference(ffuncs: font_funcs_t): font_funcs_t;
+	/**
+	 * Sets the implementation function for #hb_font_draw_glyph_func_t.
+	 * @param ffuncs A font-function structure
+	 * @param func The callback function to assign
+	 * @param destroy The function to call when #user_data is not needed anymore
+	 */
+	function font_funcs_set_draw_glyph_func(ffuncs: font_funcs_t, func: font_draw_glyph_func_t, destroy: destroy_func_t | null): void;
 	/**
 	 * Sets the implementation function for #hb_font_get_font_h_extents_func_t.
 	 * @param ffuncs A font-function structure
@@ -5524,6 +6976,14 @@ declare namespace imports.gi.HarfBuzz {
 	 */
 	function font_funcs_set_glyph_name_func(ffuncs: font_funcs_t, func: font_get_glyph_name_func_t, destroy: destroy_func_t | null): void;
 	/**
+	 * Sets the implementation function for #hb_font_get_glyph_shape_func_t,
+	 * which is the same as #hb_font_draw_glyph_func_t.
+	 * @param ffuncs A font-function structure
+	 * @param func The callback function to assign
+	 * @param destroy The function to call when #user_data is not needed anymore
+	 */
+	function font_funcs_set_glyph_shape_func(ffuncs: font_funcs_t, func: font_get_glyph_shape_func_t, destroy: destroy_func_t | null): void;
+	/**
 	 * Sets the implementation function for #hb_font_get_glyph_v_advance_func_t.
 	 * @param ffuncs A font-function structure
 	 * @param func The callback function to assign
@@ -5566,13 +7026,20 @@ declare namespace imports.gi.HarfBuzz {
 	 */
 	function font_funcs_set_nominal_glyphs_func(ffuncs: font_funcs_t, func: font_get_nominal_glyphs_func_t, destroy: destroy_func_t | null): void;
 	/**
+	 * Sets the implementation function for #hb_font_paint_glyph_func_t.
+	 * @param ffuncs A font-function structure
+	 * @param func The callback function to assign
+	 * @param destroy The function to call when #user_data is no longer needed
+	 */
+	function font_funcs_set_paint_glyph_func(ffuncs: font_funcs_t, func: font_paint_glyph_func_t, destroy: destroy_func_t | null): void;
+	/**
 	 * Attaches a user-data key/data pair to the specified font-functions structure.
 	 * @param ffuncs The font-functions structure
 	 * @param key The user-data key to set
 	 * @param data A pointer to the user data set
 	 * @param destroy A callback to call when #data is not needed anymore
 	 * @param replace Whether to replace an existing data with the same key
-	 * @returns %true if success, %false otherwise
+	 * @returns `true` if success, `false` otherwise
 	 */
 	function font_funcs_set_user_data(ffuncs: font_funcs_t, key: user_data_key_t, data: any | null, destroy: destroy_func_t | null, replace: bool_t): bool_t;
 	/**
@@ -5613,7 +7080,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param font #hb_font_t to work upon
 	 * @param unicode The Unicode code point to query
 	 * @param variation_selector A variation-selector code point
-	 * @returns %true if data found, %false otherwise
+	 * @returns `true` if data found, `false` otherwise
 	 * 
 	 * The glyph ID retrieved
 	 */
@@ -5654,7 +7121,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param font #hb_font_t to work upon
 	 * @param glyph The glyph ID to query
 	 * @param point_index The contour-point index to query
-	 * @returns %true if data found, %false otherwise
+	 * @returns `true` if data found, `false` otherwise
 	 * 
 	 * The X value retrieved for the contour point
 	 * 
@@ -5672,7 +7139,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param glyph The glyph ID to query
 	 * @param point_index The contour-point index to query
 	 * @param direction The direction of the text segment
-	 * @returns %true if data found, %false otherwise
+	 * @returns `true` if data found, `false` otherwise
 	 * 
 	 * The X value retrieved for the contour point
 	 * 
@@ -5684,7 +7151,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * in the specified font.
 	 * @param font #hb_font_t to work upon
 	 * @param glyph The glyph ID to query
-	 * @returns %true if data found, %false otherwise
+	 * @returns `true` if data found, `false` otherwise
 	 * 
 	 * The #hb_glyph_extents_t retrieved
 	 */
@@ -5699,7 +7166,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param font #hb_font_t to work upon
 	 * @param glyph The glyph ID to query
 	 * @param direction The direction of the text segment
-	 * @returns %true if data found, %false otherwise
+	 * @returns `true` if data found, `false` otherwise
 	 * 
 	 * The #hb_glyph_extents_t retrieved
 	 */
@@ -5710,7 +7177,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * <note>Note: #len == -1 means the name string is null-terminated.</note>
 	 * @param font #hb_font_t to work upon
 	 * @param name The name string to query
-	 * @returns %true if data found, %false otherwise
+	 * @returns `true` if data found, `false` otherwise
 	 * 
 	 * The glyph ID retrieved
 	 */
@@ -5751,7 +7218,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * in the specified font, for horizontal text segments.
 	 * @param font #hb_font_t to work upon
 	 * @param glyph The glyph ID to query
-	 * @returns %true if data found, %false otherwise
+	 * @returns `true` if data found, `false` otherwise
 	 * 
 	 * The X coordinate of the origin
 	 * 
@@ -5774,9 +7241,12 @@ declare namespace imports.gi.HarfBuzz {
 	function font_get_glyph_kerning_for_direction(font: font_t, first_glyph: codepoint_t, second_glyph: codepoint_t, direction: direction_t): [ x: position_t, y: position_t ];
 	/**
 	 * Fetches the glyph-name string for a glyph ID in the specified #font.
+	 * 
+	 * According to the OpenType specification, glyph names are limited to 63
+	 * characters and can only contain (a subset of) ASCII.
 	 * @param font #hb_font_t to work upon
 	 * @param glyph The glyph ID to query
-	 * @returns %true if data found, %false otherwise
+	 * @returns `true` if data found, `false` otherwise
 	 * 
 	 * Name string retrieved for the glyph ID
 	 */
@@ -5795,6 +7265,16 @@ declare namespace imports.gi.HarfBuzz {
 	 * The Y coordinate retrieved for the origin
 	 */
 	function font_get_glyph_origin_for_direction(font: font_t, glyph: codepoint_t, direction: direction_t): [ x: position_t, y: position_t ];
+	/**
+	 * Fetches the glyph shape that corresponds to a glyph in the specified #font.
+	 * The shape is returned by way of calls to the callbacks of the #dfuncs
+	 * objects, with #draw_data passed to them.
+	 * @param font #hb_font_t to work upon
+	 * @param glyph The glyph ID
+	 * @param dfuncs #hb_draw_funcs_t to draw to
+	 * @param draw_data User data to pass to draw callbacks
+	 */
+	function font_get_glyph_shape(font: font_t, glyph: codepoint_t, dfuncs: draw_funcs_t, draw_data: any | null): void;
 	/**
 	 * Fetches the advance for a glyph ID in the specified font,
 	 * for vertical text segments.
@@ -5832,7 +7312,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * in the specified font, for vertical text segments.
 	 * @param font #hb_font_t to work upon
 	 * @param glyph The glyph ID to query
-	 * @returns %true if data found, %false otherwise
+	 * @returns `true` if data found, `false` otherwise
 	 * 
 	 * The X coordinate of the origin
 	 * 
@@ -5843,7 +7323,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * Fetches the extents for a specified font, for horizontal
 	 * text segments.
 	 * @param font #hb_font_t to work upon
-	 * @returns %true if data found, %false otherwise
+	 * @returns `true` if data found, `false` otherwise
 	 * 
 	 * The font extents retrieved
 	 */
@@ -5857,14 +7337,15 @@ declare namespace imports.gi.HarfBuzz {
 	 * support, user {@link Hb.font_get_variation_glyph} or use hb_font_get_glyph().
 	 * @param font #hb_font_t to work upon
 	 * @param unicode The Unicode code point to query
-	 * @returns %true if data found, %false otherwise
+	 * @returns `true` if data found, `false` otherwise
 	 * 
 	 * The glyph ID retrieved
 	 */
 	function font_get_nominal_glyph(font: font_t, unicode: codepoint_t): [ bool_t, codepoint_t ];
 	/**
 	 * Fetches the nominal glyph IDs for a sequence of Unicode code points. Glyph
-	 * IDs must be returned in a #hb_codepoint_t output parameter.
+	 * IDs must be returned in a #hb_codepoint_t output parameter. Stops at the
+	 * first unsupported glyph ID.
 	 * @param font #hb_font_t to work upon
 	 * @param count number of code points to query
 	 * @param first_unicode The first Unicode code point to query
@@ -5905,6 +7386,30 @@ declare namespace imports.gi.HarfBuzz {
 	 */
 	function font_get_scale(font: font_t): [ x_scale: number, y_scale: number ];
 	/**
+	 * Returns the internal serial number of the font. The serial
+	 * number is increased every time a setting on the font is
+	 * changed, using a setter function.
+	 * @param font #hb_font_t to work upon
+	 * @returns serial number
+	 */
+	function font_get_serial(font: font_t): number;
+	/**
+	 * Fetches the "synthetic boldness" parameters of a font.
+	 * @param font #hb_font_t to work upon
+	 * @returns return location for horizontal value
+	 * 
+	 * return location for vertical value
+	 * 
+	 * return location for in-place value
+	 */
+	function font_get_synthetic_bold(font: font_t): [ x_embolden: number, y_embolden: number, in_place: bool_t ];
+	/**
+	 * Fetches the "synthetic slant" of a font.
+	 * @param font #hb_font_t to work upon
+	 * @returns Synthetic slant.  By default is zero.
+	 */
+	function font_get_synthetic_slant(font: font_t): number;
+	/**
 	 * Fetches the user-data object associated with the specified key,
 	 * attached to the specified font object.
 	 * @param font #hb_font_t to work upon
@@ -5916,22 +7421,48 @@ declare namespace imports.gi.HarfBuzz {
 	 * Fetches the extents for a specified font, for vertical
 	 * text segments.
 	 * @param font #hb_font_t to work upon
-	 * @returns %true if data found, %false otherwise
+	 * @returns `true` if data found, `false` otherwise
 	 * 
 	 * The font extents retrieved
 	 */
 	function font_get_v_extents(font: font_t): [ bool_t, font_extents_t ];
 	/**
-	 * Fetches the list of normalized variation coordinates currently
+	 * Fetches the list of variation coordinates (in design-space units) currently
 	 * set on a font.
+	 * 
+	 * Note that this returned array may only contain values for some
+	 * (or none) of the axes; omitted axes effectively have their default
+	 * values.
 	 * 
 	 * Return value is valid as long as variation coordinates of the font
 	 * are not modified.
 	 * @param font #hb_font_t to work upon
-	 * @param length Number of coordinates retrieved
-	 * @returns 
+	 * @returns coordinates array
+	 * 
+	 * Number of coordinates retrieved
 	 */
-	function font_get_var_coords_normalized(font: font_t, length: number): number;
+	function font_get_var_coords_design(font: font_t): [ number, number ];
+	/**
+	 * Fetches the list of normalized variation coordinates currently
+	 * set on a font.
+	 * 
+	 * Note that this returned array may only contain values for some
+	 * (or none) of the axes; omitted axes effectively have zero values.
+	 * 
+	 * Return value is valid as long as variation coordinates of the font
+	 * are not modified.
+	 * @param font #hb_font_t to work upon
+	 * @returns coordinates array
+	 * 
+	 * Number of coordinates retrieved
+	 */
+	function font_get_var_coords_normalized(font: font_t): [ number, number ];
+	/**
+	 * Returns the currently-set named-instance index of the font.
+	 * @param font a font.
+	 * @returns Named-instance index or %HB_FONT_NO_VAR_NAMED_INSTANCE.
+	 */
+	function font_get_var_named_instance(font: font_t): number;
 	/**
 	 * Fetches the glyph ID for a Unicode code point when followed by
 	 * by the specified variation-selector code point, in the specified
@@ -5939,7 +7470,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param font #hb_font_t to work upon
 	 * @param unicode The Unicode code point to query
 	 * @param variation_selector The  variation-selector code point to query
-	 * @returns %true if data found, %false otherwise
+	 * @returns `true` if data found, `false` otherwise
 	 * 
 	 * The glyph ID retrieved
 	 */
@@ -5951,7 +7482,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * <note>Note: #len == -1 means the string is null-terminated.</note>
 	 * @param font #hb_font_t to work upon
 	 * @param s string to query
-	 * @returns %true if data found, %false otherwise
+	 * @returns `true` if data found, `false` otherwise
 	 * 
 	 * The glyph ID corresponding to the string requested
 	 */
@@ -5962,6 +7493,9 @@ declare namespace imports.gi.HarfBuzz {
 	 * 
 	 * If the glyph ID has no name in #font, a string of the form `gidDDD` is
 	 * generated, with `DDD` being the glyph ID.
+	 * 
+	 * According to the OpenType specification, glyph names are limited to 63
+	 * characters and can only contain (a subset of) ASCII.
 	 * @param font #hb_font_t to work upon
 	 * @param glyph The glyph ID to query
 	 * @returns The string containing the glyph name
@@ -5970,7 +7504,7 @@ declare namespace imports.gi.HarfBuzz {
 	/**
 	 * Tests whether a font object is immutable.
 	 * @param font #hb_font_t to work upon
-	 * @returns %true if #font is immutable, %false otherwise
+	 * @returns `true` if #font is immutable, `false` otherwise
 	 */
 	function font_is_immutable(font: font_t): bool_t;
 	/**
@@ -5978,6 +7512,24 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param font #hb_font_t to work upon
 	 */
 	function font_make_immutable(font: font_t): void;
+	/**
+	 * Paints the glyph.
+	 * 
+	 * The painting instructions are returned by way of calls to
+	 * the callbacks of the #funcs object, with #paint_data passed
+	 * to them.
+	 * 
+	 * If the font has color palettes (see {@link Hb.ot_color_has_palettes}),
+	 * then #palette_index selects the palette to use. If the font only
+	 * has one palette, this will be 0.
+	 * @param font #hb_font_t to work upon
+	 * @param glyph The glyph ID
+	 * @param pfuncs #hb_paint_funcs_t to paint with
+	 * @param paint_data User data to pass to paint callbacks
+	 * @param palette_index The index of the font's color palette to use
+	 * @param foreground The foreground color, unpremultipled
+	 */
+	function font_paint_glyph(font: font_t, glyph: codepoint_t, pfuncs: paint_funcs_t, paint_data: any | null, palette_index: number, foreground: color_t): void;
 	/**
 	 * Increases the reference count on the given font object.
 	 * @param font #hb_font_t to work upon
@@ -6013,7 +7565,11 @@ declare namespace imports.gi.HarfBuzz {
 	 */
 	function font_set_parent(font: font_t, parent: font_t): void;
 	/**
-	 * Sets the horizontal and vertical pixels-per-em (ppem) of a font.
+	 * Sets the horizontal and vertical pixels-per-em (PPEM) of a font.
+	 * 
+	 * These values are used for pixel-size-specific adjustment to
+	 * shaping and draw results, though for the most part they are
+	 * unused and can be left unset.
 	 * @param font #hb_font_t to work upon
 	 * @param x_ppem Horizontal ppem value to assign
 	 * @param y_ppem Vertical ppem value to assign
@@ -6030,11 +7586,75 @@ declare namespace imports.gi.HarfBuzz {
 	function font_set_ptem(font: font_t, ptem: number): void;
 	/**
 	 * Sets the horizontal and vertical scale of a font.
+	 * 
+	 * The font scale is a number related to, but not the same as,
+	 * font size. Typically the client establishes a scale factor
+	 * to be used between the two. For example, 64, or 256, which
+	 * would be the fractional-precision part of the font scale.
+	 * This is necessary because #hb_position_t values are integer
+	 * types and you need to leave room for fractional values
+	 * in there.
+	 * 
+	 * For example, to set the font size to 20, with 64
+	 * levels of fractional precision you would call
+	 * `hb_font_set_scale(font, 20 * 64, 20 * 64)`.
+	 * 
+	 * In the example above, even what font size 20 means is up to
+	 * you. It might be 20 pixels, or 20 points, or 20 millimeters.
+	 * HarfBuzz does not care about that.  You can set the point
+	 * size of the font using {@link Hb.font_set_ptem}, and the pixel
+	 * size using hb_font_set_ppem().
+	 * 
+	 * The choice of scale is yours but needs to be consistent between
+	 * what you set here, and what you expect out of #hb_position_t
+	 * as well has draw / paint API output values.
+	 * 
+	 * Fonts default to a scale equal to the UPEM value of their face.
+	 * A font with this setting is sometimes called an "unscaled" font.
 	 * @param font #hb_font_t to work upon
 	 * @param x_scale Horizontal scale value to assign
 	 * @param y_scale Vertical scale value to assign
 	 */
 	function font_set_scale(font: font_t, x_scale: number, y_scale: number): void;
+	/**
+	 * Sets the "synthetic boldness" of a font.
+	 * 
+	 * Positive values for #x_embolden / #y_embolden make a font
+	 * bolder, negative values thinner. Typical values are in the
+	 * 0.01 to 0.05 range. The default value is zero.
+	 * 
+	 * Synthetic boldness is applied by offsetting the contour
+	 * points of the glyph shape.
+	 * 
+	 * Synthetic boldness is applied when rendering a glyph via
+	 * {@link Hb.font_draw_glyph}.
+	 * 
+	 * If #in_place is `false`, then glyph advance-widths are also
+	 * adjusted, otherwise they are not.  The in-place mode is
+	 * useful for simulating [font grading](https://fonts.google.com/knowledge/glossary/grade).
+	 * @param font #hb_font_t to work upon
+	 * @param x_embolden the amount to embolden horizontally
+	 * @param y_embolden the amount to embolden vertically
+	 * @param in_place whether to embolden glyphs in-place
+	 */
+	function font_set_synthetic_bold(font: font_t, x_embolden: number, y_embolden: number, in_place: bool_t): void;
+	/**
+	 * Sets the "synthetic slant" of a font.  By default is zero.
+	 * Synthetic slant is the graphical skew applied to the font
+	 * at rendering time.
+	 * 
+	 * HarfBuzz needs to know this value to adjust shaping results,
+	 * metrics, and style values to match the slanted rendering.
+	 * 
+	 * <note>Note: The glyph shape fetched via the {@link Hb.font_draw_glyph}
+	 * function is slanted to reflect this value as well.</note>
+	 * 
+	 * <note>Note: The slant value is a ratio.  For example, a
+	 * 20% slant would be represented as a 0.2 value.</note>
+	 * @param font #hb_font_t to work upon
+	 * @param slant synthetic slant value.
+	 */
+	function font_set_synthetic_slant(font: font_t, slant: number): void;
 	/**
 	 * Attaches a user-data key/data pair to the specified font object.
 	 * @param font #hb_font_t to work upon
@@ -6042,12 +7662,16 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param data A pointer to the user data
 	 * @param destroy A callback to call when #data is not needed anymore
 	 * @param replace Whether to replace an existing data with the same key
-	 * @returns %true if success, %false otherwise
+	 * @returns `true` if success, `false` otherwise
 	 */
 	function font_set_user_data(font: font_t, key: user_data_key_t, data: any | null, destroy: destroy_func_t | null, replace: bool_t): bool_t;
 	/**
 	 * Applies a list of variation coordinates (in design-space units)
 	 * to a font.
+	 * 
+	 * Note that this overrides all existing variations set on #font.
+	 * Axes not included in #coords will be effectively set to their
+	 * default values.
 	 * @param font #hb_font_t to work upon
 	 * @param coords Array of variation coordinates to apply
 	 */
@@ -6056,19 +7680,38 @@ declare namespace imports.gi.HarfBuzz {
 	 * Applies a list of variation coordinates (in normalized units)
 	 * to a font.
 	 * 
+	 * Note that this overrides all existing variations set on #font.
+	 * Axes not included in #coords will be effectively set to their
+	 * default values.
+	 * 
 	 * <note>Note: Coordinates should be normalized to 2.14.</note>
 	 * @param font #hb_font_t to work upon
 	 * @param coords Array of variation coordinates to apply
 	 */
 	function font_set_var_coords_normalized(font: font_t, coords: number[]): void;
 	/**
-	 * Sets design coords of a font from a named instance index.
+	 * Sets design coords of a font from a named-instance index.
 	 * @param font a font.
 	 * @param instance_index named instance index.
 	 */
 	function font_set_var_named_instance(font: font_t, instance_index: number): void;
 	/**
+	 * Change the value of one variation axis on the font.
+	 * 
+	 * Note: This function is expensive to be called repeatedly.
+	 *   If you want to set multiple variation axes at the same time,
+	 *   use {@link Hb.font_set_variations} instead.
+	 * @param font #hb_font_t to work upon
+	 * @param tag The #hb_tag_t tag of the variation-axis name
+	 * @param value The value of the variation axis
+	 */
+	function font_set_variation(font: font_t, tag: tag_t, value: number): void;
+	/**
 	 * Applies a list of font-variation settings to a font.
+	 * 
+	 * Note that this overrides all existing variations set on #font.
+	 * Axes not included in #variations will be effectively set to their
+	 * default values.
 	 * @param font #hb_font_t to work upon
 	 * @param variations Array of variation settings to apply
 	 */
@@ -6087,9 +7730,13 @@ declare namespace imports.gi.HarfBuzz {
 	/**
 	 * Creates an #hb_face_t face object from the specified FT_Face.
 	 * 
+	 * Note that this is using the FT_Face object just to get at the underlying
+	 * font data, and fonts created from the returned #hb_face_t will use the native
+	 * HarfBuzz font implementation, unless you call {@link Hb.ft_font_set_funcs} on them.
+	 * 
 	 * This variant of the function does not provide any life-cycle management.
 	 * 
-	 * Most client programs should use {@link Hb.ft_face_create_referenced}
+	 * Most client programs should use hb_ft_face_create_referenced()
 	 * (or, perhaps, hb_ft_face_create_cached()) instead.
 	 * 
 	 * If you know you have valid reasons not to use hb_ft_face_create_referenced(),
@@ -6099,9 +7746,13 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param destroy A callback to call when the face object is not needed anymore
 	 * @returns the new #hb_face_t face object
 	 */
-	function ft_face_create(ft_face: any, destroy: destroy_func_t | null): face_t;
+	function ft_face_create(ft_face: freetype2.Face, destroy: destroy_func_t | null): face_t;
 	/**
 	 * Creates an #hb_face_t face object from the specified FT_Face.
+	 * 
+	 * Note that this is using the FT_Face object just to get at the underlying
+	 * font data, and fonts created from the returned #hb_face_t will use the native
+	 * HarfBuzz font implementation, unless you call {@link Hb.ft_font_set_funcs} on them.
 	 * 
 	 * This variant of the function caches the newly created #hb_face_t
 	 * face object, using the #generic pointer of #ft_face. Subsequent function
@@ -6114,12 +7765,16 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param ft_face FT_Face to work upon
 	 * @returns the new #hb_face_t face object
 	 */
-	function ft_face_create_cached(ft_face: any): face_t;
+	function ft_face_create_cached(ft_face: freetype2.Face): face_t;
 	/**
 	 * Creates an #hb_face_t face object from the specified FT_Face.
 	 * 
+	 * Note that this is using the FT_Face object just to get at the underlying
+	 * font data, and fonts created from the returned #hb_face_t will use the native
+	 * HarfBuzz font implementation, unless you call {@link Hb.ft_font_set_funcs} on them.
+	 * 
 	 * This is the preferred variant of the hb_ft_face_create*
-	 * function family, because it calls {@link FT.Reference_Face} on #ft_face,
+	 * function family, because it calls FT_Reference_Face() on #ft_face,
 	 * ensuring that #ft_face remains alive as long as the resulting
 	 * #hb_face_t face object remains alive. Also calls FT_Done_Face()
 	 * when the #hb_face_t face object is destroyed.
@@ -6128,7 +7783,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param ft_face FT_Face to work upon
 	 * @returns the new #hb_face_t face object
 	 */
-	function ft_face_create_referenced(ft_face: any): face_t;
+	function ft_face_create_referenced(ft_face: freetype2.Face): face_t;
 	/**
 	 * Refreshes the state of #font when the underlying FT_Face has changed.
 	 * This function should be called after changing the size or
@@ -6161,7 +7816,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param destroy A callback to call when the font object is not needed anymore
 	 * @returns the new #hb_font_t font object
 	 */
-	function ft_font_create(ft_face: any, destroy: destroy_func_t | null): font_t;
+	function ft_font_create(ft_face: freetype2.Face, destroy: destroy_func_t | null): font_t;
 	/**
 	 * Creates an #hb_font_t font object from the specified FT_Face.
 	 * 
@@ -6178,30 +7833,41 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param ft_face FT_Face to work upon
 	 * @returns the new #hb_font_t font object
 	 */
-	function ft_font_create_referenced(ft_face: any): font_t;
+	function ft_font_create_referenced(ft_face: freetype2.Face): font_t;
 	/**
 	 * Fetches the FT_Face associated with the specified #hb_font_t
 	 * font object.
+	 * 
+	 * This function works with #hb_font_t objects created by
+	 * {@link Hb.ft_font_create} or hb_ft_font_create_referenced().
 	 * @param font #hb_font_t to work upon
-	 * @returns the FT_Face found or %NULL
+	 * @returns the FT_Face found or `NULL`
 	 */
-	function ft_font_get_face(font: font_t): any | null;
+	function ft_font_get_face(font: font_t): freetype2.Face | null;
 	/**
 	 * Fetches the FT_Load_Glyph load flags of the specified #hb_font_t.
 	 * 
 	 * For more information, see
-	 * https://www.freetype.org/freetype2/docs/reference/ft2-base_interface.html#ft_load_xxx
+	 * <https://freetype.org/freetype2/docs/reference/ft2-glyph_retrieval.html#ft_load_xxx>
+	 * 
+	 * This function works with #hb_font_t objects created by
+	 * {@link Hb.ft_font_create} or hb_ft_font_create_referenced().
 	 * @param font #hb_font_t to work upon
-	 * @returns FT_Load_Glyph flags found
+	 * @returns FT_Load_Glyph flags found, or 0
 	 */
 	function ft_font_get_load_flags(font: font_t): number;
 	/**
-	 * Gets the FT_Face associated with #font, This face will be kept around until
-	 * you call {@link Hb.ft_font_unlock_face}.
+	 * Gets the FT_Face associated with #font.
+	 * 
+	 * This face will be kept around and access to the FT_Face object
+	 * from other HarfBuzz API wil be blocked until you call {@link Hb.ft_font_unlock_face}.
+	 * 
+	 * This function works with #hb_font_t objects created by
+	 * hb_ft_font_create() or hb_ft_font_create_referenced().
 	 * @param font #hb_font_t to work upon
-	 * @returns the FT_Face associated with #font or %NULL
+	 * @returns the FT_Face associated with #font or `NULL`
 	 */
-	function ft_font_lock_face(font: font_t): any | null;
+	function ft_font_lock_face(font: font_t): freetype2.Face | null;
 	/**
 	 * Configures the font-functions structure of the specified
 	 * #hb_font_t font object to use FreeType font functions.
@@ -6212,9 +7878,13 @@ declare namespace imports.gi.HarfBuzz {
 	 * created with {@link Hb.face_create}, and therefore was not
 	 * initially configured to use FreeType font functions.
 	 * 
-	 * An #hb_face_t face object created with hb_ft_face_create()
+	 * An #hb_font_t object created with hb_ft_font_create()
 	 * is preconfigured for FreeType font functions and does not
 	 * require this function to be used.
+	 * 
+	 * Note that if you modify the underlying #hb_font_t after
+	 * calling this function, you need to call hb_ft_hb_font_changed()
+	 * to update the underlying FT_Face.
 	 * 
 	 * <note>Note: Internally, this function creates an FT_Face.
 	 * </note>
@@ -6225,7 +7895,10 @@ declare namespace imports.gi.HarfBuzz {
 	 * Sets the FT_Load_Glyph load flags for the specified #hb_font_t.
 	 * 
 	 * For more information, see
-	 * https://www.freetype.org/freetype2/docs/reference/ft2-base_interface.html#ft_load_xxx
+	 * <https://freetype.org/freetype2/docs/reference/ft2-glyph_retrieval.html#ft_load_xxx>
+	 * 
+	 * This function works with #hb_font_t objects created by
+	 * {@link Hb.ft_font_create} or hb_ft_font_create_referenced().
 	 * @param font #hb_font_t to work upon
 	 * @param load_flags The FreeType load flags to set
 	 */
@@ -6235,6 +7908,16 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param font #hb_font_t to work upon
 	 */
 	function ft_font_unlock_face(font: font_t): void;
+	/**
+	 * Refreshes the state of the underlying FT_Face of #font when the hb_font_t
+	 * #font has changed.
+	 * This function should be called after changing the size or
+	 * variation-axis settings on the #font.
+	 * This call is fast if nothing has changed on #font.
+	 * @param font #hb_font_t to work upon
+	 * @returns true if changed, false otherwise
+	 */
+	function ft_hb_font_changed(font: font_t): bool_t;
 	/**
 	 * Creates an #hb_blob_t blob from the specified
 	 * GBytes data structure.
@@ -6269,19 +7952,6 @@ declare namespace imports.gi.HarfBuzz {
 	 */
 	function glyph_info_get_glyph_flags(info: glyph_info_t): glyph_flags_t;
 	/**
-	 * Fetches the Graphite2 gr_face corresponding to the specified
-	 * #hb_face_t face object.
-	 * @param face #hb_face_t to query
-	 * @returns the gr_face found
-	 */
-	function graphite2_face_get_gr_face(face: face_t): any;
-	/**
-	 * Always returns %NULL. Use {@link Hb.graphite2_face_get_gr_face} instead.
-	 * @param font An #hb_font_t
-	 * @returns Graphite2 font associated with #font.
-	 */
-	function graphite2_font_get_gr_font(font: font_t): any | null;
-	/**
 	 * Converts #str representing a BCP 47 language tag to the corresponding
 	 * #hb_language_t.
 	 * @param str a string representing
@@ -6304,17 +7974,26 @@ declare namespace imports.gi.HarfBuzz {
 	 */
 	function language_get_default(): language_t;
 	/**
+	 * Check whether a second language tag is the same or a more
+	 * specific version of the provided language tag.  For example,
+	 * "fa_IR.utf8" is a more specific tag for "fa" or for "fa_IR".
+	 * @param language The #hb_language_t to work on
+	 * @param specific Another #hb_language_t
+	 * @returns `true` if languages match, `false` otherwise.
+	 */
+	function language_matches(language: language_t, specific: language_t): bool_t;
+	/**
 	 * Converts an #hb_language_t to a string.
 	 * @param language The #hb_language_t to convert
 	 * @returns 
-	 * A %NULL-terminated string representing the #language. Must not be freed by
+	 * A `NULL`-terminated string representing the #language. Must not be freed by
 	 * the caller.
 	 */
 	function language_to_string(language: language_t): string;
 	/**
 	 * Tests whether memory allocation for a set was successful.
 	 * @param map A map
-	 * @returns %true if allocation succeeded, %false otherwise
+	 * @returns `true` if allocation succeeded, `false` otherwise
 	 */
 	function map_allocation_successful(map: map_t): bool_t;
 	/**
@@ -6322,6 +8001,12 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param map A map
 	 */
 	function map_clear(map: map_t): void;
+	/**
+	 * Allocate a copy of #map.
+	 * @param map A map
+	 * @returns Newly-allocated map.
+	 */
+	function map_copy(map: map_t): map_t;
 	/**
 	 * Creates a new, initially empty map.
 	 * @returns The new #hb_map_t
@@ -6370,15 +8055,51 @@ declare namespace imports.gi.HarfBuzz {
 	 * Tests whether #key is an element of #map.
 	 * @param map A map
 	 * @param key The key to query
-	 * @returns %true if #key is found in #map, %false otherwise
+	 * @returns `true` if #key is found in #map, `false` otherwise
 	 */
 	function map_has(map: map_t, key: codepoint_t): bool_t;
 	/**
+	 * Creates a hash representing #map.
+	 * @param map A map
+	 * @returns A hash of #map.
+	 */
+	function map_hash(map: map_t): number;
+	/**
 	 * Tests whether #map is empty (contains no elements).
 	 * @param map A map
-	 * @returns %true if #map is empty
+	 * @returns `true` if #map is empty
 	 */
 	function map_is_empty(map: map_t): bool_t;
+	/**
+	 * Tests whether #map and #other are equal (contain the same
+	 * elements).
+	 * @param map A map
+	 * @param other Another map
+	 * @returns `true` if the two maps are equal, `false` otherwise.
+	 */
+	function map_is_equal(map: map_t, other: map_t): bool_t;
+	/**
+	 * Add the keys of #map to #keys.
+	 * @param map A map
+	 * @param keys A set
+	 */
+	function map_keys(map: map_t, keys: set_t): void;
+	/**
+	 * Fetches the next key/value pair in #map.
+	 * 
+	 * Set #idx to -1 to get started.
+	 * 
+	 * If the map is modified during iteration, the behavior is undefined.
+	 * 
+	 * The order in which the key/values are returned is undefined.
+	 * @param map A map
+	 * @returns `true` if there was a next value, `false` otherwise
+	 * 
+	 * Key retrieved
+	 * 
+	 * Value retrieved
+	 */
+	function map_next(map: map_t): [ bool_t, codepoint_t, codepoint_t ];
 	/**
 	 * Increases the reference count on a map.
 	 * @param map A map
@@ -6399,9 +8120,21 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param data A pointer to the user data to set
 	 * @param destroy A callback to call when #data is not needed anymore
 	 * @param replace Whether to replace an existing data with the same key
-	 * @returns %true if success, %false otherwise
+	 * @returns `true` if success, `false` otherwise
 	 */
 	function map_set_user_data(map: map_t, key: user_data_key_t, data: any | null, destroy: destroy_func_t | null, replace: bool_t): bool_t;
+	/**
+	 * Add the contents of #other to #map.
+	 * @param map A map
+	 * @param other Another map
+	 */
+	function map_update(map: map_t, other: map_t): void;
+	/**
+	 * Add the values of #map to #values.
+	 * @param map A map
+	 * @param values A set
+	 */
+	function map_values(map: map_t, values: set_t): void;
 	/**
 	 * Fetches a list of all color layers for the specified glyph index in the specified
 	 * face. The list returned will begin at the offset provided.
@@ -6414,9 +8147,19 @@ declare namespace imports.gi.HarfBuzz {
 	 */
 	function ot_color_glyph_get_layers(face: face_t, glyph: codepoint_t, start_offset: number): [ number, ot_color_layer_t[] | null ];
 	/**
+	 * Tests where a face includes COLRv1 paint
+	 * data for #glyph.
+	 * @param face #hb_face_t to work upon
+	 * @param glyph The glyph index to query
+	 * @returns `true` if data found, `false` otherwise
+	 */
+	function ot_color_glyph_has_paint(face: face_t, glyph: codepoint_t): bool_t;
+	/**
 	 * Fetches the PNG image for a glyph. This function takes a font object, not a face object,
-	 * as input. To get an optimally sized PNG blob, the UPEM value must be set on the #font
-	 * object. If UPEM is unset, the blob returned will be the largest PNG available.
+	 * as input. To get an optimally sized PNG blob, the PPEM values must be set on the #font
+	 * object. If PPEM is unset, the blob returned will be the largest PNG available.
+	 * 
+	 * If the glyph has no PNG image, the singleton empty blob is returned.
 	 * @param font #hb_font_t to work upon
 	 * @param glyph a glyph index
 	 * @returns An #hb_blob_t containing the PNG image for the glyph, if available
@@ -6424,38 +8167,48 @@ declare namespace imports.gi.HarfBuzz {
 	function ot_color_glyph_reference_png(font: font_t, glyph: codepoint_t): blob_t;
 	/**
 	 * Fetches the SVG document for a glyph. The blob may be either plain text or gzip-encoded.
+	 * 
+	 * If the glyph has no SVG document, the singleton empty blob is returned.
 	 * @param face #hb_face_t to work upon
 	 * @param glyph a svg glyph index
 	 * @returns An #hb_blob_t containing the SVG document of the glyph, if available
 	 */
 	function ot_color_glyph_reference_svg(face: face_t, glyph: codepoint_t): blob_t;
 	/**
-	 * Tests whether a face includes any `COLR` color layers.
+	 * Tests whether a face includes a `COLR` table
+	 * with data according to COLRv0.
 	 * @param face #hb_face_t to work upon
-	 * @returns %true if data found, %false otherwise
+	 * @returns `true` if data found, `false` otherwise
 	 */
 	function ot_color_has_layers(face: face_t): bool_t;
 	/**
+	 * Tests where a face includes a `COLR` table
+	 * with data according to COLRv1.
+	 * @param face #hb_face_t to work upon
+	 * @returns `true` if data found, `false` otherwise
+	 */
+	function ot_color_has_paint(face: face_t): bool_t;
+	/**
 	 * Tests whether a face includes a `CPAL` color-palette table.
 	 * @param face #hb_face_t to work upon
-	 * @returns %true if data found, %false otherwise
+	 * @returns `true` if data found, `false` otherwise
 	 */
 	function ot_color_has_palettes(face: face_t): bool_t;
 	/**
 	 * Tests whether a face has PNG glyph images (either in `CBDT` or `sbix` tables).
 	 * @param face #hb_face_t to work upon
-	 * @returns %true if data found, %false otherwise
+	 * @returns `true` if data found, `false` otherwise
 	 */
 	function ot_color_has_png(face: face_t): bool_t;
 	/**
 	 * Tests whether a face includes any `SVG` glyph images.
 	 * @param face #hb_face_t to work upon.
-	 * @returns %true if data found, %false otherwise.
+	 * @returns `true` if data found, `false` otherwise.
 	 */
 	function ot_color_has_svg(face: face_t): bool_t;
 	/**
 	 * Fetches the `name` table Name ID that provides display names for
-	 * the specificed color in a face's `CPAL` color palette.
+	 * the specified color in a face's `CPAL` color palette.
 	 * 
 	 * Display names can be generic (e.g., "Background") or specific
 	 * (e.g., "Eye color").
@@ -6472,6 +8225,10 @@ declare namespace imports.gi.HarfBuzz {
 	 * of total colors without storing any actual colors; this can be used
 	 * for allocating a buffer of suitable size before calling
 	 * {@link Hb.ot_color_palette_get_colors} a second time.
+	 * 
+	 * The RGBA values in the palette are unpremultiplied. See the
+	 * OpenType spec [CPAL](https://learn.microsoft.com/en-us/typography/opentype/spec/cpal)
+	 * section for details.
 	 * @param face #hb_face_t to work upon
 	 * @param palette_index the index of the color palette to query
 	 * @param start_offset offset of the first color to retrieve
@@ -6518,12 +8275,25 @@ declare namespace imports.gi.HarfBuzz {
 	 * features is provided, all features will be queried.
 	 * @param face #hb_face_t to work upon
 	 * @param table_tag #HB_OT_TAG_GSUB or #HB_OT_TAG_GPOS
-	 * @param scripts The array of scripts to collect features for
-	 * @param languages The array of languages to collect features for
-	 * @param features The array of features to collect
-	 * @returns The array of feature indexes found for the query
+	 * @param scripts The array of scripts to collect features for,
+	 *   terminated by %HB_TAG_NONE
+	 * @param languages The array of languages to collect features for,
+	 *   terminated by %HB_TAG_NONE
+	 * @param features The array of features to collect,
+	 *   terminated by %HB_TAG_NONE
+	 * @returns The set of feature indexes found for the query
 	 */
-	function ot_layout_collect_features(face: face_t, table_tag: tag_t, scripts: tag_t, languages: tag_t, features: tag_t): set_t;
+	function ot_layout_collect_features(face: face_t, table_tag: tag_t, scripts: tag_t[] | null, languages: tag_t[] | null, features: tag_t[] | null): set_t;
+	/**
+	 * Fetches the mapping from feature tags to feature indexes for
+	 * the specified script and language.
+	 * @param face #hb_face_t to work upon
+	 * @param table_tag #HB_OT_TAG_GSUB or #HB_OT_TAG_GPOS
+	 * @param script_index The index of the requested script tag
+	 * @param language_index The index of the requested language tag
+	 * @returns The map of feature tag to feature index.
+	 */
+	function ot_layout_collect_features_map(face: face_t, table_tag: tag_t, script_index: number, language_index: number): map_t;
 	/**
 	 * Fetches a list of all feature-lookup indexes in the specified face's GSUB
 	 * table or GPOS table, underneath the specified scripts, languages, and
@@ -6532,12 +8302,15 @@ declare namespace imports.gi.HarfBuzz {
 	 * list of features is provided, all features will be queried.
 	 * @param face #hb_face_t to work upon
 	 * @param table_tag #HB_OT_TAG_GSUB or #HB_OT_TAG_GPOS
-	 * @param scripts The array of scripts to collect lookups for
-	 * @param languages The array of languages to collect lookups for
-	 * @param features The array of features to collect lookups for
+	 * @param scripts The array of scripts to collect lookups for,
+	 *   terminated by %HB_TAG_NONE
+	 * @param languages The array of languages to collect lookups for,
+	 *   terminated by %HB_TAG_NONE
+	 * @param features The array of features to collect lookups for,
+	 *   terminated by %HB_TAG_NONE
 	 * @returns The array of lookup indexes found for the query
 	 */
-	function ot_layout_collect_lookups(face: face_t, table_tag: tag_t, scripts: tag_t, languages: tag_t, features: tag_t): set_t;
+	function ot_layout_collect_lookups(face: face_t, table_tag: tag_t, scripts: tag_t[] | null, languages: tag_t[] | null, features: tag_t[] | null): set_t;
 	/**
 	 * Fetches a list of the characters defined as having a variant under the specified
 	 * "Character Variant" ("cvXX") feature tag.
@@ -6571,7 +8344,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param face #hb_face_t to work upon
 	 * @param table_tag table tag to query, "GSUB" or "GPOS".
 	 * @param feature_index index of feature to query.
-	 * @returns %true if data found, %false otherwise
+	 * @returns `true` if data found, `false` otherwise
 	 * 
 	 * The ‘name’ table name ID that specifies a string
 	 *            for a user-interface label for this feature. (May be NULL.)
@@ -6624,11 +8397,90 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param direction text direction.
 	 * @param script_tag script tag.
 	 * @param language_tag language tag, currently unused.
-	 * @returns %true if found baseline value in the font.
+	 * @returns `true` if found baseline value in the font.
 	 * 
 	 * baseline value if found.
 	 */
-	function ot_layout_get_baseline(font: font_t, baseline_tag: ot_layout_baseline_tag_t, direction: direction_t, script_tag: tag_t, language_tag: tag_t): [ bool_t, position_t ];
+	function ot_layout_get_baseline(font: font_t, baseline_tag: ot_layout_baseline_tag_t, direction: direction_t, script_tag: tag_t, language_tag: tag_t): [ bool_t, position_t | null ];
+	/**
+	 * Fetches a baseline value from the face.
+	 * 
+	 * This function is like {@link Hb.ot_layout_get_baseline} but takes
+	 * #hb_script_t and #hb_language_t instead of OpenType #hb_tag_t.
+	 * @param font a font
+	 * @param baseline_tag a baseline tag
+	 * @param direction text direction.
+	 * @param script script.
+	 * @param language language, currently unused.
+	 * @returns `true` if found baseline value in the font.
+	 * 
+	 * baseline value if found.
+	 */
+	function ot_layout_get_baseline2(font: font_t, baseline_tag: ot_layout_baseline_tag_t, direction: direction_t, script: script_t, language: language_t | null): [ bool_t, position_t | null ];
+	/**
+	 * Fetches a baseline value from the face, and synthesizes
+	 * it if the font does not have it.
+	 * @param font a font
+	 * @param baseline_tag a baseline tag
+	 * @param direction text direction.
+	 * @param script_tag script tag.
+	 * @param language_tag language tag, currently unused.
+	 * @returns baseline value if found.
+	 */
+	function ot_layout_get_baseline_with_fallback(font: font_t, baseline_tag: ot_layout_baseline_tag_t, direction: direction_t, script_tag: tag_t, language_tag: tag_t): position_t;
+	/**
+	 * Fetches a baseline value from the face, and synthesizes
+	 * it if the font does not have it.
+	 * 
+	 * This function is like {@link Hb.ot_layout_get_baseline_with_fallback} but takes
+	 * #hb_script_t and #hb_language_t instead of OpenType #hb_tag_t.
+	 * @param font a font
+	 * @param baseline_tag a baseline tag
+	 * @param direction text direction.
+	 * @param script script.
+	 * @param language language, currently unused.
+	 * @returns baseline value if found.
+	 */
+	function ot_layout_get_baseline_with_fallback2(font: font_t, baseline_tag: ot_layout_baseline_tag_t, direction: direction_t, script: script_t, language: language_t | null): position_t;
+	/**
+	 * Fetches script/language-specific font extents.  These values are
+	 * looked up in the `BASE` table's `MinMax` records.
+	 * 
+	 * If no such extents are found, the default extents for the font are
+	 * fetched. As such, the return value of this function can for the
+	 * most part be ignored.  Note that the per-script/language extents
+	 * do not have a line-gap value, and the line-gap is set to zero in
+	 * that case.
+	 * @param font a font
+	 * @param direction text direction.
+	 * @param script_tag script tag.
+	 * @param language_tag language tag.
+	 * @returns `true` if found script/language-specific font extents.
+	 * 
+	 * font extents if found.
+	 */
+	function ot_layout_get_font_extents(font: font_t, direction: direction_t, script_tag: tag_t, language_tag: tag_t): [ bool_t, font_extents_t | null ];
+	/**
+	 * Fetches script/language-specific font extents.  These values are
+	 * looked up in the `BASE` table's `MinMax` records.
+	 * 
+	 * If no such extents are found, the default extents for the font are
+	 * fetched. As such, the return value of this function can for the
+	 * most part be ignored.  Note that the per-script/language extents
+	 * do not have a line-gap value, and the line-gap is set to zero in
+	 * that case.
+	 * 
+	 * This function is like {@link Hb.ot_layout_get_font_extents} but takes
+	 * #hb_script_t and #hb_language_t instead of OpenType #hb_tag_t.
+	 * @param font a font
+	 * @param direction text direction.
+	 * @param script script.
+	 * @param language language.
+	 * @returns `true` if found script/language-specific font extents.
+	 * 
+	 * font extents if found.
+	 */
+	function ot_layout_get_font_extents2(font: font_t, direction: direction_t, script: script_t, language: language_t | null): [ bool_t, font_extents_t | null ];
 	/**
 	 * Fetches the GDEF class of the requested glyph in the specified face.
 	 * @param face The #hb_face_t to work on
@@ -6647,8 +8499,21 @@ declare namespace imports.gi.HarfBuzz {
 	 */
 	function ot_layout_get_glyphs_in_class(face: face_t, klass: ot_layout_glyph_class_t): set_t;
 	/**
+	 * Fetches the dominant horizontal baseline tag used by #script.
+	 * @param script a script tag.
+	 * @returns dominant baseline tag for the #script.
+	 */
+	function ot_layout_get_horizontal_baseline_tag_for_script(script: script_t): ot_layout_baseline_tag_t;
+	/**
 	 * Fetches a list of the caret positions defined for a ligature glyph in the GDEF
 	 * table of the font. The list returned will begin at the offset provided.
+	 * 
+	 * Note that a ligature that is formed from n characters will have n-1
+	 * caret positions. The first character is not represented in the array,
+	 * since its caret position is the glyph position.
+	 * 
+	 * The positions returned by this function are 'unshaped', and will have to
+	 * be fixed up for kerning that may be applied to the ligature glyph.
 	 * @param font The #hb_font_t to work on
 	 * @param direction The #hb_direction_t text direction to use
 	 * @param glyph The #hb_codepoint_t code point to query
@@ -6668,7 +8533,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * For more information on this distinction, see the [`size` feature documentation](
 	 * https://docs.microsoft.com/en-us/typography/opentype/spec/features_pt#tag-size).
 	 * @param face #hb_face_t to work upon
-	 * @returns %true if data found, %false otherwise
+	 * @returns `true` if data found, `false` otherwise
 	 * 
 	 * The design size of the face
 	 * 
@@ -6684,19 +8549,19 @@ declare namespace imports.gi.HarfBuzz {
 	/**
 	 * Tests whether a face has any glyph classes defined in its GDEF table.
 	 * @param face #hb_face_t to work upon
-	 * @returns %true if data found, %false otherwise
+	 * @returns `true` if data found, `false` otherwise
 	 */
 	function ot_layout_has_glyph_classes(face: face_t): bool_t;
 	/**
 	 * Tests whether the specified face includes any GPOS positioning.
 	 * @param face #hb_face_t to work upon
-	 * @returns %true if the face has GPOS data, %false otherwise
+	 * @returns `true` if the face has GPOS data, `false` otherwise
 	 */
 	function ot_layout_has_positioning(face: face_t): bool_t;
 	/**
 	 * Tests whether the specified face includes any GSUB substitutions.
 	 * @param face #hb_face_t to work upon
-	 * @returns %true if data found, %false otherwise
+	 * @returns `true` if data found, `false` otherwise
 	 */
 	function ot_layout_has_substitution(face: face_t): bool_t;
 	/**
@@ -6707,7 +8572,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param script_index The index of the requested script tag
 	 * @param language_index The index of the requested language tag
 	 * @param feature_tag #hb_tag_t of the feature tag requested
-	 * @returns %true if the feature is found, %false otherwise
+	 * @returns `true` if the feature is found, `false` otherwise
 	 * 
 	 * The index of the requested feature
 	 */
@@ -6747,7 +8612,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param table_tag #HB_OT_TAG_GSUB or #HB_OT_TAG_GPOS
 	 * @param script_index The index of the requested script tag
 	 * @param language_index The index of the requested language tag
-	 * @returns %true if the feature is found, %false otherwise
+	 * @returns `true` if the feature is found, `false` otherwise
 	 * 
 	 * The index of the requested feature
 	 * 
@@ -6761,7 +8626,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param table_tag #HB_OT_TAG_GSUB or #HB_OT_TAG_GPOS
 	 * @param script_index The index of the requested script tag
 	 * @param language_index The index of the requested language tag
-	 * @returns %true if the feature is found, %false otherwise
+	 * @returns `true` if the feature is found, `false` otherwise
 	 * 
 	 * The index of the requested feature
 	 */
@@ -6794,6 +8659,16 @@ declare namespace imports.gi.HarfBuzz {
 	 */
 	function ot_layout_lookup_get_glyph_alternates(face: face_t, lookup_index: number, glyph: codepoint_t, start_offset: number): [ number, codepoint_t[] ];
 	/**
+	 * Fetches the optical bound of a glyph positioned at the margin of text.
+	 * The direction identifies which edge of the glyph to query.
+	 * @param font a font.
+	 * @param lookup_index index of the feature lookup to query.
+	 * @param direction edge of the glyph to query.
+	 * @param glyph a glyph id.
+	 * @returns Adjustment value. Negative values mean the glyph will stick out of the margin.
+	 */
+	function ot_layout_lookup_get_optical_bound(font: font_t, lookup_index: number, direction: direction_t, glyph: codepoint_t): position_t;
+	/**
 	 * Compute the transitive closure of glyphs needed for a
 	 * specified lookup.
 	 * @param face #hb_face_t to work upon
@@ -6810,7 +8685,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param glyphs_length The length of the glyph sequence
 	 * @param zero_context #hb_bool_t indicating whether pre-/post-context are disallowed
 	 * in substitutions
-	 * @returns %true if a substitution would be triggered, %false otherwise
+	 * @returns `true` if a substitution would be triggered, `false` otherwise
 	 */
 	function ot_layout_lookup_would_substitute(face: face_t, lookup_index: number, glyphs: codepoint_t, glyphs_length: number, zero_context: bool_t): bool_t;
 	/**
@@ -6829,7 +8704,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param script_index The index of the requested script tag
 	 * @param language_tag The #hb_tag_t of the requested language
 	 * @param language_index The index of the requested language
-	 * @returns %true if the language tag is found, %false otherwise
+	 * @returns `true` if the language tag is found, `false` otherwise
 	 */
 	function ot_layout_script_find_language(face: face_t, table_tag: tag_t, script_index: number, language_tag: tag_t, language_index: number): bool_t;
 	/**
@@ -6845,18 +8720,42 @@ declare namespace imports.gi.HarfBuzz {
 	 */
 	function ot_layout_script_get_language_tags(face: face_t, table_tag: tag_t, script_index: number, start_offset: number): [ number, tag_t[] ];
 	/**
-	 * Fetches the index of a given language tag in the specified face's GSUB table
-	 * or GPOS table, underneath the specified script index.
+	 * Fetches the index of the first language tag fom #language_tags that is present
+	 * in the specified face's GSUB or GPOS table, underneath the specified script
+	 * index.
+	 * 
+	 * If none of the given language tags is found, `false` is returned and
+	 * #language_index is set to the default language index.
 	 * @param face #hb_face_t to work upon
 	 * @param table_tag #HB_OT_TAG_GSUB or #HB_OT_TAG_GPOS
 	 * @param script_index The index of the requested script tag
 	 * @param language_count The number of languages in the specified script
 	 * @param language_tags The array of language tags
-	 * @returns %true if the language tag is found, %false otherwise
+	 * @returns `true` if one of the given language tags is found, `false` otherwise
 	 * 
 	 * The index of the requested language
 	 */
 	function ot_layout_script_select_language(face: face_t, table_tag: tag_t, script_index: number, language_count: number, language_tags: tag_t): [ bool_t, number ];
+	/**
+	 * Fetches the index of the first language tag fom #language_tags that is present
+	 * in the specified face's GSUB or GPOS table, underneath the specified script
+	 * index.
+	 * 
+	 * If none of the given language tags is found, `false` is returned and
+	 * #language_index is set to #HB_OT_LAYOUT_DEFAULT_LANGUAGE_INDEX and
+	 * #chosen_language is set to #HB_TAG_NONE.
+	 * @param face #hb_face_t to work upon
+	 * @param table_tag #HB_OT_TAG_GSUB or #HB_OT_TAG_GPOS
+	 * @param script_index The index of the requested script tag
+	 * @param language_count The number of languages in the specified script
+	 * @param language_tags The array of language tags
+	 * @returns `true` if one of the given language tags is found, `false` otherwise
+	 * 
+	 * The index of the chosen language
+	 * 
+	 * #hb_tag_t of the chosen language
+	 */
+	function ot_layout_script_select_language2(face: face_t, table_tag: tag_t, script_index: number, language_count: number, language_tags: tag_t): [ bool_t, number, tag_t ];
 	/**
 	 * Deprecated since 2.0.0
 	 * @param face #hb_face_t to work upon
@@ -6864,9 +8763,9 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param script_tags Array of #hb_tag_t script tags
 	 * @returns 
 	 * 
-	 * The index of the requested script tag
+	 * The index of the chosen script
 	 * 
-	 * #hb_tag_t of the script tag requested
+	 * #hb_tag_t of the chosen script
 	 */
 	function ot_layout_table_choose_script(face: face_t, table_tag: tag_t, script_tags: tag_t): [ bool_t, number, tag_t ];
 	/**
@@ -6876,7 +8775,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param table_tag #HB_OT_TAG_GSUB or #HB_OT_TAG_GPOS
 	 * @param coords The variation coordinates to query
 	 * @param num_coords The number of variation coordinates
-	 * @returns %true if feature variations were found, %false otherwise.
+	 * @returns `true` if feature variations were found, `false` otherwise.
 	 * 
 	 * The array of feature variations found for the query
 	 */
@@ -6887,13 +8786,15 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param face #hb_face_t to work upon
 	 * @param table_tag #HB_OT_TAG_GSUB or #HB_OT_TAG_GPOS
 	 * @param script_tag #hb_tag_t of the script tag requested
-	 * @returns %true if the script is found, %false otherwise
+	 * @returns `true` if the script is found, `false` otherwise
 	 * 
 	 * The index of the requested script tag
 	 */
 	function ot_layout_table_find_script(face: face_t, table_tag: tag_t, script_tag: tag_t): [ bool_t, number ];
 	/**
 	 * Fetches a list of all feature tags in the given face's GSUB or GPOS table.
+	 * Note that there might be duplicate feature tags, belonging to different
+	 * script/language-system pairs of the table.
 	 * @param face #hb_face_t to work upon
 	 * @param table_tag #HB_OT_TAG_GSUB or #HB_OT_TAG_GPOS
 	 * @param start_offset offset of the first feature tag to retrieve
@@ -6926,13 +8827,13 @@ declare namespace imports.gi.HarfBuzz {
 	 * 
 	 * If the table does not have any of the requested scripts, then `DFLT`,
 	 * `dflt`, and `latn` tags are tried in that order. If the table still does not
-	 * have any of these scripts, #script_index and #chosen_script are set to
-	 * #HB_OT_LAYOUT_NO_SCRIPT_INDEX.
+	 * have any of these scripts, #script_index is set to
+	 * #HB_OT_LAYOUT_NO_SCRIPT_INDEX and #chosen_script is set to #HB_TAG_NONE.
 	 * @param face #hb_face_t to work upon
 	 * @param table_tag #HB_OT_TAG_GSUB or #HB_OT_TAG_GPOS
 	 * @param script_count Number of script tags in the array
 	 * @param script_tags Array of #hb_tag_t script tags
-	 * @returns %true if one of the requested scripts is selected, %false if a fallback
+	 * @returns `true` if one of the requested scripts is selected, `false` if a fallback
 	 * script is selected or if no scripts are selected.
 	 * 
 	 * The index of the requested script
@@ -6946,7 +8847,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * 
 	 * However, if the requested constant is #HB_OT_MATH_CONSTANT_SCRIPT_PERCENT_SCALE_DOWN,
 	 * #HB_OT_MATH_CONSTANT_SCRIPT_SCRIPT_PERCENT_SCALE_DOWN or
-	 * #HB_OT_MATH_CONSTANT_SCRIPT_PERCENT_SCALE_DOWN, then the return value is
+	 * #HB_OT_MATH_CONSTANT_RADICAL_DEGREE_BOTTOM_RAISE_PERCENT, then the return value is
 	 * an integer between 0 and 100 representing that percentage.
 	 * @param font #hb_font_t to work upon
 	 * @param constant #hb_ot_math_constant_t the constant to retrieve
@@ -6998,6 +8899,30 @@ declare namespace imports.gi.HarfBuzz {
 	 */
 	function ot_math_get_glyph_kerning(font: font_t, glyph: codepoint_t, kern: ot_math_kern_t, correction_height: position_t): position_t;
 	/**
+	 * Fetches the raw MathKern (cut-in) data for the specified font, glyph index,
+	 * and #kern. The corresponding list of kern values and correction heights is
+	 * returned as a list of #hb_ot_math_kern_entry_t structs.
+	 * 
+	 * See also #hb_ot_math_get_glyph_kerning, which handles selecting the
+	 * appropriate kern value for a given correction height.
+	 * 
+	 * <note>For a glyph with #n defined kern values (where #n > 0), there are only
+	 * #n−1 defined correction heights, as each correction height defines a boundary
+	 * past which the next kern value should be selected. Therefore, only the
+	 * #hb_ot_math_kern_entry_t.kern_value of the uppermost #hb_ot_math_kern_entry_t
+	 * actually comes from the font; its corresponding
+	 * #hb_ot_math_kern_entry_t.max_correction_height is always set to
+	 * <code>INT32_MAX</code>.</note>
+	 * @param font #hb_font_t to work upon
+	 * @param glyph The glyph index from which to retrieve the kernings
+	 * @param kern The #hb_ot_math_kern_t from which to retrieve the kernings
+	 * @param start_offset offset of the first kern entry to retrieve
+	 * @returns the total number of kern values available or zero
+	 * 
+	 * array of kern entries returned
+	 */
+	function ot_math_get_glyph_kernings(font: font_t, glyph: codepoint_t, kern: ot_math_kern_t, start_offset: number): [ number, ot_math_kern_entry_t[] ];
+	/**
 	 * Fetches a top-accent-attachment value (if one exists) for the specified
 	 * glyph index.
 	 * 
@@ -7047,14 +8972,14 @@ declare namespace imports.gi.HarfBuzz {
 	/**
 	 * Tests whether a face has a `MATH` table.
 	 * @param face #hb_face_t to test
-	 * @returns %true if the table is found, %false otherwise
+	 * @returns `true` if the table is found, `false` otherwise
 	 */
 	function ot_math_has_data(face: face_t): bool_t;
 	/**
 	 * Tests whether the given glyph index is an extended shape in the face.
 	 * @param face #hb_face_t to work upon
 	 * @param glyph The glyph index to test
-	 * @returns %true if the glyph is an extended shape, %false otherwise
+	 * @returns `true` if the glyph is an extended shape, `false` otherwise
 	 */
 	function ot_math_is_glyph_extended_shape(face: face_t, glyph: codepoint_t): bool_t;
 	/**
@@ -7082,6 +9007,14 @@ declare namespace imports.gi.HarfBuzz {
 	 * result of metrics value from the font.
 	 */
 	function ot_metrics_get_position(font: font_t, metrics_tag: ot_metrics_tag_t): [ bool_t, position_t | null ];
+	/**
+	 * Fetches metrics value corresponding to #metrics_tag from #font,
+	 * and synthesizes a value if it the value is missing in the font.
+	 * @param font an #hb_font_t object.
+	 * @param metrics_tag tag of metrics value you like to fetch.
+	 * @returns result of metrics value from the font.
+	 */
+	function ot_metrics_get_position_with_fallback(font: font_t, metrics_tag: ot_metrics_tag_t): position_t | null;
 	/**
 	 * Fetches metrics value corresponding to #metrics_tag from #font with the
 	 * current font variation settings applied.
@@ -7173,6 +9106,11 @@ declare namespace imports.gi.HarfBuzz {
 	 * @returns The #hb_set_t set of lookups returned
 	 */
 	function ot_shape_plan_collect_lookups(shape_plan: shape_plan_t, table_tag: tag_t): set_t;
+	/**
+	 * Converts an #hb_language_t to an #hb_tag_t.
+	 * @param language an #hb_language_t to convert.
+	 * @returns 
+	 */
 	function ot_tag_from_language(language: language_t): tag_t;
 	/**
 	 * Converts a language tag to an #hb_language_t.
@@ -7187,7 +9125,14 @@ declare namespace imports.gi.HarfBuzz {
 	 * @returns The #hb_script_t corresponding to #tag.
 	 */
 	function ot_tag_to_script(tag: tag_t): script_t;
-	function ot_tags_from_script(script: script_t, script_tag_1: tag_t, script_tag_2: tag_t): void;
+	/**
+	 * Converts an #hb_script_t to script tags.
+	 * @param script an #hb_script_t to convert.
+	 * @returns output #hb_tag_t.
+	 * 
+	 * output #hb_tag_t.
+	 */
+	function ot_tags_from_script(script: script_t): [ script_tag_1: tag_t, script_tag_2: tag_t ];
 	/**
 	 * Converts an #hb_script_t and an #hb_language_t to script and language tags.
 	 * @param script an #hb_script_t to convert.
@@ -7198,7 +9143,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * array of size at least #language_count to store
 	 * the language tag results
 	 */
-	function ot_tags_from_script_and_language(script: script_t, language: language_t): [ script_tags: tag_t | null, language_tags: tag_t | null ];
+	function ot_tags_from_script_and_language(script: script_t, language: language_t | null): [ script_tags: tag_t | null, language_tags: tag_t | null ];
 	/**
 	 * Converts a script tag and a language tag to an #hb_script_t and an
 	 * #hb_language_t.
@@ -7226,7 +9171,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * in the specified face.
 	 * @param face #hb_face_t to work upon
 	 * @param axis_tag The #hb_tag_t of the variation axis to query
-	 * @returns %true if data found, %false otherwise
+	 * @returns `true` if data found, `false` otherwise
 	 * 
 	 * The #hb_ot_var_axis_info_t of the axis tag queried
 	 */
@@ -7266,7 +9211,7 @@ declare namespace imports.gi.HarfBuzz {
 	/**
 	 * Tests whether a face includes any OpenType variation data in the `fvar` table.
 	 * @param face The #hb_face_t to work on
-	 * @returns %true if data found, %false otherwise
+	 * @returns `true` if data found, `false` otherwise
 	 */
 	function ot_var_has_data(face: face_t): bool_t;
 	/**
@@ -7300,6 +9245,9 @@ declare namespace imports.gi.HarfBuzz {
 	 * values for the axis are mapped to the interval [-1,1], with the default
 	 * axis value mapped to 0.
 	 * 
+	 * The normalized values have 14 bits of fixed-point sub-integer precision as per
+	 * OpenType specification.
+	 * 
 	 * Any additional scaling defined in the face's `avar` table is also
 	 * applied, as described at https://docs.microsoft.com/en-us/typography/opentype/spec/avar
 	 * @param face The #hb_face_t to work on
@@ -7316,6 +9264,299 @@ declare namespace imports.gi.HarfBuzz {
 	 * @returns The array of normalized coordinates
 	 */
 	function ot_var_normalize_variations(face: face_t, variations: variation_t, variations_length: number): number[];
+	/**
+	 * Perform a "color" paint operation.
+	 * @param funcs paint functions
+	 * @param paint_data associated data passed by the caller
+	 * @param is_foreground whether the color is the foreground
+	 * @param color The color to use
+	 */
+	function paint_color(funcs: paint_funcs_t, paint_data: any | null, is_foreground: bool_t, color: color_t): void;
+	/**
+	 * Perform a "color-glyph" paint operation.
+	 * @param funcs paint functions
+	 * @param paint_data associated data passed by the caller
+	 * @param glyph the glyph ID
+	 * @param font the font
+	 * @returns 
+	 */
+	function paint_color_glyph(funcs: paint_funcs_t, paint_data: any | null, glyph: codepoint_t, font: font_t): bool_t;
+	/**
+	 * Gets the custom palette color for #color_index.
+	 * @param funcs paint functions
+	 * @param paint_data associated data passed by the caller
+	 * @param color_index color index
+	 * @returns `true` if found, `false` otherwise
+	 * 
+	 * fetched color
+	 */
+	function paint_custom_palette_color(funcs: paint_funcs_t, paint_data: any | null, color_index: number): [ bool_t, color_t ];
+	/**
+	 * Creates a new #hb_paint_funcs_t structure of paint functions.
+	 * 
+	 * The initial reference count of 1 should be released with {@link Hb.paint_funcs_destroy}
+	 * when you are done using the #hb_paint_funcs_t. This function never returns
+	 * `NULL`. If memory cannot be allocated, a special singleton #hb_paint_funcs_t
+	 * object will be returned.
+	 * @returns the paint-functions structure
+	 */
+	function paint_funcs_create(): paint_funcs_t;
+	/**
+	 * Decreases the reference count on a paint-functions structure.
+	 * 
+	 * When the reference count reaches zero, the structure
+	 * is destroyed, freeing all memory.
+	 * @param funcs The paint-functions structure
+	 */
+	function paint_funcs_destroy(funcs: paint_funcs_t): void;
+	/**
+	 * Fetches the singleton empty paint-functions structure.
+	 * @returns The empty paint-functions structure
+	 */
+	function paint_funcs_get_empty(): paint_funcs_t;
+	/**
+	 * Fetches the user-data associated with the specified key,
+	 * attached to the specified paint-functions structure.
+	 * @param funcs The paint-functions structure
+	 * @param key The user-data key to query
+	 * @returns A pointer to the user data
+	 */
+	function paint_funcs_get_user_data(funcs: paint_funcs_t, key: user_data_key_t): any | null;
+	/**
+	 * Tests whether a paint-functions structure is immutable.
+	 * @param funcs The paint-functions structure
+	 * @returns `true` if #funcs is immutable, `false` otherwise
+	 */
+	function paint_funcs_is_immutable(funcs: paint_funcs_t): bool_t;
+	/**
+	 * Makes a paint-functions structure immutable.
+	 * 
+	 * After this call, all attempts to set one of the callbacks
+	 * on #funcs will fail.
+	 * @param funcs The paint-functions structure
+	 */
+	function paint_funcs_make_immutable(funcs: paint_funcs_t): void;
+	/**
+	 * Increases the reference count on a paint-functions structure.
+	 * 
+	 * This prevents #funcs from being destroyed until a matching
+	 * call to {@link Hb.paint_funcs_destroy} is made.
+	 * @param funcs The paint-functions structure
+	 * @returns The paint-functions structure
+	 */
+	function paint_funcs_reference(funcs: paint_funcs_t): paint_funcs_t;
+	/**
+	 * Sets the paint-color callback on the paint functions struct.
+	 * @param funcs A paint functions struct
+	 * @param func The paint-color callback
+	 * @param destroy Function to call when #user_data is no longer needed
+	 */
+	function paint_funcs_set_color_func(funcs: paint_funcs_t, func: paint_color_func_t, destroy: destroy_func_t | null): void;
+	/**
+	 * Sets the color-glyph callback on the paint functions struct.
+	 * @param funcs A paint functions struct
+	 * @param func The color-glyph callback
+	 * @param destroy Function to call when #user_data is no longer needed
+	 */
+	function paint_funcs_set_color_glyph_func(funcs: paint_funcs_t, func: paint_color_glyph_func_t, destroy: destroy_func_t | null): void;
+	/**
+	 * Sets the custom-palette-color callback on the paint functions struct.
+	 * @param funcs A paint functions struct
+	 * @param func The custom-palette-color callback
+	 * @param destroy Function to call when #user_data is no longer needed
+	 */
+	function paint_funcs_set_custom_palette_color_func(funcs: paint_funcs_t, func: paint_custom_palette_color_func_t, destroy: destroy_func_t | null): void;
+	/**
+	 * Sets the paint-image callback on the paint functions struct.
+	 * @param funcs A paint functions struct
+	 * @param func The paint-image callback
+	 * @param destroy Function to call when #user_data is no longer needed
+	 */
+	function paint_funcs_set_image_func(funcs: paint_funcs_t, func: paint_image_func_t, destroy: destroy_func_t | null): void;
+	/**
+	 * Sets the linear-gradient callback on the paint functions struct.
+	 * @param funcs A paint functions struct
+	 * @param func The linear-gradient callback
+	 * @param destroy Function to call when #user_data is no longer needed
+	 */
+	function paint_funcs_set_linear_gradient_func(funcs: paint_funcs_t, func: paint_linear_gradient_func_t, destroy: destroy_func_t | null): void;
+	/**
+	 * Sets the pop-clip callback on the paint functions struct.
+	 * @param funcs A paint functions struct
+	 * @param func The pop-clip callback
+	 * @param destroy Function to call when #user_data is no longer needed
+	 */
+	function paint_funcs_set_pop_clip_func(funcs: paint_funcs_t, func: paint_pop_clip_func_t, destroy: destroy_func_t | null): void;
+	/**
+	 * Sets the pop-group callback on the paint functions struct.
+	 * @param funcs A paint functions struct
+	 * @param func The pop-group callback
+	 * @param destroy Function to call when #user_data is no longer needed
+	 */
+	function paint_funcs_set_pop_group_func(funcs: paint_funcs_t, func: paint_pop_group_func_t, destroy: destroy_func_t | null): void;
+	/**
+	 * Sets the pop-transform callback on the paint functions struct.
+	 * @param funcs A paint functions struct
+	 * @param func The pop-transform callback
+	 * @param destroy Function to call when #user_data is no longer needed
+	 */
+	function paint_funcs_set_pop_transform_func(funcs: paint_funcs_t, func: paint_pop_transform_func_t, destroy: destroy_func_t | null): void;
+	/**
+	 * Sets the push-clip-glyph callback on the paint functions struct.
+	 * @param funcs A paint functions struct
+	 * @param func The push-clip-glyph callback
+	 * @param destroy Function to call when #user_data is no longer needed
+	 */
+	function paint_funcs_set_push_clip_glyph_func(funcs: paint_funcs_t, func: paint_push_clip_glyph_func_t, destroy: destroy_func_t | null): void;
+	/**
+	 * Sets the push-clip-rect callback on the paint functions struct.
+	 * @param funcs A paint functions struct
+	 * @param func The push-clip-rectangle callback
+	 * @param destroy Function to call when #user_data is no longer needed
+	 */
+	function paint_funcs_set_push_clip_rectangle_func(funcs: paint_funcs_t, func: paint_push_clip_rectangle_func_t, destroy: destroy_func_t | null): void;
+	/**
+	 * Sets the push-group callback on the paint functions struct.
+	 * @param funcs A paint functions struct
+	 * @param func The push-group callback
+	 * @param destroy Function to call when #user_data is no longer needed
+	 */
+	function paint_funcs_set_push_group_func(funcs: paint_funcs_t, func: paint_push_group_func_t, destroy: destroy_func_t | null): void;
+	/**
+	 * Sets the push-transform callback on the paint functions struct.
+	 * @param funcs A paint functions struct
+	 * @param func The push-transform callback
+	 * @param destroy Function to call when #user_data is no longer needed
+	 */
+	function paint_funcs_set_push_transform_func(funcs: paint_funcs_t, func: paint_push_transform_func_t, destroy: destroy_func_t | null): void;
+	/**
+	 * Sets the radial-gradient callback on the paint functions struct.
+	 * @param funcs A paint functions struct
+	 * @param func The radial-gradient callback
+	 * @param destroy Function to call when #user_data is no longer needed
+	 */
+	function paint_funcs_set_radial_gradient_func(funcs: paint_funcs_t, func: paint_radial_gradient_func_t, destroy: destroy_func_t | null): void;
+	/**
+	 * Sets the sweep-gradient callback on the paint functions struct.
+	 * @param funcs A paint functions struct
+	 * @param func The sweep-gradient callback
+	 * @param destroy Function to call when #user_data is no longer needed
+	 */
+	function paint_funcs_set_sweep_gradient_func(funcs: paint_funcs_t, func: paint_sweep_gradient_func_t, destroy: destroy_func_t | null): void;
+	/**
+	 * Attaches a user-data key/data pair to the specified paint-functions structure.
+	 * @param funcs The paint-functions structure
+	 * @param key The user-data key
+	 * @param data A pointer to the user data
+	 * @param destroy A callback to call when #data is not needed anymore
+	 * @param replace Whether to replace an existing data with the same key
+	 * @returns `true` if success, `false` otherwise
+	 */
+	function paint_funcs_set_user_data(funcs: paint_funcs_t, key: user_data_key_t, data: any | null, destroy: destroy_func_t | null, replace: bool_t): bool_t;
+	/**
+	 * Perform a "image" paint operation.
+	 * @param funcs paint functions
+	 * @param paint_data associated data passed by the caller
+	 * @param image image data
+	 * @param width width of the raster image in pixels, or 0
+	 * @param height height of the raster image in pixels, or 0
+	 * @param format the image format as a tag
+	 * @param slant the synthetic slant ratio to be applied to the image during rendering
+	 * @param extents the extents of the glyph
+	 */
+	function paint_image(funcs: paint_funcs_t, paint_data: any | null, image: blob_t, width: number, height: number, format: tag_t, slant: number, extents: glyph_extents_t | null): void;
+	/**
+	 * Perform a "linear-gradient" paint operation.
+	 * @param funcs paint functions
+	 * @param paint_data associated data passed by the caller
+	 * @param color_line Color information for the gradient
+	 * @param x0 X coordinate of the first point
+	 * @param y0 Y coordinate of the first point
+	 * @param x1 X coordinate of the second point
+	 * @param y1 Y coordinate of the second point
+	 * @param x2 X coordinate of the third point
+	 * @param y2 Y coordinate of the third point
+	 */
+	function paint_linear_gradient(funcs: paint_funcs_t, paint_data: any | null, color_line: color_line_t, x0: number, y0: number, x1: number, y1: number, x2: number, y2: number): void;
+	/**
+	 * Perform a "pop-clip" paint operation.
+	 * @param funcs paint functions
+	 * @param paint_data associated data passed by the caller
+	 */
+	function paint_pop_clip(funcs: paint_funcs_t, paint_data: any | null): void;
+	/**
+	 * Perform a "pop-group" paint operation.
+	 * @param funcs paint functions
+	 * @param paint_data associated data passed by the caller
+	 * @param mode the compositing mode to use
+	 */
+	function paint_pop_group(funcs: paint_funcs_t, paint_data: any | null, mode: paint_composite_mode_t): void;
+	/**
+	 * Perform a "pop-transform" paint operation.
+	 * @param funcs paint functions
+	 * @param paint_data associated data passed by the caller
+	 */
+	function paint_pop_transform(funcs: paint_funcs_t, paint_data: any | null): void;
+	/**
+	 * Perform a "push-clip-glyph" paint operation.
+	 * @param funcs paint functions
+	 * @param paint_data associated data passed by the caller
+	 * @param glyph the glyph ID
+	 * @param font the font
+	 */
+	function paint_push_clip_glyph(funcs: paint_funcs_t, paint_data: any | null, glyph: codepoint_t, font: font_t): void;
+	/**
+	 * Perform a "push-clip-rect" paint operation.
+	 * @param funcs paint functions
+	 * @param paint_data associated data passed by the caller
+	 * @param xmin min X for the rectangle
+	 * @param ymin min Y for the rectangle
+	 * @param xmax max X for the rectangle
+	 * @param ymax max Y for the rectangle
+	 */
+	function paint_push_clip_rectangle(funcs: paint_funcs_t, paint_data: any | null, xmin: number, ymin: number, xmax: number, ymax: number): void;
+	/**
+	 * Perform a "push-group" paint operation.
+	 * @param funcs paint functions
+	 * @param paint_data associated data passed by the caller
+	 */
+	function paint_push_group(funcs: paint_funcs_t, paint_data: any | null): void;
+	/**
+	 * Perform a "push-transform" paint operation.
+	 * @param funcs paint functions
+	 * @param paint_data associated data passed by the caller
+	 * @param xx xx component of the transform matrix
+	 * @param yx yx component of the transform matrix
+	 * @param xy xy component of the transform matrix
+	 * @param yy yy component of the transform matrix
+	 * @param dx dx component of the transform matrix
+	 * @param dy dy component of the transform matrix
+	 */
+	function paint_push_transform(funcs: paint_funcs_t, paint_data: any | null, xx: number, yx: number, xy: number, yy: number, dx: number, dy: number): void;
+	/**
+	 * Perform a "radial-gradient" paint operation.
+	 * @param funcs paint functions
+	 * @param paint_data associated data passed by the caller
+	 * @param color_line Color information for the gradient
+	 * @param x0 X coordinate of the first circle's center
+	 * @param y0 Y coordinate of the first circle's center
+	 * @param r0 radius of the first circle
+	 * @param x1 X coordinate of the second circle's center
+	 * @param y1 Y coordinate of the second circle's center
+	 * @param r1 radius of the second circle
+	 */
+	function paint_radial_gradient(funcs: paint_funcs_t, paint_data: any | null, color_line: color_line_t, x0: number, y0: number, r0: number, x1: number, y1: number, r1: number): void;
+	/**
+	 * Perform a "sweep-gradient" paint operation.
+	 * @param funcs paint functions
+	 * @param paint_data associated data passed by the caller
+	 * @param color_line Color information for the gradient
+	 * @param x0 X coordinate of the circle's center
+	 * @param y0 Y coordinate of the circle's center
+	 * @param start_angle the start angle
+	 * @param end_angle the end angle
+	 */
+	function paint_sweep_gradient(funcs: paint_funcs_t, paint_data: any | null, color_line: color_line_t, x0: number, y0: number, start_angle: number, end_angle: number): void;
 	/**
 	 * Converts an ISO 15924 script tag to a corresponding #hb_script_t.
 	 * @param tag an #hb_tag_t representing an ISO 15924 tag.
@@ -7352,7 +9593,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * Checks the equality of two #hb_segment_properties_t's.
 	 * @param a first #hb_segment_properties_t to compare.
 	 * @param b second #hb_segment_properties_t to compare.
-	 * @returns %true if all properties of #a equal those of #b, %false otherwise.
+	 * @returns `true` if all properties of #a equal those of #b, `false` otherwise.
 	 */
 	function segment_properties_equal(a: segment_properties_t, b: segment_properties_t): bool_t;
 	/**
@@ -7361,6 +9602,21 @@ declare namespace imports.gi.HarfBuzz {
 	 * @returns A hash of #p.
 	 */
 	function segment_properties_hash(p: segment_properties_t): number;
+	/**
+	 * Fills in missing fields of #p from #src in a considered manner.
+	 * 
+	 * First, if #p does not have direction set, direction is copied from #src.
+	 * 
+	 * Next, if #p and #src have the same direction (which can be unset), if #p
+	 * does not have script set, script is copied from #src.
+	 * 
+	 * Finally, if #p and #src have the same direction and script (which either
+	 * can be unset), if #p does not have language set, language is copied from
+	 * #src.
+	 * @param p #hb_segment_properties_t to fill in.
+	 * @param src #hb_segment_properties_t to fill in from.
+	 */
+	function segment_properties_overlay(p: segment_properties_t, src: segment_properties_t): void;
 	/**
 	 * Adds #codepoint to #set.
 	 * @param set A set
@@ -7376,9 +9632,17 @@ declare namespace imports.gi.HarfBuzz {
 	 */
 	function set_add_range(set: set_t, first: codepoint_t, last: codepoint_t): void;
 	/**
+	 * Adds #num_codepoints codepoints to a set at once.
+	 * The codepoints array must be in increasing order,
+	 * with size at least #num_codepoints.
+	 * @param set A set
+	 * @param sorted_codepoints Array of codepoints to add
+	 */
+	function set_add_sorted_array(set: set_t, sorted_codepoints: codepoint_t[]): void;
+	/**
 	 * Tests whether memory allocation for a set was successful.
 	 * @param set A set
-	 * @returns %true if allocation succeeded, %false otherwise
+	 * @returns `true` if allocation succeeded, `false` otherwise
 	 */
 	function set_allocation_successful(set: set_t): bool_t;
 	/**
@@ -7456,9 +9720,15 @@ declare namespace imports.gi.HarfBuzz {
 	 * Tests whether #codepoint belongs to #set.
 	 * @param set A set
 	 * @param codepoint The element to query
-	 * @returns %true if #codepoint is in #set, %false otherwise
+	 * @returns `true` if #codepoint is in #set, `false` otherwise
 	 */
 	function set_has(set: set_t, codepoint: codepoint_t): bool_t;
+	/**
+	 * Creates a hash representing #set.
+	 * @param set A set
+	 * @returns A hash of #set.
+	 */
+	function set_hash(set: set_t): number;
 	/**
 	 * Makes #set the intersection of #set and #other.
 	 * @param set A set
@@ -7473,7 +9743,7 @@ declare namespace imports.gi.HarfBuzz {
 	/**
 	 * Tests whether a set is empty (contains no elements).
 	 * @param set a set.
-	 * @returns %true if #set is empty
+	 * @returns `true` if #set is empty
 	 */
 	function set_is_empty(set: set_t): bool_t;
 	/**
@@ -7481,14 +9751,20 @@ declare namespace imports.gi.HarfBuzz {
 	 * elements).
 	 * @param set A set
 	 * @param other Another set
-	 * @returns %true if the two sets are equal, %false otherwise.
+	 * @returns `true` if the two sets are equal, `false` otherwise.
 	 */
 	function set_is_equal(set: set_t, other: set_t): bool_t;
+	/**
+	 * Returns whether the set is inverted.
+	 * @param set A set
+	 * @returns `true` if the set is inverted, `false` otherwise
+	 */
+	function set_is_inverted(set: set_t): bool_t;
 	/**
 	 * Tests whether #set is a subset of #larger_set.
 	 * @param set A set
 	 * @param larger_set Another set
-	 * @returns %true if the #set is a subset of (or equal to) #larger_set, %false otherwise.
+	 * @returns `true` if the #set is a subset of (or equal to) #larger_set, `false` otherwise.
 	 */
 	function set_is_subset(set: set_t, larger_set: set_t): bool_t;
 	/**
@@ -7496,16 +9772,27 @@ declare namespace imports.gi.HarfBuzz {
 	 * 
 	 * Set #codepoint to #HB_SET_VALUE_INVALID to get started.
 	 * @param set A set
-	 * @returns %true if there was a next value, %false otherwise
+	 * @returns `true` if there was a next value, `false` otherwise
 	 */
 	function set_next(set: set_t): bool_t;
+	/**
+	 * Finds the next element in #set that is greater than #codepoint. Writes out
+	 * codepoints to #out, until either the set runs out of elements, or #size
+	 * codepoints are written, whichever comes first.
+	 * @param set A set
+	 * @param codepoint Outputting codepoints starting after this one.
+	 *             Use #HB_SET_VALUE_INVALID to get started.
+	 * @param out An array of codepoints to write to.
+	 * @returns the number of values written.
+	 */
+	function set_next_many(set: set_t, codepoint: codepoint_t, out: codepoint_t[]): number;
 	/**
 	 * Fetches the next consecutive range of elements in #set that
 	 * are greater than current value of #last.
 	 * 
 	 * Set #last to #HB_SET_VALUE_INVALID to get started.
 	 * @param set A set
-	 * @returns %true if there was a next range, %false otherwise
+	 * @returns `true` if there was a next range, `false` otherwise
 	 * 
 	 * The first code point in the range
 	 */
@@ -7515,7 +9802,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * 
 	 * Set #codepoint to #HB_SET_VALUE_INVALID to get started.
 	 * @param set A set
-	 * @returns %true if there was a previous value, %false otherwise
+	 * @returns `true` if there was a previous value, `false` otherwise
 	 */
 	function set_previous(set: set_t): bool_t;
 	/**
@@ -7524,7 +9811,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * 
 	 * Set #first to #HB_SET_VALUE_INVALID to get started.
 	 * @param set A set
-	 * @returns %true if there was a previous range, %false otherwise
+	 * @returns `true` if there was a previous range, `false` otherwise
 	 * 
 	 * The last code point in the range
 	 */
@@ -7548,7 +9835,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param data A pointer to the user data to set
 	 * @param destroy A callback to call when #data is not needed anymore
 	 * @param replace Whether to replace an existing data with the same key
-	 * @returns %true if success, %false otherwise
+	 * @returns `true` if success, `false` otherwise
 	 */
 	function set_set_user_data(set: set_t, key: user_data_key_t, data: any | null, destroy: destroy_func_t | null, replace: bool_t): bool_t;
 	/**
@@ -7572,29 +9859,58 @@ declare namespace imports.gi.HarfBuzz {
 	function set_union(set: set_t, other: set_t): void;
 	/**
 	 * Shapes #buffer using #font turning its Unicode characters content to
-	 * positioned glyphs. If #features is not %NULL, it will be used to control the
+	 * positioned glyphs. If #features is not `NULL`, it will be used to control the
 	 * features applied during shaping. If two #features have the same tag but
 	 * overlapping ranges the value of the feature with the higher index takes
 	 * precedence.
 	 * @param font an #hb_font_t to use for shaping
 	 * @param buffer an #hb_buffer_t to shape
 	 * @param features an array of user
-	 *    specified #hb_feature_t or %NULL
+	 *    specified #hb_feature_t or `NULL`
 	 */
 	function shape(font: font_t, buffer: buffer_t, features: feature_t[] | null): void;
 	/**
-	 * See {@link Hb.shape} for details. If #shaper_list is not %NULL, the specified
+	 * See {@link Hb.shape} for details. If #shaper_list is not `NULL`, the specified
 	 * shapers will be used in the given order, otherwise the default shapers list
 	 * will be used.
 	 * @param font an #hb_font_t to use for shaping
 	 * @param buffer an #hb_buffer_t to shape
 	 * @param features an array of user
-	 *    specified #hb_feature_t or %NULL
-	 * @param shaper_list a %NULL-terminated
-	 *    array of shapers to use or %NULL
+	 *    specified #hb_feature_t or `NULL`
+	 * @param shaper_list a `NULL`-terminated
+	 *    array of shapers to use or `NULL`
 	 * @returns false if all shapers failed, true otherwise
 	 */
 	function shape_full(font: font_t, buffer: buffer_t, features: feature_t[] | null, shaper_list: string[] | null): bool_t;
+	/**
+	 * See {@link Hb.shape_full} for basic details. If #shaper_list is not `NULL`, the specified
+	 * shapers will be used in the given order, otherwise the default shapers list
+	 * will be used.
+	 * 
+	 * In addition, justify the shaping results such that the shaping results reach
+	 * the target advance width/height, depending on the buffer direction.
+	 * 
+	 * If the advance of the buffer shaped with hb_shape_full() is already known,
+	 * put that in *advance. Otherwise set *advance to zero.
+	 * 
+	 * This API is currently experimental and will probably change in the future.
+	 * @param font a mutable #hb_font_t to use for shaping
+	 * @param buffer an #hb_buffer_t to shape
+	 * @param features an array of user
+	 *    specified #hb_feature_t or `NULL`
+	 * @param shaper_list a `NULL`-terminated
+	 *    array of shapers to use or `NULL`
+	 * @param min_target_advance Minimum advance width/height to aim for.
+	 * @param max_target_advance Maximum advance width/height to aim for.
+	 * @returns false if all shapers failed, true otherwise
+	 * 
+	 * XSince: EXPERIMENTAL
+	 * 
+	 * Variation-axis tag used for justification.
+	 * 
+	 * Variation-axis value used to reach target justification.
+	 */
+	function shape_justify(font: font_t, buffer: buffer_t, features: feature_t[] | null, shaper_list: string[] | null, min_target_advance: number, max_target_advance: number): [ bool_t, tag_t, number ];
 	/**
 	 * Retrieves the list of shapers supported by HarfBuzz.
 	 * @returns an array of
@@ -7660,7 +9976,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param font The #hb_font_t to use
 	 * @param buffer The #hb_buffer_t to work upon
 	 * @param features Features to enable
-	 * @returns %true if success, %false otherwise.
+	 * @returns `true` if success, `false` otherwise.
 	 */
 	function shape_plan_execute(shape_plan: shape_plan_t, font: font_t, buffer: buffer_t, features: feature_t[]): bool_t;
 	/**
@@ -7695,7 +10011,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param data A pointer to the user data
 	 * @param destroy A callback to call when #data is not needed anymore
 	 * @param replace Whether to replace an existing data with the same key
-	 * @returns %true if success, %false otherwise.
+	 * @returns `true` if success, `false` otherwise.
 	 */
 	function shape_plan_set_user_data(shape_plan: shape_plan_t, key: user_data_key_t, data: any | null, destroy: destroy_func_t | null, replace: bool_t): bool_t;
 	/**
@@ -7740,7 +10056,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param ufuncs The Unicode-functions structure
 	 * @param a The first Unicode code point to compose
 	 * @param b The second Unicode code point to compose
-	 * @returns %true if #a and #b composed, %false otherwise
+	 * @returns `true` if #a and #b composed, `false` otherwise
 	 * 
 	 * The composition of #a, #b
 	 */
@@ -7752,7 +10068,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * Unicode-functions structure #ufuncs.
 	 * @param ufuncs The Unicode-functions structure
 	 * @param ab Unicode code point to decompose
-	 * @returns %true if #ab was decomposed, %false otherwise
+	 * @returns `true` if #ab was decomposed, `false` otherwise
 	 * 
 	 * The first code point of the decomposition of #ab
 	 * 
@@ -7819,7 +10135,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * Tests whether the specified Unicode-functions structure
 	 * is immutable.
 	 * @param ufuncs The Unicode-functions structure
-	 * @returns %true if #ufuncs is immutable, %false otherwise
+	 * @returns `true` if #ufuncs is immutable, `false` otherwise
 	 */
 	function unicode_funcs_is_immutable(ufuncs: unicode_funcs_t): bool_t;
 	/**
@@ -7897,7 +10213,7 @@ declare namespace imports.gi.HarfBuzz {
 	 * @param data A pointer to the user data
 	 * @param destroy A callback to call when #data is not needed anymore
 	 * @param replace Whether to replace an existing data with the same key
-	 * @returns %true if success, %false otherwise
+	 * @returns `true` if success, `false` otherwise
 	 */
 	function unicode_funcs_set_user_data(ufuncs: unicode_funcs_t, key: user_data_key_t, data: any | null, destroy: destroy_func_t | null, replace: bool_t): bool_t;
 	/**
@@ -7934,13 +10250,13 @@ declare namespace imports.gi.HarfBuzz {
 	 * The format is a tag, optionally followed by an equals sign, followed by a
 	 * number. For example `wght=500`, or `slnt=-7.5`.
 	 * @param str a string to parse
-	 * @returns %true if #str is successfully parsed, %false otherwise
+	 * @returns `true` if #str is successfully parsed, `false` otherwise
 	 * 
 	 * the #hb_variation_t to initialize with the parsed values
 	 */
 	function variation_from_string(str: number[]): [ bool_t, variation_t ];
 	/**
-	 * Converts an #hb_variation_t into a %NULL-terminated string in the format
+	 * Converts an #hb_variation_t into a `NULL`-terminated string in the format
 	 * understood by {@link Hb.variation_from_string}. The client in responsible for
 	 * allocating big enough size for #buf, 128 bytes is more than enough.
 	 * @param variation an #hb_variation_t to convert
@@ -7964,6 +10280,12 @@ declare namespace imports.gi.HarfBuzz {
 	const BUFFER_REPLACEMENT_CODEPOINT_DEFAULT: number;
 
 	/**
+	 * Unused #hb_codepoint_t value.
+	 * @returns Unused #hb_codepoint_t value.
+	 */
+	const CODEPOINT_INVALID: codepoint_t;
+
+	/**
 	 * Special setting for #hb_feature_t.start to apply the feature from the start
 	 * of the buffer.
 	 * @returns Special setting for #hb_feature_t.start to apply the feature from the start
@@ -7972,16 +10294,20 @@ declare namespace imports.gi.HarfBuzz {
 	const FEATURE_GLOBAL_START: number;
 
 	/**
+	 * Constant signifying that a font does not have any
+	 * named-instance index set.  This is the default of
+	 * a font.
+	 * @returns Constant signifying that a font does not have any
+	 * named-instance index set.  This is the default of
+	 * a font.
+	 */
+	const FONT_NO_VAR_NAMED_INSTANCE: number;
+
+	/**
 	 * An unset #hb_language_t.
 	 * @returns An unset #hb_language_t.
 	 */
 	const LANGUAGE_INVALID: language_t;
-
-	/**
-	 * Unset #hb_map_t value.
-	 * @returns Unset #hb_map_t value.
-	 */
-	const MAP_VALUE_INVALID: codepoint_t;
 
 	/**
 	 * Special value for language index indicating default or unsupported language.
@@ -8026,10 +10352,10 @@ declare namespace imports.gi.HarfBuzz {
 	const OT_VAR_NO_AXIS_INDEX: number;
 
 	/**
-	 * Unset #hb_set_t value.
-	 * @returns Unset #hb_set_t value.
+	 * [Tibetan]
+	 * @returns [Tibetan]
 	 */
-	const SET_VALUE_INVALID: codepoint_t;
+	const UNICODE_COMBINING_CLASS_CCC133: number;
 
 	/**
 	 * Maximum valid Unicode code point.

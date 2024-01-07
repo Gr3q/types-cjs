@@ -380,7 +380,7 @@ declare namespace imports.gi.Cinnamon {
 		 * @param hook where to insert the code
 		 * @param declarations GLSL declarations
 		 * @param code GLSL code
-		 * @param is_replace wheter Cogl code should be replaced by the custom shader
+		 * @param is_replace whether Cogl code should be replaced by the custom shader
 		 */
 		add_glsl_snippet(hook: SnippetHook, declarations: string, code: string, is_replace: boolean): void;
 		get_uniform_location(name: string): number;
@@ -499,7 +499,6 @@ declare namespace imports.gi.Cinnamon {
 		readonly desklet_container: Clutter.Actor;
 		readonly display: Meta.Display;
 		readonly focus_manager: St.FocusManager;
-		readonly gdk_screen: Gdk.Screen;
 		readonly imagedir: string;
 		readonly overlay_group: Clutter.Actor;
 		readonly screen: Screen;
@@ -528,11 +527,11 @@ declare namespace imports.gi.Cinnamon {
 		 * application and normal key shortcuts.
 		 * @param timestamp
 		 * @param options
-		 * @returns %TRUE if we succesfully entered the mode. %FALSE if we couldn't
+		 * @returns %TRUE if we successfully entered the mode. %FALSE if we couldn't
 		 *  enter the mode. Failure may occur because an application has the pointer
 		 *  or keyboard grabbed, because Mutter is in a mode itself like moving a
 		 *  window or alt-Tab window selection, or because {@link Cinnamon.Global.begin_modal}
-		 *  was previouly called.
+		 *  was previously called.
 		 */
 		begin_modal(timestamp: number, options: Meta.ModalOptions): boolean;
 		/**
@@ -568,7 +567,6 @@ declare namespace imports.gi.Cinnamon {
 		end_work(): void;
 		get_current_time(): number;
 		get_display(): Meta.Display;
-		get_gdk_screen(): Gdk.Screen;
 		get_md5_for_string(string: string): string;
 		get_pid(): number;
 		/**
@@ -641,7 +639,6 @@ declare namespace imports.gi.Cinnamon {
 		set_cursor(type: Cursor): void;
 		/**
 		 * Sets the pointer coordinates.
-		 * This is a wrapper around {@link Gdk.Device.warp}.
 		 * @param x the X coordinate of the pointer, in global coordinates
 		 * @param y the Y coordinate of the pointer, in global coordinates
 		 */
@@ -697,7 +694,6 @@ declare namespace imports.gi.Cinnamon {
 		connect(signal: "notify::desklet-container", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::display", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::focus-manager", callback: (owner: this, ...args: any) => void): number;
-		connect(signal: "notify::gdk-screen", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::imagedir", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::overlay-group", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::screen", callback: (owner: this, ...args: any) => void): number;
@@ -823,7 +819,7 @@ declare namespace imports.gi.Cinnamon {
 		 * with each element being a dictionary of the form:
 		 * 
 		 * { name: <name of event>,
-		 *   description: <descrition of string,
+		 *   description: <description of string>,
 		 *   statistic: true } (only for statistics)
 		 * @param out output stream into which to write the event definitions
 		 * @returns %TRUE if the dump succeeded. %FALSE if an IO error occurred
@@ -938,11 +934,11 @@ declare namespace imports.gi.Cinnamon {
 		 * recording failed to start.
 		 * 
 		 * An extra reference count is added to the recorder if recording
-		 * is succesfully started; the recording object will not be freed
+		 * is successfully started; the recording object will not be freed
 		 * until recording is stopped even if the creator no longer holds
 		 * a reference. Recording is automatically stopped if the stage
 		 * is destroyed.
-		 * @returns %TRUE if recording was succesfully started
+		 * @returns %TRUE if recording was successfully started
 		 * 
 		 * actual filename used for recording
 		 */
@@ -962,7 +958,7 @@ declare namespace imports.gi.Cinnamon {
 		 * 
 		 * The default value is 'cinnamon-%d%u-%c.ogg'.
 		 * @param file_template the filename template to use for output files,
-		 *                 or %NULL for the defalt value.
+		 *                 or %NULL for the default value.
 		 */
 		set_file_template(file_template: string): void;
 		/**
@@ -1169,6 +1165,13 @@ declare namespace imports.gi.Cinnamon {
 	 */
 	interface IScreenshot {
 		/**
+		 * Picks the pixel at #x, #y and returns its color as #ClutterColor in callback.
+		 * @param x The X coordinate to pick
+		 * @param y The Y coordinate to pick
+		 * @param callback function to call when finished
+		 */
+		pick_color(x: number, y: number, callback: ScreenshotPickColorCallback): void;
+		/**
 		 * Takes a screenshot of the whole screen
 		 * in #filename as png image.
 		 * @param include_cursor Whether to include the cursor or not
@@ -1257,6 +1260,32 @@ declare namespace imports.gi.Cinnamon {
 
 	class Stack {
 		public constructor(options?: Partial<StackInitOptions>);
+	}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link ToucheggClient} instead.
+	 */
+	interface IToucheggClient {
+
+		connect(signal: "gesture-begin", callback: (owner: this, object: number, p0: number, p1: number, p2: number, p3: number, p4: number) => void): number;
+		connect(signal: "gesture-end", callback: (owner: this, object: number, p0: number, p1: number, p2: number, p3: number, p4: number) => void): number;
+		connect(signal: "gesture-update", callback: (owner: this, object: number, p0: number, p1: number, p2: number, p3: number, p4: number) => void): number;
+
+	}
+
+	type ToucheggClientInitOptionsMixin = GObject.ObjectInitOptions
+	export interface ToucheggClientInitOptions extends ToucheggClientInitOptionsMixin {}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link ToucheggClient} instead.
+	 */
+	type ToucheggClientMixin = IToucheggClient & GObject.Object;
+
+	interface ToucheggClient extends ToucheggClientMixin {}
+
+	class ToucheggClient {
+		public constructor(options?: Partial<ToucheggClientInitOptions>);
+		public static new(): ToucheggClient;
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -1837,7 +1866,7 @@ declare namespace imports.gi.Cinnamon {
 		LOGIN_SCREEN = 16,
 		/**
 		 * allow action when a system modal
-		 *     dialog (e.g. authentification or session dialogs) is open
+		 *     dialog (e.g. authentication or session dialogs) is open
 		 */
 		SYSTEM_MODAL = 32,
 		/**
@@ -1881,6 +1910,10 @@ declare namespace imports.gi.Cinnamon {
 		(screenshot: Screenshot, success: boolean, screenshot_area: cairo.RectangleInt): void;
 	}
 
+	interface ScreenshotPickColorCallback {
+		(screenshot: Screenshot, success: boolean, color: Clutter.Color): void;
+	}
+
 	/**
 	 * Using {@link G.BREAKPOINT}, interrupt the current process.  This is useful
 	 * in conjunction with a debugger such as gdb.
@@ -1901,7 +1934,7 @@ declare namespace imports.gi.Cinnamon {
 	function calendar_server_override_properties(klass: any, property_id_begin: number): number;
 	/**
 	 * Gets the current state of the event (the set of modifier keys that
-	 * are pressed down). Thhis is a wrapper around
+	 * are pressed down). This is a wrapper around
 	 * {@link Clutter.event.get_state} that strips out any un-declared modifier
 	 * flags, to make gjs happy; see
 	 * https://bugzilla.gnome.org/show_bug.cgi?id=597292.
@@ -1925,12 +1958,6 @@ declare namespace imports.gi.Cinnamon {
 	 * @returns File contents
 	 */
 	function get_file_contents_utf8_sync(path: string): string;
-	/**
-	 * Performs a check to see if on-demand mode for discrete graphics
-	 * is supported.
-	 * @returns %TRUE if supported.
-	 */
-	function get_gpu_offload_supported(): boolean;
 	function parse_search_provider(data: string): [ boolean, string, string, string[], string ];
 	/**
 	 * Set a double uniform on a ClutterShaderEffect.
@@ -2001,13 +2028,6 @@ declare namespace imports.gi.Cinnamon {
 	 * @param hidden Whether #actor should be hidden from pick
 	 */
 	function util_set_hidden_from_pick(actor: Clutter.Actor, hidden: boolean): void;
-	/**
-	 * Write a string to a GOutputStream as binary data. This is a
-	 * workaround for the lack of proper binary strings in GJS.
-	 * @param stream a #GOutputStream
-	 * @param message a #SoupMessage
-	 */
-	function write_soup_message_to_stream(stream: Gio.OutputStream, message: Soup.Message): void;
 	/**
 	 * Write a string to a GOutputStream as UTF-8. This is a workaround
 	 * for not having binary buffers in GJS.

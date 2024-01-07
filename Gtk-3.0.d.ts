@@ -3525,7 +3525,7 @@ declare namespace imports.gi.Gtk {
 	 * 
 	 * ## A simple application ## {#gtkapplication}
 	 * 
-	 * [A simple example](https://git.gnome.org/browse/gtk+/tree/examples/bp/bloatpad.c)
+	 * [A simple example](https://gitlab.gnome.org/GNOME/gtk/-/blob/gtk-3-24/examples/bp/bloatpad.c)
 	 * 
 	 * GtkApplication optionally registers with a session manager
 	 * of the users session (if you set the #GtkApplication:register-session
@@ -30080,7 +30080,7 @@ declare namespace imports.gi.Gtk {
 		 * If a rectangle to point to has been set, this function will
 		 * return %TRUE and fill in #rect with such rectangle, otherwise
 		 * it will return %FALSE and fill in #rect with the attached
-		 * widget coordinates.
+		 * widget width and height if a widget exists, otherwise it will zero-out #rect.
 		 * @returns %TRUE if a rectangle to point to was set.
 		 * 
 		 * location to store the rectangle
@@ -35025,9 +35025,9 @@ declare namespace imports.gi.Gtk {
 	type ScrolledWindowMixin = IScrolledWindow & Bin & Atk.ImplementorIface & Buildable;
 
 	/**
-	 * GtkScrolledWindow is a container that accepts a single child widget, makes
+	 * GtkScrolledWindow is a container that accepts a single child widget and makes
 	 * that child scrollable using either internally added scrollbars or externally
-	 * associated adjustments, and optionally draws a frame around the child.
+	 * associated adjustments.
 	 * 
 	 * Widgets with native scrolling support, i.e. those whose classes implement the
 	 * {@link Scrollable} interface, are added directly. For other types of widget, the
@@ -39258,6 +39258,29 @@ declare namespace imports.gi.Gtk {
 		 * given state.
 		 * 
 		 * See {@link Gtk.StyleContext.get_property} for details.
+		 * 
+		 * For the property name / return value pairs, it works similarly as
+		 * g_object_get(). Example:
+		 * 
+		 * |[<!-- language="C" -->
+		 * GdkRGBA *background_color = NULL;
+		 * PangoFontDescription *font_desc = NULL;
+		 * gint border_radius = 0;
+		 * 
+		 * gtk_style_context_get (style_context,
+		 *                        gtk_style_context_get_state (style_context),
+		 *                        GTK_STYLE_PROPERTY_BACKGROUND_COLOR, &background_color,
+		 *                        GTK_STYLE_PROPERTY_FONT, &font_desc,
+		 *                        GTK_STYLE_PROPERTY_BORDER_RADIUS, &border_radius,
+		 *                        NULL);
+		 * 
+		 * // Do something with the property values.
+		 * 
+		 * if (background_color != NULL)
+		 *   gdk_rgba_free (background_color);
+		 * if (font_desc != NULL)
+		 *   pango_font_description_free (font_desc);
+		 * ]|
 		 * @param state state to retrieve the property values for
 		 */
 		get(state: StateFlags): void;
@@ -41593,7 +41616,7 @@ declare namespace imports.gi.Gtk {
 
 	/**
 	 * You may wish to begin by reading the
-	 * [text widget conceptual overview][TextWidget]
+	 * [text widget conceptual overview](TextWidget.html)
 	 * which gives an overview of all the objects and data
 	 * types related to the text widget and how they work together.
 	 */
@@ -41750,7 +41773,7 @@ declare namespace imports.gi.Gtk {
 
 	/**
 	 * You may wish to begin by reading the
-	 * [text widget conceptual overview][TextWidget]
+	 * [text widget conceptual overview](TextWidget.html)
 	 * which gives an overview of all the objects and data
 	 * types related to the text widget and how they work together.
 	 * 
@@ -42170,7 +42193,7 @@ declare namespace imports.gi.Gtk {
 
 	/**
 	 * You may wish to begin by reading the
-	 * [text widget conceptual overview][TextWidget]
+	 * [text widget conceptual overview](TextWidget.html)
 	 * which gives an overview of all the objects and
 	 * data types related to the text widget and how they work together.
 	 * 
@@ -42255,7 +42278,7 @@ declare namespace imports.gi.Gtk {
 
 	/**
 	 * You may wish to begin by reading the
-	 * [text widget conceptual overview][TextWidget]
+	 * [text widget conceptual overview](TextWidget.html)
 	 * which gives an overview of all the objects and
 	 * data types related to the text widget and how they work together.
 	 * 
@@ -43364,7 +43387,7 @@ declare namespace imports.gi.Gtk {
 
 	/**
 	 * You may wish to begin by reading the
-	 * [text widget conceptual overview][TextWidget]
+	 * [text widget conceptual overview](TextWidget.html)
 	 * which gives an overview of all the objects and data
 	 * types related to the text widget and how they work together.
 	 * 
@@ -45834,31 +45857,40 @@ declare namespace imports.gi.Gtk {
 		 */
 		get_select_function(): TreeSelectionFunc;
 		/**
-		 * Sets #iter to the currently selected node if #selection is set to
-		 * #GTK_SELECTION_SINGLE or #GTK_SELECTION_BROWSE.  #iter may be NULL if you
-		 * just want to test if #selection has any selected nodes.  #model is filled
-		 * with the current model as a convenience.  This function will not work if you
-		 * use #selection is #GTK_SELECTION_MULTIPLE.
-		 * @returns TRUE, if there is a selected node.
+		 * Sets #iter to the currently selected node, if #selection is set to
+		 * %GTK_SELECTION_SINGLE or %GTK_SELECTION_BROWSE.
 		 * 
-		 * A pointer to set to the {@link TreeModel}, or NULL.
+		 * The #iter argument may be %NULL if you just want to test if #selection
+		 * has any selected nodes.
 		 * 
-		 * The #GtkTreeIter, or NULL.
+		 * The #model argument is filled with the current model as a convenience.
+		 * 
+		 * This function will not work with %GTK_SELECTION_MULTIPLE. See
+		 * {@link Gtk.TreeSelection.get_selected_rows} instead.
+		 * @returns %TRUE, if there is a selected node.
+		 * 
+		 * the model
+		 * 
+		 * the iterator for the selected row
 		 */
 		get_selected(): [ boolean, TreeModel | null, TreeIter | null ];
 		/**
-		 * Creates a list of path of all selected rows. Additionally, if you are
-		 * planning on modifying the model after calling this function, you may
-		 * want to convert the returned list into a list of {@link TreeRowReferences}.
+		 * Creates a list of path of all selected rows.
+		 * 
+		 * Additionally, if you are planning on modifying the model after calling
+		 * this function, you may want to convert the returned list into a list
+		 * of {@link TreeRowReferences}.
+		 * 
 		 * To do this, you can use {@link Gtk.TreeRowReference.new}.
 		 * 
 		 * To free the return value, use:
+		 * 
 		 * |[<!-- language="C" -->
 		 * g_list_free_full (list, (GDestroyNotify) gtk_tree_path_free);
 		 * ]|
-		 * @returns A #GList containing a {@link TreePath} for each selected row.
+		 * @returns the selected paths
 		 * 
-		 * A pointer to set to the #GtkTreeModel, or %NULL.
+		 * A pointer to set to the {@link TreeModel}, or %NULL.
 		 */
 		get_selected_rows(): [ TreePath[], TreeModel | null ];
 		/**
@@ -47275,7 +47307,7 @@ declare namespace imports.gi.Gtk {
 		 * Space, Shift+Space, Return or Enter is pressed.
 		 * 
 		 * For selection handling refer to the
-		 * [tree widget conceptual overview][TreeWidget]
+		 * [tree widget conceptual overview](TreeWidget.html)
 		 * as well as {@link TreeSelection}.
 		 * @param signal 
 		 * @param callback Callback function
@@ -47394,7 +47426,7 @@ declare namespace imports.gi.Gtk {
 	 * Widget that displays any object that implements the {@link TreeModel} interface.
 	 * 
 	 * Please refer to the
-	 * [tree widget conceptual overview][TreeWidget]
+	 * [tree widget conceptual overview](TreeWidget.html)
 	 * for an overview of all the objects and data types related
 	 * to the tree widget and how they work together.
 	 * 
@@ -47948,7 +47980,7 @@ declare namespace imports.gi.Gtk {
 	 * It allows to set properties of the column header, and functions as a holding pen for
 	 * the cell renderers which determine how the data in the column is displayed.
 	 * 
-	 * Please refer to the [tree widget conceptual overview][TreeWidget]
+	 * Please refer to the [tree widget conceptual overview](TreeWidget.html)
 	 * for an overview of all the objects and data types related to the tree widget and how
 	 * they work together.
 	 */
@@ -57820,6 +57852,9 @@ declare namespace imports.gi.Gtk {
 		public get_text(): string | null;
 		/**
 		 * Gets the contents of the selection data as array of URIs.
+		 * 
+		 * Since 3.24.37, this may involve using the FileTransfer
+		 * portal to send files between sandboxed apps.
 		 * @returns if
 		 *   the selection data contains a list of
 		 *   URIs, a newly allocated %NULL-terminated string array
@@ -57859,6 +57894,9 @@ declare namespace imports.gi.Gtk {
 		 * Sets the contents of the selection from a list of URIs.
 		 * The string is converted to the form determined by
 		 * #selection_data->target.
+		 * 
+		 * Since 3.24.37, this may involve using the FileTransfer
+		 * portal to send files between sandboxed apps.
 		 * @param uris a %NULL-terminated array of
 		 *     strings holding URIs
 		 * @returns %TRUE if the selection was successfully set,
@@ -58245,6 +58283,10 @@ declare namespace imports.gi.Gtk {
 		/**
 		 * Appends the URI targets supported by {@link SelectionData} to
 		 * the target list. All targets are added with the same #info.
+		 * 
+		 * Since 3.24.37, this includes the application/vnd.portal.files
+		 * target when possible, to allow sending files between sandboxed
+		 * apps via the FileTransfer portal.
 		 * @param info an ID that will be passed back to the application
 		 */
 		public add_uri_targets(info: number): void;
@@ -58476,7 +58518,7 @@ declare namespace imports.gi.Gtk {
 	export interface TextIterInitOptions {}
 	/**
 	 * You may wish to begin by reading the
-	 * [text widget conceptual overview][TextWidget]
+	 * [text widget conceptual overview](TextWidget.html)
 	 * which gives an overview of all the objects and data
 	 * types related to the text widget and how they work together.
 	 */
@@ -61663,7 +61705,7 @@ declare namespace imports.gi.Gtk {
 		 * See {@link Gtk.FileChooser.get_current_folder_uri}.
 		 * @returns the #GFile for the current folder.
 		 */
-		get_current_folder_file(): Gio.File;
+		get_current_folder_file(): Gio.File | null;
 		/**
 		 * Gets the current folder of #chooser as an URI.
 		 * See {@link Gtk.FileChooser.set_current_folder_uri}.
@@ -68650,11 +68692,12 @@ declare namespace imports.gi.Gtk {
 		 * @param content_buffer the {@link TextBuffer} to serialize
 		 * @param start start of the block of text to serialize
 		 * @param end end of the block of text to serialize
-		 * @param length Return location for the length of the serialized data
-		 * @returns a newly-allocated array of guint8 which contains
-		 * the serialized data, or %NULL if an error occurred
+		 * @returns a newly-allocated array of guint8
+		 * which contains the serialized data, or %NULL if an error occurred
+		 * 
+		 * return location for the length of the serialized data
 		 */
-		(register_buffer: TextBuffer, content_buffer: TextBuffer, start: TextIter, end: TextIter, length: number): number | null;
+		(register_buffer: TextBuffer, content_buffer: TextBuffer, start: TextIter, end: TextIter): [ number[] | null, number ];
 	}
 
 	interface TextCharPredicate {

@@ -1,6 +1,28 @@
 /** Generated with https://github.com/Gr3q/GIR2TS - If possible do not modify. */
 declare namespace imports.gi.XApp {
 	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link DarkModeManager} instead.
+	 */
+	interface IDarkModeManager {
+
+	}
+
+	type DarkModeManagerInitOptionsMixin = GObject.ObjectInitOptions
+	export interface DarkModeManagerInitOptions extends DarkModeManagerInitOptionsMixin {}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link DarkModeManager} instead.
+	 */
+	type DarkModeManagerMixin = IDarkModeManager & GObject.Object;
+
+	interface DarkModeManager extends DarkModeManagerMixin {}
+
+	class DarkModeManager {
+		public constructor(options?: Partial<DarkModeManagerInitOptions>);
+		public static new(prefer_dark_mode: boolean): DarkModeManager;
+	}
+
+	/** This construct is only for enabling class multi-inheritance,
 	 * use {@link Favorites} instead.
 	 */
 	interface IFavorites {
@@ -46,7 +68,7 @@ declare namespace imports.gi.XApp {
 		 * @returns a list of {@link FavoriteInfos}.
 		 *             Free the list with #g_list_free, free elements with #xapp_favorite_info_free.
 		 */
-		get_favorites(mimetypes?: string | null): FavoriteInfo[];
+		get_favorites(mimetypes?: string[] | null): FavoriteInfo[];
 		get_n_favorites(): number;
 		/**
 		 * Opens a favorite in its default app.
@@ -96,6 +118,87 @@ declare namespace imports.gi.XApp {
 		 * @returns the XAppFavorites instance for the process. Do not free.
 		 */
 		public static get_default(): Favorites;
+	}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link GpuOffloadHelper} instead.
+	 */
+	interface IGpuOffloadHelper {
+		/**
+		 * Returns an {@link GpuInfo} for the default GPU.
+		 * @returns the default {@link GpuInfo}. Do not free
+		 */
+		get_default_info(): GpuInfo;
+		/**
+		 * Returns an {@link GpuInfo} with the given ID.
+		 * @param id The ID of the info to retrieve.
+		 * @returns the appropriate {@link GpuInfo}, or %NULL if #id was invalid.
+		 */
+		get_info_by_id(id: number): GpuInfo;
+		/**
+		 * Gets the number of GPUs noticed by Switcheroo.
+		 * @returns the total number of GPUs. A return value larger than
+		 * 1 implies there are offloadable GPUs available.
+		 */
+		get_n_gpus(): number;
+		/**
+		 * Generates a list of {@link GpuInfos} that can be offloaded to, if there are any.
+		 * @returns a list of {@link GpuInfos} or %NULL if there is only
+		 * a single GPU. The elements are owned by #helper but the container itself should be freed.
+		 */
+		get_offload_infos(): GpuInfo[];
+		/**
+		 * Checks if there is a non-default GPU available for offloading.
+		 * @returns %TRUE if there is an extra GPU available.
+		 */
+		is_offload_supported(): boolean;
+		/**
+		 * Checks if the helper is ready and valid. This does not mean
+		 * offload support exists.
+		 * @returns %TRUE if the helper has been successfully initialized.
+		 */
+		is_ready(): boolean;
+		/**
+		 * This signal is emitted by the helper when it has completed
+		 * gathering GPU information. It will only be sent once.
+		 * @param signal 
+		 * @param callback Callback function
+		 *  - owner: owner of the emitted event 
+		 *  - success: Whether or not the helper initialize successfully. 
+		 * 
+		 * @returns Callback ID
+		 */
+		connect(signal: "ready", callback: (owner: this, success: boolean) => void): number;
+
+	}
+
+	type GpuOffloadHelperInitOptionsMixin = GObject.ObjectInitOptions
+	export interface GpuOffloadHelperInitOptions extends GpuOffloadHelperInitOptionsMixin {}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link GpuOffloadHelper} instead.
+	 */
+	type GpuOffloadHelperMixin = IGpuOffloadHelper & GObject.Object;
+
+	interface GpuOffloadHelper extends GpuOffloadHelperMixin {}
+
+	class GpuOffloadHelper {
+		public constructor(options?: Partial<GpuOffloadHelperInitOptions>);
+		/**
+		 * Creates a new {@link GpuOffloadHelper} instance.
+		 * 
+		 * The #XAppGpuOffloadHelper::ready signal will be emitted when the helper is initialized (successfully or not).
+		 * @returns a new {@link GpuOffloadHelper}.
+		 */
+		public static get(): GpuOffloadHelper;
+		/**
+		 * Creates a new {@link GpuOffloadHelper} instance. This performs initialization synchronously,
+		 * and can potentially block.
+		 * 
+		 * Use {@link Xapp.gpu_offload_helper_is_ready} to see if the helper was initialized successfully.
+		 * @returns a new {@link GpuOffloadHelper}, fully initialized.
+		 */
+		public static get_sync(): GpuOffloadHelper;
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -1287,6 +1390,129 @@ declare namespace imports.gi.XApp {
 		public static new(): StyleManager;
 	}
 
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link SwitcherooControlProxy} instead.
+	 */
+	interface ISwitcherooControlProxy {
+
+	}
+
+	type SwitcherooControlProxyInitOptionsMixin = Gio.DBusProxyInitOptions & Gio.AsyncInitableInitOptions & Gio.DBusInterfaceInitOptions & Gio.InitableInitOptions & SwitcherooControlInitOptions
+	export interface SwitcherooControlProxyInitOptions extends SwitcherooControlProxyInitOptionsMixin {}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link SwitcherooControlProxy} instead.
+	 */
+	type SwitcherooControlProxyMixin = ISwitcherooControlProxy & Gio.DBusProxy & Gio.AsyncInitable & Gio.DBusInterface & Gio.Initable & SwitcherooControl;
+
+	/**
+	 * The {@link SwitcherooControlProxy} structure contains only private data and should only be accessed using the provided API.
+	 */
+	interface SwitcherooControlProxy extends SwitcherooControlProxyMixin {}
+
+	class SwitcherooControlProxy {
+		public constructor(options?: Partial<SwitcherooControlProxyInitOptions>);
+		/**
+		 * Finishes an operation started with {@link Xapp.switcheroo_control_proxy_new}.
+		 * @param res The #GAsyncResult obtained from the #GAsyncReadyCallback passed to {@link Xapp.switcheroo_control_proxy_new}.
+		 * @returns The constructed proxy object or %NULL if #error is set.
+		 */
+		public static new_finish(res: Gio.AsyncResult): SwitcherooControlProxy;
+		/**
+		 * Finishes an operation started with {@link Xapp.switcheroo_control_proxy_new_for_bus}.
+		 * @param res The #GAsyncResult obtained from the #GAsyncReadyCallback passed to {@link Xapp.switcheroo_control_proxy_new_for_bus}.
+		 * @returns The constructed proxy object or %NULL if #error is set.
+		 */
+		public static new_for_bus_finish(res: Gio.AsyncResult): SwitcherooControlProxy;
+		/**
+		 * Like {@link Xapp.switcheroo_control_proxy_new_sync} but takes a #GBusType instead of a #GDBusConnection.
+		 * 
+		 * The calling thread is blocked until a reply is received.
+		 * 
+		 * See xapp_switcheroo_control_proxy_new_for_bus() for the asynchronous version of this constructor.
+		 * @param bus_type A #GBusType.
+		 * @param flags Flags from the #GDBusProxyFlags enumeration.
+		 * @param name A bus name (well-known or unique).
+		 * @param object_path An object path.
+		 * @param cancellable A #GCancellable or %NULL.
+		 * @returns The constructed proxy object or %NULL if #error is set.
+		 */
+		public static new_for_bus_sync(bus_type: Gio.BusType, flags: Gio.DBusProxyFlags, name: string, object_path: string, cancellable?: Gio.Cancellable | null): SwitcherooControlProxy;
+		/**
+		 * Synchronously creates a proxy for the D-Bus interface <link linkend="gdbus-interface-net-hadess-SwitcherooControl.top_of_page">net.hadess.SwitcherooControl</link>. See {@link G.dbus_proxy_new_sync} for more details.
+		 * 
+		 * The calling thread is blocked until a reply is received.
+		 * 
+		 * See xapp_switcheroo_control_proxy_new() for the asynchronous version of this constructor.
+		 * @param connection A #GDBusConnection.
+		 * @param flags Flags from the #GDBusProxyFlags enumeration.
+		 * @param name A bus name (well-known or unique) or %NULL if #connection is not a message bus connection.
+		 * @param object_path An object path.
+		 * @param cancellable A #GCancellable or %NULL.
+		 * @returns The constructed proxy object or %NULL if #error is set.
+		 */
+		public static new_sync(connection: Gio.DBusConnection, flags: Gio.DBusProxyFlags, name: string | null, object_path: string, cancellable?: Gio.Cancellable | null): SwitcherooControlProxy;
+		/**
+		 * Asynchronously creates a proxy for the D-Bus interface <link linkend="gdbus-interface-net-hadess-SwitcherooControl.top_of_page">net.hadess.SwitcherooControl</link>. See {@link G.dbus_proxy_new} for more details.
+		 * 
+		 * When the operation is finished, #callback will be invoked in the thread-default main loop of the thread you are calling this method from (see g_main_context_push_thread_default()).
+		 * You can then call xapp_switcheroo_control_proxy_new_finish() to get the result of the operation.
+		 * 
+		 * See xapp_switcheroo_control_proxy_new_sync() for the synchronous, blocking version of this constructor.
+		 * @param connection A #GDBusConnection.
+		 * @param flags Flags from the #GDBusProxyFlags enumeration.
+		 * @param name A bus name (well-known or unique) or %NULL if #connection is not a message bus connection.
+		 * @param object_path An object path.
+		 * @param cancellable A #GCancellable or %NULL.
+		 * @param callback A #GAsyncReadyCallback to call when the request is satisfied.
+		 */
+		public static new(connection: Gio.DBusConnection, flags: Gio.DBusProxyFlags, name: string | null, object_path: string, cancellable?: Gio.Cancellable | null, callback?: Gio.AsyncReadyCallback | null): void;
+		/**
+		 * Like {@link Xapp.switcheroo_control_proxy_new} but takes a #GBusType instead of a #GDBusConnection.
+		 * 
+		 * When the operation is finished, #callback will be invoked in the thread-default main loop of the thread you are calling this method from (see g_main_context_push_thread_default()).
+		 * You can then call xapp_switcheroo_control_proxy_new_for_bus_finish() to get the result of the operation.
+		 * 
+		 * See xapp_switcheroo_control_proxy_new_for_bus_sync() for the synchronous, blocking version of this constructor.
+		 * @param bus_type A #GBusType.
+		 * @param flags Flags from the #GDBusProxyFlags enumeration.
+		 * @param name A bus name (well-known or unique).
+		 * @param object_path An object path.
+		 * @param cancellable A #GCancellable or %NULL.
+		 * @param callback A #GAsyncReadyCallback to call when the request is satisfied.
+		 */
+		public static new_for_bus(bus_type: Gio.BusType, flags: Gio.DBusProxyFlags, name: string, object_path: string, cancellable?: Gio.Cancellable | null, callback?: Gio.AsyncReadyCallback | null): void;
+	}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link SwitcherooControlSkeleton} instead.
+	 */
+	interface ISwitcherooControlSkeleton {
+
+	}
+
+	type SwitcherooControlSkeletonInitOptionsMixin = Gio.DBusInterfaceSkeletonInitOptions & Gio.DBusInterfaceInitOptions & SwitcherooControlInitOptions
+	export interface SwitcherooControlSkeletonInitOptions extends SwitcherooControlSkeletonInitOptionsMixin {}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link SwitcherooControlSkeleton} instead.
+	 */
+	type SwitcherooControlSkeletonMixin = ISwitcherooControlSkeleton & Gio.DBusInterfaceSkeleton & Gio.DBusInterface & SwitcherooControl;
+
+	/**
+	 * The {@link SwitcherooControlSkeleton} structure contains only private data and should only be accessed using the provided API.
+	 */
+	interface SwitcherooControlSkeleton extends SwitcherooControlSkeletonMixin {}
+
+	class SwitcherooControlSkeleton {
+		public constructor(options?: Partial<SwitcherooControlSkeletonInitOptions>);
+		/**
+		 * Creates a skeleton object for the D-Bus interface <link linkend="gdbus-interface-net-hadess-SwitcherooControl.top_of_page">net.hadess.SwitcherooControl</link>.
+		 * @returns The skeleton object.
+		 */
+		public static new(): SwitcherooControlSkeleton;
+	}
+
 	export interface FavoriteInfoInitOptions {}
 	/**
 	 * Information related to a single favorite file.
@@ -1320,6 +1546,41 @@ declare namespace imports.gi.XApp {
 		 * Since 2.0
 		 */
 		public free(): void;
+	}
+
+	export interface GpuInfoInitOptions {}
+	/**
+	 * Information about a single GPU used for offloading. The length of #env_strv will always be an even number.
+	 */
+	interface GpuInfo {}
+	class GpuInfo {
+		public constructor(options?: Partial<GpuInfoInitOptions>);
+		/**
+		 * An identifier that can be used to refer to this GPU.
+		 */
+		public id: number;
+		/**
+		 * Whether this GPU is used by default.
+		 */
+		public is_default: boolean;
+		/**
+		 * User-visible name of the GPU.
+		 */
+		public display_name: string;
+		/**
+		 * A string array containing alternating environment variables names and values to use to enable the gpu.
+		 */
+		public env_strv: string[];
+		/**
+		 * Creates a new string in a form intended to prefix a shell command, containing
+		 * the appropriate name/values for this gpu. For example:
+		 * 
+		 * __GLX_VENDOR_LIBRARY_NAME=nvidia __NV_PRIME_RENDER_OFFLOAD=1
+		 * @returns A new string, free with {@link G.free}.
+		 * 
+		 * Since 2.6
+		 */
+		public get_shell_env_prefix(): string;
 	}
 
 	export interface ObjectIfaceInitOptions {}
@@ -1358,6 +1619,104 @@ declare namespace imports.gi.XApp {
 		public get_secondary_menu_is_open: {(object: StatusIconInterface): boolean;};
 		public get_tooltip_text: {(object: StatusIconInterface): string | null;};
 		public get_visible: {(object: StatusIconInterface): boolean;};
+	}
+
+	export interface SwitcherooControlIfaceInitOptions {}
+	/**
+	 * Virtual table for the D-Bus interface <link linkend="gdbus-interface-net-hadess-SwitcherooControl.top_of_page">net.hadess.SwitcherooControl</link>.
+	 */
+	interface SwitcherooControlIface {}
+	class SwitcherooControlIface {
+		public constructor(options?: Partial<SwitcherooControlIfaceInitOptions>);
+		/**
+		 * The parent interface.
+		 */
+		public readonly parent_iface: GObject.TypeInterface;
+		public get_gpus: {(object: SwitcherooControl): GLib.Variant | null;};
+		public get_has_dual_gpu: {(object: SwitcherooControl): boolean;};
+		public get_num_gpus: {(object: SwitcherooControl): number;};
+	}
+
+	export interface VisibilityGroupInitOptions {}
+	/**
+	 * A group of widgets that can have their visibility and sensitivity controlled together.
+	 */
+	interface VisibilityGroup {}
+	class VisibilityGroup {
+		public constructor(options?: Partial<VisibilityGroupInitOptions>);
+		/**
+		 * Creates a new {@link VisibilityGroup}.
+		 * 
+		 * If #widgets is not NULL, adds these widgets to the group with the starting visibility and
+		 * sensitivity state.
+		 * @param visible starting visibility state
+		 * @param sensitive starting sensitivity state
+		 * @param widgets list of #GtkWidgets to add to the group.
+		 * @returns a new {@link VisibilityGroup}. Use xapp_visibility_group_free when finished.
+		 */
+		public static new(visible: boolean, sensitive: boolean, widgets?: Gtk.Widget[] | null): VisibilityGroup;
+		/**
+		 * The #GtkWidget members of this group.
+		 */
+		public widgets: Gtk.Widget[];
+		/**
+		 * The current visible state of the group. There is no guarantee that all members are actually in this state.
+		 */
+		public visible: boolean;
+		/**
+		 * The current sensitive state of the group. There is no guarantee that all members are actually in this state.
+		 */
+		public sensitive: boolean;
+		/**
+		 * Adds widget to the visibility group.
+		 * @param widget the #GtkWidget to add to the group
+		 */
+		public add_widget(widget: Gtk.Widget): void;
+		/**
+		 * Get the sensitivity of the group.
+		 * 
+		 * There is no guarantee that all widgets in the group actually are
+		 * in the returned state, if they've had their sensitivity individually
+		 * modified since the last time the group was set.
+		 * @returns The sensitivity state of the group.
+		 */
+		public get_sensitive(): boolean;
+		/**
+		 * Get the visibility of the group.
+		 * 
+		 * There is no guarantee that all widgets in the group actually are
+		 * in the returned state, if they've had their visibility individually
+		 * modified since the last time the group was set.
+		 * @returns The visibility state of the group.
+		 */
+		public get_visible(): boolean;
+		/**
+		 * Returns the members of the group or NULL if the group is empty.
+		 * @returns a list of members of the group.
+		 * 
+		 * The list is owned by XApp, do not free.
+		 */
+		public get_widgets(): Gtk.Widget[];
+		/**
+		 * Hide all widgets in the group.
+		 */
+		public hide(): void;
+		public remove_widget(widget: Gtk.Widget): boolean;
+		/**
+		 * Set the sensitivity of all widgets in group.
+		 * @param sensitive TRUE to make the widgets sensitive.
+		 */
+		public set_sensitive(sensitive: boolean): void;
+		/**
+		 * Set the visibility of all widgets in the group.
+		 * @param visible TRUE to make the widgets visible.
+		 */
+		public set_visible(visible: boolean): void;
+		public set_widgets(widgets?: Gtk.Widget[] | null): void;
+		/**
+		 * Show all widgets in the group.
+		 */
+		public show(): void;
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -1758,7 +2117,7 @@ declare namespace imports.gi.XApp {
 		/**
 		 * Signal emitted when a remote caller is invoking the <link linkend="gdbus-method-org-x-StatusIcon.ButtonPress">ButtonPress()</link> D-Bus method.
 		 * 
-		 * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to #invocation and eventually call xapp_status_icon_interface_complete_button_press() or e.g. g_dbus_method_invocation_return_error() on it) and no order signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
+		 * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to #invocation and eventually call xapp_status_icon_interface_complete_button_press() or e.g. g_dbus_method_invocation_return_error() on it) and no other signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
 		 * @param signal 
 		 * @param callback Callback function
 		 *  - owner: owner of the emitted event 
@@ -1776,7 +2135,7 @@ declare namespace imports.gi.XApp {
 		/**
 		 * Signal emitted when a remote caller is invoking the <link linkend="gdbus-method-org-x-StatusIcon.ButtonRelease">ButtonRelease()</link> D-Bus method.
 		 * 
-		 * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to #invocation and eventually call xapp_status_icon_interface_complete_button_release() or e.g. g_dbus_method_invocation_return_error() on it) and no order signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
+		 * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to #invocation and eventually call xapp_status_icon_interface_complete_button_release() or e.g. g_dbus_method_invocation_return_error() on it) and no other signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
 		 * @param signal 
 		 * @param callback Callback function
 		 *  - owner: owner of the emitted event 
@@ -1794,7 +2153,7 @@ declare namespace imports.gi.XApp {
 		/**
 		 * Signal emitted when a remote caller is invoking the <link linkend="gdbus-method-org-x-StatusIcon.Scroll">Scroll()</link> D-Bus method.
 		 * 
-		 * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to #invocation and eventually call xapp_status_icon_interface_complete_scroll() or e.g. g_dbus_method_invocation_return_error() on it) and no order signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
+		 * If a signal handler returns %TRUE, it means the signal handler will handle the invocation (e.g. take a reference to #invocation and eventually call xapp_status_icon_interface_complete_scroll() or e.g. g_dbus_method_invocation_return_error() on it) and no other signal handlers will run. If no signal handler handles the invocation, the %G_DBUS_ERROR_UNKNOWN_METHOD error is returned.
 		 * @param signal 
 		 * @param callback Callback function
 		 *  - owner: owner of the emitted event 
@@ -1857,7 +2216,122 @@ declare namespace imports.gi.XApp {
 		 * @param property_id_begin The property id to assign to the first overridden property.
 		 * @returns The last property id.
 		 */
-		public static override_properties(klass: any, property_id_begin: number): number;
+		public static override_properties(klass: StatusIconInterface, property_id_begin: number): number;
+	}
+
+
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link SwitcherooControl} instead.
+	 */
+	interface ISwitcherooControl {
+		/**
+		 * Represents the D-Bus property <link linkend="gdbus-property-net-hadess-SwitcherooControl.GPUs">"GPUs"</link>.
+		 * 
+		 * Since the D-Bus property for this #GObject property is readable but not writable, it is meaningful to read from it on both the client- and service-side. It is only meaningful, however, to write to it on the service-side.
+		 */
+		gpus: GLib.Variant;
+		/**
+		 * Represents the D-Bus property <link linkend="gdbus-property-net-hadess-SwitcherooControl.HasDualGpu">"HasDualGpu"</link>.
+		 * 
+		 * Since the D-Bus property for this #GObject property is readable but not writable, it is meaningful to read from it on both the client- and service-side. It is only meaningful, however, to write to it on the service-side.
+		 */
+		has_dual_gpu: boolean;
+		/**
+		 * Represents the D-Bus property <link linkend="gdbus-property-net-hadess-SwitcherooControl.NumGPUs">"NumGPUs"</link>.
+		 * 
+		 * Since the D-Bus property for this #GObject property is readable but not writable, it is meaningful to read from it on both the client- and service-side. It is only meaningful, however, to write to it on the service-side.
+		 */
+		num_gpus: number;
+		/**
+		 * Gets a copy of the <link linkend="gdbus-property-net-hadess-SwitcherooControl.GPUs">"GPUs"</link> D-Bus property.
+		 * 
+		 * Since this D-Bus property is readable, it is meaningful to use this function on both the client- and service-side.
+		 * @returns The property value or %NULL if the property is not set. The returned value should be freed with {@link G.variant_unref}.
+		 */
+		dup_gpus(): GLib.Variant | null;
+		/**
+		 * Gets the value of the <link linkend="gdbus-property-net-hadess-SwitcherooControl.GPUs">"GPUs"</link> D-Bus property.
+		 * 
+		 * Since this D-Bus property is readable, it is meaningful to use this function on both the client- and service-side.
+		 * 
+		 * The returned value is only valid until the property changes so on the client-side it is only safe to use this function on the thread where #object was constructed. Use {@link Xapp.switcheroo_control_dup_gpus} if on another thread.
+		 * @returns The property value or %NULL if the property is not set. Do not free the returned value, it belongs to #object.
+		 */
+		get_gpus(): GLib.Variant | null;
+		/**
+		 * Gets the value of the <link linkend="gdbus-property-net-hadess-SwitcherooControl.HasDualGpu">"HasDualGpu"</link> D-Bus property.
+		 * 
+		 * Since this D-Bus property is readable, it is meaningful to use this function on both the client- and service-side.
+		 * @returns The property value.
+		 */
+		get_has_dual_gpu(): boolean;
+		/**
+		 * Gets the value of the <link linkend="gdbus-property-net-hadess-SwitcherooControl.NumGPUs">"NumGPUs"</link> D-Bus property.
+		 * 
+		 * Since this D-Bus property is readable, it is meaningful to use this function on both the client- and service-side.
+		 * @returns The property value.
+		 */
+		get_num_gpus(): number;
+		/**
+		 * Sets the <link linkend="gdbus-property-net-hadess-SwitcherooControl.GPUs">"GPUs"</link> D-Bus property to #value.
+		 * 
+		 * Since this D-Bus property is not writable, it is only meaningful to use this function on the service-side.
+		 * @param value The value to set.
+		 */
+		set_gpus(value: GLib.Variant): void;
+		/**
+		 * Sets the <link linkend="gdbus-property-net-hadess-SwitcherooControl.HasDualGpu">"HasDualGpu"</link> D-Bus property to #value.
+		 * 
+		 * Since this D-Bus property is not writable, it is only meaningful to use this function on the service-side.
+		 * @param value The value to set.
+		 */
+		set_has_dual_gpu(value: boolean): void;
+		/**
+		 * Sets the <link linkend="gdbus-property-net-hadess-SwitcherooControl.NumGPUs">"NumGPUs"</link> D-Bus property to #value.
+		 * 
+		 * Since this D-Bus property is not writable, it is only meaningful to use this function on the service-side.
+		 * @param value The value to set.
+		 */
+		set_num_gpus(value: number): void;
+		connect(signal: "notify::gpus", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::has-dual-gpu", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::num-gpus", callback: (owner: this, ...args: any) => void): number;
+
+	}
+
+	type SwitcherooControlInitOptionsMixin = Pick<ISwitcherooControl,
+		"gpus" |
+		"has_dual_gpu" |
+		"num_gpus">;
+
+	export interface SwitcherooControlInitOptions extends SwitcherooControlInitOptionsMixin {}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link SwitcherooControl} instead.
+	 */
+	type SwitcherooControlMixin = ISwitcherooControl;
+
+	/**
+	 * Abstract interface type for the D-Bus interface <link linkend="gdbus-interface-net-hadess-SwitcherooControl.top_of_page">net.hadess.SwitcherooControl</link>.
+	 */
+	interface SwitcherooControl extends SwitcherooControlMixin {}
+
+	class SwitcherooControl {
+		public constructor(options?: Partial<SwitcherooControlInitOptions>);
+		/**
+		 * Gets a machine-readable description of the <link linkend="gdbus-interface-net-hadess-SwitcherooControl.top_of_page">net.hadess.SwitcherooControl</link> D-Bus interface.
+		 * @returns A #GDBusInterfaceInfo. Do not free.
+		 */
+		public static interface_info(): Gio.DBusInterfaceInfo;
+		/**
+		 * Overrides all #GObject properties in the {@link SwitcherooControl} interface for a concrete class.
+		 * The properties are overridden in the order they are defined.
+		 * @param klass The class structure for a #GObject derived class.
+		 * @param property_id_begin The property id to assign to the first overridden property.
+		 * @returns The last property id.
+		 */
+		public static override_properties(klass: SwitcherooControl, property_id_begin: number): number;
 	}
 
 
@@ -1915,6 +2389,12 @@ declare namespace imports.gi.XApp {
 		(favorites: Favorites, uri: string): void;
 	}
 
+	/**
+	 * Provides the path to the system's temporary files folder. This is identical to g_get_tmp_dir,
+	 * but includes the /dev/shm ramdisk as the first choice for a temporary folder.
+	 * @returns the directory to use for temporary files.
+	 */
+	function get_tmp_dir(): string;
 	/**
 	 * Converts a pango font description string to a string suitable for use with the css "font" tag. The font description must contain the font family and font size or conversion will fail and %NULL will be returned
 	 * @param pango_font_string a pango font description string
@@ -2041,6 +2521,19 @@ declare namespace imports.gi.XApp {
 	 * @returns The last property id.
 	 */
 	function status_icon_interface_override_properties(klass: any, property_id_begin: number): number;
+	/**
+	 * Gets a machine-readable description of the <link linkend="gdbus-interface-net-hadess-SwitcherooControl.top_of_page">net.hadess.SwitcherooControl</link> D-Bus interface.
+	 * @returns A #GDBusInterfaceInfo. Do not free.
+	 */
+	function switcheroo_control_interface_info(): Gio.DBusInterfaceInfo;
+	/**
+	 * Overrides all #GObject properties in the {@link SwitcherooControl} interface for a concrete class.
+	 * The properties are overridden in the order they are defined.
+	 * @param klass The class structure for a #GObject derived class.
+	 * @param property_id_begin The property id to assign to the first overridden property.
+	 * @returns The last property id.
+	 */
+	function switcheroo_control_override_properties(klass: SwitcherooControl, property_id_begin: number): number;
 	/**
 	 * Check if the Session Manager is currently in the "Running" phase.
 	 * @returns %TRUE if the session is running.

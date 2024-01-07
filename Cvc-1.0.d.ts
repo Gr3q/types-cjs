@@ -47,7 +47,12 @@ declare namespace imports.gi.Cvc {
 		name: string;
 		pa_context: any;
 		profile: string;
-		change_profile(profile: string): boolean;
+		/**
+		 * Change the profile in use on this card.
+		 * @param profile the profile to change to or %NULL.
+		 * @returns %TRUE if profile successfully changed or already using this profile.
+		 */
+		change_profile(profile?: string | null): boolean;
 		get_gicon(): Gio.Icon;
 		get_icon_name(): string;
 		get_id(): number;
@@ -100,7 +105,7 @@ declare namespace imports.gi.Cvc {
 		name: string;
 		change_input(input: MixerUIDevice): void;
 		change_output(output: MixerUIDevice): void;
-		change_profile_on_selected_device(device: MixerUIDevice, profile: string): boolean;
+		change_profile_on_selected_device(device: MixerUIDevice, profile?: string | null): boolean;
 		close(): boolean;
 		get_cards(): MixerCard[];
 		get_default_sink(): MixerStream;
@@ -298,6 +303,7 @@ declare namespace imports.gi.Cvc {
 		name: string;
 		pa_context: any;
 		port: string;
+		state: MixerStreamState;
 		sysfs_path: string;
 		volume: number;
 		change_is_muted(is_muted: boolean): boolean;
@@ -319,6 +325,7 @@ declare namespace imports.gi.Cvc {
 		get_name(): string;
 		get_port(): MixerStreamPort;
 		get_ports(): MixerStreamPort[];
+		get_state(): MixerStreamState;
 		get_sysfs_path(): string;
 		get_volume(): number;
 		is_event_stream(): boolean;
@@ -340,6 +347,7 @@ declare namespace imports.gi.Cvc {
 		set_name(name: string): boolean;
 		set_port(port: string): boolean;
 		set_ports(ports: MixerStreamPort[]): boolean;
+		set_state(state: MixerStreamState): boolean;
 		set_sysfs_path(sysfs_path: string): boolean;
 		set_volume(volume: number): boolean;
 		connect(signal: "monitor-suspend", callback: (owner: this) => void): number;
@@ -361,6 +369,7 @@ declare namespace imports.gi.Cvc {
 		connect(signal: "notify::name", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::pa-context", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::port", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::state", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::sysfs-path", callback: (owner: this, ...args: any) => void): number;
 		connect(signal: "notify::volume", callback: (owner: this, ...args: any) => void): number;
 
@@ -384,6 +393,7 @@ declare namespace imports.gi.Cvc {
 		"name" |
 		"pa_context" |
 		"port" |
+		"state" |
 		"sysfs_path" |
 		"volume">;
 
@@ -413,8 +423,7 @@ declare namespace imports.gi.Cvc {
 		stream_id: number;
 		type: number;
 		get_active_profile(): string;
-		get_best_profile(selected: string, current: string): string;
-		get_card(): MixerCard;
+		get_best_profile(selected: string | null, current: string): string;
 		get_description(): string;
 		get_gicon(): Gio.Icon;
 		get_icon_name(): string;
@@ -532,9 +541,16 @@ declare namespace imports.gi.Cvc {
 		FAILED = 3
 	}
 
+	enum MixerStreamState {
+		INVALID = 0,
+		RUNNING = 1,
+		IDLE = 2,
+		SUSPENDED = 3
+	}
+
 	enum MixerUIDeviceDirection {
-		IDEVICEINPUT = 0,
-		IDEVICEOUTPUT = 1
+		INPUT = 0,
+		OUTPUT = 1
 	}
 
 	enum HeadsetPortChoice {

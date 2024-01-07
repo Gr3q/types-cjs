@@ -159,8 +159,8 @@ declare namespace imports.gi.Caribou {
 	 */
 	interface IGroupModel {
 		active_level: string;
-		readonly group: string;
-		readonly variant: string;
+		group: string;
+		variant: string;
 		get_levels(): [ string[], number ];
 		get_level(level_name: string): Caribou.LevelModel;
 		get_active_level(): string;
@@ -172,7 +172,9 @@ declare namespace imports.gi.Caribou {
 
 	type GroupModelInitOptionsMixin = GObject.ObjectInitOptions & Caribou.IKeyboardObjectInitOptions & 
 	Pick<IGroupModel,
-		"active_level">;
+		"active_level" |
+		"group" |
+		"variant">;
 
 	export interface GroupModelInitOptions extends GroupModelInitOptionsMixin {}
 
@@ -256,7 +258,7 @@ declare namespace imports.gi.Caribou {
 		keyval: number;
 		text: string;
 		label: string;
-		readonly modifier_state: Caribou.ModifierState;
+		modifier_state: Caribou.ModifierState;
 		press(): void;
 		release(): void;
 		get_extended_keys(): [ Caribou.KeyModel[], number ];
@@ -305,7 +307,8 @@ declare namespace imports.gi.Caribou {
 		"name" |
 		"keyval" |
 		"text" |
-		"label">;
+		"label" |
+		"modifier_state">;
 
 	export interface KeyModelInitOptions extends KeyModelInitOptionsMixin {}
 

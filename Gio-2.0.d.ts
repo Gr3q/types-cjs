@@ -6,8 +6,8 @@ declare namespace imports.gi.Gio {
 	interface IAppInfoMonitor {
 
 		/**
-		 * Signal emitted when the app info database for changes (ie: newly installed
-		 * or removed applications).
+		 * Signal emitted when the app info database changes, when applications are
+		 * installed or removed.
 		 * @param signal 
 		 * @param callback Callback function
 		 *  - owner: owner of the emitted event 
@@ -28,19 +28,34 @@ declare namespace imports.gi.Gio {
 
 	/**
 	 * #GAppInfoMonitor is a very simple object used for monitoring the app
-	 * info database for changes (ie: newly installed or removed
-	 * applications).
+	 * info database for changes (newly installed or removed applications).
 	 * 
 	 * Call {@link G.app_info_monitor_get} to get a #GAppInfoMonitor and connect
-	 * to the "changed" signal.
+	 * to the #GAppInfoMonitor::changed signal. The signal will be emitted once when
+	 * the app info database changes, and will not be emitted again until after the
+	 * next call to g_app_info_get_all() or another `g_app_info_*()` function. This
+	 * is because monitoring the app info database for changes is expensive.
+	 * 
+	 * The following functions will re-arm the #GAppInfoMonitor::changed signal so
+	 * it can be emitted again:
+	 *  - g_app_info_get_all()
+	 *  - g_app_info_get_all_for_type()
+	 *  - g_app_info_get_default_for_type()
+	 *  - g_app_info_get_fallback_for_type()
+	 *  - g_app_info_get_recommended_for_type()
+	 *  - g_desktop_app_info_get_implementations()
+	 *  - g_desktop_app_info_new()
+	 *  - g_desktop_app_info_new_from_filename()
+	 *  - g_desktop_app_info_new_from_keyfile()
+	 *  - g_desktop_app_info_search()
 	 * 
 	 * In the usual case, applications should try to make note of the change
 	 * (doing things like invalidating caches) but not act on it.  In
 	 * particular, applications should avoid making calls to #GAppInfo APIs
 	 * in response to the change signal, deferring these until the time that
-	 * the data is actually required.  The exception to this case is when
+	 * the updated data is actually required.  The exception to this case is when
 	 * application information is actually being displayed on the screen
-	 * (eg: during a search or when the list of all applications is shown).
+	 * (for example, during a search or when the list of all applications is shown).
 	 * The reason for this is that changes to the list of installed
 	 * applications often come in groups (like during system updates) and
 	 * rescanning the list on every change is pointless and expensive.
@@ -56,6 +71,10 @@ declare namespace imports.gi.Gio {
 		 * The #GAppInfoMonitor will emit a "changed" signal in the
 		 * thread-default main context whenever the list of installed
 		 * applications (as reported by {@link G.app_info_get_all}) may have changed.
+		 * 
+		 * The #GAppInfoMonitor::changed signal will only be emitted once until
+		 * g_app_info_get_all() (or another `g_app_info_*()` function) is called. Doing
+		 * so will re-arm the signal ready to notify about the next change.
 		 * 
 		 * You must only call g_object_unref() on the return value from under
 		 * the same main context as you created it.
@@ -88,12 +107,20 @@ declare namespace imports.gi.Gio {
 		get_environment(): string[];
 		/**
 		 * Initiates startup notification for the application and returns the
-		 * `DESKTOP_STARTUP_ID` for the launched operation, if supported.
+		 * `XDG_ACTIVATION_TOKEN` or `DESKTOP_STARTUP_ID` for the launched operation,
+		 * if supported.
 		 * 
-		 * Startup notification IDs are defined in the
-		 * [FreeDesktop.Org Startup Notifications standard](http://standards.freedesktop.org/startup-notification-spec/startup-notification-latest.txt).
+		 * The returned token may be referred to equivalently as an ‘activation token’
+		 * (using Wayland terminology) or a ‘startup sequence ID’ (using X11 terminology).
+		 * The two [are interoperable](https://gitlab.freedesktop.org/wayland/wayland-protocols/-/blob/main/staging/xdg-activation/x11-interoperation.rst).
+		 * 
+		 * Activation tokens are defined in the [XDG Activation Protocol](https://wayland.app/protocols/xdg-activation-v1),
+		 * and startup notification IDs are defined in the
+		 * [freedesktop.org Startup Notification Protocol](http://standards.freedesktop.org/startup-notification-spec/startup-notification-latest.txt).
+		 * 
+		 * Support for the XDG Activation Protocol was added in GLib 2.76.
 		 * @param info a #GAppInfo
-		 * @param files a #GList of of #GFile objects
+		 * @param files a #GList of #GFile objects
 		 * @returns a startup notification ID for the application, or %NULL if
 		 *     not supported.
 		 */
@@ -118,9 +145,13 @@ declare namespace imports.gi.Gio {
 		 */
 		unsetenv(variable: string): void;
 		/**
-		 * The ::launch-failed signal is emitted when a #GAppInfo launch
+		 * The #GAppLaunchContext::launch-failed signal is emitted when a #GAppInfo launch
 		 * fails. The startup notification id is provided, so that the launcher
 		 * can cancel the startup notification.
+		 * 
+		 * Because a launch operation may involve spawning multiple instances of the
+		 * target application, you should expect this signal to be emitted multiple
+		 * times, one for each spawned instance.
 		 * @param signal 
 		 * @param callback Callback function
 		 *  - owner: owner of the emitted event 
@@ -130,11 +161,54 @@ declare namespace imports.gi.Gio {
 		 */
 		connect(signal: "launch-failed", callback: (owner: this, startup_notify_id: string) => void): number;
 		/**
-		 * The ::launched signal is emitted when a #GAppInfo is successfully
-		 * launched. The #platform_data is an GVariant dictionary mapping
-		 * strings to variants (ie a{sv}), which contains additional,
+		 * The #GAppLaunchContext::launch-started signal is emitted when a #GAppInfo is
+		 * about to be launched. If non-null the #platform_data is an
+		 * GVariant dictionary mapping strings to variants (ie `a{sv}`), which
+		 * contains additional, platform-specific data about this launch. On
+		 * UNIX, at least the `startup-notification-id` keys will be
+		 * present.
+		 * 
+		 * The value of the `startup-notification-id` key (type `s`) is a startup
+		 * notification ID corresponding to the format from the [startup-notification
+		 * specification](https://specifications.freedesktop.org/startup-notification-spec/startup-notification-0.1.txt).
+		 * It allows tracking the progress of the launchee through startup.
+		 * 
+		 * It is guaranteed that this signal is followed by either a #GAppLaunchContext::launched or
+		 * #GAppLaunchContext::launch-failed signal.
+		 * 
+		 * Because a launch operation may involve spawning multiple instances of the
+		 * target application, you should expect this signal to be emitted multiple
+		 * times, one for each spawned instance.
+		 * @param signal 
+		 * @param callback Callback function
+		 *  - owner: owner of the emitted event 
+		 *  - info: the #GAppInfo that is about to be launched 
+		 *  - platform_data: additional platform-specific data for this launch 
+		 * 
+		 * @returns Callback ID
+		 */
+		connect(signal: "launch-started", callback: (owner: this, info: AppInfo, platform_data: GLib.Variant | null) => void): number;
+		/**
+		 * The #GAppLaunchContext::launched signal is emitted when a #GAppInfo is successfully
+		 * launched.
+		 * 
+		 * Because a launch operation may involve spawning multiple instances of the
+		 * target application, you should expect this signal to be emitted multiple
+		 * times, one time for each spawned instance.
+		 * 
+		 * The #platform_data is an GVariant dictionary mapping
+		 * strings to variants (ie `a{sv}`), which contains additional,
 		 * platform-specific data about this launch. On UNIX, at least the
-		 * "pid" and "startup-notification-id" keys will be present.
+		 * `pid` and `startup-notification-id` keys will be present.
+		 * 
+		 * Since 2.72 the `pid` may be 0 if the process id wasn't known (for
+		 * example if the process was launched via D-Bus). The `pid` may not be
+		 * set at all in subsequent releases.
+		 * 
+		 * On Windows, `pid` is guaranteed to be valid only for the duration of the
+		 * #GAppLaunchContext::launched signal emission; after the signal is emitted,
+		 * GLib will call {@link G.spawn_close_pid}. If you need to keep the #GPid after the
+		 * signal has been emitted, then you can duplicate `pid` using `DuplicateHandle()`.
 		 * @param signal 
 		 * @param callback Callback function
 		 *  - owner: owner of the emitted event 
@@ -236,6 +310,8 @@ declare namespace imports.gi.Gio {
 		 * inspected and modified.  If %G_APPLICATION_HANDLES_COMMAND_LINE is
 		 * set, then the resulting dictionary is sent to the primary instance,
 		 * where g_application_command_line_get_options_dict() will return it.
+		 * As it has been passed outside the process at this point, the types of all
+		 * values in the options dict must be checked before being used.
 		 * This "packing" is done according to the type of the argument --
 		 * booleans for normal flags, strings for strings, bytestrings for
 		 * filenames, etc.  The packing only occurs if the flag is given (ie: we
@@ -412,7 +488,7 @@ declare namespace imports.gi.Gio {
 		 * Increases the use count of #application.
 		 * 
 		 * Use this function to indicate that the application has a reason to
-		 * continue to run.  For example, {@link G.application_hold} is called by GTK+
+		 * continue to run.  For example, {@link G.application_hold} is called by GTK
 		 * when a toplevel window is on the screen.
 		 * 
 		 * To cancel the hold, call g_application_release().
@@ -967,8 +1043,8 @@ declare namespace imports.gi.Gio {
 	 * instance and g_application_run() promptly returns. See the code
 	 * examples below.
 	 * 
-	 * If used, the expected form of an application identifier is the same as
-	 * that of of a
+	 * If used, the expected form of an application identifier is the
+	 * same as that of a
 	 * [D-Bus well-known bus name](https://dbus.freedesktop.org/doc/dbus-specification.html#message-protocol-names-bus).
 	 * Examples include: `com.example.MyApp`, `org.example.internal_apps.Calculator`,
 	 * `org._7_zip.Archiver`.
@@ -995,6 +1071,10 @@ declare namespace imports.gi.Gio {
 	 * the session bus, and GIO provides the #GDBusActionGroup wrapper to
 	 * conveniently access them remotely. GIO provides a #GDBusMenuModel wrapper
 	 * for remote access to exported #GMenuModels.
+	 * 
+	 * Note: Due to the fact that actions are exported on the session bus,
+	 * using `maybe` parameters is not supported, since D-Bus does not support
+	 * `maybe` types.
 	 * 
 	 * There is a number of different entry points into a GApplication:
 	 * 
@@ -1202,7 +1282,7 @@ declare namespace imports.gi.Gio {
 		 */
 		get_is_remote(): boolean;
 		/**
-		 * Gets the options there were passed to {@link G.application_command_line}.
+		 * Gets the options that were passed to {@link G.application_command_line}.
 		 * 
 		 * If you did not override local_command_line() then these are the same
 		 * options that were parsed according to the #GOptionEntrys added to the
@@ -1211,6 +1291,9 @@ declare namespace imports.gi.Gio {
 		 * 
 		 * If no options were sent then an empty dictionary is returned so that
 		 * you don't need to check for %NULL.
+		 * 
+		 * The data has been passed via an untrusted external process, so the types of
+		 * all values must be checked before being used.
 		 * @returns a #GVariantDict with the options
 		 */
 		get_options_dict(): GLib.VariantDict;
@@ -1221,6 +1304,9 @@ declare namespace imports.gi.Gio {
 		 * context in which the invocation occurred.  It typically contains
 		 * information like the current working directory and the startup
 		 * notification ID.
+		 * 
+		 * It comes from an untrusted external process and hence the types of all
+		 * values must be validated before being used.
 		 * 
 		 * For local invocation, it will be %NULL.
 		 * @returns the platform data, or %NULL
@@ -1376,7 +1462,7 @@ declare namespace imports.gi.Gio {
 	 * The complete example can be found here:
 	 * [gapplication-example-cmdline.c](https://gitlab.gnome.org/GNOME/glib/-/blob/HEAD/gio/tests/gapplication-example-cmdline.c)
 	 * 
-	 * In more complicated cases, the handling of the comandline can be
+	 * In more complicated cases, the handling of the commandline can be
 	 * split between the launcher and the primary instance.
 	 * |[<!-- language="C" -->
 	 * static gboolean
@@ -1388,6 +1474,12 @@ declare namespace imports.gi.Gio {
 	 *   gchar **argv;
 	 * 
 	 *   argv = *arguments;
+	 * 
+	 *   if (argv[0] == NULL)
+	 *     {
+	 *       *exit_status = 0;
+	 *       return FALSE;
+	 *     }
 	 * 
 	 *   i = 1;
 	 *   while (argv[i])
@@ -2211,8 +2303,7 @@ declare namespace imports.gi.Gio {
 		 * 
 		 * This operation can fail if #GCredentials is not supported on the
 		 * OS or if the native credentials type does not contain information
-		 * about the UNIX process ID (for example this is the case for
-		 * %G_CREDENTIALS_TYPE_APPLE_XUCRED).
+		 * about the UNIX process ID.
 		 * @returns The UNIX process ID, or `-1` if #error is set.
 		 */
 		get_unix_pid(): number;
@@ -2311,6 +2402,9 @@ declare namespace imports.gi.Gio {
 	 * On Solaris (including OpenSolaris and its derivatives), the native
 	 * credential type is a `ucred_t`. This corresponds to
 	 * %G_CREDENTIALS_TYPE_SOLARIS_UCRED.
+	 * 
+	 * Since GLib 2.72, on Windows, the native credentials may contain the PID of a
+	 * process. This corresponds to %G_CREDENTIALS_TYPE_WIN32_PID.
 	 */
 	interface Credentials extends CredentialsMixin {}
 
@@ -2903,6 +2997,10 @@ declare namespace imports.gi.Gio {
 		 * constraint is violated, the export will fail and 0 will be
 		 * returned (with #error set accordingly).
 		 * 
+		 * Exporting menus with sections containing more than
+		 * %G_MENU_EXPORTER_MAX_SECTION_SIZE items is not supported and results in
+		 * undefined behavior.
+		 * 
 		 * You can unexport the menu model using
 		 * {@link G.dbus_connection_unexport_menu_model} with the return value of
 		 * this function.
@@ -3040,7 +3138,7 @@ declare namespace imports.gi.Gio {
 		 * 
 		 * When handling remote calls into any node in the subtree, first the
 		 * #enumerate function is used to check if the node exists. If the node exists
-		 * or the #G_DBUS_SUBTREE_FLAGS_DISPATCH_TO_UNENUMERATED_NODES flag is set
+		 * or the %G_DBUS_SUBTREE_FLAGS_DISPATCH_TO_UNENUMERATED_NODES flag is set
 		 * the #introspection function is used to check if the node supports the
 		 * requested method. If so, the #dispatch function is used to determine
 		 * where to dispatch the call. The collected #GDBusInterfaceVTable and
@@ -3052,7 +3150,7 @@ declare namespace imports.gi.Gio {
 		 * of the thread you are calling this method from.
 		 * 
 		 * If an existing subtree is already registered at #object_path or
-		 * then #error is set to #G_IO_ERROR_EXISTS.
+		 * then #error is set to %G_IO_ERROR_EXISTS.
 		 * 
 		 * Note that it is valid to register regular objects (using
 		 * {@link G.dbus_connection_register_object}) in a subtree registered with
@@ -3234,7 +3332,7 @@ declare namespace imports.gi.Gio {
 		 */
 		set_exit_on_close(exit_on_close: boolean): void;
 		/**
-		 * Subscribes to signals on #connection and invokes #callback with a whenever
+		 * Subscribes to signals on #connection and invokes #callback whenever
 		 * the signal is received. Note that #callback will be invoked in the
 		 * [thread-default main context][g-main-context-push-thread-default]
 		 * of the thread you are calling this method from.
@@ -3668,7 +3766,7 @@ declare namespace imports.gi.Gio {
 		 * Gets the interface vtable for the D-Bus interface implemented by
 		 * #interface_. The returned function pointers should expect #interface_
 		 * itself to be passed as #user_data.
-		 * @returns A #GDBusInterfaceVTable (never %NULL).
+		 * @returns the vtable of the D-Bus interface implemented by the skeleton
 		 */
 		get_vtable(): DBusInterfaceVTable;
 		/**
@@ -5387,6 +5485,10 @@ declare namespace imports.gi.Gio {
 		connect(signal: "g-properties-changed", callback: (owner: this, changed_properties: GLib.Variant, invalidated_properties: string[]) => void): number;
 		/**
 		 * Emitted when a signal from the remote object and interface that #proxy is for, has been received.
+		 * 
+		 * Since 2.72 this signal supports detailed connections. You can connect to
+		 * the detailed signal `g-signal::x` in order to receive callbacks only when
+		 * signal `x` is received from the remote object.
 		 * @param signal 
 		 * @param callback Callback function
 		 *  - owner: owner of the emitted event 
@@ -6245,6 +6347,209 @@ declare namespace imports.gi.Gio {
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link DebugControllerDBus} instead.
+	 */
+	interface IDebugControllerDBus {
+		/**
+		 * The D-Bus connection to expose the debugging interface on.
+		 * 
+		 * Typically this will be the same connection (to the system or session bus)
+		 * which the rest of the application or service’s D-Bus objects are registered
+		 * on.
+		 */
+		connection: DBusConnection;
+		/**
+		 * Stop the debug controller, unregistering its object from the bus.
+		 * 
+		 * Any pending method calls to the object will complete successfully, but new
+		 * ones will return an error. This method will block until all pending
+		 * #GDebugControllerDBus::authorize signals have been handled. This is expected
+		 * to not take long, as it will just be waiting for threads to join. If any
+		 * #GDebugControllerDBus::authorize signal handlers are still executing in other
+		 * threads, this will block until after they have returned.
+		 * 
+		 * This method will be called automatically when the final reference to the
+		 * #GDebugControllerDBus is dropped. You may want to call it explicitly to know
+		 * when the controller has been fully removed from the bus, or to break
+		 * reference count cycles.
+		 * 
+		 * Calling this method from within a #GDebugControllerDBus::authorize signal
+		 * handler will cause a deadlock and must not be done.
+		 */
+		stop(): void;
+		/**
+		 * Emitted when a D-Bus peer is trying to change the debug settings and used
+		 * to determine if that is authorized.
+		 * 
+		 * This signal is emitted in a dedicated worker thread, so handlers are
+		 * allowed to perform blocking I/O. This means that, for example, it is
+		 * appropriate to call {@link `polkit.authority_check_authorization_sync}` to check
+		 * authorization using polkit.
+		 * 
+		 * If %FALSE is returned then no further handlers are run and the request to
+		 * change the debug settings is rejected.
+		 * 
+		 * Otherwise, if %TRUE is returned, signal emission continues. If no handlers
+		 * return %FALSE, then the debug settings are allowed to be changed.
+		 * 
+		 * Signal handlers must not modify #invocation, or cause it to return a value.
+		 * 
+		 * The default class handler just returns %TRUE.
+		 * @param signal 
+		 * @param callback Callback function
+		 *  - owner: owner of the emitted event 
+		 *  - invocation: A #GDBusMethodInvocation. 
+		 *  - returns %TRUE if the call is authorized, %FALSE otherwise. 
+		 * 
+		 * @returns Callback ID
+		 */
+		connect(signal: "authorize", callback: (owner: this, invocation: DBusMethodInvocation) => boolean): number;
+
+		connect(signal: "notify::connection", callback: (owner: this, ...args: any) => void): number;
+
+	}
+
+	type DebugControllerDBusInitOptionsMixin = GObject.ObjectInitOptions & DebugControllerInitOptions & InitableInitOptions & 
+	Pick<IDebugControllerDBus,
+		"connection">;
+
+	export interface DebugControllerDBusInitOptions extends DebugControllerDBusInitOptionsMixin {}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link DebugControllerDBus} instead.
+	 */
+	type DebugControllerDBusMixin = IDebugControllerDBus & GObject.Object & DebugController & Initable;
+
+	/**
+	 * #GDebugControllerDBus is an implementation of #GDebugController which exposes
+	 * debug settings as a D-Bus object.
+	 * 
+	 * It is a #GInitable object, and will register an object at
+	 * `/org/gtk/Debugging` on the bus given as
+	 * #GDebugControllerDBus:connection once it’s initialized. The object will be
+	 * unregistered when the last reference to the #GDebugControllerDBus is dropped.
+	 * 
+	 * This D-Bus object can be used by remote processes to enable or disable debug
+	 * output in this process. Remote processes calling
+	 * `org.gtk.Debugging.SetDebugEnabled()` will affect the value of
+	 * #GDebugController:debug-enabled and, by default, g_log_get_debug_enabled().
+	 * default.
+	 * 
+	 * By default, no processes are allowed to call `SetDebugEnabled()` unless a
+	 * #GDebugControllerDBus::authorize signal handler is installed. This is because
+	 * the process may be privileged, or might expose sensitive information in its
+	 * debug output. You may want to restrict the ability to enable debug output to
+	 * privileged users or processes.
+	 * 
+	 * One option is to install a D-Bus security policy which restricts access to
+	 * `SetDebugEnabled()`, installing something like the following in
+	 * `$datadir/dbus-1/system.d/`:
+	 * |[<!-- language="XML" -->
+	 * <?xml version="1.0"?> <!--*-nxml-*-->
+	 * <!DOCTYPE busconfig PUBLIC "-//freedesktop//DTD D-BUS Bus Configuration 1.0//EN"
+	 *      "http://www.freedesktop.org/standards/dbus/1.0/busconfig.dtd">
+	 * <busconfig>
+	 *   <policy user="root">
+	 *     <allow send_destination="com.example.MyService" send_interface="org.gtk.Debugging"/>
+	 *   </policy>
+	 *   <policy context="default">
+	 *     <deny send_destination="com.example.MyService" send_interface="org.gtk.Debugging"/>
+	 *   </policy>
+	 * </busconfig>
+	 * ]|
+	 * 
+	 * This will prevent the `SetDebugEnabled()` method from being called by all
+	 * except root. It will not prevent the `DebugEnabled` property from being read,
+	 * as it’s accessed through the `org.freedesktop.DBus.Properties` interface.
+	 * 
+	 * Another option is to use polkit to allow or deny requests on a case-by-case
+	 * basis, allowing for the possibility of dynamic authorisation. To do this,
+	 * connect to the #GDebugControllerDBus::authorize signal and query polkit in
+	 * it:
+	 * |[<!-- language="C" -->
+	 *   g_autoptr(GError) child_error = NULL;
+	 *   g_autoptr(GDBusConnection) connection = g_bus_get_sync (G_BUS_TYPE_SYSTEM, NULL, NULL);
+	 *   gulong debug_controller_authorize_id = 0;
+	 * 
+	 *   // Set up the debug controller.
+	 *   debug_controller = G_DEBUG_CONTROLLER (g_debug_controller_dbus_new (priv->connection, NULL, &child_error));
+	 *   if (debug_controller == NULL)
+	 *     {
+	 *       g_error ("Could not register debug controller on bus: %s"),
+	 *                child_error->message);
+	 *     }
+	 * 
+	 *   debug_controller_authorize_id = g_signal_connect (debug_controller,
+	 *                                                     "authorize",
+	 *                                                     G_CALLBACK (debug_controller_authorize_cb),
+	 *                                                     self);
+	 * 
+	 *   static gboolean
+	 *   debug_controller_authorize_cb (GDebugControllerDBus  *debug_controller,
+	 *                                  GDBusMethodInvocation *invocation,
+	 *                                  gpointer               user_data)
+	 *   {
+	 *     g_autoptr(PolkitAuthority) authority = NULL;
+	 *     g_autoptr(PolkitSubject) subject = NULL;
+	 *     g_autoptr(PolkitAuthorizationResult) auth_result = NULL;
+	 *     g_autoptr(GError) local_error = NULL;
+	 *     GDBusMessage *message;
+	 *     GDBusMessageFlags message_flags;
+	 *     PolkitCheckAuthorizationFlags flags = POLKIT_CHECK_AUTHORIZATION_FLAGS_NONE;
+	 * 
+	 *     message = g_dbus_method_invocation_get_message (invocation);
+	 *     message_flags = g_dbus_message_get_flags (message);
+	 * 
+	 *     authority = polkit_authority_get_sync (NULL, &local_error);
+	 *     if (authority == NULL)
+	 *       {
+	 *         g_warning ("Failed to get polkit authority: %s", local_error->message);
+	 *         return FALSE;
+	 *       }
+	 * 
+	 *     if (message_flags & G_DBUS_MESSAGE_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION)
+	 *       flags |= POLKIT_CHECK_AUTHORIZATION_FLAGS_ALLOW_USER_INTERACTION;
+	 * 
+	 *     subject = polkit_system_bus_name_new (g_dbus_method_invocation_get_sender (invocation));
+	 * 
+	 *     auth_result = polkit_authority_check_authorization_sync (authority,
+	 *                                                              subject,
+	 *                                                              "com.example.MyService.set-debug-enabled",
+	 *                                                              NULL,
+	 *                                                              flags,
+	 *                                                              NULL,
+	 *                                                              &local_error);
+	 *     if (auth_result == NULL)
+	 *       {
+	 *         g_warning ("Failed to get check polkit authorization: %s", local_error->message);
+	 *         return FALSE;
+	 *       }
+	 * 
+	 *     return polkit_authorization_result_get_is_authorized (auth_result);
+	 *   }
+	 * ]|
+	 */
+	interface DebugControllerDBus extends DebugControllerDBusMixin {}
+
+	class DebugControllerDBus {
+		public constructor(options?: Partial<DebugControllerDBusInitOptions>);
+		/**
+		 * Create a new #GDebugControllerDBus and synchronously initialize it.
+		 * 
+		 * Initializing the object will export the debug object on #connection. The
+		 * object will remain registered until the last reference to the
+		 * #GDebugControllerDBus is dropped.
+		 * 
+		 * Initialization may fail if registering the object on #connection fails.
+		 * @param connection a #GDBusConnection to register the debug object on
+		 * @param cancellable a #GCancellable, or %NULL
+		 * @returns a new #GDebugControllerDBus, or %NULL
+		 *   on failure
+		 */
+		public static new(connection: DBusConnection, cancellable?: Cancellable | null): DebugControllerDBus | null;
+	}
+
+	/** This construct is only for enabling class multi-inheritance,
 	 * use {@link DesktopAppInfo} instead.
 	 */
 	interface IDesktopAppInfo {
@@ -6315,7 +6620,7 @@ declare namespace imports.gi.Gio {
 		/**
 		 * Gets the value of the NoDisplay key, which helps determine if the
 		 * application info should be shown in menus. See
-		 * #G_KEY_FILE_DESKTOP_KEY_NO_DISPLAY and {@link G.app_info_should_show}.
+		 * %G_KEY_FILE_DESKTOP_KEY_NO_DISPLAY and {@link G.app_info_should_show}.
 		 * @returns The value of the NoDisplay key
 		 */
 		get_nodisplay(): boolean;
@@ -6426,12 +6731,15 @@ declare namespace imports.gi.Gio {
 		 * @param uris List of URIs
 		 * @param launch_context a #GAppLaunchContext
 		 * @param spawn_flags #GSpawnFlags, used for each process
+		 * @param user_setup a #GSpawnChildSetupFunc, used once
+		 *     for each process.
+		 * @param pid_callback Callback for child processes
 		 * @param stdin_fd file descriptor to use for child's stdin, or -1
 		 * @param stdout_fd file descriptor to use for child's stdout, or -1
 		 * @param stderr_fd file descriptor to use for child's stderr, or -1
 		 * @returns %TRUE on successful launch, %FALSE otherwise.
 		 */
-		launch_uris_as_manager_with_fds(uris: string[], launch_context: AppLaunchContext | null, spawn_flags: GLib.SpawnFlags, stdin_fd: number, stdout_fd: number, stderr_fd: number): boolean;
+		launch_uris_as_manager_with_fds(uris: string[], launch_context: AppLaunchContext | null, spawn_flags: GLib.SpawnFlags, user_setup: GLib.SpawnChildSetupFunc | null, pid_callback: DesktopAppLaunchCallback | null, stdin_fd: number, stdout_fd: number, stderr_fd: number): boolean;
 		/**
 		 * Returns the list of "additional application actions" supported on the
 		 * desktop file, as per the desktop file specification.
@@ -6691,7 +6999,8 @@ declare namespace imports.gi.Gio {
 		 * {@link G.file_enumerator_close_finish}.
 		 * @param io_priority the [I/O priority][io-priority] of the request
 		 * @param cancellable optional #GCancellable object, %NULL to ignore.
-		 * @param callback a #GAsyncReadyCallback to call when the request is satisfied
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		close_async(io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -6713,6 +7022,9 @@ declare namespace imports.gi.Gio {
 		 * Return a new #GFile which refers to the file named by #info in the source
 		 * directory of #enumerator.  This function is primarily intended to be used
 		 * inside loops with {@link G.file_enumerator_next_file}.
+		 * 
+		 * To use this, %G_FILE_ATTRIBUTE_STANDARD_NAME must have been listed in the
+		 * attributes list used when creating the #GFileEnumerator.
 		 * 
 		 * This is a convenience method that's equivalent to:
 		 * |[<!-- language="C" -->
@@ -6807,28 +7119,74 @@ declare namespace imports.gi.Gio {
 		next_file(cancellable?: Cancellable | null): FileInfo | null;
 		/**
 		 * Request information for a number of files from the enumerator asynchronously.
-		 * When all i/o for the operation is finished the #callback will be called with
+		 * When all I/O for the operation is finished the #callback will be called with
 		 * the requested information.
 		 * 
 		 * See the documentation of #GFileEnumerator for information about the
 		 * order of returned files.
 		 * 
-		 * The callback can be called with less than #num_files files in case of error
-		 * or at the end of the enumerator. In case of a partial error the callback will
-		 * be called with any succeeding items and no error, and on the next request the
-		 * error will be reported. If a request is cancelled the callback will be called
-		 * with %G_IO_ERROR_CANCELLED.
+		 * Once the end of the enumerator is reached, or if an error occurs, the
+		 * #callback will be called with an empty list. In this case, the previous call
+		 * to {@link G.file_enumerator_next_files_async} will typically have returned fewer
+		 * than #num_files items.
+		 * 
+		 * If a request is cancelled the callback will be called with
+		 * %G_IO_ERROR_CANCELLED.
+		 * 
+		 * This leads to the following pseudo-code usage:
+		 * |[
+		 * g_autoptr(GFile) dir = get_directory ();
+		 * g_autoptr(GFileEnumerator) enumerator = NULL;
+		 * g_autolist(GFileInfo) files = NULL;
+		 * g_autoptr(GError) local_error = NULL;
+		 * 
+		 * enumerator = yield g_file_enumerate_children_async (dir,
+		 *                                                     G_FILE_ATTRIBUTE_STANDARD_NAME ","
+		 *                                                     G_FILE_ATTRIBUTE_STANDARD_TYPE,
+		 *                                                     G_FILE_QUERY_INFO_NONE,
+		 *                                                     G_PRIORITY_DEFAULT,
+		 *                                                     cancellable,
+		 *                                                     …,
+		 *                                                     &local_error);
+		 * if (enumerator == NULL)
+		 *   g_error ("Error enumerating: %s", local_error->message);
+		 * 
+		 * // Loop until no files are returned, either because the end of the enumerator
+		 * // has been reached, or an error was returned.
+		 * do
+		 *   {
+		 *     files = yield g_file_enumerator_next_files_async (enumerator,
+		 *                                                       5,  // number of files to request
+		 *                                                       G_PRIORITY_DEFAULT,
+		 *                                                       cancellable,
+		 *                                                       …,
+		 *                                                       &local_error);
+		 * 
+		 *     // Process the returned files, but don’t assume that exactly 5 were returned.
+		 *     for (GList *l = files; l != NULL; l = l->next)
+		 *       {
+		 *         GFileInfo *info = l->data;
+		 *         handle_file_info (info);
+		 *       }
+		 *   }
+		 * while (files != NULL);
+		 * 
+		 * if (local_error != NULL &&
+		 *     !g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+		 *   g_error ("Error while enumerating: %s", local_error->message);
+		 * ]|
 		 * 
 		 * During an async request no other sync and async calls are allowed, and will
 		 * result in %G_IO_ERROR_PENDING errors.
 		 * 
-		 * Any outstanding i/o request with higher priority (lower numerical value) will
+		 * Any outstanding I/O request with higher priority (lower numerical value) will
 		 * be executed before an outstanding request with lower priority. Default
 		 * priority is %G_PRIORITY_DEFAULT.
 		 * @param num_files the number of file info objects to request
 		 * @param io_priority the [I/O priority][io-priority] of the request
 		 * @param cancellable optional #GCancellable object, %NULL to ignore.
-		 * @param callback a #GAsyncReadyCallback to call when the request is satisfied
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		next_files_async(num_files: number, io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -6932,7 +7290,8 @@ declare namespace imports.gi.Gio {
 		 * @param attributes a file attribute query string.
 		 * @param io_priority the [I/O priority][gio-GIOScheduler] of the request
 		 * @param cancellable optional #GCancellable object, %NULL to ignore.
-		 * @param callback callback to call when the request is satisfied
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		query_info_async(attributes: string, io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -7048,14 +7407,18 @@ declare namespace imports.gi.Gio {
 		 * Gets the access time of the current #info and returns it as a
 		 * #GDateTime.
 		 * 
-		 * This requires the %G_FILE_ATTRIBUTE_TIME_ACCESS attribute. If
-		 * %G_FILE_ATTRIBUTE_TIME_ACCESS_USEC is provided, the resulting #GDateTime
-		 * will have microsecond precision.
+		 * It is an error to call this if the #GFileInfo does not contain
+		 * %G_FILE_ATTRIBUTE_TIME_ACCESS. If %G_FILE_ATTRIBUTE_TIME_ACCESS_USEC is
+		 * provided, the resulting #GDateTime will additionally have microsecond
+		 * precision.
+		 * 
+		 * If nanosecond precision is needed, %G_FILE_ATTRIBUTE_TIME_ACCESS_NSEC must
+		 * be queried separately using {@link G.file_info_get_attribute_uint32}.
 		 * @returns access time, or %NULL if unknown
 		 */
 		get_access_date_time(): GLib.DateTime | null;
 		/**
-		 * Gets the value of a attribute, formatted as a string.
+		 * Gets the value of an attribute, formatted as a string.
 		 * This escapes things as needed to make the string valid
 		 * UTF-8.
 		 * @param attribute a file attribute key.
@@ -7093,6 +7456,18 @@ declare namespace imports.gi.Gio {
 		 * return location for the attribute status, or %NULL
 		 */
 		get_attribute_data(attribute: string): [ boolean, FileAttributeType | null, any | null, FileAttributeStatus | null ];
+		/**
+		 * Gets the value of a byte string attribute as a file path.
+		 * 
+		 * If the attribute does not contain a byte string, `NULL` will be returned.
+		 * 
+		 * This function is meant to be used by language bindings that have specific
+		 * handling for Unix paths.
+		 * @param attribute a file attribute key.
+		 * @returns the contents of the #attribute value as
+		 * a file path, or %NULL otherwise.
+		 */
+		get_attribute_file_path(attribute: string): string | null;
 		/**
 		 * Gets a signed 32-bit integer contained within the attribute. If the
 		 * attribute does not contain a signed 32-bit integer, or is invalid,
@@ -7165,6 +7540,9 @@ declare namespace imports.gi.Gio {
 		get_attribute_uint64(attribute: string): number;
 		/**
 		 * Gets the file's content type.
+		 * 
+		 * It is an error to call this if the #GFileInfo does not contain
+		 * %G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE.
 		 * @returns a string containing the file's content type,
 		 * or %NULL if unknown.
 		 */
@@ -7173,58 +7551,86 @@ declare namespace imports.gi.Gio {
 		 * Gets the creation time of the current #info and returns it as a
 		 * #GDateTime.
 		 * 
-		 * This requires the %G_FILE_ATTRIBUTE_TIME_CREATED attribute. If
-		 * %G_FILE_ATTRIBUTE_TIME_CREATED_USEC is provided, the resulting #GDateTime
-		 * will have microsecond precision.
+		 * It is an error to call this if the #GFileInfo does not contain
+		 * %G_FILE_ATTRIBUTE_TIME_CREATED. If %G_FILE_ATTRIBUTE_TIME_CREATED_USEC is
+		 * provided, the resulting #GDateTime will additionally have microsecond
+		 * precision.
+		 * 
+		 * If nanosecond precision is needed, %G_FILE_ATTRIBUTE_TIME_CREATED_NSEC must
+		 * be queried separately using {@link G.file_info_get_attribute_uint32}.
 		 * @returns creation time, or %NULL if unknown
 		 */
 		get_creation_date_time(): GLib.DateTime | null;
 		/**
 		 * Returns the #GDateTime representing the deletion date of the file, as
-		 * available in G_FILE_ATTRIBUTE_TRASH_DELETION_DATE. If the
-		 * G_FILE_ATTRIBUTE_TRASH_DELETION_DATE attribute is unset, %NULL is returned.
+		 * available in %G_FILE_ATTRIBUTE_TRASH_DELETION_DATE. If the
+		 * %G_FILE_ATTRIBUTE_TRASH_DELETION_DATE attribute is unset, %NULL is returned.
 		 * @returns a #GDateTime, or %NULL.
 		 */
 		get_deletion_date(): GLib.DateTime | null;
 		/**
 		 * Gets a display name for a file. This is guaranteed to always be set.
+		 * 
+		 * It is an error to call this if the #GFileInfo does not contain
+		 * %G_FILE_ATTRIBUTE_STANDARD_DISPLAY_NAME.
 		 * @returns a string containing the display name.
 		 */
 		get_display_name(): string;
 		/**
 		 * Gets the edit name for a file.
+		 * 
+		 * It is an error to call this if the #GFileInfo does not contain
+		 * %G_FILE_ATTRIBUTE_STANDARD_EDIT_NAME.
 		 * @returns a string containing the edit name.
 		 */
 		get_edit_name(): string;
 		/**
 		 * Gets the [entity tag][gfile-etag] for a given
 		 * #GFileInfo. See %G_FILE_ATTRIBUTE_ETAG_VALUE.
+		 * 
+		 * It is an error to call this if the #GFileInfo does not contain
+		 * %G_FILE_ATTRIBUTE_ETAG_VALUE.
 		 * @returns a string containing the value of the "etag:value" attribute.
 		 */
 		get_etag(): string | null;
 		/**
 		 * Gets a file's type (whether it is a regular file, symlink, etc).
 		 * This is different from the file's content type, see {@link G.file_info_get_content_type}.
+		 * 
+		 * It is an error to call this if the #GFileInfo does not contain
+		 * %G_FILE_ATTRIBUTE_STANDARD_TYPE.
 		 * @returns a #GFileType for the given file.
 		 */
 		get_file_type(): FileType;
 		/**
 		 * Gets the icon for a file.
+		 * 
+		 * It is an error to call this if the #GFileInfo does not contain
+		 * %G_FILE_ATTRIBUTE_STANDARD_ICON.
 		 * @returns #GIcon for the given #info.
 		 */
 		get_icon(): Icon | null;
 		/**
 		 * Checks if a file is a backup file.
+		 * 
+		 * It is an error to call this if the #GFileInfo does not contain
+		 * %G_FILE_ATTRIBUTE_STANDARD_IS_BACKUP.
 		 * @returns %TRUE if file is a backup file, %FALSE otherwise.
 		 */
 		get_is_backup(): boolean;
 		/**
 		 * Checks if a file is hidden.
+		 * 
+		 * It is an error to call this if the #GFileInfo does not contain
+		 * %G_FILE_ATTRIBUTE_STANDARD_IS_HIDDEN.
 		 * @returns %TRUE if the file is a hidden file, %FALSE otherwise.
 		 */
 		get_is_hidden(): boolean;
 		/**
 		 * Checks if a file is a symlink.
+		 * 
+		 * It is an error to call this if the #GFileInfo does not contain
+		 * %G_FILE_ATTRIBUTE_STANDARD_IS_SYMLINK.
 		 * @returns %TRUE if the given #info is a symlink.
 		 */
 		get_is_symlink(): boolean;
@@ -7232,9 +7638,13 @@ declare namespace imports.gi.Gio {
 		 * Gets the modification time of the current #info and returns it as a
 		 * #GDateTime.
 		 * 
-		 * This requires the %G_FILE_ATTRIBUTE_TIME_MODIFIED attribute. If
-		 * %G_FILE_ATTRIBUTE_TIME_MODIFIED_USEC is provided, the resulting #GDateTime
-		 * will have microsecond precision.
+		 * It is an error to call this if the #GFileInfo does not contain
+		 * %G_FILE_ATTRIBUTE_TIME_MODIFIED. If %G_FILE_ATTRIBUTE_TIME_MODIFIED_USEC is
+		 * provided, the resulting #GDateTime will additionally have microsecond
+		 * precision.
+		 * 
+		 * If nanosecond precision is needed, %G_FILE_ATTRIBUTE_TIME_MODIFIED_NSEC must
+		 * be queried separately using {@link G.file_info_get_attribute_uint32}.
 		 * @returns modification time, or %NULL if unknown
 		 */
 		get_modification_date_time(): GLib.DateTime | null;
@@ -7245,11 +7655,18 @@ declare namespace imports.gi.Gio {
 		 * 
 		 * Gets the modification time of the current #info and sets it
 		 * in #result.
+		 * 
+		 * It is an error to call this if the #GFileInfo does not contain
+		 * %G_FILE_ATTRIBUTE_TIME_MODIFIED. If %G_FILE_ATTRIBUTE_TIME_MODIFIED_USEC is
+		 * provided it will be used too.
 		 * @returns a #GTimeVal.
 		 */
 		get_modification_time(): GLib.TimeVal;
 		/**
 		 * Gets the name for a file. This is guaranteed to always be set.
+		 * 
+		 * It is an error to call this if the #GFileInfo does not contain
+		 * %G_FILE_ATTRIBUTE_STANDARD_NAME.
 		 * @returns a string containing the file name.
 		 */
 		get_name(): string;
@@ -7257,22 +7674,34 @@ declare namespace imports.gi.Gio {
 		 * Gets the file's size (in bytes). The size is retrieved through the value of
 		 * the %G_FILE_ATTRIBUTE_STANDARD_SIZE attribute and is converted
 		 * from #guint64 to #goffset before returning the result.
+		 * 
+		 * It is an error to call this if the #GFileInfo does not contain
+		 * %G_FILE_ATTRIBUTE_STANDARD_SIZE.
 		 * @returns a #goffset containing the file's size (in bytes).
 		 */
 		get_size(): number;
 		/**
 		 * Gets the value of the sort_order attribute from the #GFileInfo.
 		 * See %G_FILE_ATTRIBUTE_STANDARD_SORT_ORDER.
+		 * 
+		 * It is an error to call this if the #GFileInfo does not contain
+		 * %G_FILE_ATTRIBUTE_STANDARD_SORT_ORDER.
 		 * @returns a #gint32 containing the value of the "standard::sort_order" attribute.
 		 */
 		get_sort_order(): number;
 		/**
 		 * Gets the symbolic icon for a file.
+		 * 
+		 * It is an error to call this if the #GFileInfo does not contain
+		 * %G_FILE_ATTRIBUTE_STANDARD_SYMBOLIC_ICON.
 		 * @returns #GIcon for the given #info.
 		 */
 		get_symbolic_icon(): Icon | null;
 		/**
 		 * Gets the symlink target for a given #GFileInfo.
+		 * 
+		 * It is an error to call this if the #GFileInfo does not contain
+		 * %G_FILE_ATTRIBUTE_STANDARD_SYMLINK_TARGET.
 		 * @returns a string containing the symlink target.
 		 */
 		get_symlink_target(): string | null;
@@ -7309,6 +7738,8 @@ declare namespace imports.gi.Gio {
 		 * Sets the %G_FILE_ATTRIBUTE_TIME_ACCESS and
 		 * %G_FILE_ATTRIBUTE_TIME_ACCESS_USEC attributes in the file info to the
 		 * given date/time value.
+		 * 
+		 * %G_FILE_ATTRIBUTE_TIME_ACCESS_NSEC will be cleared.
 		 * @param atime a #GDateTime.
 		 */
 		set_access_date_time(atime: GLib.DateTime): void;
@@ -7334,6 +7765,16 @@ declare namespace imports.gi.Gio {
 		 * @param attr_value a byte string.
 		 */
 		set_attribute_byte_string(attribute: string, attr_value: string): void;
+		/**
+		 * Sets the #attribute to contain the given #attr_value,
+		 * if possible.
+		 * 
+		 * This function is meant to be used by language bindings that have specific
+		 * handling for Unix paths.
+		 * @param attribute a file attribute key.
+		 * @param attr_value a file path.
+		 */
+		set_attribute_file_path(attribute: string, attr_value: string): void;
 		/**
 		 * Sets the #attribute to contain the given #attr_value,
 		 * if possible.
@@ -7413,6 +7854,8 @@ declare namespace imports.gi.Gio {
 		 * Sets the %G_FILE_ATTRIBUTE_TIME_CREATED and
 		 * %G_FILE_ATTRIBUTE_TIME_CREATED_USEC attributes in the file info to the
 		 * given date/time value.
+		 * 
+		 * %G_FILE_ATTRIBUTE_TIME_CREATED_NSEC will be cleared.
 		 * @param creation_time a #GDateTime.
 		 */
 		set_creation_date_time(creation_time: GLib.DateTime): void;
@@ -7456,6 +7899,8 @@ declare namespace imports.gi.Gio {
 		 * Sets the %G_FILE_ATTRIBUTE_TIME_MODIFIED and
 		 * %G_FILE_ATTRIBUTE_TIME_MODIFIED_USEC attributes in the file info to the
 		 * given date/time value.
+		 * 
+		 * %G_FILE_ATTRIBUTE_TIME_MODIFIED_NSEC will be cleared.
 		 * @param mtime a #GDateTime.
 		 */
 		set_modification_date_time(mtime: GLib.DateTime): void;
@@ -7467,6 +7912,8 @@ declare namespace imports.gi.Gio {
 		 * Sets the %G_FILE_ATTRIBUTE_TIME_MODIFIED and
 		 * %G_FILE_ATTRIBUTE_TIME_MODIFIED_USEC attributes in the file info to the
 		 * given time value.
+		 * 
+		 * %G_FILE_ATTRIBUTE_TIME_MODIFIED_NSEC will be cleared.
 		 * @param mtime a #GTimeVal.
 		 */
 		set_modification_time(mtime: GLib.TimeVal): void;
@@ -7543,6 +7990,11 @@ declare namespace imports.gi.Gio {
 	 * g_file_info_get_attribute_byte_string().This optimization will matter
 	 * only if calling the API in a tight loop.
 	 * 
+	 * It is an error to call these accessors without specifying their required file
+	 * attributes when creating the #GFileInfo. Use g_file_info_has_attribute() or
+	 * g_file_info_list_attributes() to check what attributes are specified for a
+	 * #GFileInfo.
+	 * 
 	 * #GFileAttributeMatcher allows for searching through a #GFileInfo for
 	 * attributes.
 	 */
@@ -7587,7 +8039,8 @@ declare namespace imports.gi.Gio {
 		 * @param attributes a file attribute query string.
 		 * @param io_priority the [I/O priority][io-priority] of the request
 		 * @param cancellable optional #GCancellable object, %NULL to ignore.
-		 * @param callback callback to call when the request is satisfied
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		query_info_async(attributes: string, io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -7684,7 +8137,7 @@ declare namespace imports.gi.Gio {
 		 * that the %G_FILE_MONITOR_WATCH_MOVES flag is not in use.
 		 * 
 		 * If using the deprecated flag %G_FILE_MONITOR_SEND_MOVED flag and #event_type is
-		 * #G_FILE_MONITOR_EVENT_MOVED, #file will be set to a #GFile containing the
+		 * %G_FILE_MONITOR_EVENT_MOVED, #file will be set to a #GFile containing the
 		 * old path, and #other_file will be set to a #GFile containing the new path.
 		 * 
 		 * In all the other cases, #other_file will be set to #NULL.
@@ -8153,7 +8606,8 @@ declare namespace imports.gi.Gio {
 		 * classes. However, if you override one you must override all.
 		 * @param io_priority the io priority of the request
 		 * @param cancellable optional cancellable object
-		 * @param callback callback to call when the request is satisfied
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		close_async(io_priority: number | null, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -8205,7 +8659,8 @@ declare namespace imports.gi.Gio {
 		 * @param flags a set of #GIOStreamSpliceFlags.
 		 * @param io_priority the io priority of the request.
 		 * @param cancellable optional #GCancellable object, %NULL to ignore.
-		 * @param callback a #GAsyncReadyCallback.
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		splice_async(stream2: IOStream, flags: IOStreamSpliceFlags, io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		connect(signal: "notify::closed", callback: (owner: this, ...args: any) => void): number;
@@ -8723,7 +9178,8 @@ declare namespace imports.gi.Gio {
 		 * override one you must override all.
 		 * @param io_priority the [I/O priority][io-priority] of the request
 		 * @param cancellable optional cancellable object
-		 * @param callback callback to call when the request is satisfied
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		close_async(io_priority: number | null, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -8813,7 +9269,8 @@ declare namespace imports.gi.Gio {
 		 * priority. Default priority is %G_PRIORITY_DEFAULT.
 		 * @param io_priority the [I/O priority][io-priority] of the request
 		 * @param cancellable optional #GCancellable object, %NULL to ignore
-		 * @param callback callback to call when the request is satisfied
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 * @returns 
 		 *     a buffer to read data into (which should be at least count bytes long)
 		 */
@@ -8861,7 +9318,8 @@ declare namespace imports.gi.Gio {
 		 * @param io_priority the [I/O priority][io-priority]
 		 * of the request.
 		 * @param cancellable optional #GCancellable object, %NULL to ignore.
-		 * @param callback callback to call when the request is satisfied
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 * @returns 
 		 *     a buffer to read data into (which should be at least count bytes long).
 		 */
@@ -8920,7 +9378,8 @@ declare namespace imports.gi.Gio {
 		 * @param count the number of bytes that will be read from the stream
 		 * @param io_priority the [I/O priority][io-priority] of the request
 		 * @param cancellable optional #GCancellable object, %NULL to ignore.
-		 * @param callback callback to call when the request is satisfied
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		read_bytes_async(count: number, io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -8989,7 +9448,8 @@ declare namespace imports.gi.Gio {
 		 * @param count the number of bytes that will be skipped from the stream
 		 * @param io_priority the [I/O priority][io-priority] of the request
 		 * @param cancellable optional #GCancellable object, %NULL to ignore.
-		 * @param callback callback to call when the request is satisfied
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		skip_async(count: number, io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -9037,6 +9497,10 @@ declare namespace imports.gi.Gio {
 		 */
 		item_type: GObject.Type;
 		/**
+		 * The number of items contained in this list store.
+		 */
+		readonly n_items: number;
+		/**
 		 * Appends #item to #store. #item must be of type #GListStore:item-type.
 		 * 
 		 * This function takes a ref on #item.
@@ -9062,9 +9526,13 @@ declare namespace imports.gi.Gio {
 		find(item: GObject.Object): [ boolean, number | null ];
 		/**
 		 * Looks up the given #item in the list store by looping over the items and
-		 * comparing them with #compare_func until the first occurrence of #item which
+		 * comparing them with #equal_func until the first occurrence of #item which
 		 * matches. If #item was not found, then #position will not be set, and this
 		 * method will return %FALSE.
+		 * 
+		 * #item is always passed as second parameter to #equal_func.
+		 * 
+		 * Since GLib 2.76 it is possible to pass `NULL` for #item.
 		 * @param item an item
 		 * @param equal_func A custom equality check function
 		 * @returns Whether #store contains #item. If it was found, #position will be
@@ -9072,7 +9540,22 @@ declare namespace imports.gi.Gio {
 		 * 
 		 * the first position of #item, if it was found.
 		 */
-		find_with_equal_func(item: GObject.Object, equal_func: GLib.EqualFunc): [ boolean, number | null ];
+		find_with_equal_func(item: GObject.Object | null, equal_func: GLib.EqualFunc): [ boolean, number | null ];
+		/**
+		 * Like {@link G.list_store_find_with_equal_func} but with an additional #user_data
+		 * that is passed to #equal_func.
+		 * 
+		 * #item is always passed as second parameter to #equal_func.
+		 * 
+		 * Since GLib 2.76 it is possible to pass `NULL` for #item.
+		 * @param item an item
+		 * @param equal_func A custom equality check function
+		 * @returns Whether #store contains #item. If it was found, #position will be
+		 * set to the position where #item occurred for the first time.
+		 * 
+		 * the first position of #item, if it was found.
+		 */
+		find_with_equal_func_full(item: GObject.Object | null, equal_func: GLib.EqualFuncFull): [ boolean, number | null ];
 		/**
 		 * Inserts #item into #store at #position. #item must be of type
 		 * #GListStore:item-type or derived from it. #position must be smaller
@@ -9138,6 +9621,7 @@ declare namespace imports.gi.Gio {
 		 */
 		splice(position: number, n_removals: number, additions: GObject.Object[]): void;
 		connect(signal: "notify::item-type", callback: (owner: this, ...args: any) => void): number;
+		connect(signal: "notify::n-items", callback: (owner: this, ...args: any) => void): number;
 
 	}
 
@@ -10991,7 +11475,7 @@ declare namespace imports.gi.Gio {
 		 * application-wide action (start with "app.").
 		 * 
 		 * If #target is non-%NULL, #action will be activated with #target as
-		 * its parameter.
+		 * its parameter. If #target is floating, it will be consumed.
 		 * 
 		 * When no default action is set, the application that the notification
 		 * was sent on is activated.
@@ -11152,7 +11636,8 @@ declare namespace imports.gi.Gio {
 		 * classes. However, if you override one you must override all.
 		 * @param io_priority the io priority of the request.
 		 * @param cancellable optional cancellable object
-		 * @param callback callback to call when the request is satisfied
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		close_async(io_priority: number | null, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -11185,7 +11670,8 @@ declare namespace imports.gi.Gio {
 		 * result of the operation.
 		 * @param io_priority the io priority of the request.
 		 * @param cancellable optional #GCancellable object, %NULL to ignore.
-		 * @param callback a #GAsyncReadyCallback to call when the request is satisfied
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		flush_async(io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -11265,7 +11751,8 @@ declare namespace imports.gi.Gio {
 		 * @param flags a set of #GOutputStreamSpliceFlags.
 		 * @param io_priority the io priority of the request.
 		 * @param cancellable optional #GCancellable object, %NULL to ignore.
-		 * @param callback a #GAsyncReadyCallback.
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		splice_async(source: InputStream, flags: OutputStreamSpliceFlags, io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -11373,7 +11860,8 @@ declare namespace imports.gi.Gio {
 		 * @param buffer the buffer containing the data to write
 		 * @param io_priority the io priority of the request
 		 * @param cancellable optional #GCancellable object, %NULL to ignore
-		 * @param callback callback to call when the request is satisfied
+		 * @param callback a #GAsyncReadyCallback
+		 *     to call when the request is satisfied
 		 */
 		write_all_async(buffer: number[], io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -11432,7 +11920,8 @@ declare namespace imports.gi.Gio {
 		 * @param buffer the buffer containing the data to write.
 		 * @param io_priority the io priority of the request.
 		 * @param cancellable optional #GCancellable object, %NULL to ignore.
-		 * @param callback callback to call when the request is satisfied
+		 * @param callback a #GAsyncReadyCallback
+		 *     to call when the request is satisfied
 		 */
 		write_async(buffer: number[], io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -11469,7 +11958,8 @@ declare namespace imports.gi.Gio {
 		 * @param bytes The bytes to write
 		 * @param io_priority the io priority of the request.
 		 * @param cancellable optional #GCancellable object, %NULL to ignore.
-		 * @param callback callback to call when the request is satisfied
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		write_bytes_async(bytes: GLib.Bytes, io_priority: number | null, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -11567,7 +12057,8 @@ declare namespace imports.gi.Gio {
 		 * @param vectors the buffer containing the #GOutputVectors to write.
 		 * @param io_priority the I/O priority of the request
 		 * @param cancellable optional #GCancellable object, %NULL to ignore
-		 * @param callback callback to call when the request is satisfied
+		 * @param callback a #GAsyncReadyCallback
+		 *     to call when the request is satisfied
 		 */
 		writev_all_async(vectors: OutputVector[], io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -11621,7 +12112,8 @@ declare namespace imports.gi.Gio {
 		 * @param vectors the buffer containing the #GOutputVectors to write.
 		 * @param io_priority the I/O priority of the request.
 		 * @param cancellable optional #GCancellable object, %NULL to ignore.
-		 * @param callback callback to call when the request is satisfied
+		 * @param callback a #GAsyncReadyCallback
+		 *     to call when the request is satisfied
 		 */
 		writev_async(vectors: OutputVector[], io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -12132,6 +12624,24 @@ declare namespace imports.gi.Gio {
 	 */
 	interface IResolver {
 		/**
+		 * The timeout applied to all resolver lookups, in milliseconds.
+		 * 
+		 * This may be changed through the lifetime of the #GResolver. The new value
+		 * will apply to any lookups started after the change, but not to any
+		 * already-ongoing lookups.
+		 * 
+		 * If this is `0`, no timeout is applied to lookups.
+		 * 
+		 * No timeout was applied to lookups before this property was added in
+		 * GLib 2.78.
+		 */
+		timeout: number;
+		/**
+		 * Get the timeout applied to all resolver lookups. See #GResolver:timeout.
+		 * @returns the resolver timeout, in milliseconds, or `0` for no timeout
+		 */
+		get_timeout(): number;
+		/**
 		 * Synchronously reverse-resolves #address to determine its
 		 * associated hostname.
 		 * 
@@ -12226,7 +12736,7 @@ declare namespace imports.gi.Gio {
 		/**
 		 * This differs from {@link G.resolver_lookup_by_name} in that you can modify
 		 * the lookup behavior with #flags. For example this can be used to limit
-		 * results with #G_RESOLVER_NAME_LOOKUP_FLAGS_IPV4_ONLY.
+		 * results with %G_RESOLVER_NAME_LOOKUP_FLAGS_IPV4_ONLY.
 		 * @param hostname the hostname to look up
 		 * @param flags extra #GResolverNameLookupFlags for the lookup
 		 * @param cancellable a #GCancellable, or %NULL
@@ -12378,6 +12888,11 @@ declare namespace imports.gi.Gio {
 		 */
 		set_default(): void;
 		/**
+		 * Set the timeout applied to all resolver lookups. See #GResolver:timeout.
+		 * @param timeout_ms timeout in milliseconds, or `0` for no timeouts
+		 */
+		set_timeout(timeout_ms: number): void;
+		/**
 		 * Emitted when the resolver notices that the system resolver
 		 * configuration has changed.
 		 * @param signal 
@@ -12388,9 +12903,14 @@ declare namespace imports.gi.Gio {
 		 */
 		connect(signal: "reload", callback: (owner: this) => void): number;
 
+		connect(signal: "notify::timeout", callback: (owner: this, ...args: any) => void): number;
+
 	}
 
-	type ResolverInitOptionsMixin = GObject.ObjectInitOptions
+	type ResolverInitOptionsMixin = GObject.ObjectInitOptions & 
+	Pick<IResolver,
+		"timeout">;
+
 	export interface ResolverInitOptions extends ResolverInitOptionsMixin {}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -12407,6 +12927,10 @@ declare namespace imports.gi.Gio {
 	 * #GNetworkAddress and #GNetworkService provide wrappers around
 	 * #GResolver functionality that also implement #GSocketConnectable,
 	 * making it easy to connect to a remote host/service.
+	 * 
+	 * The default resolver (see g_resolver_get_default()) has a timeout of 30s set
+	 * on it since GLib 2.78. Earlier versions of GLib did not support resolver
+	 * timeouts.
 	 */
 	interface Resolver extends ResolverMixin {}
 
@@ -12624,7 +13148,10 @@ declare namespace imports.gi.Gio {
 		 * #settings.
 		 * 
 		 * The schema for the child settings object must have been declared
-		 * in the schema of #settings using a <child> element.
+		 * in the schema of #settings using a `<child>` element.
+		 * 
+		 * The created child settings object will inherit the #GSettings:delay-apply
+		 * mode from #settings.
 		 * @param name the name of the child schema
 		 * @returns a 'child' settings object
 		 */
@@ -12867,8 +13394,8 @@ declare namespace imports.gi.Gio {
 		 * 
 		 * You should free the return value with g_strfreev() when you are done
 		 * with it.
-		 * @returns a list of the children on
-		 *    #settings, in no defined order
+		 * @returns a list of the children
+		 *    on #settings, in no defined order
 		 */
 		list_children(): string[];
 		/**
@@ -12883,8 +13410,8 @@ declare namespace imports.gi.Gio {
 		 * 
 		 * You should free the return value with {@link G.strfreev} when you are done
 		 * with it.
-		 * @returns a list of the keys on
-		 *    #settings, in no defined order
+		 * @returns a list
+		 *    of the keys on #settings, in no defined order
 		 */
 		list_keys(): string[];
 		/**
@@ -13412,7 +13939,7 @@ declare namespace imports.gi.Gio {
 	 * looks for a boolean property with the name "sensitivity" and
 	 * automatically binds it to the writability of the bound setting.
 	 * If this 'magic' gets in the way, it can be suppressed with the
-	 * #G_SETTINGS_BIND_NO_SENSITIVITY flag.
+	 * %G_SETTINGS_BIND_NO_SENSITIVITY flag.
 	 * 
 	 * ## Relocatable schemas # {#gsettings-relocatable}
 	 * 
@@ -13593,9 +14120,9 @@ declare namespace imports.gi.Gio {
 		 * Use {@link G.settings_schema_source_list_schemas} instead
 		 * 
 		 * Deprecated.
-		 * @returns a list of relocatable
-		 *   #GSettings schemas that are available, in no defined order.  The list must
-		 *   not be modified or freed.
+		 * @returns a list of
+		 *   relocatable #GSettings schemas that are available, in no defined order.
+		 *   The list must not be modified or freed.
 		 */
 		public static list_relocatable_schemas(): string[];
 		/**
@@ -13606,9 +14133,9 @@ declare namespace imports.gi.Gio {
 		 * of your whole loop.
 		 * 
 		 * Deprecated.
-		 * @returns a list of #GSettings
-		 *   schemas that are available, in no defined order.  The list must not be
-		 *   modified or freed.
+		 * @returns a list of
+		 *   #GSettings schemas that are available, in no defined order.  The list
+		 *   must not be modified or freed.
 		 */
 		public static list_schemas(): string[];
 		/**
@@ -13760,7 +14287,7 @@ declare namespace imports.gi.Gio {
 	 * non-strictly-typed data that is stored in a hierarchy. To implement
 	 * an alternative storage backend for #GSettings, you need to implement
 	 * the #GSettingsBackend interface and then make it implement the
-	 * extension point #G_SETTINGS_BACKEND_EXTENSION_POINT_NAME.
+	 * extension point %G_SETTINGS_BACKEND_EXTENSION_POINT_NAME.
 	 * 
 	 * The interface defines methods for reading and writing values, a
 	 * method for determining if writing of certain values will fail
@@ -14197,7 +14724,7 @@ declare namespace imports.gi.Gio {
 		 * Use #GTask and {@link G.task_return_new_error} instead.
 		 * 
 		 * Sets an error within the asynchronous result without a #GError.
-		 * @param domain a #GQuark (usually #G_IO_ERROR).
+		 * @param domain a #GQuark (usually %G_IO_ERROR).
 		 * @param code an error code.
 		 * @param format a formatted error reporting string.
 		 */
@@ -14208,7 +14735,7 @@ declare namespace imports.gi.Gio {
 		 * 
 		 * Sets an error within the asynchronous result without a #GError.
 		 * Unless writing a binding, see {@link G.simple_async_result_set_error}.
-		 * @param domain a #GQuark (usually #G_IO_ERROR).
+		 * @param domain a #GQuark (usually %G_IO_ERROR).
 		 * @param code an error code.
 		 * @param format a formatted error reporting string.
 		 * @param args va_list of arguments.
@@ -14497,7 +15024,7 @@ declare namespace imports.gi.Gio {
 		 * Creates a #GSimpleAsyncResult from an error condition, and takes over the
 		 * caller's ownership of #error, so the caller does not need to free it anymore.
 		 * @param source_object a #GObject, or %NULL
-		 * @param callback a #GAsyncReadyCallback
+		 * @param callback a #GAsyncReadyCallback.
 		 * @param error a #GError
 		 * @returns a #GSimpleAsyncResult
 		 */
@@ -14670,7 +15197,7 @@ declare namespace imports.gi.Gio {
 		 * the socks5, socks4a, and socks4 proxy types.
 		 * @param default_proxy the default proxy to use
 		 */
-		set_default_proxy(default_proxy: string): void;
+		set_default_proxy(default_proxy?: string | null): void;
 		/**
 		 * Sets the list of ignored hosts.
 		 * 
@@ -14679,7 +15206,7 @@ declare namespace imports.gi.Gio {
 		 * @param ignore_hosts %NULL-terminated list of hosts/IP addresses
 		 *     to not use a proxy for
 		 */
-		set_ignore_hosts(ignore_hosts: string): void;
+		set_ignore_hosts(ignore_hosts: string[]): void;
 		/**
 		 * Adds a URI-scheme-specific proxy to #resolver; URIs whose scheme
 		 * matches #uri_scheme (and which don't match
@@ -14735,7 +15262,7 @@ declare namespace imports.gi.Gio {
 		 *     to not use a proxy for.
 		 * @returns a new #GSimpleProxyResolver
 		 */
-		public static new(default_proxy?: string | null, ignore_hosts?: string | null): ProxyResolver;
+		public static new(default_proxy?: string | null, ignore_hosts?: string[] | null): ProxyResolver;
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -15966,7 +16493,7 @@ declare namespace imports.gi.Gio {
 		 *     error (in which case *#error will be set) or if there are no
 		 *     more addresses.
 		 */
-		next(cancellable?: Cancellable | null): SocketAddress;
+		next(cancellable?: Cancellable | null): SocketAddress | null;
 		/**
 		 * Asynchronously retrieves the next #GSocketAddress from #enumerator
 		 * and then calls #callback, which must call
@@ -15974,8 +16501,8 @@ declare namespace imports.gi.Gio {
 		 * 
 		 * It is an error to call this multiple times before the previous callback has finished.
 		 * @param cancellable optional #GCancellable object, %NULL to ignore.
-		 * @param callback a #GAsyncReadyCallback to call when the request
-		 *     is satisfied
+		 * @param callback a #GAsyncReadyCallback to call
+		 *   when the request is satisfied
 		 */
 		next_async(cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -15988,7 +16515,7 @@ declare namespace imports.gi.Gio {
 		 *     error (in which case *#error will be set) or if there are no
 		 *     more addresses.
 		 */
-		next_finish(result: AsyncResult): SocketAddress;
+		next_finish(result: AsyncResult): SocketAddress | null;
 	}
 
 	type SocketAddressEnumeratorInitOptionsMixin = GObject.ObjectInitOptions
@@ -16035,6 +16562,27 @@ declare namespace imports.gi.Gio {
 		proxy_resolver: ProxyResolver;
 		timeout: number;
 		tls: boolean;
+		/**
+		 * @deprecated
+		 * Do not attempt to ignore validation errors.
+		 * 
+		 * The TLS validation flags used when creating TLS connections. The
+		 * default value is %G_TLS_CERTIFICATE_VALIDATE_ALL.
+		 * 
+		 * GLib guarantees that if certificate verification fails, at least one
+		 * flag will be set, but it does not guarantee that all possible flags
+		 * will be set. Accordingly, you may not safely decide to ignore any
+		 * particular type of error. For example, it would be incorrect to mask
+		 * %G_TLS_CERTIFICATE_EXPIRED if you want to allow expired certificates,
+		 * because this could potentially be the only error flag set even if
+		 * other problems exist with the certificate. Therefore, there is no
+		 * safe way to use this property. This is not a horrible problem,
+		 * though, because you should not be attempting to ignore validation
+		 * errors anyway. If you really must ignore TLS certificate errors,
+		 * connect to the #GSocketClient::event signal, wait for it to be
+		 * emitted with %G_SOCKET_CLIENT_TLS_HANDSHAKING, and use that to
+		 * connect to #GTlsConnection::accept-certificate.
+		 */
 		tls_validation_flags: TlsCertificateFlags;
 		type: SocketType;
 		/**
@@ -16302,8 +16850,15 @@ declare namespace imports.gi.Gio {
 		 */
 		get_tls(): boolean;
 		/**
+		 * @deprecated
+		 * Do not attempt to ignore validation errors.
+		 * 
 		 * Gets the TLS validation flags used creating TLS connections via
 		 * #client.
+		 * 
+		 * This function does not work as originally designed and is impossible
+		 * to use correctly. See #GSocketClient:tls-validation-flags for more
+		 * information.
 		 * @returns the TLS validation flags
 		 */
 		get_tls_validation_flags(): TlsCertificateFlags;
@@ -16405,8 +16960,15 @@ declare namespace imports.gi.Gio {
 		 */
 		set_tls(tls: boolean): void;
 		/**
+		 * @deprecated
+		 * Do not attempt to ignore validation errors.
+		 * 
 		 * Sets the TLS validation flags used when creating TLS connections
 		 * via #client. The default value is %G_TLS_CERTIFICATE_VALIDATE_ALL.
+		 * 
+		 * This function does not work as originally designed and is impossible
+		 * to use correctly. See #GSocketClient:tls-validation-flags for more
+		 * information.
 		 * @param flags the validation flags
 		 */
 		set_tls_validation_flags(flags: TlsCertificateFlags): void;
@@ -16733,7 +17295,7 @@ declare namespace imports.gi.Gio {
 		 * @param data pointer to the message data
 		 * @returns the deserialized message or %NULL
 		 */
-		public static deserialize(level: number, type: number, data: number[]): SocketControlMessage;
+		public static deserialize(level: number, type: number, data: number[]): SocketControlMessage | null;
 	}
 
 	/** This construct is only for enabling class multi-inheritance,
@@ -17432,7 +17994,10 @@ declare namespace imports.gi.Gio {
 	 * As a matter of principle, #GSubprocess has no API that accepts
 	 * shell-style space-separated strings.  It will, however, match the
 	 * typical shell behaviour of searching the PATH for executables that do
-	 * not contain a directory separator in their name.
+	 * not contain a directory separator in their name. By default, the `PATH`
+	 * of the current process is used.  You can specify
+	 * %G_SUBPROCESS_FLAGS_SEARCH_PATH_FROM_ENVP to use the `PATH` of the
+	 * launcher environment instead.
 	 * 
 	 * #GSubprocess attempts to have a very simple API for most uses (ie:
 	 * spawning a subprocess with arguments and support for most typical
@@ -17779,7 +18344,8 @@ declare namespace imports.gi.Gio {
 		 * callback to #callback, with #task as the callback's `user_data`.
 		 * 
 		 * It will set the #source’s name to the task’s name (as set with
-		 * {@link G.task_set_name}), if one has been set.
+		 * {@link G.task_set_name}), if one has been set on the task and the source doesn’t
+		 * yet have a name.
 		 * 
 		 * This takes a reference on #task until #source is destroyed.
 		 * @param source the source to attach
@@ -17790,7 +18356,7 @@ declare namespace imports.gi.Gio {
 		 * Gets #task's #GCancellable
 		 * @returns #task's #GCancellable
 		 */
-		get_cancellable(): Cancellable;
+		get_cancellable(): Cancellable | null;
 		/**
 		 * Gets #task's check-cancellable flag. See
 		 * {@link G.task_set_check_cancellable} for more details.
@@ -17977,7 +18543,7 @@ declare namespace imports.gi.Gio {
 		/**
 		 * Sets #task's result to #result (by copying it) and completes the task.
 		 * 
-		 * If #result is %NULL then a #GValue of type #G_TYPE_POINTER
+		 * If #result is %NULL then a #GValue of type %G_TYPE_POINTER
 		 * with a value of %NULL will be used for the result.
 		 * 
 		 * This is a very generic low-level method intended primarily for use
@@ -18000,6 +18566,13 @@ declare namespace imports.gi.Gio {
 		 * do this. If you have a very large number of tasks to run (several tens of
 		 * tasks), but don't want them to all run at once, you should only queue a
 		 * limited number of them (around ten) at a time.
+		 * 
+		 * Be aware that if your task depends on other tasks to complete, use of this
+		 * function could lead to a livelock if the other tasks also use this function
+		 * and enough of them (around 10) execute in a dependency chain, as that will
+		 * exhaust the thread pool. If this situation is possible, consider using a
+		 * separate worker thread or thread pool explicitly, rather than using
+		 * g_task_run_in_thread().
 		 * @param task_func a #GTaskThreadFunc
 		 */
 		run_in_thread(task_func: TaskThreadFunc): void;
@@ -18051,7 +18624,8 @@ declare namespace imports.gi.Gio {
 		 * name of the #GSource used for idle completion of the task.
 		 * 
 		 * This function may only be called before the #task is first used in a thread
-		 * other than the one it was constructed in.
+		 * other than the one it was constructed in. It is called automatically by
+		 * {@link G.task_set_source_tag} if not called already.
 		 * @param name a human readable name for the task, or %NULL to unset it
 		 */
 		set_name(name?: string | null): void;
@@ -18103,15 +18677,28 @@ declare namespace imports.gi.Gio {
 		 */
 		set_return_on_cancel(return_on_cancel: boolean): boolean;
 		/**
-		 * Sets #task's source tag. You can use this to tag a task return
+		 * Sets #task's source tag.
+		 * 
+		 * You can use this to tag a task return
 		 * value with a particular pointer (usually a pointer to the function
 		 * doing the tagging) and then later check it using
 		 * {@link G.task_get_source_tag} (or g_async_result_is_tagged()) in the
 		 * task's "finish" function, to figure out if the response came from a
 		 * particular place.
+		 * 
+		 * A macro wrapper around this function will automatically set the
+		 * task’s name to the string form of #source_tag if it’s not already
+		 * set, for convenience.
 		 * @param source_tag an opaque pointer indicating the source of this task
 		 */
 		set_source_tag(source_tag?: any | null): void;
+		/**
+		 * Sets #task’s name, used in debugging and profiling.
+		 * 
+		 * This is a variant of {@link G.task_set_name} that avoids copying #name.
+		 * @param name a human readable name for the task. Must be a string literal
+		 */
+		set_static_name(name?: string | null): void;
 		/**
 		 * Sets #task's task data (freeing the existing task data, if any).
 		 * @param task_data task-specific data
@@ -18150,6 +18737,14 @@ declare namespace imports.gi.Gio {
 	 * the operation's finish function (as a #GAsyncResult), and you can
 	 * use g_task_propagate_pointer() or the like to extract the
 	 * return value.
+	 * 
+	 * Using #GTask requires the thread-default #GMainContext from when the
+	 * #GTask was constructed to be running at least until the task has completed
+	 * and its data has been freed.
+	 * 
+	 * If a #GTask has been constructed and its callback set, it is an error to
+	 * not call `g_task_return_*()` on it. GLib will warn at runtime if this happens
+	 * (since 2.76).
 	 * 
 	 * Here is an example for using GTask as a GAsyncResult:
 	 * |[<!-- language="C" -->
@@ -18625,6 +19220,24 @@ declare namespace imports.gi.Gio {
 	 *   having come from the `_async()` wrapper
 	 *   function (for "short-circuit" results, such as when passing
 	 *   0 to g_input_stream_read_async()).
+	 * 
+	 * ## Thread-safety considerations
+	 * 
+	 * Due to some infelicities in the API design, there is a
+	 * thread-safety concern that users of GTask have to be aware of:
+	 * 
+	 * If the `main` thread drops its last reference to the source object
+	 * or the task data before the task is finalized, then the finalizers
+	 * of these objects may be called on the worker thread.
+	 * 
+	 * This is a problem if the finalizers use non-threadsafe API, and
+	 * can lead to hard-to-debug crashes. Possible workarounds include:
+	 * 
+	 * - Clear task data in a signal handler for `notify::completed`
+	 * 
+	 * - Keep iterating a main context in the main thread and defer
+	 *   dropping the reference to the source object to that main
+	 *   context when the task is finalized
 	 */
 	interface Task extends TaskMixin {}
 
@@ -19314,6 +19927,8 @@ declare namespace imports.gi.Gio {
 		 * check a certificate against a CA that is not part of the system
 		 * CA database.
 		 * 
+		 * If #cert is valid, %G_TLS_CERTIFICATE_NO_FLAGS is returned.
+		 * 
 		 * If #identity is not %NULL, #cert's name(s) will be compared against
 		 * it, and %G_TLS_CERTIFICATE_BAD_IDENTITY will be set in the return
 		 * value if it does not match. If #identity is %NULL, that bit will
@@ -19325,13 +19940,18 @@ declare namespace imports.gi.Gio {
 		 * #trusted_ca is %NULL, that bit will never be set in the return
 		 * value.
 		 * 
-		 * (All other #GTlsCertificateFlags values will always be set or unset
-		 * as appropriate.)
+		 * GLib guarantees that if certificate verification fails, at least one
+		 * error will be set in the return value, but it does not guarantee
+		 * that all possible errors will be set. Accordingly, you may not safely
+		 * decide to ignore any particular type of error. For example, it would
+		 * be incorrect to mask %G_TLS_CERTIFICATE_EXPIRED if you want to allow
+		 * expired certificates, because this could potentially be the only
+		 * error flag set even if other problems exist with the certificate.
 		 * 
 		 * Because TLS session context is not used, #GTlsCertificate may not
 		 * perform as many checks on the certificates as #GTlsConnection would.
-		 * For example, certificate constraints cannot be honored, and some
-		 * revocation checks cannot be performed. The best way to verify TLS
+		 * For example, certificate constraints may not be honored, and
+		 * revocation checks may not be performed. The best way to verify TLS
 		 * certificates used by a TLS connection is to let #GTlsConnection
 		 * handle the verification.
 		 * @param identity the expected peer identity
@@ -19384,23 +20004,33 @@ declare namespace imports.gi.Gio {
 	class TlsCertificate {
 		public constructor(options?: Partial<TlsCertificateInitOptions>);
 		/**
-		 * Creates a #GTlsCertificate from the PEM-encoded data in #file. The
-		 * returned certificate will be the first certificate found in #file. As
-		 * of GLib 2.44, if #file contains more certificates it will try to load
-		 * a certificate chain. All certificates will be verified in the order
-		 * found (top-level certificate should be the last one in the file) and
-		 * the #GTlsCertificate:issuer property of each certificate will be set
-		 * accordingly if the verification succeeds. If any certificate in the
-		 * chain cannot be verified, the first certificate in the file will
-		 * still be returned.
+		 * Creates a #GTlsCertificate from the data in #file.
+		 * 
+		 * As of 2.72, if the filename ends in `.p12` or `.pfx` the data is loaded by
+		 * {@link G.tls_certificate_new_from_pkcs12} otherwise it is loaded by
+		 * g_tls_certificate_new_from_pem(). See those functions for
+		 * exact details.
 		 * 
 		 * If #file cannot be read or parsed, the function will return %NULL and
-		 * set #error. Otherwise, this behaves like
-		 * {@link G.tls_certificate_new_from_pem}.
-		 * @param file file containing a PEM-encoded certificate to import
+		 * set #error.
+		 * @param file file containing a certificate to import
 		 * @returns the new certificate, or %NULL on error
 		 */
 		public static new_from_file(file: string): TlsCertificate;
+		/**
+		 * Creates a #GTlsCertificate from the data in #file.
+		 * 
+		 * If #file cannot be read or parsed, the function will return %NULL and
+		 * set #error.
+		 * 
+		 * Any unknown file types will error with %G_IO_ERROR_NOT_SUPPORTED.
+		 * Currently only `.p12` and `.pfx` files are supported.
+		 * See {@link G.tls_certificate_new_from_pkcs12} for more details.
+		 * @param file file containing a certificate to import
+		 * @param password password for PKCS #12 files
+		 * @returns the new certificate, or %NULL on error
+		 */
+		public static new_from_file_with_password(file: string, password: string): TlsCertificate;
 		/**
 		 * Creates a #GTlsCertificate from the PEM-encoded data in #cert_file
 		 * and #key_file. The returned certificate will be the first certificate
@@ -19474,6 +20104,29 @@ declare namespace imports.gi.Gio {
 		 */
 		public static new_from_pkcs11_uris(pkcs11_uri: string, private_key_pkcs11_uri?: string | null): TlsCertificate;
 		/**
+		 * Creates a #GTlsCertificate from the data in #data. It must contain
+		 * a certificate and matching private key.
+		 * 
+		 * If extra certificates are included they will be verified as a chain
+		 * and the #GTlsCertificate:issuer property will be set.
+		 * All other data will be ignored.
+		 * 
+		 * You can pass as single password for all of the data which will be
+		 * used both for the PKCS #12 container as well as encrypted
+		 * private keys. If decryption fails it will error with
+		 * %G_TLS_ERROR_BAD_CERTIFICATE_PASSWORD.
+		 * 
+		 * This constructor requires support in the current #GTlsBackend.
+		 * If support is missing it will error with
+		 * %G_IO_ERROR_NOT_SUPPORTED.
+		 * 
+		 * Other parsing failures will error with %G_TLS_ERROR_BAD_CERTIFICATE.
+		 * @param data DER-encoded PKCS #12 format certificate data
+		 * @param password optional password for encrypted certificate data
+		 * @returns the new certificate, or %NULL if #data is invalid
+		 */
+		public static new_from_pkcs12(data: number[], password?: string | null): TlsCertificate;
+		/**
 		 * Creates one or more #GTlsCertificates from the PEM-encoded
 		 * data in #file. If #file cannot be read or parsed, the function will
 		 * return %NULL and set #error. If #file does not contain any
@@ -19518,6 +20171,19 @@ declare namespace imports.gi.Gio {
 		 * The certificate database to use when verifying this TLS connection.
 		 * If no certificate database is set, then the default database will be
 		 * used. See {@link G.tls_backend_get_default_database}.
+		 * 
+		 * When using a non-default database, #GTlsConnection must fall back to using
+		 * the #GTlsDatabase to perform certificate verification using
+		 * g_tls_database_verify_chain(), which means certificate verification will
+		 * not be able to make use of TLS session context. This may be less secure.
+		 * For example, if you create your own #GTlsDatabase that just wraps the
+		 * default #GTlsDatabase, you might expect that you have not changed anything,
+		 * but this is not true because you may have altered the behavior of
+		 * #GTlsConnection by causing it to use g_tls_database_verify_chain(). See the
+		 * documentation of g_tls_database_verify_chain() for more details on specific
+		 * security checks that may not be performed. Accordingly, setting a
+		 * non-default database is discouraged except for specialty applications with
+		 * unusual security requirements.
 		 */
 		database: TlsDatabase;
 		/**
@@ -19547,6 +20213,14 @@ declare namespace imports.gi.Gio {
 		 * %G_TLS_CERTIFICATE_VALIDATE_ALL, or if
 		 * #GTlsConnection::accept-certificate overrode the default
 		 * behavior.
+		 * 
+		 * GLib guarantees that if certificate verification fails, at least
+		 * one error will be set, but it does not guarantee that all possible
+		 * errors will be set. Accordingly, you may not safely decide to
+		 * ignore any particular type of error. For example, it would be
+		 * incorrect to mask %G_TLS_CERTIFICATE_EXPIRED if you want to allow
+		 * expired certificates, because this could potentially be the only
+		 * error flag set even if other problems exist with the certificate.
 		 */
 		readonly peer_certificate_errors: TlsCertificateFlags;
 		/**
@@ -19658,6 +20332,8 @@ declare namespace imports.gi.Gio {
 		 * Gets the errors associated with validating #conn's peer's
 		 * certificate, after the handshake has completed or failed. (It is
 		 * not set during the emission of #GTlsConnection::accept-certificate.)
+		 * 
+		 * See #GTlsConnection:peer-certificate-errors for more information.
 		 * @returns #conn's peer's certificate errors
 		 */
 		get_peer_certificate_errors(): TlsCertificateFlags;
@@ -19795,6 +20471,9 @@ declare namespace imports.gi.Gio {
 		 * #GTlsConnection::accept-certificate will always be emitted on
 		 * client-side connections, unless that bit is not set in
 		 * #GTlsClientConnection:validation-flags).
+		 * 
+		 * There are nonintuitive security implications when using a non-default
+		 * database. See #GTlsConnection:database for details.
 		 * @param database a #GTlsDatabase
 		 */
 		set_database(database?: TlsDatabase | null): void;
@@ -19878,6 +20557,15 @@ declare namespace imports.gi.Gio {
 		 * certificate to be accepted despite #errors, return %TRUE from the
 		 * signal handler. Otherwise, if no handler accepts the certificate,
 		 * the handshake will fail with %G_TLS_ERROR_BAD_CERTIFICATE.
+		 * 
+		 * GLib guarantees that if certificate verification fails, this signal
+		 * will be emitted with at least one error will be set in #errors, but
+		 * it does not guarantee that all possible errors will be set.
+		 * Accordingly, you may not safely decide to ignore any particular
+		 * type of error. For example, it would be incorrect to ignore
+		 * %G_TLS_CERTIFICATE_EXPIRED if you want to allow expired
+		 * certificates, because this could potentially be the only error flag
+		 * set even if other problems exist with the certificate.
 		 * 
 		 * For a server-side connection, #peer_cert is the certificate
 		 * presented by the client, if this was requested via the server's
@@ -20087,7 +20775,7 @@ declare namespace imports.gi.Gio {
 		 * {@link G.tls_database_lookup_certificates_issued_by} for more information.
 		 * 
 		 * The database may choose to hold a reference to the issuer byte array for the duration
-		 * of of this asynchronous operation. The byte array should not be modified during
+		 * of this asynchronous operation. The byte array should not be modified during
 		 * this time.
 		 * @param issuer_raw_dn a #GByteArray which holds the DER encoded issuer DN.
 		 * @param interaction used to interact with the user if necessary
@@ -20112,7 +20800,7 @@ declare namespace imports.gi.Gio {
 		 * certificate in the chain by its #GTlsCertificate:issuer property.
 		 * 
 		 * #purpose describes the purpose (or usage) for which the certificate
-		 * is being used. Typically #purpose will be set to #G_TLS_DATABASE_PURPOSE_AUTHENTICATE_SERVER
+		 * is being used. Typically #purpose will be set to %G_TLS_DATABASE_PURPOSE_AUTHENTICATE_SERVER
 		 * which means that the certificate is being used to authenticate a server
 		 * (and we are acting as the client).
 		 * 
@@ -20128,13 +20816,21 @@ declare namespace imports.gi.Gio {
 		 * used.
 		 * 
 		 * If #chain is found to be valid, then the return value will be 0. If
-		 * #chain is found to be invalid, then the return value will indicate
-		 * the problems found. If the function is unable to determine whether
-		 * #chain is valid or not (eg, because #cancellable is triggered
-		 * before it completes) then the return value will be
-		 * %G_TLS_CERTIFICATE_GENERIC_ERROR and #error will be set
-		 * accordingly. #error is not set when #chain is successfully analyzed
-		 * but found to be invalid.
+		 * #chain is found to be invalid, then the return value will indicate at
+		 * least one problem found. If the function is unable to determine
+		 * whether #chain is valid (for example, because #cancellable is
+		 * triggered before it completes) then the return value will be
+		 * %G_TLS_CERTIFICATE_GENERIC_ERROR and #error will be set accordingly.
+		 * #error is not set when #chain is successfully analyzed but found to
+		 * be invalid.
+		 * 
+		 * GLib guarantees that if certificate verification fails, at least one
+		 * error will be set in the return value, but it does not guarantee
+		 * that all possible errors will be set. Accordingly, you may not safely
+		 * decide to ignore any particular type of error. For example, it would
+		 * be incorrect to mask %G_TLS_CERTIFICATE_EXPIRED if you want to allow
+		 * expired certificates, because this could potentially be the only
+		 * error flag set even if other problems exist with the certificate.
 		 * 
 		 * Prior to GLib 2.48, GLib's default TLS backend modified #chain to
 		 * represent the certification path built by #GTlsDatabase during
@@ -20146,14 +20842,14 @@ declare namespace imports.gi.Gio {
 		 * 
 		 * Because TLS session context is not used, #GTlsDatabase may not
 		 * perform as many checks on the certificates as #GTlsConnection would.
-		 * For example, certificate constraints cannot be honored, and some
-		 * revocation checks cannot be performed. The best way to verify TLS
+		 * For example, certificate constraints may not be honored, and
+		 * revocation checks may not be performed. The best way to verify TLS
 		 * certificates used by a TLS connection is to let #GTlsConnection
 		 * handle the verification.
 		 * 
 		 * The TLS backend may attempt to look up and add missing certificates
-		 * to the chain. Since GLib 2.70, this may involve HTTP requests to
-		 * download missing certificates.
+		 * to the chain. This may involve HTTP requests to download missing
+		 * certificates.
 		 * 
 		 * This function can block. Use {@link G.tls_database_verify_chain_async} to
 		 * perform the verification operation asynchronously.
@@ -20573,7 +21269,8 @@ declare namespace imports.gi.Gio {
 		 * When the operation is finished, #callback will be called. You can then call
 		 * g_unix_connection_receive_credentials_finish() to get the result of the operation.
 		 * @param cancellable optional #GCancellable object, %NULL to ignore.
-		 * @param callback a #GAsyncReadyCallback to call when the request is satisfied
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		receive_credentials_async(cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -20629,7 +21326,8 @@ declare namespace imports.gi.Gio {
 		 * When the operation is finished, #callback will be called. You can then call
 		 * g_unix_connection_send_credentials_finish() to get the result of the operation.
 		 * @param cancellable optional #GCancellable object, %NULL to ignore.
-		 * @param callback a #GAsyncReadyCallback to call when the request is satisfied
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		send_credentials_async(cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -20669,9 +21367,12 @@ declare namespace imports.gi.Gio {
 	 * It contains functions to do some of the UNIX socket specific
 	 * functionality like passing file descriptors.
 	 * 
-	 * Note that `<gio/gunixconnection.h>` belongs to the UNIX-specific
-	 * GIO interfaces, thus you have to use the `gio-unix-2.0.pc`
-	 * pkg-config file when using it.
+	 * Since GLib 2.72, #GUnixConnection is available on all platforms. It requires
+	 * underlying system support (such as Windows 10 with `AF_UNIX`) at run time.
+	 * 
+	 * Before GLib 2.72, `<gio/gunixconnection.h>` belonged to the UNIX-specific GIO
+	 * interfaces, thus you had to use the `gio-unix-2.0.pc` pkg-config file when
+	 * using it. This is no longer necessary since GLib 2.72.
 	 */
 	interface UnixConnection extends UnixConnectionMixin {}
 
@@ -20719,6 +21420,14 @@ declare namespace imports.gi.Gio {
 	 * g_unix_connection_receive_credentials(). To receive credentials of
 	 * a foreign process connected to a socket, use
 	 * g_socket_get_credentials().
+	 * 
+	 * Since GLib 2.72, #GUnixCredentialMessage is available on all platforms. It
+	 * requires underlying system support (such as Windows 10 with `AF_UNIX`) at run
+	 * time.
+	 * 
+	 * Before GLib 2.72, `<gio/gunixcredentialsmessage.h>` belonged to the UNIX-specific
+	 * GIO interfaces, thus you had to use the `gio-unix-2.0.pc` pkg-config file
+	 * when using it. This is no longer necessary since GLib 2.72.
 	 */
 	interface UnixCredentialsMessage extends UnixCredentialsMessageMixin {}
 
@@ -20852,9 +21561,11 @@ declare namespace imports.gi.Gio {
 	 * the %G_SOCKET_FAMILY_UNIX family by using {@link G.socket_send_message}
 	 * and received using g_socket_receive_message().
 	 * 
-	 * Note that `<gio/gunixfdlist.h>` belongs to the UNIX-specific GIO
-	 * interfaces, thus you have to use the `gio-unix-2.0.pc` pkg-config
-	 * file when using it.
+	 * Before 2.74, `<gio/gunixfdlist.h>` belonged to the UNIX-specific GIO
+	 * interfaces, thus you had to use the `gio-unix-2.0.pc` pkg-config file when
+	 * using it.
+	 * 
+	 * Since 2.74, the API is available for Windows.
 	 */
 	interface UnixFDList extends UnixFDListMixin {}
 
@@ -21284,9 +21995,13 @@ declare namespace imports.gi.Gio {
 	 * errors. You can use {@link G.unix_socket_address_abstract_names_supported}
 	 * to see if abstract names are supported.
 	 * 
-	 * Note that `<gio/gunixsocketaddress.h>` belongs to the UNIX-specific GIO
-	 * interfaces, thus you have to use the `gio-unix-2.0.pc` pkg-config file
-	 * when using it.
+	 * Since GLib 2.72, #GUnixSocketAddress is available on all platforms. It
+	 * requires underlying system support (such as Windows 10 with `AF_UNIX`) at
+	 * run time.
+	 * 
+	 * Before GLib 2.72, `<gio/gunixsocketaddress.h>` belonged to the UNIX-specific
+	 * GIO interfaces, thus you had to use the `gio-unix-2.0.pc` pkg-config file
+	 * when using it. This is no longer necessary since GLib 2.72.
 	 */
 	interface UnixSocketAddress extends UnixSocketAddressMixin {}
 
@@ -22002,7 +22717,7 @@ declare namespace imports.gi.Gio {
 		 * The parent interface.
 		 */
 		public readonly g_iface: GObject.TypeInterface;
-		public convert: {(converter: Converter, inbuf: number[] | null, outbuf: number[] | null, flags: ConverterFlags): [ ConverterResult, number, number ];};
+		public convert: {(converter: Converter, inbuf: number[] | null, outbuf: number[], flags: ConverterFlags): [ ConverterResult, number, number ];};
 		public reset: {(converter: Converter): void;};
 	}
 
@@ -22561,6 +23276,19 @@ declare namespace imports.gi.Gio {
 		public condition_wait: {(datagram_based: DatagramBased, condition: GLib.IOCondition, timeout: number, cancellable?: Cancellable | null): boolean;};
 	}
 
+	export interface DebugControllerInterfaceInitOptions {}
+	/**
+	 * The virtual function table for #GDebugController.
+	 */
+	interface DebugControllerInterface {}
+	class DebugControllerInterface {
+		public constructor(options?: Partial<DebugControllerInterfaceInitOptions>);
+		/**
+		 * The parent interface.
+		 */
+		public readonly g_iface: GObject.TypeInterface;
+	}
+
 	export interface DesktopAppInfoLookupIfaceInitOptions {}
 	/**
 	 * Interface that is used by backends to associate default
@@ -22799,7 +23527,7 @@ declare namespace imports.gi.Gio {
 		 */
 		public matches(attribute: string): boolean;
 		/**
-		 * Checks if a attribute matcher only matches a given attribute. Always
+		 * Checks if an attribute matcher only matches a given attribute. Always
 		 * returns %FALSE if "*" was used when creating the matcher.
 		 * @param attribute a file attribute key.
 		 * @returns %TRUE if the matcher only matches #attribute. %FALSE otherwise.
@@ -22931,14 +23659,14 @@ declare namespace imports.gi.Gio {
 		public make_directory_async: {(file: File, io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;};
 		public make_directory_finish: {(file: File, result: AsyncResult): boolean;};
 		public make_symbolic_link: {(file: File, symlink_value: string, cancellable?: Cancellable | null): boolean;};
-		public _make_symbolic_link_async: {(): void;};
-		public _make_symbolic_link_finish: {(): void;};
+		public make_symbolic_link_async: {(file: File, symlink_value: string, io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;};
+		public make_symbolic_link_finish: {(file: File, result: AsyncResult): boolean;};
 		public copy: {(source: File, destination: File, flags: FileCopyFlags, cancellable?: Cancellable | null, progress_callback?: FileProgressCallback | null): boolean;};
-		public copy_async: {(source: File, destination: File, flags: FileCopyFlags, io_priority: number, cancellable?: Cancellable | null): void;};
+		public copy_async: {(source: File, destination: File, flags: FileCopyFlags, io_priority: number, cancellable?: Cancellable | null, progress_callback?: FileProgressCallback | null, callback?: AsyncReadyCallback | null): void;};
 		public copy_finish: {(file: File, res: AsyncResult): boolean;};
 		public move: {(source: File, destination: File, flags: FileCopyFlags, cancellable?: Cancellable | null, progress_callback?: FileProgressCallback | null): boolean;};
-		public _move_async: {(): void;};
-		public _move_finish: {(): void;};
+		public move_async: {(source: File, destination: File, flags: FileCopyFlags, io_priority: number, cancellable?: Cancellable | null, progress_callback?: FileProgressCallback | null, callback?: AsyncReadyCallback | null): void;};
+		public move_finish: {(file: File, result: AsyncResult): boolean;};
 		public mount_mountable: {(file: File, flags: MountMountFlags, mount_operation?: MountOperation | null, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;};
 		public mount_mountable_finish: {(file: File, result: AsyncResult): File;};
 		public unmount_mountable: {(file: File, flags: MountUnmountFlags, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;};
@@ -23060,7 +23788,7 @@ declare namespace imports.gi.Gio {
 		/**
 		 * Gets the required type for #extension_point.
 		 * @returns the #GType that all implementations must have,
-		 *     or #G_TYPE_INVALID if the extension point has no required type
+		 *   or %G_TYPE_INVALID if the extension point has no required type
 		 */
 		public get_required_type(): GObject.Type;
 		/**
@@ -23163,7 +23891,7 @@ declare namespace imports.gi.Gio {
 		public readonly g_iface: GObject.TypeInterface;
 		public hash: {(icon: Icon): number;};
 		public equal: {(icon1?: Icon | null, icon2?: Icon | null): boolean;};
-		public to_tokens: {(icon: Icon, tokens: any[], out_version: number): boolean;};
+		public to_tokens: {(icon: Icon): [ boolean, string[], number ];};
 		public from_tokens: {(tokens: string, num_tokens: number, version: number): Icon;};
 		public serialize: {(icon: Icon): GLib.Variant | null;};
 	}
@@ -23959,8 +24687,8 @@ declare namespace imports.gi.Gio {
 		 * 
 		 * You should free the return value with {@link G.strfreev} when you are done
 		 * with it.
-		 * @returns a list of the children on
-		 *    #settings, in no defined order
+		 * @returns a list of
+		 *    the children on #settings, in no defined order
 		 */
 		public list_children(): string[];
 		/**
@@ -23969,8 +24697,8 @@ declare namespace imports.gi.Gio {
 		 * You should probably not be calling this function from "normal" code
 		 * (since you should already know what keys are in your schema).  This
 		 * function is intended for introspection reasons.
-		 * @returns a list of the keys on
-		 *   #schema, in no defined order
+		 * @returns a list
+		 *   of the keys on #schema, in no defined order
 		 */
 		public list_keys(): string[];
 		/**
@@ -24756,31 +25484,38 @@ declare namespace imports.gi.Gio {
 		 * 
 		 * The first format is used to represent an action name with no target
 		 * value and consists of just an action name containing no whitespace
-		 * nor the characters ':', '(' or ')'.  For example: "app.action".
+		 * nor the characters `:`, `(` or `)`.  For example: `app.action`.
 		 * 
 		 * The second format is used to represent an action with a target value
-		 * that is a non-empty string consisting only of alphanumerics, plus '-'
-		 * and '.'.  In that case, the action name and target value are
-		 * separated by a double colon ("::").  For example:
-		 * "app.action::target".
+		 * that is a non-empty string consisting only of alphanumerics, plus `-`
+		 * and `.`.  In that case, the action name and target value are
+		 * separated by a double colon (`::`).  For example:
+		 * `app.action::target`.
 		 * 
 		 * The third format is used to represent an action with any type of
 		 * target value, including strings.  The target value follows the action
-		 * name, surrounded in parens.  For example: "app.action(42)".  The
+		 * name, surrounded in parens.  For example: `app.action(42)`.  The
 		 * target value is parsed using {@link G.variant_parse}.  If a tuple-typed
 		 * value is desired, it must be specified in the same way, resulting in
-		 * two sets of parens, for example: "app.action((1,2,3))".  A string
-		 * target can be specified this way as well: "app.action('target')".
-		 * For strings, this third format must be used if * target value is
-		 * empty or contains characters other than alphanumerics, '-' and '.'.
+		 * two sets of parens, for example: `app.action((1,2,3))`.  A string
+		 * target can be specified this way as well: `app.action('target')`.
+		 * For strings, this third format must be used if target value is
+		 * empty or contains characters other than alphanumerics, `-` and `.`.
+		 * 
+		 * If this function returns %TRUE, a non-%NULL value is guaranteed to be returned
+		 * in #action_name (if a pointer is passed in). A %NULL value may still be
+		 * returned in #target_value, as the #detailed_name may not contain a target.
+		 * 
+		 * If returned, the #GVariant in #target_value is guaranteed to not be floating.
 		 * @param detailed_name a detailed action name
 		 * @returns %TRUE if successful, else %FALSE with #error set
 		 * 
 		 * the action name
 		 * 
-		 * the target value, or %NULL for no target
+		 * the target value,
+		 *   or %NULL for no target
 		 */
-		public static parse_detailed_name(detailed_name: string): [ boolean, string, GLib.Variant ];
+		public static parse_detailed_name(detailed_name: string): [ boolean, string | null, GLib.Variant | null ];
 		/**
 		 * Formats a detailed action name from #action_name and #target_value.
 		 * 
@@ -25214,6 +25949,33 @@ declare namespace imports.gi.Gio {
 		 * @param action_name the name of the action
 		 */
 		remove_action(action_name: string): void;
+		/**
+		 * Remove actions from a #GActionMap. This is meant as the reverse of
+		 * {@link G.action_map_add_action_entries}.
+		 * 
+		 * 
+		 * |[<!-- language="C" -->
+		 * static const GActionEntry entries[] = {
+		 *     { "quit",         activate_quit              },
+		 *     { "print-string", activate_print_string, "s" }
+		 * };
+		 * 
+		 * void
+		 * add_actions (GActionMap *map)
+		 * {
+		 *   g_action_map_add_action_entries (map, entries, G_N_ELEMENTS (entries), NULL);
+		 * }
+		 * 
+		 * void
+		 * remove_actions (GActionMap *map)
+		 * {
+		 *   g_action_map_remove_action_entries (map, entries, G_N_ELEMENTS (entries));
+		 * }
+		 * ]|
+		 * @param entries a pointer to
+		 *           the first item in an array of #GActionEntry structs
+		 */
+		remove_action_entries(entries: ActionEntry[]): void;
 	}
 
 	type ActionMapInitOptionsMixin  = {};
@@ -25312,6 +26074,10 @@ declare namespace imports.gi.Gio {
 		get_display_name(): string;
 		/**
 		 * Gets the executable's name for the installed application.
+		 * 
+		 * This is intended to be used for debugging or labelling what program is going
+		 * to be run. To launch the executable, use {@link G.app_info_launch} and related
+		 * functions, rather than spawning the return value from this function.
 		 * @returns a string containing the #appinfo's application
 		 * binaries name
 		 */
@@ -25374,9 +26140,9 @@ declare namespace imports.gi.Gio {
 		 * environment variable with the path of the launched desktop file and
 		 * `GIO_LAUNCHED_DESKTOP_FILE_PID` to the process id of the launched
 		 * process. This can be used to ignore `GIO_LAUNCHED_DESKTOP_FILE`,
-		 * should it be inherited by further processes. The `DISPLAY` and
-		 * `DESKTOP_STARTUP_ID` environment variables are also set, based
-		 * on information provided in #context.
+		 * should it be inherited by further processes. The `DISPLAY`,
+		 * `XDG_ACTIVATION_TOKEN` and `DESKTOP_STARTUP_ID` environment
+		 * variables are also set, based on information provided in #context.
 		 * @param files a #GList of #GFile objects
 		 * @param context a #GAppLaunchContext or %NULL
 		 * @returns %TRUE on successful launch, %FALSE otherwise.
@@ -25386,7 +26152,9 @@ declare namespace imports.gi.Gio {
 		 * Launches the application. This passes the #uris to the launched application
 		 * as arguments, using the optional #context to get information
 		 * about the details of the launcher (like what screen it is on).
-		 * On error, #error will be set accordingly.
+		 * On error, #error will be set accordingly. If the application only supports
+		 * one URI per invocation as part of their command-line, multiple instances
+		 * of the application will be spawned.
 		 * 
 		 * To launch the application without arguments pass a %NULL #uris list.
 		 * 
@@ -25571,6 +26339,25 @@ declare namespace imports.gi.Gio {
 		 */
 		public static get_default_for_type(content_type: string, must_support_uris: boolean): AppInfo | null;
 		/**
+		 * Asynchronously gets the default #GAppInfo for a given content type.
+		 * @param content_type the content type to find a #GAppInfo for
+		 * @param must_support_uris if %TRUE, the #GAppInfo is expected to
+		 *     support URIs
+		 * @param cancellable optional #GCancellable object, %NULL to ignore
+		 * @param callback a #GAsyncReadyCallback to call when the request is done
+		 */
+		public static get_default_for_type_async(content_type: string, must_support_uris: boolean, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
+		/**
+		 * Finishes a default #GAppInfo lookup started by
+		 * {@link G.app_info_get_default_for_type_async}.
+		 * 
+		 * If no #GAppInfo is found, then #error will be set to %G_IO_ERROR_NOT_FOUND.
+		 * @param result a #GAsyncResult
+		 * @returns #GAppInfo for given #content_type or
+		 *     %NULL on error.
+		 */
+		public static get_default_for_type_finish(result: AsyncResult): AppInfo;
+		/**
 		 * Gets the default application for handling URIs with
 		 * the given URI scheme. A URI scheme is the initial part
 		 * of the URI, up to but not including the ':', e.g. "http",
@@ -25580,6 +26367,26 @@ declare namespace imports.gi.Gio {
 		 *     %NULL on error.
 		 */
 		public static get_default_for_uri_scheme(uri_scheme: string): AppInfo | null;
+		/**
+		 * Asynchronously gets the default application for handling URIs with
+		 * the given URI scheme. A URI scheme is the initial part
+		 * of the URI, up to but not including the ':', e.g. "http",
+		 * "ftp" or "sip".
+		 * @param uri_scheme a string containing a URI scheme.
+		 * @param cancellable optional #GCancellable object, %NULL to ignore
+		 * @param callback a #GAsyncReadyCallback to call when the request is done
+		 */
+		public static get_default_for_uri_scheme_async(uri_scheme: string, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
+		/**
+		 * Finishes a default #GAppInfo lookup started by
+		 * {@link G.app_info_get_default_for_uri_scheme_async}.
+		 * 
+		 * If no #GAppInfo is found, then #error will be set to %G_IO_ERROR_NOT_FOUND.
+		 * @param result a #GAsyncResult
+		 * @returns #GAppInfo for given #uri_scheme or
+		 *     %NULL on error.
+		 */
+		public static get_default_for_uri_scheme_finish(result: AsyncResult): AppInfo;
 		/**
 		 * Gets a list of fallback #GAppInfos for a given content type, i.e.
 		 * those applications which claim to support the given content type
@@ -26117,14 +26924,16 @@ declare namespace imports.gi.Gio {
 		 * (typically %G_IO_ERROR_PARTIAL_INPUT).
 		 * @param inbuf the buffer
 		 *         containing the data to convert.
-		 * @param outbuf a buffer to write
-		 *    converted data in.
+		 * @param outbuf a
+		 *    buffer to write converted data in.
 		 * @param flags a #GConverterFlags controlling the conversion details
 		 * @returns a #GConverterResult, %G_CONVERTER_ERROR on error.
 		 * 
-		 * will be set to the number of bytes read from #inbuf on success
+		 * will be set to the number of bytes read
+		 *    from #inbuf on success
 		 * 
-		 * will be set to the number of bytes written to #outbuf on success
+		 * will be set to the number of bytes
+		 *    written to #outbuf on success
 		 */
 		convert(inbuf: number[], outbuf: number[], flags: ConverterFlags): [ ConverterResult, number, number ];
 		/**
@@ -26289,7 +27098,7 @@ declare namespace imports.gi.Gio {
 		 */
 		get_interface(object_path: string, interface_name: string): DBusInterface | null;
 		/**
-		 * Gets the #GDBusObjectProxy at #object_path, if any.
+		 * Gets the #GDBusObject at #object_path, if any.
 		 * @param object_path Object path to look up.
 		 * @returns A #GDBusObject or %NULL. Free with
 		 *   {@link GObject.unref}.
@@ -26647,6 +27456,64 @@ declare namespace imports.gi.Gio {
 
 
 	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link DebugController} instead.
+	 */
+	interface IDebugController {
+		/**
+		 * %TRUE if debug output should be exposed (for example by forwarding it to
+		 * the journal), %FALSE otherwise.
+		 */
+		debug_enabled: boolean;
+		/**
+		 * Get the value of #GDebugController:debug-enabled.
+		 * @returns %TRUE if debug output should be exposed, %FALSE otherwise
+		 */
+		get_debug_enabled(): boolean;
+		/**
+		 * Set the value of #GDebugController:debug-enabled.
+		 * @param debug_enabled %TRUE if debug output should be exposed, %FALSE otherwise
+		 */
+		set_debug_enabled(debug_enabled: boolean): void;
+		connect(signal: "notify::debug-enabled", callback: (owner: this, ...args: any) => void): number;
+
+	}
+
+	type DebugControllerInitOptionsMixin = Pick<IDebugController,
+		"debug_enabled">;
+
+	export interface DebugControllerInitOptions extends DebugControllerInitOptionsMixin {}
+
+	/** This construct is only for enabling class multi-inheritance,
+	 * use {@link DebugController} instead.
+	 */
+	type DebugControllerMixin = IDebugController;
+
+	/**
+	 * #GDebugController is an interface to expose control of debugging features and
+	 * debug output.
+	 * 
+	 * It is implemented on Linux using #GDebugControllerDBus, which exposes a D-Bus
+	 * interface to allow authenticated peers to control debug features in this
+	 * process.
+	 * 
+	 * Whether debug output is enabled is exposed as
+	 * #GDebugController:debug-enabled. This controls {@link G.log_set_debug_enabled} by
+	 * default. Application code may connect to the #GObject::notify signal for it
+	 * to control other parts of its debug infrastructure as necessary.
+	 * 
+	 * If your application or service is using the default GLib log writer function,
+	 * creating one of the built-in implementations of #GDebugController should be
+	 * all that’s needed to dynamically enable or disable debug output.
+	 */
+	interface DebugController extends DebugControllerMixin {}
+
+	class DebugController {
+		public constructor(options?: Partial<DebugControllerInitOptions>);
+	}
+
+
+
+	/** This construct is only for enabling class multi-inheritance,
 	 * use {@link DesktopAppInfoLookup} instead.
 	 */
 	interface IDesktopAppInfoLookup {
@@ -26780,7 +27647,7 @@ declare namespace imports.gi.Gio {
 		/**
 		 * Gets the identifier of the given kind for #drive. The only
 		 * identifier currently available is
-		 * #G_DRIVE_IDENTIFIER_KIND_UNIX_DEVICE.
+		 * %G_DRIVE_IDENTIFIER_KIND_UNIX_DEVICE.
 		 * @param kind the kind of identifier to return
 		 * @returns a newly allocated string containing the
 		 *     requested identifier, or %NULL if the #GDrive
@@ -27023,10 +27890,25 @@ declare namespace imports.gi.Gio {
 		 */
 		server_identity: SocketConnectable;
 		/**
+		 * @deprecated
+		 * Do not attempt to ignore validation errors.
+		 * 
 		 * What steps to perform when validating a certificate received from
 		 * a server. Server certificates that fail to validate in any of the
 		 * ways indicated here will be rejected unless the application
 		 * overrides the default via #GDtlsConnection::accept-certificate.
+		 * 
+		 * GLib guarantees that if certificate verification fails, at least one
+		 * flag will be set, but it does not guarantee that all possible flags
+		 * will be set. Accordingly, you may not safely decide to ignore any
+		 * particular type of error. For example, it would be incorrect to mask
+		 * %G_TLS_CERTIFICATE_EXPIRED if you want to allow expired certificates,
+		 * because this could potentially be the only error flag set even if
+		 * other problems exist with the certificate. Therefore, there is no
+		 * safe way to use this property. This is not a horrible problem,
+		 * though, because you should not be attempting to ignore validation
+		 * errors anyway. If you really must ignore TLS certificate errors,
+		 * connect to #GDtlsConnection::accept-certificate.
 		 */
 		validation_flags: TlsCertificateFlags;
 		/**
@@ -27050,7 +27932,14 @@ declare namespace imports.gi.Gio {
 		 */
 		get_server_identity(): SocketConnectable;
 		/**
+		 * @deprecated
+		 * Do not attempt to ignore validation errors.
+		 * 
 		 * Gets #conn's validation flags
+		 * 
+		 * This function does not work as originally designed and is impossible
+		 * to use correctly. See #GDtlsClientConnection:validation-flags for more
+		 * information.
 		 * @returns the validation flags
 		 */
 		get_validation_flags(): TlsCertificateFlags;
@@ -27063,9 +27952,16 @@ declare namespace imports.gi.Gio {
 		 */
 		set_server_identity(identity: SocketConnectable): void;
 		/**
+		 * @deprecated
+		 * Do not attempt to ignore validation errors.
+		 * 
 		 * Sets #conn's validation flags, to override the default set of
 		 * checks performed when validating a server certificate. By default,
 		 * %G_TLS_CERTIFICATE_VALIDATE_ALL is used.
+		 * 
+		 * This function does not work as originally designed and is impossible
+		 * to use correctly. See #GDtlsClientConnection:validation-flags for more
+		 * information.
 		 * @param flags the #GTlsCertificateFlags to use
 		 */
 		set_validation_flags(flags: TlsCertificateFlags): void;
@@ -27135,6 +28031,19 @@ declare namespace imports.gi.Gio {
 		 * The certificate database to use when verifying this TLS connection.
 		 * If no certificate database is set, then the default database will be
 		 * used. See {@link G.tls_backend_get_default_database}.
+		 * 
+		 * When using a non-default database, #GDtlsConnection must fall back to using
+		 * the #GTlsDatabase to perform certificate verification using
+		 * g_tls_database_verify_chain(), which means certificate verification will
+		 * not be able to make use of TLS session context. This may be less secure.
+		 * For example, if you create your own #GTlsDatabase that just wraps the
+		 * default #GTlsDatabase, you might expect that you have not changed anything,
+		 * but this is not true because you may have altered the behavior of
+		 * #GDtlsConnection by causing it to use g_tls_database_verify_chain(). See the
+		 * documentation of g_tls_database_verify_chain() for more details on specific
+		 * security checks that may not be performed. Accordingly, setting a
+		 * non-default database is discouraged except for specialty applications with
+		 * unusual security requirements.
 		 */
 		database: TlsDatabase;
 		/**
@@ -27164,6 +28073,14 @@ declare namespace imports.gi.Gio {
 		 * %G_TLS_CERTIFICATE_VALIDATE_ALL, or if
 		 * #GDtlsConnection::accept-certificate overrode the default
 		 * behavior.
+		 * 
+		 * GLib guarantees that if certificate verification fails, at least
+		 * one error will be set, but it does not guarantee that all possible
+		 * errors will be set. Accordingly, you may not safely decide to
+		 * ignore any particular type of error. For example, it would be
+		 * incorrect to mask %G_TLS_CERTIFICATE_EXPIRED if you want to allow
+		 * expired certificates, because this could potentially be the only
+		 * error flag set even if other problems exist with the certificate.
 		 */
 		readonly peer_certificate_errors: TlsCertificateFlags;
 		/**
@@ -27428,6 +28345,9 @@ declare namespace imports.gi.Gio {
 		 * #GDtlsConnection::accept-certificate will always be emitted on
 		 * client-side connections, unless that bit is not set in
 		 * #GDtlsClientConnection:validation-flags).
+		 * 
+		 * There are nonintuitive security implications when using a non-default
+		 * database. See #GDtlsConnection:database for details.
 		 * @param database a #GTlsDatabase
 		 */
 		set_database(database?: TlsDatabase | null): void;
@@ -27536,6 +28456,15 @@ declare namespace imports.gi.Gio {
 		 * certificate to be accepted despite #errors, return %TRUE from the
 		 * signal handler. Otherwise, if no handler accepts the certificate,
 		 * the handshake will fail with %G_TLS_ERROR_BAD_CERTIFICATE.
+		 * 
+		 * GLib guarantees that if certificate verification fails, this signal
+		 * will be emitted with at least one error will be set in #errors, but
+		 * it does not guarantee that all possible errors will be set.
+		 * Accordingly, you may not safely decide to ignore any particular
+		 * type of error. For example, it would be incorrect to ignore
+		 * %G_TLS_CERTIFICATE_EXPIRED if you want to allow expired
+		 * certificates, because this could potentially be the only error flag
+		 * set even if other problems exist with the certificate.
 		 * 
 		 * For a server-side connection, #peer_cert is the certificate
 		 * presented by the client, if this was requested via the server's
@@ -27686,7 +28615,7 @@ declare namespace imports.gi.Gio {
 		 * If the file doesn't already exist it is created.
 		 * 
 		 * By default files created are generally readable by everyone,
-		 * but if you pass #G_FILE_CREATE_PRIVATE in #flags the file
+		 * but if you pass %G_FILE_CREATE_PRIVATE in #flags the file
 		 * will be made readable only to the current user, to the level that
 		 * is supported on the target filesystem.
 		 * 
@@ -27701,9 +28630,9 @@ declare namespace imports.gi.Gio {
 		 * possible too, and depend on what kind of filesystem the file is on.
 		 * @param flags a set of #GFileCreateFlags
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @returns a #GFileOutputStream, or %NULL on error.
-		 *     Free the returned object with {@link GObject.unref}.
+		 *   Free the returned object with {@link GObject.unref}.
 		 */
 		append_to(flags: FileCreateFlags, cancellable?: Cancellable | null): FileOutputStream;
 		/**
@@ -27718,9 +28647,9 @@ declare namespace imports.gi.Gio {
 		 * @param flags a set of #GFileCreateFlags
 		 * @param io_priority the [I/O priority][io-priority] of the request
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
-		 * @param callback a #GAsyncReadyCallback to call
-		 *     when the request is satisfied
+		 *   %NULL to ignore
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		append_to_async(flags: FileCreateFlags, io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -27728,8 +28657,8 @@ declare namespace imports.gi.Gio {
 		 * {@link G.file_append_to_async}.
 		 * @param res #GAsyncResult
 		 * @returns a valid #GFileOutputStream
-		 *     or %NULL on error.
-		 *     Free the returned object with {@link GObject.unref}.
+		 *   or %NULL on error.
+		 *   Free the returned object with {@link GObject.unref}.
 		 */
 		append_to_finish(res: AsyncResult): FileOutputStream;
 		/**
@@ -27744,23 +28673,23 @@ declare namespace imports.gi.Gio {
 		 * stages (e.g., for recursive move of a directory).
 		 * @param flags a set of #GFileCopyFlags
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @returns an attribute query string for {@link G.file_query_info},
-		 *     or %NULL if an error occurs.
+		 *   or %NULL if an error occurs.
 		 */
 		build_attribute_list_for_copy(flags: FileCopyFlags, cancellable?: Cancellable | null): string;
 		/**
 		 * Copies the file #source to the location specified by #destination.
 		 * Can not handle recursive copies of directories.
 		 * 
-		 * If the flag #G_FILE_COPY_OVERWRITE is specified an already
+		 * If the flag %G_FILE_COPY_OVERWRITE is specified an already
 		 * existing #destination file is overwritten.
 		 * 
-		 * If the flag #G_FILE_COPY_NOFOLLOW_SYMLINKS is specified then symlinks
+		 * If the flag %G_FILE_COPY_NOFOLLOW_SYMLINKS is specified then symlinks
 		 * will be copied as symlinks, otherwise the target of the
 		 * #source symlink will be copied.
 		 * 
-		 * If the flag #G_FILE_COPY_ALL_METADATA is specified then all the metadata
+		 * If the flag %G_FILE_COPY_ALL_METADATA is specified then all the metadata
 		 * that is possible to copy is copied, not just the default subset (which,
 		 * for instance, does not include the owner, see #GFileInfo).
 		 * 
@@ -27777,7 +28706,7 @@ declare namespace imports.gi.Gio {
 		 * If the #source file does not exist, then the %G_IO_ERROR_NOT_FOUND error
 		 * is returned, independent on the status of the #destination.
 		 * 
-		 * If #G_FILE_COPY_OVERWRITE is not specified and the target exists, then
+		 * If %G_FILE_COPY_OVERWRITE is not specified and the target exists, then
 		 * the error %G_IO_ERROR_EXISTS is returned.
 		 * 
 		 * If trying to overwrite a file over a directory, the %G_IO_ERROR_IS_DIRECTORY
@@ -27785,7 +28714,7 @@ declare namespace imports.gi.Gio {
 		 * %G_IO_ERROR_WOULD_MERGE error is returned.
 		 * 
 		 * If the source is a directory and the target does not exist, or
-		 * #G_FILE_COPY_OVERWRITE is specified and the target is a file, then the
+		 * %G_FILE_COPY_OVERWRITE is specified and the target is a file, then the
 		 * %G_IO_ERROR_WOULD_RECURSE error is returned.
 		 * 
 		 * If you are interested in copying the #GFile object itself (not the on-disk
@@ -27793,9 +28722,9 @@ declare namespace imports.gi.Gio {
 		 * @param destination destination #GFile
 		 * @param flags set of #GFileCopyFlags
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @param progress_callback function to callback with
-		 *     progress information, or %NULL if progress information is not needed
+		 *   progress information, or %NULL if progress information is not needed
 		 * @returns %TRUE on success, %FALSE otherwise.
 		 */
 		copy(destination: File, flags: FileCopyFlags, cancellable?: Cancellable | null, progress_callback?: FileProgressCallback | null): boolean;
@@ -27814,24 +28743,29 @@ declare namespace imports.gi.Gio {
 		 * @param flags set of #GFileCopyFlags
 		 * @param io_priority the [I/O priority][io-priority] of the request
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
+		 * @param progress_callback 
+		 *   function to callback with progress information, or %NULL if
+		 *   progress information is not needed
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
-		copy_async(destination: File, flags: FileCopyFlags, io_priority: number, cancellable?: Cancellable | null): void;
+		copy_async(destination: File, flags: FileCopyFlags, io_priority: number, cancellable?: Cancellable | null, progress_callback?: FileProgressCallback | null, callback?: AsyncReadyCallback | null): void;
 		/**
 		 * Copies the file attributes from #source to #destination.
 		 * 
 		 * Normally only a subset of the file attributes are copied,
 		 * those that are copies in a normal file copy operation
 		 * (which for instance does not include e.g. owner). However
-		 * if #G_FILE_COPY_ALL_METADATA is specified in #flags, then
+		 * if %G_FILE_COPY_ALL_METADATA is specified in #flags, then
 		 * all the metadata that is possible to copy is copied. This
 		 * is useful when implementing move by copy + delete source.
 		 * @param destination a #GFile to copy attributes to
 		 * @param flags a set of #GFileCopyFlags
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @returns %TRUE if the attributes were copied successfully,
-		 *     %FALSE otherwise.
+		 *   %FALSE otherwise.
 		 */
 		copy_attributes(destination: File, flags: FileCopyFlags, cancellable?: Cancellable | null): boolean;
 		/**
@@ -27845,7 +28779,7 @@ declare namespace imports.gi.Gio {
 		 * The file must not already exist.
 		 * 
 		 * By default files created are generally readable by everyone,
-		 * but if you pass #G_FILE_CREATE_PRIVATE in #flags the file
+		 * but if you pass %G_FILE_CREATE_PRIVATE in #flags the file
 		 * will be made readable only to the current user, to the level
 		 * that is supported on the target filesystem.
 		 * 
@@ -27862,10 +28796,10 @@ declare namespace imports.gi.Gio {
 		 * of filesystem the file is on.
 		 * @param flags a set of #GFileCreateFlags
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @returns a #GFileOutputStream for the newly created
-		 *     file, or %NULL on error.
-		 *     Free the returned object with {@link GObject.unref}.
+		 *   file, or %NULL on error.
+		 *   Free the returned object with {@link GObject.unref}.
 		 */
 		create(flags: FileCreateFlags, cancellable?: Cancellable | null): FileOutputStream;
 		/**
@@ -27881,9 +28815,9 @@ declare namespace imports.gi.Gio {
 		 * @param flags a set of #GFileCreateFlags
 		 * @param io_priority the [I/O priority][io-priority] of the request
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
-		 * @param callback a #GAsyncReadyCallback to call
-		 *     when the request is satisfied
+		 *   %NULL to ignore
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		create_async(flags: FileCreateFlags, io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -27891,7 +28825,7 @@ declare namespace imports.gi.Gio {
 		 * {@link G.file_create_async}.
 		 * @param res a #GAsyncResult
 		 * @returns a #GFileOutputStream or %NULL on error.
-		 *     Free the returned object with {@link GObject.unref}.
+		 *   Free the returned object with {@link GObject.unref}.
 		 */
 		create_finish(res: AsyncResult): FileOutputStream;
 		/**
@@ -27899,7 +28833,7 @@ declare namespace imports.gi.Gio {
 		 * writing to it. The file must not already exist.
 		 * 
 		 * By default files created are generally readable by everyone,
-		 * but if you pass #G_FILE_CREATE_PRIVATE in #flags the file
+		 * but if you pass %G_FILE_CREATE_PRIVATE in #flags the file
 		 * will be made readable only to the current user, to the level
 		 * that is supported on the target filesystem.
 		 * 
@@ -27920,10 +28854,10 @@ declare namespace imports.gi.Gio {
 		 * streaming, rather than just opening for reading or writing.
 		 * @param flags a set of #GFileCreateFlags
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @returns a #GFileIOStream for the newly created
-		 *     file, or %NULL on error.
-		 *     Free the returned object with {@link GObject.unref}.
+		 *   file, or %NULL on error.
+		 *   Free the returned object with {@link GObject.unref}.
 		 */
 		create_readwrite(flags: FileCreateFlags, cancellable?: Cancellable | null): FileIOStream;
 		/**
@@ -27939,9 +28873,9 @@ declare namespace imports.gi.Gio {
 		 * @param flags a set of #GFileCreateFlags
 		 * @param io_priority the [I/O priority][io-priority] of the request
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
-		 * @param callback a #GAsyncReadyCallback to call
-		 *     when the request is satisfied
+		 *   %NULL to ignore
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		create_readwrite_async(flags: FileCreateFlags, io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -27949,7 +28883,7 @@ declare namespace imports.gi.Gio {
 		 * {@link G.file_create_readwrite_async}.
 		 * @param res a #GAsyncResult
 		 * @returns a #GFileIOStream or %NULL on error.
-		 *     Free the returned object with {@link GObject.unref}.
+		 *   Free the returned object with {@link GObject.unref}.
 		 */
 		create_readwrite_finish(res: AsyncResult): FileIOStream;
 		/**
@@ -27975,7 +28909,7 @@ declare namespace imports.gi.Gio {
 		 * triggering the cancellable object from another thread. If the operation
 		 * was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @returns %TRUE if the file was deleted. %FALSE otherwise.
 		 */
 		delete(cancellable?: Cancellable | null): boolean;
@@ -27985,9 +28919,9 @@ declare namespace imports.gi.Gio {
 		 * {@link G.unlink}.
 		 * @param io_priority the [I/O priority][io-priority] of the request
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @param callback a #GAsyncReadyCallback to call
-		 *     when the request is satisfied
+		 *   when the request is satisfied
 		 */
 		delete_async(io_priority: number | null, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -28008,7 +28942,7 @@ declare namespace imports.gi.Gio {
 		 * 
 		 * This call does no blocking I/O.
 		 * @returns a new #GFile that is a duplicate
-		 *     of the given #GFile.
+		 *   of the given #GFile.
 		 */
 		dup(): File;
 		/**
@@ -28025,21 +28959,21 @@ declare namespace imports.gi.Gio {
 		 * was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
 		 * @param flags flags affecting the operation
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
-		 * @param callback a #GAsyncReadyCallback to call
-		 *     when the request is satisfied, or %NULL
+		 *   %NULL to ignore
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		eject_mountable(flags: MountUnmountFlags, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
 		 * @deprecated
 		 * Use {@link G.file_eject_mountable_with_operation_finish}
-		 *     instead.
+		 *   instead.
 		 * 
 		 * Finishes an asynchronous eject operation started by
 		 * {@link G.file_eject_mountable}.
 		 * @param result a #GAsyncResult
 		 * @returns %TRUE if the #file was ejected successfully.
-		 *     %FALSE otherwise.
+		 *   %FALSE otherwise.
 		 */
 		eject_mountable_finish(result: AsyncResult): boolean;
 		/**
@@ -28053,11 +28987,11 @@ declare namespace imports.gi.Gio {
 		 * was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
 		 * @param flags flags affecting the operation
 		 * @param mount_operation a #GMountOperation,
-		 *     or %NULL to avoid user interaction
+		 *   or %NULL to avoid user interaction
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
-		 * @param callback a #GAsyncReadyCallback to call
-		 *     when the request is satisfied, or %NULL
+		 *   %NULL to ignore
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		eject_mountable_with_operation(flags: MountUnmountFlags, mount_operation?: MountOperation | null, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -28065,7 +28999,7 @@ declare namespace imports.gi.Gio {
 		 * {@link G.file_eject_mountable_with_operation}.
 		 * @param result a #GAsyncResult
 		 * @returns %TRUE if the #file was ejected successfully.
-		 *     %FALSE otherwise.
+		 *   %FALSE otherwise.
 		 */
 		eject_mountable_with_operation_finish(result: AsyncResult): boolean;
 		/**
@@ -28082,7 +29016,9 @@ declare namespace imports.gi.Gio {
 		 * "standard::*" means all attributes in the standard namespace.
 		 * An example attribute query be "standard::*,owner::user".
 		 * The standard attributes are available as defines, like
-		 * #G_FILE_ATTRIBUTE_STANDARD_NAME.
+		 * %G_FILE_ATTRIBUTE_STANDARD_NAME. %G_FILE_ATTRIBUTE_STANDARD_NAME should
+		 * always be specified if you plan to call {@link G.file_enumerator_get_child} or
+		 * g_file_enumerator_iterate() on the returned enumerator.
 		 * 
 		 * If #cancellable is not %NULL, then the operation can be cancelled
 		 * by triggering the cancellable object from another thread. If the
@@ -28095,9 +29031,9 @@ declare namespace imports.gi.Gio {
 		 * @param attributes an attribute query string
 		 * @param flags a set of #GFileQueryInfoFlags
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @returns A #GFileEnumerator if successful,
-		 *     %NULL on error. Free the returned object with {@link GObject.unref}.
+		 *   %NULL on error. Free the returned object with {@link GObject.unref}.
 		 */
 		enumerate_children(attributes: string, flags: FileQueryInfoFlags, cancellable?: Cancellable | null): FileEnumerator;
 		/**
@@ -28115,9 +29051,9 @@ declare namespace imports.gi.Gio {
 		 * @param flags a set of #GFileQueryInfoFlags
 		 * @param io_priority the [I/O priority][io-priority] of the request
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
-		 * @param callback a #GAsyncReadyCallback to call when the
-		 *     request is satisfied
+		 *   %NULL to ignore
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		enumerate_children_async(attributes: string, flags: FileQueryInfoFlags, io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -28125,8 +29061,8 @@ declare namespace imports.gi.Gio {
 		 * See {@link G.file_enumerate_children_async}.
 		 * @param res a #GAsyncResult
 		 * @returns a #GFileEnumerator or %NULL
-		 *     if an error occurred.
-		 *     Free the returned object with {@link GObject.unref}.
+		 *   if an error occurred.
+		 *   Free the returned object with {@link GObject.unref}.
 		 */
 		enumerate_children_finish(res: AsyncResult): FileEnumerator;
 		/**
@@ -28152,10 +29088,10 @@ declare namespace imports.gi.Gio {
 		 * triggering the cancellable object from another thread. If the operation
 		 * was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @returns a #GMount where the #file is located
-		 *     or %NULL on error.
-		 *     Free the returned object with {@link GObject.unref}.
+		 *   or %NULL on error.
+		 *   Free the returned object with {@link GObject.unref}.
 		 */
 		find_enclosing_mount(cancellable?: Cancellable | null): Mount;
 		/**
@@ -28169,9 +29105,9 @@ declare namespace imports.gi.Gio {
 		 * get the result of the operation.
 		 * @param io_priority the [I/O priority][io-priority] of the request
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
-		 * @param callback a #GAsyncReadyCallback to call
-		 *     when the request is satisfied
+		 *   %NULL to ignore
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		find_enclosing_mount_async(io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -28179,7 +29115,7 @@ declare namespace imports.gi.Gio {
 		 * See {@link G.file_find_enclosing_mount_async}.
 		 * @param res a #GAsyncResult
 		 * @returns #GMount for given #file or %NULL on error.
-		 *     Free the returned object with {@link GObject.unref}.
+		 *   Free the returned object with {@link GObject.unref}.
 		 */
 		find_enclosing_mount_finish(res: AsyncResult): Mount;
 		/**
@@ -28197,8 +29133,8 @@ declare namespace imports.gi.Gio {
 		 * 
 		 * This call does no blocking I/O.
 		 * @returns string containing the #GFile's
-		 *     base name, or %NULL if given #GFile is invalid. The returned string
-		 *     should be freed with {@link G.free} when no longer needed.
+		 *   base name, or %NULL if given #GFile is invalid. The returned string
+		 *   should be freed with {@link G.free} when no longer needed.
 		 */
 		get_basename(): string | null;
 		/**
@@ -28211,7 +29147,7 @@ declare namespace imports.gi.Gio {
 		 * This call does no blocking I/O.
 		 * @param name string containing the child's basename
 		 * @returns a #GFile to a child specified by #name.
-		 *     Free the returned object with {@link GObject.unref}.
+		 *   Free the returned object with {@link GObject.unref}.
 		 */
 		get_child(name: string): File;
 		/**
@@ -28225,8 +29161,8 @@ declare namespace imports.gi.Gio {
 		 * This call does no blocking I/O.
 		 * @param display_name string to a possible child
 		 * @returns a #GFile to the specified child, or
-		 *     %NULL if the display name couldn't be converted.
-		 *     Free the returned object with {@link GObject.unref}.
+		 *   %NULL if the display name couldn't be converted.
+		 *   Free the returned object with {@link GObject.unref}.
 		 */
 		get_child_for_display_name(display_name: string): File;
 		/**
@@ -28236,8 +29172,8 @@ declare namespace imports.gi.Gio {
 		 * 
 		 * This call does no blocking I/O.
 		 * @returns a #GFile structure to the
-		 *     parent of the given #GFile or %NULL if there is no parent. Free
-		 *     the returned object with {@link GObject.unref}.
+		 *   parent of the given #GFile or %NULL if there is no parent. Free
+		 *   the returned object with {@link GObject.unref}.
 		 */
 		get_parent(): File | null;
 		/**
@@ -28256,8 +29192,8 @@ declare namespace imports.gi.Gio {
 		 * 
 		 * This call does no blocking I/O.
 		 * @returns a string containing the #GFile's parse name.
-		 *     The returned string should be freed with {@link G.free}
-		 *     when no longer needed.
+		 *   The returned string should be freed with {@link G.free}
+		 *   when no longer needed.
 		 */
 		get_parse_name(): string;
 		/**
@@ -28266,8 +29202,8 @@ declare namespace imports.gi.Gio {
 		 * 
 		 * This call does no blocking I/O.
 		 * @returns string containing the #GFile's path,
-		 *     or %NULL if no such path exists. The returned string should be freed
-		 *     with {@link G.free} when no longer needed.
+		 *   or %NULL if no such path exists. The returned string should be freed
+		 *   with {@link G.free} when no longer needed.
 		 */
 		get_path(): string | null;
 		/**
@@ -28276,9 +29212,9 @@ declare namespace imports.gi.Gio {
 		 * This call does no blocking I/O.
 		 * @param descendant input #GFile
 		 * @returns string with the relative path from
-		 *     #descendant to #parent, or %NULL if #descendant doesn't have #parent as
-		 *     prefix. The returned string should be freed with {@link G.free} when
-		 *     no longer needed.
+		 *   #descendant to #parent, or %NULL if #descendant doesn't have #parent as
+		 *   prefix. The returned string should be freed with {@link G.free} when
+		 *   no longer needed.
 		 */
 		get_relative_path(descendant: File): string | null;
 		/**
@@ -28286,9 +29222,9 @@ declare namespace imports.gi.Gio {
 		 * 
 		 * This call does no blocking I/O.
 		 * @returns a string containing the #GFile's URI. If the #GFile was constructed
-		 *     with an invalid URI, an invalid URI is returned.
-		 *     The returned string should be freed with {@link G.free}
-		 *     when no longer needed.
+		 *   with an invalid URI, an invalid URI is returned.
+		 *   The returned string should be freed with {@link G.free}
+		 *   when no longer needed.
 		 */
 		get_uri(): string;
 		/**
@@ -28304,8 +29240,8 @@ declare namespace imports.gi.Gio {
 		 * 
 		 * This call does no blocking I/O.
 		 * @returns a string containing the URI scheme for the given
-		 *     #GFile or %NULL if the #GFile was constructed with an invalid URI. The
-		 *     returned string should be freed with {@link G.free} when no longer needed.
+		 *   #GFile or %NULL if the #GFile was constructed with an invalid URI. The
+		 *   returned string should be freed with {@link G.free} when no longer needed.
 		 */
 		get_uri_scheme(): string | null;
 		/**
@@ -28316,7 +29252,7 @@ declare namespace imports.gi.Gio {
 		 * if #file is an immediate child of #parent.
 		 * @param parent the parent to check for, or %NULL
 		 * @returns %TRUE if #file is an immediate child of #parent (or any parent in
-		 *          the case that #parent is %NULL).
+		 *   the case that #parent is %NULL).
 		 */
 		has_parent(parent?: File | null): boolean;
 		/**
@@ -28336,7 +29272,7 @@ declare namespace imports.gi.Gio {
 		 * of #prefix.
 		 * @param prefix input #GFile
 		 * @returns %TRUE if the #file's parent, grandparent, etc is #prefix,
-		 *     %FALSE otherwise.
+		 *   %FALSE otherwise.
 		 */
 		has_prefix(prefix: File): boolean;
 		/**
@@ -28345,8 +29281,8 @@ declare namespace imports.gi.Gio {
 		 * This call does no blocking I/O.
 		 * @param uri_scheme a string containing a URI scheme
 		 * @returns %TRUE if #GFile's backend supports the
-		 *     given URI scheme, %FALSE if URI scheme is %NULL,
-		 *     not supported, or #GFile is invalid.
+		 *   given URI scheme, %FALSE if URI scheme is %NULL,
+		 *   not supported, or #GFile is invalid.
 		 */
 		has_uri_scheme(uri_scheme: string): boolean;
 		/**
@@ -28354,9 +29290,9 @@ declare namespace imports.gi.Gio {
 		 * 
 		 * This call does no blocking I/O.
 		 * @returns 0 if #file is not a valid #GFile, otherwise an
-		 *     integer that can be used as hash value for the #GFile.
-		 *     This function is intended for easily hashing a #GFile to
-		 *     add to a #GHashTable or similar data structure.
+		 *   integer that can be used as hash value for the #GFile.
+		 *   This function is intended for easily hashing a #GFile to
+		 *   add to a #GHashTable or similar data structure.
 		 */
 		hash(): number;
 		/**
@@ -28390,7 +29326,7 @@ declare namespace imports.gi.Gio {
 		 * @returns a #GBytes or %NULL and #error is set
 		 * 
 		 * a location to place the current
-		 *     entity tag for the file, or %NULL if the entity tag is not needed
+		 *   entity tag for the file, or %NULL if the entity tag is not needed
 		 */
 		load_bytes(cancellable?: Cancellable | null): [ GLib.Bytes, string | null ];
 		/**
@@ -28405,8 +29341,8 @@ declare namespace imports.gi.Gio {
 		 * 
 		 * See g_file_load_bytes() for more information.
 		 * @param cancellable a #GCancellable or %NULL
-		 * @param callback a #GAsyncReadyCallback to call when the
-		 *     request is satisfied
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		load_bytes_async(cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -28423,7 +29359,7 @@ declare namespace imports.gi.Gio {
 		 * @returns a #GBytes or %NULL and #error is set
 		 * 
 		 * a location to place the current
-		 *     entity tag for the file, or %NULL if the entity tag is not needed
+		 *   entity tag for the file, or %NULL if the entity tag is not needed
 		 */
 		load_bytes_finish(result: AsyncResult): [ GLib.Bytes, string | null ];
 		/**
@@ -28437,12 +29373,12 @@ declare namespace imports.gi.Gio {
 		 * was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
 		 * @param cancellable optional #GCancellable object, %NULL to ignore
 		 * @returns %TRUE if the #file's contents were successfully loaded.
-		 *     %FALSE if there were errors.
+		 *   %FALSE if there were errors.
 		 * 
 		 * a location to place the contents of the file
 		 * 
 		 * a location to place the current entity tag for the file,
-		 *    or %NULL if the entity tag is not needed
+		 *   or %NULL if the entity tag is not needed
 		 */
 		load_contents(cancellable?: Cancellable | null): [success: boolean, contents: Uint8Array];
 		/**
@@ -28471,12 +29407,12 @@ declare namespace imports.gi.Gio {
 		 * set to the new entity tag for the #file.
 		 * @param res a #GAsyncResult
 		 * @returns %TRUE if the load was successful. If %FALSE and #error is
-		 *     present, it will be set appropriately.
+		 *   present, it will be set appropriately.
 		 * 
 		 * a location to place the contents of the file
 		 * 
 		 * a location to place the current entity tag for the file,
-		 *     or %NULL if the entity tag is not needed
+		 *   or %NULL if the entity tag is not needed
 		 */
 		load_contents_finish(res: AsyncResult): [ boolean, number[], string | null ];
 		/**
@@ -28493,10 +29429,10 @@ declare namespace imports.gi.Gio {
 		 * was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
 		 * @param cancellable optional #GCancellable object, %NULL to ignore
 		 * @param read_more_callback a
-		 *     #GFileReadMoreCallback to receive partial data
-		 *     and to specify whether further data should be read
+		 *   #GFileReadMoreCallback to receive partial data
+		 *   and to specify whether further data should be read
 		 * @param callback a #GAsyncReadyCallback to call
-		 *     when the request is satisfied
+		 *   when the request is satisfied
 		 */
 		load_partial_contents_async(cancellable: Cancellable | null, read_more_callback: FileReadMoreCallback, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -28507,12 +29443,12 @@ declare namespace imports.gi.Gio {
 		 * needed.
 		 * @param res a #GAsyncResult
 		 * @returns %TRUE if the load was successful. If %FALSE and #error is
-		 *     present, it will be set appropriately.
+		 *   present, it will be set appropriately.
 		 * 
 		 * a location to place the contents of the file
 		 * 
 		 * a location to place the current entity tag for the file,
-		 *     or %NULL if the entity tag is not needed
+		 *   or %NULL if the entity tag is not needed
 		 */
 		load_partial_contents_finish(res: AsyncResult): [ boolean, number[], string | null ];
 		/**
@@ -28531,7 +29467,7 @@ declare namespace imports.gi.Gio {
 		 * triggering the cancellable object from another thread. If the operation
 		 * was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @returns %TRUE on successful creation, %FALSE otherwise.
 		 */
 		make_directory(cancellable?: Cancellable | null): boolean;
@@ -28539,9 +29475,9 @@ declare namespace imports.gi.Gio {
 		 * Asynchronously creates a directory.
 		 * @param io_priority the [I/O priority][io-priority] of the request
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @param callback a #GAsyncReadyCallback to call
-		 *     when the request is satisfied
+		 *   when the request is satisfied
 		 */
 		make_directory_async(io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -28566,7 +29502,7 @@ declare namespace imports.gi.Gio {
 		 * triggering the cancellable object from another thread. If the operation
 		 * was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @returns %TRUE if all directories have been successfully created, %FALSE
 		 * otherwise.
 		 */
@@ -28579,12 +29515,31 @@ declare namespace imports.gi.Gio {
 		 * triggering the cancellable object from another thread. If the operation
 		 * was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
 		 * @param symlink_value a string with the path for the target
-		 *     of the new symlink
+		 *   of the new symlink
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @returns %TRUE on the creation of a new symlink, %FALSE otherwise.
 		 */
 		make_symbolic_link(symlink_value: string, cancellable?: Cancellable | null): boolean;
+		/**
+		 * Asynchronously creates a symbolic link named #file which contains the
+		 * string #symlink_value.
+		 * @param symlink_value a string with the path for the target
+		 *   of the new symlink
+		 * @param io_priority the [I/O priority][io-priority] of the request
+		 * @param cancellable optional #GCancellable object,
+		 *   %NULL to ignore
+		 * @param callback a #GAsyncReadyCallback to call
+		 *   when the request is satisfied
+		 */
+		make_symbolic_link_async(symlink_value: string, io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
+		/**
+		 * Finishes an asynchronous symbolic link creation, started with
+		 * {@link G.file_make_symbolic_link_async}.
+		 * @param result a #GAsyncResult
+		 * @returns %TRUE on successful directory creation, %FALSE otherwise.
+		 */
+		make_symbolic_link_finish(result: AsyncResult): boolean;
 		/**
 		 * Recursively measures the disk usage of #file.
 		 * 
@@ -28608,7 +29563,7 @@ declare namespace imports.gi.Gio {
 		 * @param cancellable optional #GCancellable
 		 * @param progress_callback a #GFileMeasureProgressCallback
 		 * @returns %TRUE if successful, with the out parameters set.
-		 *          %FALSE otherwise, with #error set.
+		 *   %FALSE otherwise, with #error set.
 		 * 
 		 * the number of bytes of disk space used
 		 * 
@@ -28635,7 +29590,7 @@ declare namespace imports.gi.Gio {
 		 * more information.
 		 * @param result the #GAsyncResult passed to your #GAsyncReadyCallback
 		 * @returns %TRUE if successful, with the out parameters set.
-		 *          %FALSE otherwise, with #error set.
+		 *   %FALSE otherwise, with #error set.
 		 * 
 		 * the number of bytes of disk space used
 		 * 
@@ -28653,10 +29608,10 @@ declare namespace imports.gi.Gio {
 		 * was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
 		 * @param flags a set of #GFileMonitorFlags
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @returns a #GFileMonitor for the given #file,
-		 *     or %NULL on error.
-		 *     Free the returned object with {@link GObject.unref}.
+		 *   or %NULL on error.
+		 *   Free the returned object with {@link GObject.unref}.
 		 */
 		monitor(flags: FileMonitorFlags, cancellable?: Cancellable | null): FileMonitor;
 		/**
@@ -28674,10 +29629,10 @@ declare namespace imports.gi.Gio {
 		 * you must register individual watches with {@link G.file_monitor}.
 		 * @param flags a set of #GFileMonitorFlags
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @returns a #GFileMonitor for the given #file,
-		 *     or %NULL on error.
-		 *     Free the returned object with {@link GObject.unref}.
+		 *   or %NULL on error.
+		 *   Free the returned object with {@link GObject.unref}.
 		 */
 		monitor_directory(flags: FileMonitorFlags, cancellable?: Cancellable | null): FileMonitor;
 		/**
@@ -28697,10 +29652,10 @@ declare namespace imports.gi.Gio {
 		 * backend and/or filesystem type.
 		 * @param flags a set of #GFileMonitorFlags
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @returns a #GFileMonitor for the given #file,
-		 *     or %NULL on error.
-		 *     Free the returned object with {@link GObject.unref}.
+		 *   or %NULL on error.
+		 *   Free the returned object with {@link GObject.unref}.
 		 */
 		monitor_file(flags: FileMonitorFlags, cancellable?: Cancellable | null): FileMonitor;
 		/**
@@ -28716,19 +29671,19 @@ declare namespace imports.gi.Gio {
 		 * was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
 		 * @param flags flags affecting the operation
 		 * @param mount_operation a #GMountOperation
-		 *     or %NULL to avoid user interaction
+		 *   or %NULL to avoid user interaction
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @param callback a #GAsyncReadyCallback to call
-		 *     when the request is satisfied, or %NULL
+		 *   when the request is satisfied, or %NULL
 		 */
 		mount_enclosing_volume(flags: MountMountFlags, mount_operation?: MountOperation | null, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
 		 * Finishes a mount operation started by {@link G.file_mount_enclosing_volume}.
 		 * @param result a #GAsyncResult
 		 * @returns %TRUE if successful. If an error has occurred,
-		 *     this function will return %FALSE and set #error
-		 *     appropriately if present.
+		 *   this function will return %FALSE and set #error
+		 *   appropriately if present.
 		 */
 		mount_enclosing_volume_finish(result: AsyncResult): boolean;
 		/**
@@ -28745,11 +29700,11 @@ declare namespace imports.gi.Gio {
 		 * the result of the operation.
 		 * @param flags flags affecting the operation
 		 * @param mount_operation a #GMountOperation,
-		 *     or %NULL to avoid user interaction
+		 *   or %NULL to avoid user interaction
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
-		 * @param callback a #GAsyncReadyCallback to call
-		 *     when the request is satisfied, or %NULL
+		 *   %NULL to ignore
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		mount_mountable(flags: MountMountFlags, mount_operation?: MountOperation | null, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -28759,7 +29714,7 @@ declare namespace imports.gi.Gio {
 		 * with g_file_mount_mountable().
 		 * @param result a #GAsyncResult
 		 * @returns a #GFile or %NULL on error.
-		 *     Free the returned object with {@link GObject.unref}.
+		 *   Free the returned object with {@link GObject.unref}.
 		 */
 		mount_mountable_finish(result: AsyncResult): File;
 		/**
@@ -28769,7 +29724,7 @@ declare namespace imports.gi.Gio {
 		 * implementation may support moving directories (for instance on moves
 		 * inside the same filesystem), but the fallback code does not.
 		 * 
-		 * If the flag #G_FILE_COPY_OVERWRITE is specified an already
+		 * If the flag %G_FILE_COPY_OVERWRITE is specified an already
 		 * existing #destination file is overwritten.
 		 * 
 		 * If #cancellable is not %NULL, then the operation can be cancelled by
@@ -28785,7 +29740,7 @@ declare namespace imports.gi.Gio {
 		 * If the #source file does not exist, then the %G_IO_ERROR_NOT_FOUND
 		 * error is returned, independent on the status of the #destination.
 		 * 
-		 * If #G_FILE_COPY_OVERWRITE is not specified and the target exists,
+		 * If %G_FILE_COPY_OVERWRITE is not specified and the target exists,
 		 * then the error %G_IO_ERROR_EXISTS is returned.
 		 * 
 		 * If trying to overwrite a file over a directory, the %G_IO_ERROR_IS_DIRECTORY
@@ -28793,18 +29748,46 @@ declare namespace imports.gi.Gio {
 		 * %G_IO_ERROR_WOULD_MERGE error is returned.
 		 * 
 		 * If the source is a directory and the target does not exist, or
-		 * #G_FILE_COPY_OVERWRITE is specified and the target is a file, then
+		 * %G_FILE_COPY_OVERWRITE is specified and the target is a file, then
 		 * the %G_IO_ERROR_WOULD_RECURSE error may be returned (if the native
 		 * move operation isn't available).
 		 * @param destination #GFile pointing to the destination location
 		 * @param flags set of #GFileCopyFlags
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @param progress_callback #GFileProgressCallback
-		 *     function for updates
+		 *   function for updates
 		 * @returns %TRUE on successful move, %FALSE otherwise.
 		 */
 		move(destination: File, flags: FileCopyFlags, cancellable?: Cancellable | null, progress_callback?: FileProgressCallback | null): boolean;
+		/**
+		 * Asynchronously moves a file #source to the location of #destination. For details of the behaviour, see {@link G.file_move}.
+		 * 
+		 * If #progress_callback is not %NULL, then that function that will be called
+		 * just like in g_file_move(). The callback will run in the default main context
+		 * of the thread calling g_file_move_async() — the same context as #callback is
+		 * run in.
+		 * 
+		 * When the operation is finished, #callback will be called. You can then call
+		 * g_file_move_finish() to get the result of the operation.
+		 * @param destination #GFile pointing to the destination location
+		 * @param flags set of #GFileCopyFlags
+		 * @param io_priority the [I/O priority][io-priority] of the request
+		 * @param cancellable optional #GCancellable object,
+		 *   %NULL to ignore
+		 * @param progress_callback 
+		 *   #GFileProgressCallback function for updates
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
+		 */
+		move_async(destination: File, flags: FileCopyFlags, io_priority: number, cancellable?: Cancellable | null, progress_callback?: FileProgressCallback | null, callback?: AsyncReadyCallback | null): void;
+		/**
+		 * Finishes an asynchronous file movement, started with
+		 * {@link G.file_move_async}.
+		 * @param result a #GAsyncResult
+		 * @returns %TRUE on successful file move, %FALSE otherwise.
+		 */
+		move_finish(result: AsyncResult): boolean;
 		/**
 		 * Opens an existing file for reading and writing. The result is
 		 * a #GFileIOStream that can be used to read and write the contents
@@ -28824,7 +29807,7 @@ declare namespace imports.gi.Gio {
 		 * for reading or writing.
 		 * @param cancellable a #GCancellable
 		 * @returns #GFileIOStream or %NULL on error.
-		 *     Free the returned object with {@link GObject.unref}.
+		 *   Free the returned object with {@link GObject.unref}.
 		 */
 		open_readwrite(cancellable?: Cancellable | null): FileIOStream;
 		/**
@@ -28838,9 +29821,9 @@ declare namespace imports.gi.Gio {
 		 * the result of the operation.
 		 * @param io_priority the [I/O priority][io-priority] of the request
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
-		 * @param callback a #GAsyncReadyCallback to call
-		 *     when the request is satisfied
+		 *   %NULL to ignore
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		open_readwrite_async(io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -28848,7 +29831,7 @@ declare namespace imports.gi.Gio {
 		 * {@link G.file_open_readwrite_async}.
 		 * @param res a #GAsyncResult
 		 * @returns a #GFileIOStream or %NULL on error.
-		 *     Free the returned object with {@link GObject.unref}.
+		 *   Free the returned object with {@link GObject.unref}.
 		 */
 		open_readwrite_finish(res: AsyncResult): FileIOStream;
 		/**
@@ -28860,11 +29843,11 @@ declare namespace imports.gi.Gio {
 		 * 
 		 * This call does no blocking I/O.
 		 * @returns string containing the #GFile's path,
-		 *     or %NULL if no such path exists. The returned string is owned by #file.
+		 *   or %NULL if no such path exists. The returned string is owned by #file.
 		 */
 		peek_path(): string | null;
 		/**
-		 * Polls a file of type #G_FILE_TYPE_MOUNTABLE.
+		 * Polls a file of type %G_FILE_TYPE_MOUNTABLE.
 		 * 
 		 * If #cancellable is not %NULL, then the operation can be cancelled by
 		 * triggering the cancellable object from another thread. If the operation
@@ -28875,7 +29858,7 @@ declare namespace imports.gi.Gio {
 		 * the result of the operation.
 		 * @param cancellable optional #GCancellable object, %NULL to ignore
 		 * @param callback a #GAsyncReadyCallback to call
-		 *     when the request is satisfied, or %NULL
+		 *   when the request is satisfied, or %NULL
 		 */
 		poll_mountable(cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -28897,8 +29880,8 @@ declare namespace imports.gi.Gio {
 		 * was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
 		 * @param cancellable optional #GCancellable object, %NULL to ignore
 		 * @returns a #GAppInfo if the handle was found,
-		 *     %NULL if there were errors.
-		 *     When you are done with it, release it with {@link GObject.unref}
+		 *   %NULL if there were errors.
+		 *   When you are done with it, release it with {@link GObject.unref}
 		 */
 		query_default_handler(cancellable?: Cancellable | null): AppInfo;
 		/**
@@ -28912,8 +29895,8 @@ declare namespace imports.gi.Gio {
 		 * Finishes a {@link G.file_query_default_handler_async} operation.
 		 * @param result a #GAsyncResult
 		 * @returns a #GAppInfo if the handle was found,
-		 *     %NULL if there were errors.
-		 *     When you are done with it, release it with {@link GObject.unref}
+		 *   %NULL if there were errors.
+		 *   When you are done with it, release it with {@link GObject.unref}
 		 */
 		query_default_handler_finish(result: AsyncResult): AppInfo;
 		/**
@@ -28940,9 +29923,9 @@ declare namespace imports.gi.Gio {
 		 * dialog. If you do this, you should make sure to also handle the errors
 		 * that can happen due to races when you execute the operation.
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @returns %TRUE if the file exists (and can be detected without error),
-		 *     %FALSE otherwise (or if cancelled).
+		 *   %FALSE otherwise (or if cancelled).
 		 */
 		query_exists(cancellable?: Cancellable | null): boolean;
 		/**
@@ -28953,9 +29936,9 @@ declare namespace imports.gi.Gio {
 		 * a regular file, directory, or symlink.
 		 * @param flags a set of #GFileQueryInfoFlags passed to {@link G.file_query_info}
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
-		 * @returns The #GFileType of the file and #G_FILE_TYPE_UNKNOWN
-		 *     if the file does not exist
+		 *   %NULL to ignore
+		 * @returns The #GFileType of the file and %G_FILE_TYPE_UNKNOWN
+		 *   if the file does not exist
 		 */
 		query_file_type(flags: FileQueryInfoFlags, cancellable?: Cancellable | null): FileType;
 		/**
@@ -28972,9 +29955,9 @@ declare namespace imports.gi.Gio {
 		 * attributes, and a wildcard like "filesystem::*" means all attributes
 		 * in the filesystem namespace. The standard namespace for filesystem
 		 * attributes is "filesystem". Common attributes of interest are
-		 * #G_FILE_ATTRIBUTE_FILESYSTEM_SIZE (the total size of the filesystem
-		 * in bytes), #G_FILE_ATTRIBUTE_FILESYSTEM_FREE (number of bytes available),
-		 * and #G_FILE_ATTRIBUTE_FILESYSTEM_TYPE (type of the filesystem).
+		 * %G_FILE_ATTRIBUTE_FILESYSTEM_SIZE (the total size of the filesystem
+		 * in bytes), %G_FILE_ATTRIBUTE_FILESYSTEM_FREE (number of bytes available),
+		 * and %G_FILE_ATTRIBUTE_FILESYSTEM_TYPE (type of the filesystem).
 		 * 
 		 * If #cancellable is not %NULL, then the operation can be cancelled
 		 * by triggering the cancellable object from another thread. If the
@@ -28986,9 +29969,9 @@ declare namespace imports.gi.Gio {
 		 * kind of filesystem the file is on.
 		 * @param attributes an attribute query string
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @returns a #GFileInfo or %NULL if there was an error.
-		 *     Free the returned object with {@link GObject.unref}.
+		 *   Free the returned object with {@link GObject.unref}.
 		 */
 		query_filesystem_info(attributes: string, cancellable?: Cancellable | null): FileInfo;
 		/**
@@ -29006,9 +29989,9 @@ declare namespace imports.gi.Gio {
 		 * @param attributes an attribute query string
 		 * @param io_priority the [I/O priority][io-priority] of the request
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
-		 * @param callback a #GAsyncReadyCallback to call
-		 *     when the request is satisfied
+		 *   %NULL to ignore
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		query_filesystem_info_async(attributes: string, io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -29016,8 +29999,8 @@ declare namespace imports.gi.Gio {
 		 * See {@link G.file_query_filesystem_info_async}.
 		 * @param res a #GAsyncResult
 		 * @returns #GFileInfo for given #file
-		 *     or %NULL on error.
-		 *     Free the returned object with {@link GObject.unref}.
+		 *   or %NULL on error.
+		 *   Free the returned object with {@link GObject.unref}.
 		 */
 		query_filesystem_info_finish(res: AsyncResult): FileInfo;
 		/**
@@ -29034,7 +30017,7 @@ declare namespace imports.gi.Gio {
 		 * "standard::*" means all attributes in the standard namespace.
 		 * An example attribute query be "standard::*,owner::user".
 		 * The standard attributes are available as defines, like
-		 * #G_FILE_ATTRIBUTE_STANDARD_NAME.
+		 * %G_FILE_ATTRIBUTE_STANDARD_NAME.
 		 * 
 		 * If #cancellable is not %NULL, then the operation can be cancelled
 		 * by triggering the cancellable object from another thread. If the
@@ -29043,7 +30026,7 @@ declare namespace imports.gi.Gio {
 		 * 
 		 * For symlinks, normally the information about the target of the
 		 * symlink is returned, rather than information about the symlink
-		 * itself. However if you pass #G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS
+		 * itself. However if you pass %G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS
 		 * in #flags the information about the symlink itself will be returned.
 		 * Also, for symlinks that point to non-existing files the information
 		 * about the symlink itself will be returned.
@@ -29054,9 +30037,9 @@ declare namespace imports.gi.Gio {
 		 * @param attributes an attribute query string
 		 * @param flags a set of #GFileQueryInfoFlags
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @returns a #GFileInfo for the given #file, or %NULL
-		 *     on error. Free the returned object with {@link GObject.unref}.
+		 *   on error. Free the returned object with {@link GObject.unref}.
 		 */
 		query_info(attributes: string, flags: FileQueryInfoFlags, cancellable?: Cancellable | null): FileInfo;
 		/**
@@ -29073,9 +30056,9 @@ declare namespace imports.gi.Gio {
 		 * @param flags a set of #GFileQueryInfoFlags
 		 * @param io_priority the [I/O priority][io-priority] of the request
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
-		 * @param callback a #GAsyncReadyCallback to call when the
-		 *     request is satisfied
+		 *   %NULL to ignore
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		query_info_async(attributes: string, flags: FileQueryInfoFlags, io_priority: number | null, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -29083,8 +30066,8 @@ declare namespace imports.gi.Gio {
 		 * See {@link G.file_query_info_async}.
 		 * @param res a #GAsyncResult
 		 * @returns #GFileInfo for given #file
-		 *     or %NULL on error. Free the returned object with
-		 *     {@link GObject.unref}.
+		 *   or %NULL on error. Free the returned object with
+		 *   {@link GObject.unref}.
 		 */
 		query_info_finish(res: AsyncResult): FileInfo;
 		/**
@@ -29099,10 +30082,10 @@ declare namespace imports.gi.Gio {
 		 * triggering the cancellable object from another thread. If the operation
 		 * was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @returns a #GFileAttributeInfoList describing the settable attributes.
-		 *     When you are done with it, release it with
-		 *     {@link G.file_attribute_info_list_unref}
+		 *   When you are done with it, release it with
+		 *   {@link G.file_attribute_info_list_unref}
 		 */
 		query_settable_attributes(cancellable?: Cancellable | null): FileAttributeInfoList;
 		/**
@@ -29114,10 +30097,10 @@ declare namespace imports.gi.Gio {
 		 * triggering the cancellable object from another thread. If the operation
 		 * was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @returns a #GFileAttributeInfoList describing the writable namespaces.
-		 *     When you are done with it, release it with
-		 *     {@link G.file_attribute_info_list_unref}
+		 *   When you are done with it, release it with
+		 *   {@link G.file_attribute_info_list_unref}
 		 */
 		query_writable_namespaces(cancellable?: Cancellable | null): FileAttributeInfoList;
 		/**
@@ -29134,7 +30117,7 @@ declare namespace imports.gi.Gio {
 		 * on what kind of filesystem the file is on.
 		 * @param cancellable a #GCancellable
 		 * @returns #GFileInputStream or %NULL on error.
-		 *     Free the returned object with {@link GObject.unref}.
+		 *   Free the returned object with {@link GObject.unref}.
 		 */
 		read(cancellable?: Cancellable | null): FileInputStream;
 		/**
@@ -29148,9 +30131,9 @@ declare namespace imports.gi.Gio {
 		 * of the operation.
 		 * @param io_priority the [I/O priority][io-priority] of the request
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
-		 * @param callback a #GAsyncReadyCallback to call
-		 *     when the request is satisfied
+		 *   %NULL to ignore
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		read_async(io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -29158,7 +30141,7 @@ declare namespace imports.gi.Gio {
 		 * {@link G.file_read_async}.
 		 * @param res a #GAsyncResult
 		 * @returns a #GFileInputStream or %NULL on error.
-		 *     Free the returned object with {@link GObject.unref}.
+		 *   Free the returned object with {@link GObject.unref}.
 		 */
 		read_finish(res: AsyncResult): FileInputStream;
 		/**
@@ -29173,7 +30156,7 @@ declare namespace imports.gi.Gio {
 		 * the destination when the stream is closed.
 		 * 
 		 * By default files created are generally readable by everyone,
-		 * but if you pass #G_FILE_CREATE_PRIVATE in #flags the file
+		 * but if you pass %G_FILE_CREATE_PRIVATE in #flags the file
 		 * will be made readable only to the current user, to the level that
 		 * is supported on the target filesystem.
 		 * 
@@ -29204,13 +30187,13 @@ declare namespace imports.gi.Gio {
 		 * %G_IO_ERROR_FILENAME_TOO_LONG will be returned. Other errors are
 		 * possible too, and depend on what kind of filesystem the file is on.
 		 * @param etag an optional [entity tag][gfile-etag]
-		 *     for the current #GFile, or #NULL to ignore
+		 *   for the current #GFile, or #NULL to ignore
 		 * @param make_backup %TRUE if a backup should be created
 		 * @param flags a set of #GFileCreateFlags
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @returns a #GFileOutputStream or %NULL on error.
-		 *     Free the returned object with {@link GObject.unref}.
+		 *   Free the returned object with {@link GObject.unref}.
 		 */
 		replace(etag: string | null, make_backup: boolean, flags: FileCreateFlags, cancellable?: Cancellable | null): FileOutputStream;
 		/**
@@ -29224,14 +30207,14 @@ declare namespace imports.gi.Gio {
 		 * You can then call g_file_replace_finish() to get the result
 		 * of the operation.
 		 * @param etag an [entity tag][gfile-etag] for the current #GFile,
-		 *     or %NULL to ignore
+		 *   or %NULL to ignore
 		 * @param make_backup %TRUE if a backup should be created
 		 * @param flags a set of #GFileCreateFlags
 		 * @param io_priority the [I/O priority][io-priority] of the request
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
-		 * @param callback a #GAsyncReadyCallback to call
-		 *     when the request is satisfied
+		 *   %NULL to ignore
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		replace_async(etag: string | null, make_backup: boolean, flags: FileCreateFlags, io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -29253,16 +30236,16 @@ declare namespace imports.gi.Gio {
 		 * changed the next time it is saved over.
 		 * @param contents a string containing the new contents for #file
 		 * @param etag the old [entity-tag][gfile-etag] for the document,
-		 *     or %NULL
+		 *   or %NULL
 		 * @param make_backup %TRUE if a backup should be created
 		 * @param flags a set of #GFileCreateFlags
 		 * @param cancellable optional #GCancellable object, %NULL to ignore
 		 * @returns %TRUE if successful. If an error has occurred, this function
-		 *     will return %FALSE and set #error appropriately if present.
+		 *   will return %FALSE and set #error appropriately if present.
 		 * 
 		 * a location to a new [entity tag][gfile-etag]
-		 *      for the document. This should be freed with {@link G.free} when no longer
-		 *      needed, or %NULL
+		 *   for the document. This should be freed with {@link G.free} when no longer
+		 *   needed, or %NULL
 		 */
 		replace_contents(contents: string, etag: string | null, make_backup: boolean, flags: FileCreateFlags, cancellable?: Cancellable | null): [ boolean, string | null ];
 		/**
@@ -29318,8 +30301,8 @@ declare namespace imports.gi.Gio {
 		 * @returns %TRUE on success, %FALSE on failure.
 		 * 
 		 * a location of a new [entity tag][gfile-etag]
-		 *     for the document. This should be freed with {@link G.free} when it is no
-		 *     longer needed, or %NULL
+		 *   for the document. This should be freed with {@link G.free} when it is no
+		 *   longer needed, or %NULL
 		 */
 		replace_contents_finish(res: AsyncResult): [ boolean, string | null ];
 		/**
@@ -29327,7 +30310,7 @@ declare namespace imports.gi.Gio {
 		 * {@link G.file_replace_async}.
 		 * @param res a #GAsyncResult
 		 * @returns a #GFileOutputStream, or %NULL on error.
-		 *     Free the returned object with {@link GObject.unref}.
+		 *   Free the returned object with {@link GObject.unref}.
 		 */
 		replace_finish(res: AsyncResult): FileOutputStream;
 		/**
@@ -29342,13 +30325,13 @@ declare namespace imports.gi.Gio {
 		 * supported, so make sure you really need to do read and write streaming,
 		 * rather than just opening for reading or writing.
 		 * @param etag an optional [entity tag][gfile-etag]
-		 *     for the current #GFile, or #NULL to ignore
+		 *   for the current #GFile, or #NULL to ignore
 		 * @param make_backup %TRUE if a backup should be created
 		 * @param flags a set of #GFileCreateFlags
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @returns a #GFileIOStream or %NULL on error.
-		 *     Free the returned object with {@link GObject.unref}.
+		 *   Free the returned object with {@link GObject.unref}.
 		 */
 		replace_readwrite(etag: string | null, make_backup: boolean, flags: FileCreateFlags, cancellable?: Cancellable | null): FileIOStream;
 		/**
@@ -29363,14 +30346,14 @@ declare namespace imports.gi.Gio {
 		 * You can then call g_file_replace_readwrite_finish() to get
 		 * the result of the operation.
 		 * @param etag an [entity tag][gfile-etag] for the current #GFile,
-		 *     or %NULL to ignore
+		 *   or %NULL to ignore
 		 * @param make_backup %TRUE if a backup should be created
 		 * @param flags a set of #GFileCreateFlags
 		 * @param io_priority the [I/O priority][io-priority] of the request
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
-		 * @param callback a #GAsyncReadyCallback to call
-		 *     when the request is satisfied
+		 *   %NULL to ignore
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		replace_readwrite_async(etag: string | null, make_backup: boolean, flags: FileCreateFlags | null, io_priority: number | null, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -29378,17 +30361,18 @@ declare namespace imports.gi.Gio {
 		 * {@link G.file_replace_readwrite_async}.
 		 * @param res a #GAsyncResult
 		 * @returns a #GFileIOStream, or %NULL on error.
-		 *     Free the returned object with {@link GObject.unref}.
+		 *   Free the returned object with {@link GObject.unref}.
 		 */
 		replace_readwrite_finish(res: AsyncResult): FileIOStream;
 		/**
 		 * Resolves a relative path for #file to an absolute path.
 		 * 
 		 * This call does no blocking I/O.
+		 * 
+		 * If the #relative_path is an absolute path name, the resolution
+		 * is done absolutely (without taking #file path as base).
 		 * @param relative_path a given relative path string
-		 * @returns #GFile to the resolved path.
-		 *     %NULL if #relative_path is %NULL or if #file is invalid.
-		 *     Free the returned object with {@link GObject.unref}.
+		 * @returns a #GFile for the resolved path.
 		 */
 		resolve_relative_path(relative_path: string): File;
 		/**
@@ -29403,10 +30387,10 @@ declare namespace imports.gi.Gio {
 		 * @param attribute a string containing the attribute's name
 		 * @param type The type of the attribute
 		 * @param value_p a pointer to the value (or the pointer
-		 *     itself if the type is a pointer type)
+		 *   itself if the type is a pointer type)
 		 * @param flags a set of #GFileQueryInfoFlags
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @returns %TRUE if the attribute was set, %FALSE otherwise.
 		 */
 		set_attribute(attribute: string, type: FileAttributeType, value_p: any | null, flags: FileQueryInfoFlags, cancellable?: Cancellable | null): boolean;
@@ -29422,9 +30406,9 @@ declare namespace imports.gi.Gio {
 		 * @param value a string containing the attribute's new value
 		 * @param flags a #GFileQueryInfoFlags
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @returns %TRUE if the #attribute was successfully set to #value
-		 *     in the #file, %FALSE otherwise.
+		 *   in the #file, %FALSE otherwise.
 		 */
 		set_attribute_byte_string(attribute: string, value: string, flags: FileQueryInfoFlags, cancellable?: Cancellable | null): boolean;
 		/**
@@ -29438,9 +30422,9 @@ declare namespace imports.gi.Gio {
 		 * @param value a #gint32 containing the attribute's new value
 		 * @param flags a #GFileQueryInfoFlags
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @returns %TRUE if the #attribute was successfully set to #value
-		 *     in the #file, %FALSE otherwise.
+		 *   in the #file, %FALSE otherwise.
 		 */
 		set_attribute_int32(attribute: string, value: number, flags: FileQueryInfoFlags, cancellable?: Cancellable | null): boolean;
 		/**
@@ -29454,7 +30438,7 @@ declare namespace imports.gi.Gio {
 		 * @param value a #guint64 containing the attribute's new value
 		 * @param flags a #GFileQueryInfoFlags
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @returns %TRUE if the #attribute was successfully set, %FALSE otherwise.
 		 */
 		set_attribute_int64(attribute: string, value: number, flags: FileQueryInfoFlags, cancellable?: Cancellable | null): boolean;
@@ -29469,7 +30453,7 @@ declare namespace imports.gi.Gio {
 		 * @param value a string containing the attribute's value
 		 * @param flags #GFileQueryInfoFlags
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @returns %TRUE if the #attribute was successfully set, %FALSE otherwise.
 		 */
 		set_attribute_string(attribute: string, value: string, flags: FileQueryInfoFlags, cancellable?: Cancellable | null): boolean;
@@ -29484,9 +30468,9 @@ declare namespace imports.gi.Gio {
 		 * @param value a #guint32 containing the attribute's new value
 		 * @param flags a #GFileQueryInfoFlags
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @returns %TRUE if the #attribute was successfully set to #value
-		 *     in the #file, %FALSE otherwise.
+		 *   in the #file, %FALSE otherwise.
 		 */
 		set_attribute_uint32(attribute: string, value: number, flags: FileQueryInfoFlags, cancellable?: Cancellable | null): boolean;
 		/**
@@ -29500,9 +30484,9 @@ declare namespace imports.gi.Gio {
 		 * @param value a #guint64 containing the attribute's new value
 		 * @param flags a #GFileQueryInfoFlags
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @returns %TRUE if the #attribute was successfully set to #value
-		 *     in the #file, %FALSE otherwise.
+		 *   in the #file, %FALSE otherwise.
 		 */
 		set_attribute_uint64(attribute: string, value: number, flags: FileQueryInfoFlags, cancellable?: Cancellable | null): boolean;
 		/**
@@ -29518,8 +30502,9 @@ declare namespace imports.gi.Gio {
 		 * @param flags a #GFileQueryInfoFlags
 		 * @param io_priority the [I/O priority][io-priority] of the request
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		set_attributes_async(info: FileInfo, flags: FileQueryInfoFlags, io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -29546,7 +30531,7 @@ declare namespace imports.gi.Gio {
 		 * @param info a #GFileInfo
 		 * @param flags #GFileQueryInfoFlags
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @returns %FALSE if there was any error, %TRUE otherwise.
 		 */
 		set_attributes_from_info(info: FileInfo, flags: FileQueryInfoFlags, cancellable?: Cancellable | null): boolean;
@@ -29557,7 +30542,7 @@ declare namespace imports.gi.Gio {
 		 * for the target filesystem if possible and the #file is renamed to this.
 		 * 
 		 * If you want to implement a rename operation in the user interface the
-		 * edit name (#G_FILE_ATTRIBUTE_STANDARD_EDIT_NAME) should be used as the
+		 * edit name (%G_FILE_ATTRIBUTE_STANDARD_EDIT_NAME) should be used as the
 		 * initial value in the rename widget, and then the result after editing
 		 * should be passed to {@link G.file_set_display_name}.
 		 * 
@@ -29568,10 +30553,10 @@ declare namespace imports.gi.Gio {
 		 * was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
 		 * @param display_name a string
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @returns a #GFile specifying what #file was renamed to,
-		 *     or %NULL if there was an error.
-		 *     Free the returned object with {@link GObject.unref}.
+		 *   or %NULL if there was an error.
+		 *   Free the returned object with {@link GObject.unref}.
 		 */
 		set_display_name(display_name: string, cancellable?: Cancellable | null): File;
 		/**
@@ -29586,9 +30571,9 @@ declare namespace imports.gi.Gio {
 		 * @param display_name a string
 		 * @param io_priority the [I/O priority][io-priority] of the request
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
-		 * @param callback a #GAsyncReadyCallback to call
-		 *     when the request is satisfied
+		 *   %NULL to ignore
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		set_display_name_async(display_name: string, io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -29596,11 +30581,11 @@ declare namespace imports.gi.Gio {
 		 * {@link G.file_set_display_name_async}.
 		 * @param res a #GAsyncResult
 		 * @returns a #GFile or %NULL on error.
-		 *     Free the returned object with {@link GObject.unref}.
+		 *   Free the returned object with {@link GObject.unref}.
 		 */
 		set_display_name_finish(res: AsyncResult): File;
 		/**
-		 * Starts a file of type #G_FILE_TYPE_MOUNTABLE.
+		 * Starts a file of type %G_FILE_TYPE_MOUNTABLE.
 		 * Using #start_operation, you can request callbacks when, for instance,
 		 * passwords are needed during authentication.
 		 * 
@@ -29628,7 +30613,7 @@ declare namespace imports.gi.Gio {
 		 */
 		start_mountable_finish(result: AsyncResult): boolean;
 		/**
-		 * Stops a file of type #G_FILE_TYPE_MOUNTABLE.
+		 * Stops a file of type %G_FILE_TYPE_MOUNTABLE.
 		 * 
 		 * If #cancellable is not %NULL, then the operation can be cancelled by
 		 * triggering the cancellable object from another thread. If the operation
@@ -29639,11 +30624,11 @@ declare namespace imports.gi.Gio {
 		 * the result of the operation.
 		 * @param flags flags affecting the operation
 		 * @param mount_operation a #GMountOperation,
-		 *     or %NULL to avoid user interaction.
+		 *   or %NULL to avoid user interaction.
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @param callback a #GAsyncReadyCallback to call
-		 *     when the request is satisfied, or %NULL
+		 *   when the request is satisfied, or %NULL
 		 */
 		stop_mountable(flags: MountUnmountFlags, mount_operation?: MountOperation | null, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -29653,7 +30638,7 @@ declare namespace imports.gi.Gio {
 		 * with g_file_stop_mountable().
 		 * @param result a #GAsyncResult
 		 * @returns %TRUE if the operation finished successfully.
-		 *     %FALSE otherwise.
+		 *   %FALSE otherwise.
 		 */
 		stop_mountable_finish(result: AsyncResult): boolean;
 		/**
@@ -29676,7 +30661,7 @@ declare namespace imports.gi.Gio {
 		 * triggering the cancellable object from another thread. If the operation
 		 * was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @returns %TRUE on successful trash, %FALSE otherwise.
 		 */
 		trash(cancellable?: Cancellable | null): boolean;
@@ -29684,9 +30669,9 @@ declare namespace imports.gi.Gio {
 		 * Asynchronously sends #file to the Trash location, if possible.
 		 * @param io_priority the [I/O priority][io-priority] of the request
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
+		 *   %NULL to ignore
 		 * @param callback a #GAsyncReadyCallback to call
-		 *     when the request is satisfied
+		 *   when the request is satisfied
 		 */
 		trash_async(io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -29711,15 +30696,15 @@ declare namespace imports.gi.Gio {
 		 * the result of the operation.
 		 * @param flags flags affecting the operation
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
-		 * @param callback a #GAsyncReadyCallback to call
-		 *     when the request is satisfied, or %NULL
+		 *   %NULL to ignore
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		unmount_mountable(flags: MountUnmountFlags, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
 		 * @deprecated
 		 * Use {@link G.file_unmount_mountable_with_operation_finish}
-		 *     instead.
+		 *   instead.
 		 * 
 		 * Finishes an unmount operation, see {@link G.file_unmount_mountable} for details.
 		 * 
@@ -29727,11 +30712,11 @@ declare namespace imports.gi.Gio {
 		 * with g_file_unmount_mountable().
 		 * @param result a #GAsyncResult
 		 * @returns %TRUE if the operation finished successfully.
-		 *     %FALSE otherwise.
+		 *   %FALSE otherwise.
 		 */
 		unmount_mountable_finish(result: AsyncResult): boolean;
 		/**
-		 * Unmounts a file of type #G_FILE_TYPE_MOUNTABLE.
+		 * Unmounts a file of type %G_FILE_TYPE_MOUNTABLE.
 		 * 
 		 * If #cancellable is not %NULL, then the operation can be cancelled by
 		 * triggering the cancellable object from another thread. If the operation
@@ -29742,11 +30727,11 @@ declare namespace imports.gi.Gio {
 		 * the result of the operation.
 		 * @param flags flags affecting the operation
 		 * @param mount_operation a #GMountOperation,
-		 *     or %NULL to avoid user interaction
+		 *   or %NULL to avoid user interaction
 		 * @param cancellable optional #GCancellable object,
-		 *     %NULL to ignore
-		 * @param callback a #GAsyncReadyCallback to call
-		 *     when the request is satisfied, or %NULL
+		 *   %NULL to ignore
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		unmount_mountable_with_operation(flags: MountUnmountFlags, mount_operation?: MountOperation | null, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -29757,7 +30742,7 @@ declare namespace imports.gi.Gio {
 		 * with g_file_unmount_mountable_with_operation().
 		 * @param result a #GAsyncResult
 		 * @returns %TRUE if the operation finished successfully.
-		 *     %FALSE otherwise.
+		 *   %FALSE otherwise.
 		 */
 		unmount_mountable_with_operation_finish(result: AsyncResult): boolean;
 	}
@@ -29783,8 +30768,10 @@ declare namespace imports.gi.Gio {
 	 * - g_file_new_for_uri() if you have a URI.
 	 * - g_file_new_for_commandline_arg() for a command line argument.
 	 * - g_file_new_tmp() to create a temporary file from a template.
+	 * - g_file_new_tmp_async() to asynchronously create a temporary file.
+	 * - g_file_new_tmp_dir_async() to asynchronously create a temporary directory.
 	 * - g_file_parse_name() from a UTF-8 string gotten from g_file_get_parse_name().
-	 * - g_file_new_build_filename() to create a file from path elements.
+	 * - g_file_new_build_filename() or g_file_new_build_filenamev() to create a file from path elements.
 	 * 
 	 * One way to think of a #GFile is as an abstraction of a pathname. For
 	 * normal files the system pathname is what is stored internally, but as
@@ -29868,6 +30855,17 @@ declare namespace imports.gi.Gio {
 		 */
 		public static new_build_filename(first_element: string): File;
 		/**
+		 * Constructs a #GFile from a vector of elements using the correct
+		 * separator for filenames.
+		 * 
+		 * Using this function is equivalent to calling {@link G.build_filenamev},
+		 * followed by g_file_new_for_path() on the result.
+		 * @param args %NULL-terminated
+		 *   array of strings containing the path elements.
+		 * @returns a new #GFile
+		 */
+		public static new_build_filenamev(args: string[]): File;
+		/**
 		 * Creates a #GFile with the given argument from the command line.
 		 * The value of #arg can be either a URI, an absolute path or a
 		 * relative path resolved relative to the current working directory.
@@ -29884,7 +30882,7 @@ declare namespace imports.gi.Gio {
 		 * #GOptionContext arguments of type %G_OPTION_ARG_FILENAME.
 		 * @param arg a command line string
 		 * @returns a new #GFile.
-		 *    Free the returned object with {@link GObject.unref}.
+		 *   Free the returned object with {@link GObject.unref}.
 		 */
 		public static new_for_commandline_arg(arg: string): File;
 		/**
@@ -29909,7 +30907,7 @@ declare namespace imports.gi.Gio {
 		 * fails, but the returned object might not support any I/O
 		 * operation if #path is malformed.
 		 * @param path a string containing a relative or absolute path.
-		 *     The string must be encoded in the glib filename encoding.
+		 *   The string must be encoded in the glib filename encoding.
 		 * @returns a new #GFile for the given #path.
 		 *   Free the returned object with {@link GObject.unref}.
 		 */
@@ -29921,7 +30919,7 @@ declare namespace imports.gi.Gio {
 		 * not supported.
 		 * @param uri a UTF-8 string containing a URI
 		 * @returns a new #GFile for the given #uri.
-		 *     Free the returned object with {@link GObject.unref}.
+		 *   Free the returned object with {@link GObject.unref}.
 		 */
 		public static new_for_uri(uri: string): File;
 		/**
@@ -29938,11 +30936,56 @@ declare namespace imports.gi.Gio {
 		 * @param tmpl Template for the file
 		 *   name, as in {@link G.file_open_tmp}, or %NULL for a default template
 		 * @returns a new #GFile.
-		 *     Free the returned object with {@link GObject.unref}.
+		 *   Free the returned object with {@link GObject.unref}.
 		 * 
 		 * on return, a #GFileIOStream for the created file
 		 */
 		public static new_tmp(tmpl?: string | null): [ File, FileIOStream ];
+		/**
+		 * Asynchronously opens a file in the preferred directory for temporary files
+		 *  (as returned by {@link G.get_tmp_dir}) as g_file_new_tmp().
+		 * 
+		 * #tmpl should be a string in the GLib file name encoding
+		 * containing a sequence of six 'X' characters, and containing no
+		 * directory components. If it is %NULL, a default template is used.
+		 * @param tmpl Template for the file
+		 *   name, as in {@link G.file_open_tmp}, or %NULL for a default template
+		 * @param io_priority the [I/O priority][io-priority] of the request
+		 * @param cancellable optional #GCancellable object, %NULL to ignore
+		 * @param callback a #GAsyncReadyCallback to call when the request is done
+		 */
+		public static new_tmp_async(tmpl: string | null, io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
+		/**
+		 * Asynchronously creates a directory in the preferred directory for
+		 * temporary files (as returned by {@link G.get_tmp_dir}) as g_dir_make_tmp().
+		 * 
+		 * #tmpl should be a string in the GLib file name encoding
+		 * containing a sequence of six 'X' characters, and containing no
+		 * directory components. If it is %NULL, a default template is used.
+		 * @param tmpl Template for the file
+		 *   name, as in {@link G.dir_make_tmp}, or %NULL for a default template
+		 * @param io_priority the [I/O priority][io-priority] of the request
+		 * @param cancellable optional #GCancellable object, %NULL to ignore
+		 * @param callback a #GAsyncReadyCallback to call when the request is done
+		 */
+		public static new_tmp_dir_async(tmpl: string | null, io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
+		/**
+		 * Finishes a temporary directory creation started by
+		 * {@link G.file_new_tmp_dir_async}.
+		 * @param result a #GAsyncResult
+		 * @returns a new #GFile.
+		 *   Free the returned object with {@link GObject.unref}.
+		 */
+		public static new_tmp_dir_finish(result: AsyncResult): File;
+		/**
+		 * Finishes a temporary file creation started by {@link G.file_new_tmp_async}.
+		 * @param result a #GAsyncResult
+		 * @returns a new #GFile.
+		 *   Free the returned object with {@link GObject.unref}.
+		 * 
+		 * on return, a #GFileIOStream for the created file
+		 */
+		public static new_tmp_finish(result: AsyncResult): [ File, FileIOStream ];
 		/**
 		 * Constructs a #GFile with the given #parse_name (i.e. something
 		 * given by {@link G.file_get_parse_name}). This operation never fails,
@@ -30001,6 +31044,12 @@ declare namespace imports.gi.Gio {
 		 * @returns %TRUE if #icon1 is equal to #icon2. %FALSE otherwise.
 		 */
 		equal(icon2?: Icon | null): boolean;
+		/**
+		 * Gets a hash for an icon.
+		 * @returns a #guint containing a hash for the #icon, suitable for
+		 * use in a #GHashTable or similar data structure.
+		 */
+		hash(): number;
 		/**
 		 * Serializes a #GIcon into a #GVariant. An equivalent #GIcon can be retrieved
 		 * back by calling {@link G.icon_deserialize} on the returned value.
@@ -30081,13 +31130,6 @@ declare namespace imports.gi.Gio {
 		 * @returns a #GIcon, or %NULL when deserialization fails.
 		 */
 		public static deserialize(value: GLib.Variant): Icon | null;
-		/**
-		 * Gets a hash for an icon.
-		 * @param icon #gconstpointer to an icon object.
-		 * @returns a #guint containing a hash for the #icon, suitable for
-		 * use in a #GHashTable or similar data structure.
-		 */
-		public static hash(icon: any): number;
 		/**
 		 * Generate a #GIcon instance from #str. This function can fail if
 		 * #str is not valid - see {@link G.icon_to_string} for discussion.
@@ -30243,19 +31285,28 @@ declare namespace imports.gi.Gio {
 	 */
 	interface IListModel {
 		/**
-		 * Get the item at #position. If #position is greater than the number of
-		 * items in #list, %NULL is returned.
+		 * Get the item at #position.
+		 * 
+		 * If #position is greater than the number of items in #list, %NULL is
+		 * returned.
 		 * 
 		 * %NULL is never returned for an index that is smaller than the length
-		 * of the list.  See {@link G.list_model_get_n_items}.
+		 * of the list.
+		 * 
+		 * This function is meant to be used by language bindings in place
+		 * of {@link G.list_model_get_item}.
+		 * 
+		 * See also: g_list_model_get_n_items()
 		 * @param position the position of the item to fetch
 		 * @returns the object at #position.
 		 */
 		get_item(position: number): GObject.Object | null;
 		/**
-		 * Gets the type of the items in #list. All items returned from
-		 * {@link G.list_model_get_type} are of that type or a subtype, or are an
-		 * implementation of that interface.
+		 * Gets the type of the items in #list.
+		 * 
+		 * All items returned from {@link G.list_model_get_item} are of the type
+		 * returned by this function, or a subtype, or if the type is an
+		 * interface, they are an implementation of that interface.
 		 * 
 		 * The item type of a #GListModel can not change during the life of the
 		 * model.
@@ -30302,7 +31353,7 @@ declare namespace imports.gi.Gio {
 		 * from #list. At #position, #removed items were removed and #added
 		 * items were added in their place.
 		 * 
-		 * Note: If #removed != #added, the positions of all later items
+		 * Note: If `removed != added`, the positions of all later items
 		 * in the model change.
 		 * @param signal 
 		 * @param callback Callback function
@@ -30373,6 +31424,21 @@ declare namespace imports.gi.Gio {
 	 * implementation, but typically it will be from the thread that owns
 	 * the [thread-default main context][g-main-context-push-thread-default]
 	 * in effect at the time that the model was created.
+	 * 
+	 * Over time, it has established itself as good practice for listmodel
+	 * implementations to provide properties `item-type` and `n-items` to
+	 * ease working with them. While it is not required, it is recommended
+	 * that implementations provide these two properties. They should return
+	 * the values of g_list_model_get_item_type() and g_list_model_get_n_items()
+	 * respectively and be defined as such:
+	 * |[<!-- language="C" -->
+	 * properties[PROP_ITEM_TYPE] =
+	 *   g_param_spec_gtype ("item-type", "", "", G_TYPE_OBJECT,
+	 *                       G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+	 * properties[PROP_N_ITEMS] =
+	 *   g_param_spec_uint ("n-items", "", "", 0, G_MAXUINT, 0,
+	 *                      G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+	 * ]|
 	 */
 	interface ListModel extends ListModelMixin {}
 
@@ -30404,8 +31470,8 @@ declare namespace imports.gi.Gio {
 		 * version of this function, see g_loadable_icon_load().
 		 * @param size an integer.
 		 * @param cancellable optional #GCancellable object, %NULL to ignore.
-		 * @param callback a #GAsyncReadyCallback to call when the
-		 *            request is satisfied
+		 * @param callback a #GAsyncReadyCallback
+		 *   to call when the request is satisfied
 		 */
 		load_async(size: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -30911,14 +31977,18 @@ declare namespace imports.gi.Gio {
 		 */
 		readonly network_available: boolean;
 		/**
-		 * Whether the network is considered metered. That is, whether the
+		 * Whether the network is considered metered.
+		 * 
+		 * That is, whether the
 		 * system has traffic flowing through the default connection that is
 		 * subject to limitations set by service providers. For example, traffic
 		 * might be billed by the amount of data transmitted, or there might be a
 		 * quota on the amount of traffic per month. This is typical with tethered
 		 * connections (3G and 4G) and in such situations, bandwidth intensive
 		 * applications may wish to avoid network activity where possible if it will
-		 * cost the user money or use up their limited quota.
+		 * cost the user money or use up their limited quota. Anything more than a
+		 * few hundreds of kilobytes of data usage per hour should be avoided without
+		 * asking permission from the user.
 		 * 
 		 * If more information is required about specific devices then the
 		 * system network management API should be used instead (for example,
@@ -30965,8 +32035,8 @@ declare namespace imports.gi.Gio {
 		 * to get the result of the operation.
 		 * @param connectable a #GSocketConnectable
 		 * @param cancellable a #GCancellable, or %NULL
-		 * @param callback a #GAsyncReadyCallback to call when the
-		 *     request is satisfied
+		 * @param callback a #GAsyncReadyCallback
+		 *     to call when the request is satisfied
 		 */
 		can_reach_async(connectable: SocketConnectable, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void;
 		/**
@@ -31084,6 +32154,9 @@ declare namespace imports.gi.Gio {
 		 * the stream may not actually be readable even after the source
 		 * triggers, so you should use g_pollable_input_stream_read_nonblocking()
 		 * rather than g_input_stream_read() from the callback.
+		 * 
+		 * The behaviour of this method is undefined if
+		 * g_pollable_input_stream_can_poll() returns %FALSE for #stream.
 		 * @param cancellable a #GCancellable, or %NULL
 		 * @returns a new #GSource
 		 */
@@ -31097,6 +32170,9 @@ declare namespace imports.gi.Gio {
 		 * non-blocking behavior, you should always use
 		 * g_pollable_input_stream_read_nonblocking(), which will return a
 		 * %G_IO_ERROR_WOULD_BLOCK error rather than blocking.
+		 * 
+		 * The behaviour of this method is undefined if
+		 * g_pollable_input_stream_can_poll() returns %FALSE for #stream.
 		 * @returns %TRUE if #stream is readable, %FALSE if not. If an error
 		 *   has occurred on #stream, this will result in
 		 *   {@link G.pollable_input_stream_is_readable} returning %TRUE, and the
@@ -31115,6 +32191,9 @@ declare namespace imports.gi.Gio {
 		 * if #cancellable has already been cancelled when you call, which
 		 * may happen if you call this method after a source triggers due
 		 * to having been cancelled.
+		 * 
+		 * The behaviour of this method is undefined if
+		 * g_pollable_input_stream_can_poll() returns %FALSE for #stream.
 		 * @param cancellable a #GCancellable, or %NULL
 		 * @returns the number of bytes read, or -1 on error (including
 		 *   %G_IO_ERROR_WOULD_BLOCK).
@@ -31138,6 +32217,11 @@ declare namespace imports.gi.Gio {
 	 * can be polled for readiness to read. This can be used when
 	 * interfacing with a non-GIO API that expects
 	 * UNIX-file-descriptor-style asynchronous I/O rather than GIO-style.
+	 * 
+	 * Some classes may implement #GPollableInputStream but have only certain
+	 * instances of that class be pollable. If {@link G.pollable_input_stream_can_poll}
+	 * returns %FALSE, then the behavior of other #GPollableInputStream methods is
+	 * undefined.
 	 */
 	interface PollableInputStream extends PollableInputStreamMixin {}
 
@@ -31171,6 +32255,9 @@ declare namespace imports.gi.Gio {
 		 * the stream may not actually be writable even after the source
 		 * triggers, so you should use g_pollable_output_stream_write_nonblocking()
 		 * rather than g_output_stream_write() from the callback.
+		 * 
+		 * The behaviour of this method is undefined if
+		 * g_pollable_output_stream_can_poll() returns %FALSE for #stream.
 		 * @param cancellable a #GCancellable, or %NULL
 		 * @returns a new #GSource
 		 */
@@ -31184,6 +32271,9 @@ declare namespace imports.gi.Gio {
 		 * non-blocking behavior, you should always use
 		 * g_pollable_output_stream_write_nonblocking(), which will return a
 		 * %G_IO_ERROR_WOULD_BLOCK error rather than blocking.
+		 * 
+		 * The behaviour of this method is undefined if
+		 * g_pollable_output_stream_can_poll() returns %FALSE for #stream.
 		 * @returns %TRUE if #stream is writable, %FALSE if not. If an error
 		 *   has occurred on #stream, this will result in
 		 *   {@link G.pollable_output_stream_is_writable} returning %TRUE, and the
@@ -31206,6 +32296,9 @@ declare namespace imports.gi.Gio {
 		 * Also note that if %G_IO_ERROR_WOULD_BLOCK is returned some underlying
 		 * transports like D/TLS require that you re-send the same #buffer and
 		 * #count in the next write call.
+		 * 
+		 * The behaviour of this method is undefined if
+		 * g_pollable_output_stream_can_poll() returns %FALSE for #stream.
 		 * @param buffer a buffer to write
 		 *     data from
 		 * @param cancellable a #GCancellable, or %NULL
@@ -31230,6 +32323,9 @@ declare namespace imports.gi.Gio {
 		 * Also note that if %G_POLLABLE_RETURN_WOULD_BLOCK is returned some underlying
 		 * transports like D/TLS require that you re-send the same #vectors and
 		 * #n_vectors in the next write call.
+		 * 
+		 * The behaviour of this method is undefined if
+		 * g_pollable_output_stream_can_poll() returns %FALSE for #stream.
 		 * @param vectors the buffer containing the #GOutputVectors to write.
 		 * @param cancellable a #GCancellable, or %NULL
 		 * @returns %#G_POLLABLE_RETURN_OK on success, %G_POLLABLE_RETURN_WOULD_BLOCK
@@ -31256,6 +32352,11 @@ declare namespace imports.gi.Gio {
 	 * can be polled for readiness to write. This can be used when
 	 * interfacing with a non-GIO API that expects
 	 * UNIX-file-descriptor-style asynchronous I/O rather than GIO-style.
+	 * 
+	 * Some classes may implement #GPollableOutputStream but have only certain
+	 * instances of that class be pollable. If {@link G.pollable_output_stream_can_poll}
+	 * returns %FALSE, then the behavior of other #GPollableOutputStream methods is
+	 * undefined.
 	 */
 	interface PollableOutputStream extends PollableOutputStreamMixin {}
 
@@ -31301,10 +32402,10 @@ declare namespace imports.gi.Gio {
 	 * some systems).
 	 * 
 	 * When in “Low Power” mode, it is recommended that applications:
-	 * - disabling automatic downloads
+	 * - disable automatic downloads;
 	 * - reduce the rate of refresh from online sources such as calendar or
-	 *   email synchronisation
-	 * - if the application has expensive visual effects, reduce them
+	 *   email synchronisation;
+	 * - reduce the use of expensive visual effects.
 	 * 
 	 * It is also likely that OS components providing services to applications will
 	 * lower their own background activity, for the sake of the system.
@@ -31421,7 +32522,7 @@ declare namespace imports.gi.Gio {
 		/**
 		 * Looks into the system proxy configuration to determine what proxy,
 		 * if any, to use to connect to #uri. The returned proxy URIs are of
-		 * the form `<protocol>://[user[:password]#]host:port` or
+		 * the form `<protocol>://[user[:password]#]host[:port]` or
 		 * `direct://`, where <protocol> could be http, rtsp, socks
 		 * or other proxying protocol.
 		 * 
@@ -31906,10 +33007,25 @@ declare namespace imports.gi.Gio {
 		 */
 		use_ssl3: boolean;
 		/**
+		 * @deprecated
+		 * Do not attempt to ignore validation errors.
+		 * 
 		 * What steps to perform when validating a certificate received from
 		 * a server. Server certificates that fail to validate in any of the
 		 * ways indicated here will be rejected unless the application
 		 * overrides the default via #GTlsConnection::accept-certificate.
+		 * 
+		 * GLib guarantees that if certificate verification fails, at least one
+		 * flag will be set, but it does not guarantee that all possible flags
+		 * will be set. Accordingly, you may not safely decide to ignore any
+		 * particular type of error. For example, it would be incorrect to mask
+		 * %G_TLS_CERTIFICATE_EXPIRED if you want to allow expired certificates,
+		 * because this could potentially be the only error flag set even if
+		 * other problems exist with the certificate. Therefore, there is no
+		 * safe way to use this property. This is not a horrible problem,
+		 * though, because you should not be attempting to ignore validation
+		 * errors anyway. If you really must ignore TLS certificate errors,
+		 * connect to #GTlsConnection::accept-certificate.
 		 */
 		validation_flags: TlsCertificateFlags;
 		/**
@@ -31974,7 +33090,14 @@ declare namespace imports.gi.Gio {
 		 */
 		get_use_ssl3(): boolean;
 		/**
+		 * @deprecated
+		 * Do not attempt to ignore validation errors.
+		 * 
 		 * Gets #conn's validation flags
+		 * 
+		 * This function does not work as originally designed and is impossible
+		 * to use correctly. See #GTlsClientConnection:validation-flags for more
+		 * information.
 		 * @returns the validation flags
 		 */
 		get_validation_flags(): TlsCertificateFlags;
@@ -32004,9 +33127,16 @@ declare namespace imports.gi.Gio {
 		 */
 		set_use_ssl3(use_ssl3: boolean): void;
 		/**
+		 * @deprecated
+		 * Do not attempt to ignore validation errors.
+		 * 
 		 * Sets #conn's validation flags, to override the default set of
 		 * checks performed when validating a server certificate. By default,
 		 * %G_TLS_CERTIFICATE_VALIDATE_ALL is used.
+		 * 
+		 * This function does not work as originally designed and is impossible
+		 * to use correctly. See #GTlsClientConnection:validation-flags for more
+		 * information.
 		 * @param flags the #GTlsCertificateFlags to use
 		 */
 		set_validation_flags(flags: TlsCertificateFlags): void;
@@ -32397,13 +33527,13 @@ declare namespace imports.gi.Gio {
 	 * different kinds of identifiers, such as Hal UDIs, filesystem labels,
 	 * traditional Unix devices (e.g. `/dev/sda2`), UUIDs. GIO uses predefined
 	 * strings as names for the different kinds of identifiers:
-	 * #G_VOLUME_IDENTIFIER_KIND_UUID, #G_VOLUME_IDENTIFIER_KIND_LABEL, etc.
+	 * %G_VOLUME_IDENTIFIER_KIND_UUID, %G_VOLUME_IDENTIFIER_KIND_LABEL, etc.
 	 * Use g_volume_get_identifier() to obtain an identifier for a volume.
 	 * 
 	 * 
-	 * Note that #G_VOLUME_IDENTIFIER_KIND_HAL_UDI will only be available
+	 * Note that %G_VOLUME_IDENTIFIER_KIND_HAL_UDI will only be available
 	 * when the gvfs hal volume monitor is in use. Other volume monitors
-	 * will generally be able to provide the #G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE
+	 * will generally be able to provide the %G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE
 	 * identifier, which can be used to obtain a hal device by means of
 	 * libhal_manager_find_device_string_match().
 	 */
@@ -32490,7 +33620,11 @@ declare namespace imports.gi.Gio {
 		/**
 		 * The native credentials type is a `struct xucred`. Added in 2.66.
 		 */
-		APPLE_XUCRED = 6
+		APPLE_XUCRED = 6,
+		/**
+		 * The native credentials type is a PID `DWORD`. Added in 2.72.
+		 */
+		WIN32_PID = 7
 	}
 
 	/**
@@ -33042,7 +34176,7 @@ declare namespace imports.gi.Gio {
 	/**
 	 * Indicates a hint from the file system whether files should be
 	 * previewed in a file manager. Returned as the value of the key
-	 * #G_FILE_ATTRIBUTE_FILESYSTEM_USE_PREVIEW.
+	 * %G_FILE_ATTRIBUTE_FILESYSTEM_USE_PREVIEW.
 	 */
 	enum FilesystemPreviewType {
 		/**
@@ -33074,7 +34208,7 @@ declare namespace imports.gi.Gio {
 	 *   }
 	 * ]|
 	 * but should instead treat all unrecognized error codes the same as
-	 * #G_IO_ERROR_FAILED.
+	 * %G_IO_ERROR_FAILED.
 	 * 
 	 * See also #GPollableReturn for a cheaper way of returning
 	 * %G_IO_ERROR_WOULD_BLOCK to callers without allocating a #GError.
@@ -33284,7 +34418,11 @@ declare namespace imports.gi.Gio {
 		/**
 		 * Message too large. Since 2.48.
 		 */
-		MESSAGE_TOO_LARGE = 46
+		MESSAGE_TOO_LARGE = 46,
+		/**
+		 * No such device found. Since 2.74
+		 */
+		NO_SUCH_DEVICE = 47
 	}
 
 	/**
@@ -33782,7 +34920,7 @@ declare namespace imports.gi.Gio {
 
 	/**
 	 * The type of TLS channel binding data to retrieve from #GTlsConnection
-	 * or #GDtlsConnection, as documented by RFC 5929. The
+	 * or #GDtlsConnection, as documented by RFC 5929 or RFC 9266. The
 	 * [`tls-unique-for-telnet`](https://tools.ietf.org/html/rfc5929#section-5)
 	 * binding type is not currently implemented.
 	 */
@@ -33796,7 +34934,12 @@ declare namespace imports.gi.Gio {
 		 * [`tls-server-end-point`](https://tools.ietf.org/html/rfc5929#section-4)
 		 *    binding type
 		 */
-		SERVER_END_POINT = 1
+		SERVER_END_POINT = 1,
+		/**
+		 * [`tls-exporter`](https://www.rfc-editor.org/rfc/rfc9266.html) binding
+		 *    type. Since: 2.74
+		 */
+		EXPORTER = 2
 	}
 
 	/**
@@ -33861,7 +35004,12 @@ declare namespace imports.gi.Gio {
 		 *   because the client sent the fallback SCSV, indicating a protocol
 		 *   downgrade attack. Since: 2.60
 		 */
-		INAPPROPRIATE_FALLBACK = 7
+		INAPPROPRIATE_FALLBACK = 7,
+		/**
+		 * The certificate failed
+		 *   to load because a password was incorrect. Since: 2.72
+		 */
+		BAD_CERTIFICATE_PASSWORD = 8
 	}
 
 	/**
@@ -34036,9 +35184,14 @@ declare namespace imports.gi.Gio {
 	 */
 	enum ApplicationFlags {
 		/**
-		 * Default
+		 * Default. Deprecated in 2.74, use
+		 *   %G_APPLICATION_DEFAULT_FLAGS instead
 		 */
 		FLAGS_NONE = 0,
+		/**
+		 * Default flags. Since: 2.74
+		 */
+		DEFAULT_FLAGS = 0,
 		/**
 		 * Run as a service. In this mode, registration
 		 *      fails if the service is already running, and the application
@@ -34150,7 +35303,7 @@ declare namespace imports.gi.Gio {
 		ALLOW_REPLACEMENT = 1,
 		/**
 		 * If another message bus connection owns the name and have
-		 * specified #G_BUS_NAME_OWNER_FLAGS_ALLOW_REPLACEMENT, then take the name from the other connection.
+		 * specified %G_BUS_NAME_OWNER_FLAGS_ALLOW_REPLACEMENT, then take the name from the other connection.
 		 */
 		REPLACE = 2,
 		/**
@@ -34266,7 +35419,16 @@ declare namespace imports.gi.Gio {
 		 * When authenticating
 		 * as a server, require the UID of the peer to be the same as the UID of the server. (Since: 2.68)
 		 */
-		AUTHENTICATION_REQUIRE_SAME_USER = 32
+		AUTHENTICATION_REQUIRE_SAME_USER = 32,
+		/**
+		 * When authenticating, try to use
+		 *  protocols that work across a Linux user namespace boundary, even if this
+		 *  reduces interoperability with older D-Bus implementations. This currently
+		 *  affects client-side `EXTERNAL` authentication, for which this flag makes
+		 *  connections to a server in another user namespace succeed, but causes
+		 *  a deadlock when connecting to a GDBus server older than 2.73.3. Since: 2.74
+		 */
+		CROSS_NAMESPACE = 64
 	}
 
 	/**
@@ -34378,7 +35540,13 @@ declare namespace imports.gi.Gio {
 		 * autostarted by a method call. This flag is only meaningful in proxies for well-known names,
 		 * and only if %G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START is not also specified.
 		 */
-		DO_NOT_AUTO_START_AT_CONSTRUCTION = 16
+		DO_NOT_AUTO_START_AT_CONSTRUCTION = 16,
+		/**
+		 * Don't actually send the AddMatch D-Bus
+		 *    call for this signal subscription. This gives you more control
+		 *    over which match rules you add (but you must add them manually). (Since: 2.72)
+		 */
+		NO_MATCH_RULE = 32
 	}
 
 	/**
@@ -34575,6 +35743,9 @@ declare namespace imports.gi.Gio {
 		 *   sizes.  Normally, the block-size is used, if available, as this is a
 		 *   more accurate representation of disk space used.
 		 *   Compare with `du --apparent-size`.
+		 *   Since GLib 2.78. and similarly to `du` since GNU Coreutils 9.2, this will
+		 *   ignore the sizes of file types other than regular files and links, as the
+		 *   sizes of other file types are not specified in a standard way.
 		 */
 		APPARENT_SIZE = 4,
 		/**
@@ -34771,7 +35942,7 @@ declare namespace imports.gi.Gio {
 		 */
 		NO_SENSITIVITY = 4,
 		/**
-		 * When set in addition to #G_SETTINGS_BIND_GET, set the #GObject property
+		 * When set in addition to %G_SETTINGS_BIND_GET, set the #GObject property
 		 *     value initially from the setting, but do not listen for changes of the setting
 		 */
 		GET_NO_CHANGES = 8,
@@ -34872,7 +36043,13 @@ declare namespace imports.gi.Gio {
 		 *   been explicitly marked as close-on-exec.  This flag has no effect
 		 *   over the "standard" file descriptors (stdin, stdout, stderr).
 		 */
-		INHERIT_FDS = 128
+		INHERIT_FDS = 128,
+		/**
+		 * if path searching is
+		 *   needed when spawning the subprocess, use the `PATH` in the launcher
+		 *   environment. (Since: 2.72)
+		 */
+		SEARCH_PATH_FROM_ENVP = 256
 	}
 
 	/**
@@ -34887,12 +36064,22 @@ declare namespace imports.gi.Gio {
 
 	/**
 	 * A set of flags describing TLS certification validation. This can be
-	 * used to set which validation steps to perform (eg, with
-	 * {@link G.tls_client_connection_set_validation_flags}), or to describe why
-	 * a particular certificate was rejected (eg, in
-	 * #GTlsConnection::accept-certificate).
+	 * used to describe why a particular certificate was rejected (for
+	 * example, in #GTlsConnection::accept-certificate).
+	 * 
+	 * GLib guarantees that if certificate verification fails, at least one
+	 * flag will be set, but it does not guarantee that all possible flags
+	 * will be set. Accordingly, you may not safely decide to ignore any
+	 * particular type of error. For example, it would be incorrect to mask
+	 * %G_TLS_CERTIFICATE_EXPIRED if you want to allow expired certificates,
+	 * because this could potentially be the only error flag set even if
+	 * other problems exist with the certificate.
 	 */
 	enum TlsCertificateFlags {
+		/**
+		 * No flags set. Since: 2.74
+		 */
+		NO_FLAGS = 0,
 		/**
 		 * The signing certificate authority is
 		 *   not known.
@@ -35013,8 +36200,9 @@ declare namespace imports.gi.Gio {
 		 * after this callback returns.
 		 * @param source_object the object the asynchronous operation was started with.
 		 * @param res a #GAsyncResult.
+		 * @param data user data passed to the callback.
 		 */
-		(source_object: GObject.Object | null, res: AsyncResult): void;
+		(source_object: GObject.Object | null, res: AsyncResult, data?: any | null): void;
 	}
 
 	/**
@@ -35097,9 +36285,10 @@ declare namespace imports.gi.Gio {
 		 * This is the function type of the callback used for the #GSource
 		 * returned by {@link G.cancellable_source_new}.
 		 * @param cancellable the #GCancellable
+		 * @param data data passed in by the user.
 		 * @returns it should return %FALSE if the source should be removed.
 		 */
-		(cancellable?: Cancellable | null): boolean;
+		(cancellable?: Cancellable | null, data?: any | null): boolean;
 	}
 
 	/**
@@ -35310,11 +36499,12 @@ declare namespace imports.gi.Gio {
 		 * @param manager A #GDBusObjectManagerClient.
 		 * @param object_path The object path of the remote object.
 		 * @param interface_name The interface name of the remote object or %NULL if a #GDBusObjectProxy #GType is requested.
+		 * @param data data passed in by the user.
 		 * @returns A #GType to use for the remote object. The returned type
 		 *   must be a #GDBusProxy or #GDBusObjectProxy -derived
 		 *   type.
 		 */
-		(manager: DBusObjectManagerClient, object_path: string, interface_name?: string | null): GObject.Type;
+		(manager: DBusObjectManagerClient, object_path: string, interface_name?: string | null, data?: any | null): GObject.Type;
 	}
 
 	/**
@@ -35450,10 +36640,11 @@ declare namespace imports.gi.Gio {
 		 * returned by {@link G.datagram_based_create_source}.
 		 * @param datagram_based the #GDatagramBased
 		 * @param condition the current condition at the source fired
+		 * @param data data passed in by the user
 		 * @returns %G_SOURCE_REMOVE if the source should be removed,
 		 *   %G_SOURCE_CONTINUE otherwise
 		 */
-		(datagram_based: DatagramBased, condition: GLib.IOCondition): boolean;
+		(datagram_based: DatagramBased, condition: GLib.IOCondition, data?: any | null): boolean;
 	}
 
 	/**
@@ -35534,8 +36725,9 @@ declare namespace imports.gi.Gio {
 		 * @param current_size the current cumulative size measurement
 		 * @param num_dirs the number of directories visited so far
 		 * @param num_files the number of non-directory files encountered
+		 * @param data the data passed to the original request for this callback
 		 */
-		(reporting: boolean, current_size: number, num_dirs: number, num_files: number): void;
+		(reporting: boolean, current_size: number, num_dirs: number, num_files: number, data?: any | null): void;
 	}
 
 	/**
@@ -35550,8 +36742,9 @@ declare namespace imports.gi.Gio {
 		 * far along that operation is to the application.
 		 * @param current_num_bytes the current number of bytes in the operation.
 		 * @param total_num_bytes the total number of bytes in the operation.
+		 * @param data user data passed to the callback.
 		 */
-		(current_num_bytes: number, total_num_bytes: number): void;
+		(current_num_bytes: number, total_num_bytes: number, data?: any | null): void;
 	}
 
 	/**
@@ -35568,9 +36761,10 @@ declare namespace imports.gi.Gio {
 		 * should be read, or %FALSE otherwise.
 		 * @param file_contents the data as currently read.
 		 * @param file_size the size of the data currently read.
+		 * @param callback_data data passed to the callback.
 		 * @returns %TRUE if more data should be read back. %FALSE otherwise.
 		 */
-		(file_contents: string, file_size: number): boolean;
+		(file_contents: string, file_size: number, callback_data?: any | null): boolean;
 	}
 
 	/**
@@ -35587,10 +36781,11 @@ declare namespace imports.gi.Gio {
 		 * to see if they have been cancelled.
 		 * @param job a #GIOSchedulerJob.
 		 * @param cancellable optional #GCancellable object, %NULL to ignore.
+		 * @param data data passed to the callback function
 		 * @returns %TRUE if this function should be called again to
 		 *    complete the job, %FALSE if the job is complete (or cancelled)
 		 */
-		(job: IOSchedulerJob, cancellable?: Cancellable | null): boolean;
+		(job: IOSchedulerJob, cancellable?: Cancellable | null, data?: any | null): boolean;
 	}
 
 	/**
@@ -35604,9 +36799,10 @@ declare namespace imports.gi.Gio {
 		 * returned by {@link G.pollable_input_stream_create_source} and
 		 * g_pollable_output_stream_create_source().
 		 * @param pollable_stream the #GPollableInputStream or #GPollableOutputStream
+		 * @param data data passed in by the user.
 		 * @returns it should return %FALSE if the source should be removed.
 		 */
-		(pollable_stream: GObject.Object): boolean;
+		(pollable_stream: GObject.Object, data?: any | null): boolean;
 	}
 
 	/**
@@ -35718,9 +36914,10 @@ declare namespace imports.gi.Gio {
 		 * returned by {@link G.socket_create_source}.
 		 * @param socket the #GSocket
 		 * @param condition the current condition at the source fired.
+		 * @param data data passed in by the user.
 		 * @returns it should return %FALSE if the source should be removed.
 		 */
-		(socket: Socket, condition: GLib.IOCondition): boolean;
+		(socket: Socket, condition: GLib.IOCondition, data?: any | null): boolean;
 	}
 
 	/**
@@ -35809,31 +37006,38 @@ declare namespace imports.gi.Gio {
 	 * 
 	 * The first format is used to represent an action name with no target
 	 * value and consists of just an action name containing no whitespace
-	 * nor the characters ':', '(' or ')'.  For example: "app.action".
+	 * nor the characters `:`, `(` or `)`.  For example: `app.action`.
 	 * 
 	 * The second format is used to represent an action with a target value
-	 * that is a non-empty string consisting only of alphanumerics, plus '-'
-	 * and '.'.  In that case, the action name and target value are
-	 * separated by a double colon ("::").  For example:
-	 * "app.action::target".
+	 * that is a non-empty string consisting only of alphanumerics, plus `-`
+	 * and `.`.  In that case, the action name and target value are
+	 * separated by a double colon (`::`).  For example:
+	 * `app.action::target`.
 	 * 
 	 * The third format is used to represent an action with any type of
 	 * target value, including strings.  The target value follows the action
-	 * name, surrounded in parens.  For example: "app.action(42)".  The
+	 * name, surrounded in parens.  For example: `app.action(42)`.  The
 	 * target value is parsed using {@link G.variant_parse}.  If a tuple-typed
 	 * value is desired, it must be specified in the same way, resulting in
-	 * two sets of parens, for example: "app.action((1,2,3))".  A string
-	 * target can be specified this way as well: "app.action('target')".
-	 * For strings, this third format must be used if * target value is
-	 * empty or contains characters other than alphanumerics, '-' and '.'.
+	 * two sets of parens, for example: `app.action((1,2,3))`.  A string
+	 * target can be specified this way as well: `app.action('target')`.
+	 * For strings, this third format must be used if target value is
+	 * empty or contains characters other than alphanumerics, `-` and `.`.
+	 * 
+	 * If this function returns %TRUE, a non-%NULL value is guaranteed to be returned
+	 * in #action_name (if a pointer is passed in). A %NULL value may still be
+	 * returned in #target_value, as the #detailed_name may not contain a target.
+	 * 
+	 * If returned, the #GVariant in #target_value is guaranteed to not be floating.
 	 * @param detailed_name a detailed action name
 	 * @returns %TRUE if successful, else %FALSE with #error set
 	 * 
 	 * the action name
 	 * 
-	 * the target value, or %NULL for no target
+	 * the target value,
+	 *   or %NULL for no target
 	 */
-	function action_parse_detailed_name(detailed_name: string): [ boolean, string, GLib.Variant ];
+	function action_parse_detailed_name(detailed_name: string): [ boolean, string | null, GLib.Variant | null ];
 	/**
 	 * Formats a detailed action name from #action_name and #target_value.
 	 * 
@@ -35896,6 +37100,25 @@ declare namespace imports.gi.Gio {
 	 */
 	function app_info_get_default_for_type(content_type: string, must_support_uris: boolean): AppInfo | null;
 	/**
+	 * Asynchronously gets the default #GAppInfo for a given content type.
+	 * @param content_type the content type to find a #GAppInfo for
+	 * @param must_support_uris if %TRUE, the #GAppInfo is expected to
+	 *     support URIs
+	 * @param cancellable optional #GCancellable object, %NULL to ignore
+	 * @param callback a #GAsyncReadyCallback to call when the request is done
+	 */
+	function app_info_get_default_for_type_async(content_type: string, must_support_uris: boolean, cancellable: Cancellable | null, callback: AsyncReadyCallback | null): void;
+	/**
+	 * Finishes a default #GAppInfo lookup started by
+	 * {@link G.app_info_get_default_for_type_async}.
+	 * 
+	 * If no #GAppInfo is found, then #error will be set to %G_IO_ERROR_NOT_FOUND.
+	 * @param result a #GAsyncResult
+	 * @returns #GAppInfo for given #content_type or
+	 *     %NULL on error.
+	 */
+	function app_info_get_default_for_type_finish(result: AsyncResult): AppInfo;
+	/**
 	 * Gets the default application for handling URIs with
 	 * the given URI scheme. A URI scheme is the initial part
 	 * of the URI, up to but not including the ':', e.g. "http",
@@ -35905,6 +37128,26 @@ declare namespace imports.gi.Gio {
 	 *     %NULL on error.
 	 */
 	function app_info_get_default_for_uri_scheme(uri_scheme: string): AppInfo | null;
+	/**
+	 * Asynchronously gets the default application for handling URIs with
+	 * the given URI scheme. A URI scheme is the initial part
+	 * of the URI, up to but not including the ':', e.g. "http",
+	 * "ftp" or "sip".
+	 * @param uri_scheme a string containing a URI scheme.
+	 * @param cancellable optional #GCancellable object, %NULL to ignore
+	 * @param callback a #GAsyncReadyCallback to call when the request is done
+	 */
+	function app_info_get_default_for_uri_scheme_async(uri_scheme: string, cancellable: Cancellable | null, callback: AsyncReadyCallback | null): void;
+	/**
+	 * Finishes a default #GAppInfo lookup started by
+	 * {@link G.app_info_get_default_for_uri_scheme_async}.
+	 * 
+	 * If no #GAppInfo is found, then #error will be set to %G_IO_ERROR_NOT_FOUND.
+	 * @param result a #GAsyncResult
+	 * @returns #GAppInfo for given #uri_scheme or
+	 *     %NULL on error.
+	 */
+	function app_info_get_default_for_uri_scheme_finish(result: AsyncResult): AppInfo;
 	/**
 	 * Gets a list of fallback #GAppInfos for a given content type, i.e.
 	 * those applications which claim to support the given content type
@@ -36008,7 +37251,9 @@ declare namespace imports.gi.Gio {
 	 * callers of g_bus_get() and g_bus_get_sync() for #bus_type. In the
 	 * event that you need a private message bus connection, use
 	 * g_dbus_address_get_for_bus_sync() and
-	 * g_dbus_connection_new_for_address().
+	 * g_dbus_connection_new_for_address() with
+	 * G_DBUS_CONNECTION_FLAGS_AUTHENTICATION_CLIENT and
+	 * G_DBUS_CONNECTION_FLAGS_MESSAGE_BUS_CONNECTION flags.
 	 * 
 	 * Note that the returned #GDBusConnection object will (usually) have
 	 * the #GDBusConnection:exit-on-close property set to %TRUE.
@@ -36031,7 +37276,9 @@ declare namespace imports.gi.Gio {
 	 * callers of g_bus_get() and g_bus_get_sync() for #bus_type. In the
 	 * event that you need a private message bus connection, use
 	 * g_dbus_address_get_for_bus_sync() and
-	 * g_dbus_connection_new_for_address().
+	 * g_dbus_connection_new_for_address() with
+	 * G_DBUS_CONNECTION_FLAGS_AUTHENTICATION_CLIENT and
+	 * G_DBUS_CONNECTION_FLAGS_MESSAGE_BUS_CONNECTION flags.
 	 * 
 	 * Note that the returned #GDBusConnection object will (usually) have
 	 * the #GDBusConnection:exit-on-close property set to %TRUE.
@@ -36198,7 +37445,7 @@ declare namespace imports.gi.Gio {
 	 * uncertain, #result_uncertain will be set to %TRUE. Either #filename
 	 * or #data may be %NULL, in which case the guess will be based solely
 	 * on the other argument.
-	 * @param filename a string, or %NULL
+	 * @param filename a path, or %NULL
 	 * @param data a stream of data, or %NULL
 	 * @returns a string indicating a guessed content type for the
 	 *     given data. Free with {@link G.free}
@@ -36423,7 +37670,7 @@ declare namespace imports.gi.Gio {
 	 * such that it can be recovered with g_dbus_error_get_remote_error().
 	 * 
 	 * Otherwise, a #GError with the error code %G_IO_ERROR_DBUS_ERROR
-	 * in the #G_IO_ERROR error domain is returned. Also, #dbus_error_name is
+	 * in the %G_IO_ERROR error domain is returned. Also, #dbus_error_name is
 	 * added to the error message such that it can be recovered with
 	 * g_dbus_error_get_remote_error().
 	 * 
@@ -36530,23 +37777,23 @@ declare namespace imports.gi.Gio {
 	 * 
 	 * The conversion is using the following rules:
 	 * 
-	 * - #G_TYPE_STRING: 's', 'o', 'g' or 'ay'
-	 * - #G_TYPE_STRV: 'as', 'ao' or 'aay'
-	 * - #G_TYPE_BOOLEAN: 'b'
-	 * - #G_TYPE_UCHAR: 'y'
-	 * - #G_TYPE_INT: 'i', 'n'
-	 * - #G_TYPE_UINT: 'u', 'q'
-	 * - #G_TYPE_INT64 'x'
-	 * - #G_TYPE_UINT64: 't'
-	 * - #G_TYPE_DOUBLE: 'd'
-	 * - #G_TYPE_VARIANT: Any #GVariantType
+	 * - `G_TYPE_STRING`: 's', 'o', 'g' or 'ay'
+	 * - `G_TYPE_STRV`: 'as', 'ao' or 'aay'
+	 * - `G_TYPE_BOOLEAN`: 'b'
+	 * - `G_TYPE_UCHAR`: 'y'
+	 * - `G_TYPE_INT`: 'i', 'n'
+	 * - `G_TYPE_UINT`: 'u', 'q'
+	 * - `G_TYPE_INT64`: 'x'
+	 * - `G_TYPE_UINT64`: 't'
+	 * - `G_TYPE_DOUBLE`: 'd'
+	 * - `G_TYPE_VARIANT`: Any #GVariantType
 	 * 
-	 * This can fail if e.g. #gvalue is of type #G_TYPE_STRING and #type
-	 * is ['i'][G-VARIANT-TYPE-INT32:CAPS]. It will also fail for any #GType
-	 * (including e.g. #G_TYPE_OBJECT and #G_TYPE_BOXED derived-types) not
+	 * This can fail if e.g. #gvalue is of type %G_TYPE_STRING and #type
+	 * is 'i', i.e. %G_VARIANT_TYPE_INT32. It will also fail for any #GType
+	 * (including e.g. %G_TYPE_OBJECT and %G_TYPE_BOXED derived-types) not
 	 * in the table above.
 	 * 
-	 * Note that if #gvalue is of type #G_TYPE_VARIANT and its value is
+	 * Note that if #gvalue is of type %G_TYPE_VARIANT and its value is
 	 * %NULL, the empty #GVariant instance (never %NULL) for #type is
 	 * returned (e.g. 0 for scalar types, the empty string for string types,
 	 * '/' for object path types, the empty array for any array type and so on).
@@ -36673,6 +37920,17 @@ declare namespace imports.gi.Gio {
 	 */
 	function dtls_server_connection_new(base_socket: DatagramBased, certificate: TlsCertificate | null): DtlsServerConnection;
 	/**
+	 * Constructs a #GFile from a vector of elements using the correct
+	 * separator for filenames.
+	 * 
+	 * Using this function is equivalent to calling {@link G.build_filenamev},
+	 * followed by g_file_new_for_path() on the result.
+	 * @param args %NULL-terminated
+	 *   array of strings containing the path elements.
+	 * @returns a new #GFile
+	 */
+	function file_new_build_filenamev(args: string[]): File;
+	/**
 	 * Creates a #GFile with the given argument from the command line.
 	 * The value of #arg can be either a URI, an absolute path or a
 	 * relative path resolved relative to the current working directory.
@@ -36689,7 +37947,7 @@ declare namespace imports.gi.Gio {
 	 * #GOptionContext arguments of type %G_OPTION_ARG_FILENAME.
 	 * @param arg a command line string
 	 * @returns a new #GFile.
-	 *    Free the returned object with {@link GObject.unref}.
+	 *   Free the returned object with {@link GObject.unref}.
 	 */
 	function file_new_for_commandline_arg(arg: string): File;
 	/**
@@ -36714,7 +37972,7 @@ declare namespace imports.gi.Gio {
 	 * fails, but the returned object might not support any I/O
 	 * operation if #path is malformed.
 	 * @param path a string containing a relative or absolute path.
-	 *     The string must be encoded in the glib filename encoding.
+	 *   The string must be encoded in the glib filename encoding.
 	 * @returns a new #GFile for the given #path.
 	 *   Free the returned object with {@link GObject.unref}.
 	 */
@@ -36726,7 +37984,7 @@ declare namespace imports.gi.Gio {
 	 * not supported.
 	 * @param uri a UTF-8 string containing a URI
 	 * @returns a new #GFile for the given #uri.
-	 *     Free the returned object with {@link GObject.unref}.
+	 *   Free the returned object with {@link GObject.unref}.
 	 */
 	function file_new_for_uri(uri: string): File;
 	/**
@@ -36743,11 +38001,56 @@ declare namespace imports.gi.Gio {
 	 * @param tmpl Template for the file
 	 *   name, as in {@link G.file_open_tmp}, or %NULL for a default template
 	 * @returns a new #GFile.
-	 *     Free the returned object with {@link GObject.unref}.
+	 *   Free the returned object with {@link GObject.unref}.
 	 * 
 	 * on return, a #GFileIOStream for the created file
 	 */
 	function file_new_tmp(tmpl: string | null): [ File, FileIOStream ];
+	/**
+	 * Asynchronously opens a file in the preferred directory for temporary files
+	 *  (as returned by {@link G.get_tmp_dir}) as g_file_new_tmp().
+	 * 
+	 * #tmpl should be a string in the GLib file name encoding
+	 * containing a sequence of six 'X' characters, and containing no
+	 * directory components. If it is %NULL, a default template is used.
+	 * @param tmpl Template for the file
+	 *   name, as in {@link G.file_open_tmp}, or %NULL for a default template
+	 * @param io_priority the [I/O priority][io-priority] of the request
+	 * @param cancellable optional #GCancellable object, %NULL to ignore
+	 * @param callback a #GAsyncReadyCallback to call when the request is done
+	 */
+	function file_new_tmp_async(tmpl: string | null, io_priority: number, cancellable: Cancellable | null, callback: AsyncReadyCallback | null): void;
+	/**
+	 * Asynchronously creates a directory in the preferred directory for
+	 * temporary files (as returned by {@link G.get_tmp_dir}) as g_dir_make_tmp().
+	 * 
+	 * #tmpl should be a string in the GLib file name encoding
+	 * containing a sequence of six 'X' characters, and containing no
+	 * directory components. If it is %NULL, a default template is used.
+	 * @param tmpl Template for the file
+	 *   name, as in {@link G.dir_make_tmp}, or %NULL for a default template
+	 * @param io_priority the [I/O priority][io-priority] of the request
+	 * @param cancellable optional #GCancellable object, %NULL to ignore
+	 * @param callback a #GAsyncReadyCallback to call when the request is done
+	 */
+	function file_new_tmp_dir_async(tmpl: string | null, io_priority: number, cancellable: Cancellable | null, callback: AsyncReadyCallback | null): void;
+	/**
+	 * Finishes a temporary directory creation started by
+	 * {@link G.file_new_tmp_dir_async}.
+	 * @param result a #GAsyncResult
+	 * @returns a new #GFile.
+	 *   Free the returned object with {@link GObject.unref}.
+	 */
+	function file_new_tmp_dir_finish(result: AsyncResult): File;
+	/**
+	 * Finishes a temporary file creation started by {@link G.file_new_tmp_async}.
+	 * @param result a #GAsyncResult
+	 * @returns a new #GFile.
+	 *   Free the returned object with {@link GObject.unref}.
+	 * 
+	 * on return, a #GFileIOStream for the created file
+	 */
+	function file_new_tmp_finish(result: AsyncResult): [ File, FileIOStream ];
 	/**
 	 * Constructs a #GFile with the given #parse_name (i.e. something
 	 * given by {@link G.file_get_parse_name}). This operation never fails,
@@ -36763,13 +38066,6 @@ declare namespace imports.gi.Gio {
 	 * @returns a #GIcon, or %NULL when deserialization fails.
 	 */
 	function icon_deserialize(value: GLib.Variant): Icon | null;
-	/**
-	 * Gets a hash for an icon.
-	 * @param icon #gconstpointer to an icon object.
-	 * @returns a #guint containing a hash for the #icon, suitable for
-	 * use in a #GHashTable or similar data structure.
-	 */
-	function icon_hash(icon: any): number;
 	/**
 	 * Generate a #GIcon instance from #str. This function can fail if
 	 * #str is not valid - see {@link G.icon_to_string} for discussion.
@@ -36805,6 +38101,12 @@ declare namespace imports.gi.Gio {
 	 * @returns #GIOErrorEnum value for the given errno.h error number.
 	 */
 	function io_error_from_errno(err_no: number): IOErrorEnum;
+	/**
+	 * Converts #GFileError error codes into GIO error codes.
+	 * @param file_error a #GFileError.
+	 * @returns #GIOErrorEnum value for the given #GFileError error value.
+	 */
+	function io_error_from_file_error(file_error: GLib.FileError): IOErrorEnum;
 	/**
 	 * Gets the GIO Error Quark.
 	 * @returns a #GQuark.
@@ -37246,7 +38548,7 @@ declare namespace imports.gi.Gio {
 	 * information.
 	 * @param object a #GObject, or %NULL.
 	 * @param callback a #GAsyncReadyCallback.
-	 * @param domain a #GQuark containing the error domain (usually #G_IO_ERROR).
+	 * @param domain a #GQuark containing the error domain (usually %G_IO_ERROR).
 	 * @param code a specific error code.
 	 * @param format a formatted error reporting string.
 	 */
@@ -37595,6 +38897,14 @@ declare namespace imports.gi.Gio {
 	 * use %FALSE instead.
 	 */
 	const DBUS_METHOD_INVOCATION_UNHANDLED: boolean;
+
+	/**
+	 * Extension point for debug control functionality.
+	 * See [Extending GIO][extending-gio].
+	 * @returns Extension point for debug control functionality.
+	 * See [Extending GIO][extending-gio].
+	 */
+	const DEBUG_CONTROLLER_EXTENSION_POINT_NAME: string;
 
 	/**
 	 * Extension point for default handler to URI association. See
@@ -38479,6 +39789,70 @@ declare namespace imports.gi.Gio {
 	const FILE_ATTRIBUTE_THUMBNAILING_FAILED: string;
 
 	/**
+	 * A key in the "thumbnail" namespace for checking if thumbnailing failed
+	 * for the large image.
+	 * 
+	 * This attribute is %TRUE if thumbnailing failed.
+	 * 
+	 * Corresponding #GFileAttributeType is %G_FILE_ATTRIBUTE_TYPE_BOOLEAN.
+	 * @returns A key in the "thumbnail" namespace for checking if thumbnailing failed
+	 * for the large image.
+	 * 
+	 * This attribute is %TRUE if thumbnailing failed.
+	 * 
+	 * Corresponding #GFileAttributeType is %G_FILE_ATTRIBUTE_TYPE_BOOLEAN.
+	 */
+	const FILE_ATTRIBUTE_THUMBNAILING_FAILED_LARGE: string;
+
+	/**
+	 * A key in the "thumbnail" namespace for checking if thumbnailing failed
+	 * for the normal image.
+	 * 
+	 * This attribute is %TRUE if thumbnailing failed.
+	 * 
+	 * Corresponding #GFileAttributeType is %G_FILE_ATTRIBUTE_TYPE_BOOLEAN.
+	 * @returns A key in the "thumbnail" namespace for checking if thumbnailing failed
+	 * for the normal image.
+	 * 
+	 * This attribute is %TRUE if thumbnailing failed.
+	 * 
+	 * Corresponding #GFileAttributeType is %G_FILE_ATTRIBUTE_TYPE_BOOLEAN.
+	 */
+	const FILE_ATTRIBUTE_THUMBNAILING_FAILED_NORMAL: string;
+
+	/**
+	 * A key in the "thumbnail" namespace for checking if thumbnailing failed
+	 * for the x-large image.
+	 * 
+	 * This attribute is %TRUE if thumbnailing failed.
+	 * 
+	 * Corresponding #GFileAttributeType is %G_FILE_ATTRIBUTE_TYPE_BOOLEAN.
+	 * @returns A key in the "thumbnail" namespace for checking if thumbnailing failed
+	 * for the x-large image.
+	 * 
+	 * This attribute is %TRUE if thumbnailing failed.
+	 * 
+	 * Corresponding #GFileAttributeType is %G_FILE_ATTRIBUTE_TYPE_BOOLEAN.
+	 */
+	const FILE_ATTRIBUTE_THUMBNAILING_FAILED_XLARGE: string;
+
+	/**
+	 * A key in the "thumbnail" namespace for checking if thumbnailing failed
+	 * for the xx-large image.
+	 * 
+	 * This attribute is %TRUE if thumbnailing failed.
+	 * 
+	 * Corresponding #GFileAttributeType is %G_FILE_ATTRIBUTE_TYPE_BOOLEAN.
+	 * @returns A key in the "thumbnail" namespace for checking if thumbnailing failed
+	 * for the xx-large image.
+	 * 
+	 * This attribute is %TRUE if thumbnailing failed.
+	 * 
+	 * Corresponding #GFileAttributeType is %G_FILE_ATTRIBUTE_TYPE_BOOLEAN.
+	 */
+	const FILE_ATTRIBUTE_THUMBNAILING_FAILED_XXLARGE: string;
+
+	/**
 	 * A key in the "thumbnail" namespace for checking whether the thumbnail is outdated.
 	 * 
 	 * This attribute is %TRUE if the thumbnail is up-to-date with the file it represents,
@@ -38501,16 +39875,176 @@ declare namespace imports.gi.Gio {
 	const FILE_ATTRIBUTE_THUMBNAIL_IS_VALID: string;
 
 	/**
+	 * A key in the "thumbnail" namespace for checking whether the large
+	 * thumbnail is outdated.
+	 * 
+	 * This attribute is %TRUE if the large thumbnail is up-to-date with the file
+	 * it represents, and %FALSE if the file has been modified since the thumbnail
+	 * was generated.
+	 * 
+	 * If %G_FILE_ATTRIBUTE_THUMBNAILING_FAILED_LARGE is %TRUE and this attribute
+	 * is %FALSE, it indicates that thumbnailing may be attempted again and may
+	 * succeed.
+	 * 
+	 * Corresponding #GFileAttributeType is %G_FILE_ATTRIBUTE_TYPE_BOOLEAN.
+	 * @returns A key in the "thumbnail" namespace for checking whether the large
+	 * thumbnail is outdated.
+	 * 
+	 * This attribute is %TRUE if the large thumbnail is up-to-date with the file
+	 * it represents, and %FALSE if the file has been modified since the thumbnail
+	 * was generated.
+	 * 
+	 * If %G_FILE_ATTRIBUTE_THUMBNAILING_FAILED_LARGE is %TRUE and this attribute
+	 * is %FALSE, it indicates that thumbnailing may be attempted again and may
+	 * succeed.
+	 * 
+	 * Corresponding #GFileAttributeType is %G_FILE_ATTRIBUTE_TYPE_BOOLEAN.
+	 */
+	const FILE_ATTRIBUTE_THUMBNAIL_IS_VALID_LARGE: string;
+
+	/**
+	 * A key in the "thumbnail" namespace for checking whether the normal
+	 * thumbnail is outdated.
+	 * 
+	 * This attribute is %TRUE if the normal thumbnail is up-to-date with the file
+	 * it represents, and %FALSE if the file has been modified since the thumbnail
+	 * was generated.
+	 * 
+	 * If %G_FILE_ATTRIBUTE_THUMBNAILING_FAILED_NORMAL is %TRUE and this attribute
+	 * is %FALSE, it indicates that thumbnailing may be attempted again and may
+	 * succeed.
+	 * 
+	 * Corresponding #GFileAttributeType is %G_FILE_ATTRIBUTE_TYPE_BOOLEAN.
+	 * @returns A key in the "thumbnail" namespace for checking whether the normal
+	 * thumbnail is outdated.
+	 * 
+	 * This attribute is %TRUE if the normal thumbnail is up-to-date with the file
+	 * it represents, and %FALSE if the file has been modified since the thumbnail
+	 * was generated.
+	 * 
+	 * If %G_FILE_ATTRIBUTE_THUMBNAILING_FAILED_NORMAL is %TRUE and this attribute
+	 * is %FALSE, it indicates that thumbnailing may be attempted again and may
+	 * succeed.
+	 * 
+	 * Corresponding #GFileAttributeType is %G_FILE_ATTRIBUTE_TYPE_BOOLEAN.
+	 */
+	const FILE_ATTRIBUTE_THUMBNAIL_IS_VALID_NORMAL: string;
+
+	/**
+	 * A key in the "thumbnail" namespace for checking whether the x-large
+	 * thumbnail is outdated.
+	 * 
+	 * This attribute is %TRUE if the x-large thumbnail is up-to-date with the file
+	 * it represents, and %FALSE if the file has been modified since the thumbnail
+	 * was generated.
+	 * 
+	 * If %G_FILE_ATTRIBUTE_THUMBNAILING_FAILED_XLARGE is %TRUE and this attribute
+	 * is %FALSE, it indicates that thumbnailing may be attempted again and may
+	 * succeed.
+	 * 
+	 * Corresponding #GFileAttributeType is %G_FILE_ATTRIBUTE_TYPE_BOOLEAN.
+	 * @returns A key in the "thumbnail" namespace for checking whether the x-large
+	 * thumbnail is outdated.
+	 * 
+	 * This attribute is %TRUE if the x-large thumbnail is up-to-date with the file
+	 * it represents, and %FALSE if the file has been modified since the thumbnail
+	 * was generated.
+	 * 
+	 * If %G_FILE_ATTRIBUTE_THUMBNAILING_FAILED_XLARGE is %TRUE and this attribute
+	 * is %FALSE, it indicates that thumbnailing may be attempted again and may
+	 * succeed.
+	 * 
+	 * Corresponding #GFileAttributeType is %G_FILE_ATTRIBUTE_TYPE_BOOLEAN.
+	 */
+	const FILE_ATTRIBUTE_THUMBNAIL_IS_VALID_XLARGE: string;
+
+	/**
+	 * A key in the "thumbnail" namespace for checking whether the xx-large
+	 * thumbnail is outdated.
+	 * 
+	 * This attribute is %TRUE if the x-large thumbnail is up-to-date with the file
+	 * it represents, and %FALSE if the file has been modified since the thumbnail
+	 * was generated.
+	 * 
+	 * If %G_FILE_ATTRIBUTE_THUMBNAILING_FAILED_XXLARGE is %TRUE and this attribute
+	 * is %FALSE, it indicates that thumbnailing may be attempted again and may
+	 * succeed.
+	 * 
+	 * Corresponding #GFileAttributeType is %G_FILE_ATTRIBUTE_TYPE_BOOLEAN.
+	 * @returns A key in the "thumbnail" namespace for checking whether the xx-large
+	 * thumbnail is outdated.
+	 * 
+	 * This attribute is %TRUE if the x-large thumbnail is up-to-date with the file
+	 * it represents, and %FALSE if the file has been modified since the thumbnail
+	 * was generated.
+	 * 
+	 * If %G_FILE_ATTRIBUTE_THUMBNAILING_FAILED_XXLARGE is %TRUE and this attribute
+	 * is %FALSE, it indicates that thumbnailing may be attempted again and may
+	 * succeed.
+	 * 
+	 * Corresponding #GFileAttributeType is %G_FILE_ATTRIBUTE_TYPE_BOOLEAN.
+	 */
+	const FILE_ATTRIBUTE_THUMBNAIL_IS_VALID_XXLARGE: string;
+
+	/**
 	 * A key in the "thumbnail" namespace for getting the path to the thumbnail
-	 * image.
+	 * image with the biggest size available.
 	 * 
 	 * Corresponding #GFileAttributeType is %G_FILE_ATTRIBUTE_TYPE_BYTE_STRING.
 	 * @returns A key in the "thumbnail" namespace for getting the path to the thumbnail
-	 * image.
+	 * image with the biggest size available.
 	 * 
 	 * Corresponding #GFileAttributeType is %G_FILE_ATTRIBUTE_TYPE_BYTE_STRING.
 	 */
 	const FILE_ATTRIBUTE_THUMBNAIL_PATH: string;
+
+	/**
+	 * A key in the "thumbnail" namespace for getting the path to the large
+	 * thumbnail image.
+	 * 
+	 * Corresponding #GFileAttributeType is %G_FILE_ATTRIBUTE_TYPE_BYTE_STRING.
+	 * @returns A key in the "thumbnail" namespace for getting the path to the large
+	 * thumbnail image.
+	 * 
+	 * Corresponding #GFileAttributeType is %G_FILE_ATTRIBUTE_TYPE_BYTE_STRING.
+	 */
+	const FILE_ATTRIBUTE_THUMBNAIL_PATH_LARGE: string;
+
+	/**
+	 * A key in the "thumbnail" namespace for getting the path to the normal
+	 * thumbnail image.
+	 * 
+	 * Corresponding #GFileAttributeType is %G_FILE_ATTRIBUTE_TYPE_BYTE_STRING.
+	 * @returns A key in the "thumbnail" namespace for getting the path to the normal
+	 * thumbnail image.
+	 * 
+	 * Corresponding #GFileAttributeType is %G_FILE_ATTRIBUTE_TYPE_BYTE_STRING.
+	 */
+	const FILE_ATTRIBUTE_THUMBNAIL_PATH_NORMAL: string;
+
+	/**
+	 * A key in the "thumbnail" namespace for getting the path to the x-large
+	 * thumbnail image.
+	 * 
+	 * Corresponding #GFileAttributeType is %G_FILE_ATTRIBUTE_TYPE_BYTE_STRING.
+	 * @returns A key in the "thumbnail" namespace for getting the path to the x-large
+	 * thumbnail image.
+	 * 
+	 * Corresponding #GFileAttributeType is %G_FILE_ATTRIBUTE_TYPE_BYTE_STRING.
+	 */
+	const FILE_ATTRIBUTE_THUMBNAIL_PATH_XLARGE: string;
+
+	/**
+	 * A key in the "thumbnail" namespace for getting the path to the xx-large
+	 * thumbnail image.
+	 * 
+	 * Corresponding #GFileAttributeType is %G_FILE_ATTRIBUTE_TYPE_BYTE_STRING.
+	 * @returns A key in the "thumbnail" namespace for getting the path to the xx-large
+	 * thumbnail image.
+	 * 
+	 * Corresponding #GFileAttributeType is %G_FILE_ATTRIBUTE_TYPE_BYTE_STRING.
+	 */
+	const FILE_ATTRIBUTE_THUMBNAIL_PATH_XXLARGE: string;
 
 	/**
 	 * A key in the "time" namespace for getting the time the file was last
@@ -38527,6 +40061,18 @@ declare namespace imports.gi.Gio {
 	 * UNIX epoch.
 	 */
 	const FILE_ATTRIBUTE_TIME_ACCESS: string;
+
+	/**
+	 * A key in the "time" namespace for getting the nanoseconds of the time
+	 * the file was last accessed. This should be used in conjunction with
+	 * #G_FILE_ATTRIBUTE_TIME_ACCESS. Corresponding #GFileAttributeType is
+	 * %G_FILE_ATTRIBUTE_TYPE_UINT32.
+	 * @returns A key in the "time" namespace for getting the nanoseconds of the time
+	 * the file was last accessed. This should be used in conjunction with
+	 * #G_FILE_ATTRIBUTE_TIME_ACCESS. Corresponding #GFileAttributeType is
+	 * %G_FILE_ATTRIBUTE_TYPE_UINT32.
+	 */
+	const FILE_ATTRIBUTE_TIME_ACCESS_NSEC: string;
 
 	/**
 	 * A key in the "time" namespace for getting the microseconds of the time
@@ -38565,6 +40111,18 @@ declare namespace imports.gi.Gio {
 	const FILE_ATTRIBUTE_TIME_CHANGED: string;
 
 	/**
+	 * A key in the "time" namespace for getting the nanoseconds of the time
+	 * the file was last changed. This should be used in conjunction with
+	 * #G_FILE_ATTRIBUTE_TIME_CHANGED. Corresponding #GFileAttributeType is
+	 * %G_FILE_ATTRIBUTE_TYPE_UINT32.
+	 * @returns A key in the "time" namespace for getting the nanoseconds of the time
+	 * the file was last changed. This should be used in conjunction with
+	 * #G_FILE_ATTRIBUTE_TIME_CHANGED. Corresponding #GFileAttributeType is
+	 * %G_FILE_ATTRIBUTE_TYPE_UINT32.
+	 */
+	const FILE_ATTRIBUTE_TIME_CHANGED_NSEC: string;
+
+	/**
 	 * A key in the "time" namespace for getting the microseconds of the time
 	 * the file was last changed.
 	 * 
@@ -38601,6 +40159,18 @@ declare namespace imports.gi.Gio {
 	const FILE_ATTRIBUTE_TIME_CREATED: string;
 
 	/**
+	 * A key in the "time" namespace for getting the nanoseconds of the time
+	 * the file was created. This should be used in conjunction with
+	 * #G_FILE_ATTRIBUTE_TIME_CREATED. Corresponding #GFileAttributeType is
+	 * %G_FILE_ATTRIBUTE_TYPE_UINT32.
+	 * @returns A key in the "time" namespace for getting the nanoseconds of the time
+	 * the file was created. This should be used in conjunction with
+	 * #G_FILE_ATTRIBUTE_TIME_CREATED. Corresponding #GFileAttributeType is
+	 * %G_FILE_ATTRIBUTE_TYPE_UINT32.
+	 */
+	const FILE_ATTRIBUTE_TIME_CREATED_NSEC: string;
+
+	/**
 	 * A key in the "time" namespace for getting the microseconds of the time
 	 * the file was created.
 	 * 
@@ -38631,6 +40201,18 @@ declare namespace imports.gi.Gio {
 	 * epoch.
 	 */
 	const FILE_ATTRIBUTE_TIME_MODIFIED: string;
+
+	/**
+	 * A key in the "time" namespace for getting the nanoseconds of the time
+	 * the file was last modified. This should be used in conjunction with
+	 * #G_FILE_ATTRIBUTE_TIME_MODIFIED. Corresponding #GFileAttributeType is
+	 * %G_FILE_ATTRIBUTE_TYPE_UINT32.
+	 * @returns A key in the "time" namespace for getting the nanoseconds of the time
+	 * the file was last modified. This should be used in conjunction with
+	 * #G_FILE_ATTRIBUTE_TIME_MODIFIED. Corresponding #GFileAttributeType is
+	 * %G_FILE_ATTRIBUTE_TYPE_UINT32.
+	 */
+	const FILE_ATTRIBUTE_TIME_MODIFIED_NSEC: string;
 
 	/**
 	 * A key in the "time" namespace for getting the microseconds of the time
@@ -38933,6 +40515,18 @@ declare namespace imports.gi.Gio {
 	 * See also {@link G.menu_item_set_action_and_target}
 	 */
 	const MENU_ATTRIBUTE_TARGET: string;
+
+	/**
+	 * The maximum number of entries in a menu section supported by
+	 * {@link G.dbus_connection_export_menu_model}.
+	 * 
+	 * The exact value of the limit may change in future GLib versions.
+	 * @returns The maximum number of entries in a menu section supported by
+	 * {@link G.dbus_connection_export_menu_model}.
+	 * 
+	 * The exact value of the limit may change in future GLib versions.
+	 */
+	const MENU_EXPORTER_MAX_SECTION_SIZE: number;
 
 	/**
 	 * The name of the link that associates a menu item with a section.  The linked
