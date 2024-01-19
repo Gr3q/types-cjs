@@ -15,6 +15,7 @@
 /// <reference path="./Gdk-3.0.d.ts" />
 /// <reference path="./GdkPixbuf-2.0.d.ts" />
 /// <reference path="./Geoclue-2.0.d.ts" />
+/// <reference path="./GeocodeGlib-2.0.d.ts" />
 /// <reference path="./Gio-2.0.d.ts" />
 /// <reference path="./GIRepository-2.0.d.ts" />
 /// <reference path="./GLib-2.0.d.ts" />
