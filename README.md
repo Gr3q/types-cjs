@@ -1,6 +1,6 @@
 # types-cjs
 
-Typescript declarations for CJS - Cinnamon JavaScript 
+Typescript declarations for CJS - Cinnamon JavaScript
 
 ## Usage
 
@@ -10,7 +10,7 @@ To use the the declarations add types in tsconfig.json
 
 ```json
 {
-    "compileOptions": {
+    "compilerOptions": {
         "types": ["@ci-types/cjs"]
     }
 }
